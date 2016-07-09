@@ -421,4 +421,4 @@ Under construction
 
 ## License
 
-`activity_notification` project rocks and uses [MIT License](https://github.com/simukappu/activity-notification/blob/master/MIT-LICENSE).
+`activity_notification` project rocks and uses [MIT License](https://github.com/simukappu/activity_notification/blob/master/MIT-LICENSE).
