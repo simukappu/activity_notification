@@ -1,0 +1,2 @@
+$("#notifications_count").html("<%= @target.unopened_notifications_count %>");
+$("#notifications").html("<%= escape_javascript( render_notification(@notifications, fallback: "default") ) %>");

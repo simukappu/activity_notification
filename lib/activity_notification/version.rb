@@ -1,0 +1,3 @@
+module ActivityNotification
+  VERSION = "0.0.1"
+end
