@@ -24,7 +24,7 @@ Some setup you must do manually if you haven't yet:
 
    - You can override several methods in your target model
 
-       e.g. notifications_index, notification_email_allowed?
+       e.g. notification_index, notification_email_allowed?
 
   3. Setup your notifiable model (e.g. app/models/comment.rb)
 
@@ -40,7 +40,7 @@ Some setup you must do manually if you haven't yet:
 
    - You can override several methods in your notifiable model
 
-       e.g. notifiable_path, notification_email_to_users_allowed?
+       e.g. notifiable_path, notification_email_allowed?
 
   4. You can copy ActivityNotification views (for customization) to your app by running:
 

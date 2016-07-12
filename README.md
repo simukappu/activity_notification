@@ -100,7 +100,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-You can override several methods in your target model (e.g. notifications_index or notification_email_allowed?).
+You can override several methods in your target model (e.g. `notification_index` or `notification_email_allowed?`).
 
 #### Configuring notifiable model
 
@@ -137,7 +137,7 @@ class Comment < ActiveRecord::Base
 end
 ```
 
-You can override several methods in your notifiable model (e.g. notifiable_path or notification_email_to_users_allowed?).
+You can override several methods in your notifiable model (e.g. `notifiable_path` or `notification_email_allowed?`).
 
 ### Configuring views
 
@@ -257,12 +257,12 @@ def index
 end
 ```
 
-Moreover, you can use `notifications_index` or `notification_index_with_attributes` methods to automatically prepare notification index for the target.
+Moreover, you can use `notification_index` or `notification_index_with_attributes` methods to automatically prepare notification index for the target.
 
 ```ruby
 # custom_notifications_controller.rb
 def index
-  @notifications = @target.notifications_index_with_attributes
+  @notifications = @target.notification_index_with_attributes
 end
 ```
 
@@ -288,11 +288,11 @@ If you want to set notification index in the common layout, such as common heade
 <%= render_notifications_of current_user, index_content: :with_attributes %>
 ```
 
-Then, content named :notifications_index will be prepared and you can use it in your partial template.
+Then, content named :notification_index will be prepared and you can use it in your partial template.
 
 ```activity_notifications/notifications/users/_index.html.erb
 ...
-<%= yield :notifications_index %>
+<%= yield :notification_index %>
 ...
 ```
 
@@ -373,7 +373,7 @@ def index
   @notifications = @target.notifications.group_owners_only
 end
 ```
-`notifications_index` and `notification_index_with_attributes` methods also use `group_owners_only` scope internally.
+`notification_index` and `notification_index_with_attributes` methods also use `group_owners_only` scope internally.
 
 And you can render them in a view like this:
 ```erb

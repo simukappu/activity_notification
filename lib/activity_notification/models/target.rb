@@ -28,33 +28,33 @@ module ActivityNotification
       resolve_value(_notification_email_allowed, notifiable, key)
     end
 
-    def unopened_notifications_count
-      unopened_notifications_index.count
+    def unopened_notification_count
+      unopened_notification_index.count
     end
 
     def has_unopened_notifications?
-      unopened_notifications_index.exists?
+      unopened_notification_index.exists?
     end
 
     #TODO is this switching the best solution?
-    def notifications_index(limit = nil)
+    def notification_index(limit = nil)
       # When the target have unopened notifications
       notifications.unopened_index.exists? ?
         # Return unopened notifications
-        unopened_notifications_index(limit) :
+        unopened_notification_index(limit) :
         # Otherwise, return opened notifications
         limit.present? ?
-          opened_notifications_index(limit) :
-          opened_notifications_index
+          opened_notification_index(limit) :
+          opened_notification_index
     end
 
-    def unopened_notifications_index(limit = nil)
+    def unopened_notification_index(limit = nil)
       limit.present? ?
         notifications.unopened_index.limit(limit) :
         notifications.unopened_index
     end
 
-    def opened_notifications_index(limit = ActivityNotification.config.opened_limit)
+    def opened_notification_index(limit = ActivityNotification.config.opened_limit)
       notifications.opened_index(limit)
     end
 
@@ -72,27 +72,27 @@ module ActivityNotification
     # Methods to be overriden
 
     # Typical method to get notifications index
-    def notifications_index_with_attributes(limit = nil)
+    def notification_index_with_attributes(limit = nil)
       # When the target have unopened notifications
-      unopened_notifications_index.exists? ?
+      unopened_notification_index.exists? ?
         # Return unopened notifications
-        unopened_notifications_index_with_attributes(limit) :
+        unopened_notification_index_with_attributes(limit) :
         # Otherwise, return opened notifications
         limit.present? ?
-          opened_notifications_index_with_attributes(limit) :
-          opened_notifications_index_with_attributes
+          opened_notification_index_with_attributes(limit) :
+          opened_notification_index_with_attributes
     end
 
-    def unopened_notifications_index_with_attributes(limit = nil)
-      Notification.group_member_exists?(unopened_notifications_index(limit)) ?
-        unopened_notifications_index(limit).with_target.with_notifiable.with_group.with_notifier :
-        unopened_notifications_index(limit).with_target.with_notifiable.with_notifier
+    def unopened_notification_index_with_attributes(limit = nil)
+      Notification.group_member_exists?(unopened_notification_index(limit)) ?
+        unopened_notification_index(limit).with_target.with_notifiable.with_group.with_notifier :
+        unopened_notification_index(limit).with_target.with_notifiable.with_notifier
     end
 
-    def opened_notifications_index_with_attributes(limit = ActivityNotification.config.opened_limit)
-      Notification.group_member_exists?(opened_notifications_index(limit)) ?
-        opened_notifications_index(limit).with_target.with_notifiable.with_group.with_notifier :
-        opened_notifications_index(limit).with_target.with_notifiable.with_notifier
+    def opened_notification_index_with_attributes(limit = ActivityNotification.config.opened_limit)
+      Notification.group_member_exists?(opened_notification_index(limit)) ?
+        opened_notification_index(limit).with_target.with_notifiable.with_group.with_notifier :
+        opened_notification_index(limit).with_target.with_notifiable.with_notifier
     end
 
     def authenticate_with_devise?(current_resource)

@@ -1,9 +1,9 @@
 <div>
   <%= link_to open_all_notifications_path_for(@target), method: :post, remote: true do %>
-    <div id="notifications_count"><%= @target.unopened_notifications_count %></div>
+    <div id="notification_count"><%= @target.unopened_notification_count %></div>
   <% end %>
 
-  <div id="notifications_index">
-    <%= yield :notifications_index %>
+  <div id="notification_index">
+    <%= yield :notification_index %>
   </div>
 </div>

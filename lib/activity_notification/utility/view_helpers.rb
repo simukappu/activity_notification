@@ -33,19 +33,19 @@ module ActivityNotification
                                layout:  options[:notification_layout]
       case options[:index_content]
       when :simple
-        notifications_index = target.notifications_index
+        notification_index = target.notification_index
       when :none
       else
-        notifications_index = target.notifications_index_with_attributes
+        notification_index = target.notification_index_with_attributes
       end
 
-      if notifications_index.present?
-        content_for :notifications_index do
+      if notification_index.present?
+        content_for :notification_index do
           begin
-            render_notifications notifications_index, notification_options
+            render_notifications notification_index, notification_options
           rescue ActionView::MissingTemplate => e
             notification_options.delete(:target)
-            render_notifications notifications_index, notification_options
+            render_notifications notification_index, notification_options
           end
         end
       end

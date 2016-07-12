@@ -10,7 +10,7 @@ module ActivityNotification
   
     # GET /:target_type/:target_id/notifcations
     def index
-      @notifications = load_notifications_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
+      @notifications = load_notification_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
       respond_to do |format|
         format.html # index.html.erb
         format.json { render json: @notifications.to_json(include: [:target, :notifiable, :group]) }
@@ -20,7 +20,7 @@ module ActivityNotification
     # POST /:target_type/:target_id/notifcations/open_all
     def open_all
       @target.open_all_notifications
-      @notifications = load_notifications_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
+      @notifications = load_notification_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
       return_back_or_ajax(params[:filter], params[:limit])
     end
   
@@ -31,14 +31,14 @@ module ActivityNotification
     # DELETE /:target_type/:target_id/notifcations/:id
     def destroy
       @notification.destroy
-      @notifications = load_notifications_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
+      @notifications = load_notification_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
       return_back_or_ajax(params[:filter], params[:limit])
     end
   
     # POST /:target_type/:target_id/notifcations/:id/open
     def open
       @notification.open!
-      @notifications = load_notifications_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
+      @notifications = load_notification_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
       params[:move].to_s.to_boolean(false) ? 
         move : 
         return_back_or_ajax(params[:filter], params[:limit])
@@ -87,15 +87,15 @@ module ActivityNotification
         end
       end
 
-      def load_notifications_index(filter, limit)
+      def load_notification_index(filter, limit)
         limit = nil unless limit.to_i > 0
         case filter
         when 'opened'
-          @target.opened_notifications_index_with_attributes(limit)
+          @target.opened_notification_index_with_attributes(limit)
         when 'unopened'
-          @target.unopened_notifications_index_with_attributes(limit)
+          @target.unopened_notification_index_with_attributes(limit)
         else
-          @target.notifications_index_with_attributes(limit)
+          @target.notification_index_with_attributes(limit)
         end
       end
 

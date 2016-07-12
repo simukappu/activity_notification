@@ -52,7 +52,7 @@ class <%= @target_prefix %>NotificationsWithDeviseController < ActivityNotificat
   #   super
   # end
 
-  # def load_notifications_index(filter, limit)
+  # def load_notification_index(filter, limit)
   #   super(filter, limit)
   # end
 

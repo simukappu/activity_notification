@@ -1,5 +1,5 @@
 <h1>Notifications for <%= @target.printable_name %></h1>
-<div id="notifications_count"><%= @target.unopened_notifications_count %></div>
+<div id="notification_count"><%= @target.unopened_notification_count %></div>
 
 <div>
   <%= link_to "Open all", open_all_notifications_path_for(@target), method: :post %>
