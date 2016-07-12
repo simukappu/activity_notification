@@ -24,9 +24,12 @@ Currently, `activity_notification` is only supported with ActiveRecord ORM in Ra
     1. [Preparing target notifications](#preparing-target-notifications)
     2. [Rendering notifications](#rendering-notifications)
     3. [Notification views](#notification-views)
-    4. [i18n](#i18n)
+    4. [i18n for notifications](#i18n-for-notifications)
     5. [Grouping notifications](#grouping-notifications)
-  9. [Configuring email notifications](#configuring-email-notifications)
+  9. [Configuring email notification](#configuring-email-notification)
+    1. [Setup mailer](#setup-mailer)
+    2. [Email templates](#email-templates)
+    3. [i18n for email](#i18n-for-email)
 4. [Testing](#testing)
 5. [Documentation](#documentation)
 6. **[Common examples](#common-examples)**
@@ -338,7 +341,7 @@ If a view file does not exist then ActionView::MisingTemplate will be raised. If
 <%= render_notification(@notification, fallback: :text) %>
 ```
 
-#### i18n
+#### i18n for notifications
 
 Translations are used by the `#text` method, to which you can pass additional options in form of a hash. `#render` method uses translations when view templates have not been provided. You can render pure i18n strings by passing `{i18n: true}` to `#render_notification` or `#render`.
 
@@ -396,13 +399,13 @@ First, you need to set up the default URL options for the `activity_notification
 config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 ```
 
-#### Notification email views
+#### Email templates
 
 `activity_notification` will look for email template in the same way as notification views. For example, if you have an notification with `:key` set to `"notification.article.comment.replied"` and target_type `users`, the gem will look for a partial in `app/views/activity_notification/mailer/users/article/comment/_replied.html.(|erb|haml|slim|something_else)`.
 
 If this template is missing, the gem will look for a partial in `default` as the target type which means `activity_notification/mailer/default/_default.html.(|erb|haml|slim|something_else)`.
 
-#### i18n
+#### i18n for email
 
 The subject of notification email can be put in your locale `.yml` files as `mail_subject` field:
 
