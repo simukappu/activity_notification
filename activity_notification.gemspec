@@ -11,8 +11,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Shota Yamazaki (simukappu)"]
   s.email       = ["shota.yamazaki.8@gmail.com"]
   s.homepage    = "https://github.com/simukappu/activity_notification"
-  s.summary     = "Integrated user activity notification for Rails"
-  s.description = "Integrated user activity notification for Rails. Provides functions to configure multiple notification targets and make activity notifications with models, like adding comments, responding etc."
+  s.summary     = "Integrated user activity notifications for Rails"
+  s.description = "Integrated user activity notifications for Rails. Provides functions to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc."
   s.license     = "MIT"
 
   s.files = Dir["{lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
