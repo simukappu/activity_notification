@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- spec/*`.split("\n")
   s.require_paths = ["lib"]
+  s.required_ruby_version = '>= 2.1.0'
 
   s.add_dependency "rails", "~> 4.2.5"
   s.add_dependency 'activerecord', '>= 3.0'
