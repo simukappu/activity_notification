@@ -1,10 +1,10 @@
 PATH
   remote: .
   specs:
-    activity_notification (0.0.5)
+    activity_notification (0.0.6)
       activerecord (>= 3.0)
       i18n (>= 0.5.0)
-      rails (~> 4.2.7, >= 3.0.0)
+      rails (~> 4.2)
 
 GEM
   remote: https://rubygems.org/
