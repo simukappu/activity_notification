@@ -1,8 +1,8 @@
 <li>
   <div>
   	<%= notification.notifier.present? ? notification.notifier.printable_name : 'Someone' %>
-    <% if notification.group_members_exists? %>
-       <%= " and other #{notification.group_members_count} people" %>
+    <% if notification.group_member_exists? %>
+       <%= " and other #{notification.group_member_count} people" %>
     <% end %>
     notified you of <%= notification.notifiable.printable_name %>
   	<%= "in #{notification.group.printable_name}" if notification.group.present? %>

@@ -39,7 +39,7 @@ Currently, `activity_notification` is only supported with ActiveRecord ORM in Ra
 ## About
 
 `activity_notification` provides following functions:
-* Notification API (creating notifications, query notifications and notification parameters)
+* Notification API (creating notifications, query for notifications and managing notification parameters)
 * Notification controllers (managing open/unopen of notifications, link to notifiable activity page)
 * Notification views (presentation of notifications)
 * Notification grouping (grouping like `"Tom and other 7 people posted comments to this article"`)
@@ -78,7 +78,7 @@ $ rails generate activity_notification:install
 ```
 
 The generator will install an initializer which describes all configuration options of `activity_notification`.
-This generator also generates a i18n based translation file which we can configure the presentation of notifications.
+It also generates a i18n based translation file which we can configure the presentation of notifications.
 
 ### Database setup
 
@@ -95,7 +95,7 @@ $ rake db:migrate
 #### Configuring target model
 
 Configure your target model (e.g. app/models/user.rb).
-Add including statement and `acts_as_target` configuration to your target model which notifications are sent.
+Add including statement and `acts_as_target` configuration to your target model to get notifications.
 
 ```ruby
 class User < ActiveRecord::Base
@@ -382,11 +382,12 @@ end
 
 And you can render them in a view like this:
 ```erb
-<% if notification.group_members_exists? %>
-  <%= "#{notification.notifier.name} and other #{notification.group_members_count} people posted comments to your article \"#{notification.group.title}\"" %>
+<% if notification.group_member_exists? %>
+  <%= "#{notification.notifier.name} and other #{notification.group_member_count} people" %>
 <% else %>
-  <%= "#{notification.notifier.name} posted a comment to your article #{notification.notifiable.title}" %>
+  <%= "#{notification.notifier.name}" %>
 <% end %>
+<%= "posted comments to your article \"#{notification.group.title}\"" %>
 ```
 
 This presentation will be shown to target users as `Tom and other 7 people posted comments to your article "Let's use Ruby"`.

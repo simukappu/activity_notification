@@ -120,16 +120,16 @@ module ActivityNotification
     end
   
     # Cache group-by query result to avoid N+1 call
-    def group_members_exists?(limit = ActivityNotification.config.opened_limit)
-      group_members_count(limit) > 0
+    def group_member_exists?(limit = ActivityNotification.config.opened_limit)
+      group_member_count(limit) > 0
     end
 
     # Cache group-by query result to avoid N+1 call
-    def group_members_count(limit = ActivityNotification.config.opened_limit)
+    def group_member_count(limit = ActivityNotification.config.opened_limit)
       notification = group_owner? ? group_owner : self
       notification.opened? ?
-        opened_group_members_count(limit) :
-        unopened_group_members_count
+        opened_group_member_count(limit) :
+        unopened_group_member_count
     end
 
     def notifiale_path
@@ -164,22 +164,22 @@ module ActivityNotification
     # Protected instance methods
     protected
 
-      def unopened_group_members_count
+      def unopened_group_member_count
         # Cache group-by query result to avoid N+1 call
-        unopened_group_members_counts = target.notifications
+        unopened_group_member_counts = target.notifications
                                               .unopened_index_group_members_only
                                               .group(:group_owner_id)
                                               .count
-        unopened_group_members_counts[id] || 0
+        unopened_group_member_counts[id] || 0
       end
     
-      def opened_group_members_count(limit = ActivityNotification.config.opened_limit)
+      def opened_group_member_count(limit = ActivityNotification.config.opened_limit)
         # Cache group-by query result to avoid N+1 call
-        opened_group_members_counts   = target.notifications
+        opened_group_member_counts   = target.notifications
                                               .opened_index_group_members_only(limit)
                                               .group(:group_owner_id)
                                               .count
-        opened_group_members_counts[id] || 0
+        opened_group_member_counts[id] || 0
       end
 
   end
