@@ -1,0 +1,28 @@
+language: ruby
+
+rvm:
+  - 2.1.9
+  - 2.2.5
+  - 2.3.1
+  - ruby-head
+
+gemfile:
+  - Gemfile
+
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+  fast_finish: true
+
+sudo: false
+
+cache: bundler
+
+before_install: "rm ${BUNDLE_GEMFILE}.lock"
+
+before_script: "bundle update"
+
+script: bundle exec rspec
+
+notifications:
+  email: true 

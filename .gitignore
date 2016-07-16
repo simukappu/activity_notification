@@ -6,9 +6,12 @@
 /pkg/
 /spec/reports/
 /spec/examples.txt
+/spec/rails_app/log/*
+/spec/rails_app/tmp/*
 /test/tmp/
 /test/version_tmp/
 /tmp/
+/log/
 
 # Used by dotenv library to load environment variables.
 # .env
@@ -49,4 +52,7 @@ build-iPhoneSimulator/
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
 
+*~
+coverage/*
+*.sqlite3
 .project

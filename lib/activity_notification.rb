@@ -1,6 +1,6 @@
 require 'rails'
-#require 'active_support'
-#require 'action_view'
+require 'active_support'
+require 'action_view'
 
 module ActivityNotification
   extend ActiveSupport::Concern
