@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.name          = "activity_notification"
   s.version       = ActivityNotification::VERSION
   s.platform      = Gem::Platform::RUBY
-  s.authors       = ["Shota Yamazaki (simukappu)"]
+  s.authors       = ["Shota Yamazaki"]
   s.email         = ["shota.yamazaki.8@gmail.com"]
   s.homepage      = "https://github.com/simukappu/activity_notification"
   s.summary       = "Integrated user activity notifications for Rails"
