@@ -3,6 +3,7 @@ module ActivityNotification
   class Config
     attr_accessor :enabled,
                   :table_name,
+                  :email_enabled,
                   :mailer_sender,
                   :mailer,
                   :parent_mailer,
@@ -12,6 +13,7 @@ module ActivityNotification
     def initialize
       @enabled           = true
       @table_name        = "notifications"
+      @email_enabled     = false
       @mailer_sender     = nil
       @mailer            = "ActivityNotification::Mailer"
       @parent_mailer     = 'ActionMailer::Base'

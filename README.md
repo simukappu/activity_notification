@@ -397,6 +397,33 @@ First, you need to set up the default URL options for the `activity_notification
 config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 ```
 
+Email notification is disabled as default. You can configure to enable email notification in initializer `activity_notification.rb`.
+
+```ruby
+config.email_enabled = true
+```
+
+You can also configure them for each model by acts_as roles like these.
+
+```ruby
+class User < ActiveRecord::Base
+  acts_as_notification_target email: :email, email_allowed: true
+end
+```
+
+```ruby
+class Comment < ActiveRecord::Base
+  acts_as_notifiable :users,
+    targets: :custom_notification_users,
+    email_allowed: :custom_notification_email_allowed?
+
+  def custom_notification_email_allowed?(target, key)
+    # You can add enabled conditions from target and key
+    true
+  end
+end
+```
+
 #### Email templates
 
 `activity_notification` will look for email template in the same way as notification views. For example, if you have an notification with `:key` set to `"notification.article.comment.replied"` and target_type `users`, the gem will look for a partial in `app/views/activity_notification/mailer/users/article/comment/_replied.html.(|erb|haml|slim|something_else)`.

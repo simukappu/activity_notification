@@ -13,7 +13,7 @@ module ActivityNotification
     class_methods do
       def set_target_class_defaults
         self._notification_email          = nil
-        self._notification_email_allowed  = false
+        self._notification_email_allowed  = ActivityNotification.config.email_enabled
       end
     end
 

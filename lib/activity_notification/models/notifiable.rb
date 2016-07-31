@@ -85,7 +85,7 @@ module ActivityNotification
       if _notification_email_allowed[plural_target_type_sym]
         resolve_value(_notification_email_allowed[plural_target_type_sym], target, key)
       else
-        true
+        ActivityNotification.config.email_enabled
       end
     end
 
