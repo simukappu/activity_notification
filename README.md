@@ -65,14 +65,6 @@ or in your Gemfile:
 gem 'activity_notification'
 ```
 
-!! WARNING: `activity_notification` has not been registered to Rubygems now.
-This will be registered after testing and documentation are arranged.
-Please install from github repository before you can get from Rubygems.
-
-```ruby
-gem 'activity_notification', git: 'https://github.com/simukappu/activity_notification'
-```
-
 After you install `activity_notification` and add it to your Gemfile, you need to run the generator:
 
 ```console
@@ -102,7 +94,8 @@ Add including statement and `acts_as_target` configuration to your target model 
 ```ruby
 class User < ActiveRecord::Base
   include ActivityNotification::Target
-  # Example using confirmed_at of Device field to decide whether activity_notification sends notification email to this user
+  # Example using confirmed_at of Device field
+  # to decide whether activity_notification sends notification email to this user
   acts_as_target email: :email, email_allowed: :confirmed_at
 end
 ```
