@@ -1,6 +1,7 @@
 module ActivityNotification
   module Notifiable
     extend ActiveSupport::Concern
+
     included do
       include Common
       include ActsAsNotifiable
@@ -19,9 +20,7 @@ module ActivityNotification
       Rails.application.routes.default_url_options
     end
     
-    #TODO From Rails 4.2
-    #class_methods do
-    module ClassMethods
+    class_methods do
       def set_notifiable_class_defaults
         self._notification_targets        = {}
         self._notification_group          = {}
@@ -102,6 +101,8 @@ module ActivityNotification
       else
         begin
           polymorphic_path(self)
+        rescue NoMethodError => e
+          raise NotImplementedError, "You have to implement #{self.class}##{__method__}, set :notifiable_path in acts_as_notifiable or set polymorphic_path routing for #{self.class}"
         rescue ActionController::UrlGenerationError => e
           raise NotImplementedError, "You have to implement #{self.class}##{__method__}, set :notifiable_path in acts_as_notifiable or set polymorphic_path routing for #{self.class}"
         end
@@ -128,5 +129,8 @@ module ActivityNotification
       Notification.notify_all(targets, self, options)
     end
 
+    def default_notification_key
+      "#{to_resource_name}.default"
+    end
   end
 end

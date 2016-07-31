@@ -2,4 +2,7 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'coveralls', require: false, group: :test
+group :test do
+  gem 'timecop'
+  gem 'coveralls', require: false
+end

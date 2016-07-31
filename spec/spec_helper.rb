@@ -14,10 +14,12 @@ Bundler.setup
   Coveralls.wear!
 #end
 
+# Dummy application
+require 'rails_app/config/environment'
+
 #require 'rails'
 #require 'rspec-rails'
 require 'activity_notification'
-require "rails_app/config/environment"
 require 'factory_girl_rails'
 #require 'devise'
 

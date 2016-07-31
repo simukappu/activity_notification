@@ -2,9 +2,7 @@ module ActivityNotification
   module ActsAsNotifiable
     extend ActiveSupport::Concern
 
-    #TODO From Rails 4.2
-    #class_methods do
-    module ClassMethods
+    class_methods do
       # Adds required callbacks for creating and updating
       # notifiable models.
       #

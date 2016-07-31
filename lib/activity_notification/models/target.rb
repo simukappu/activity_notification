@@ -11,9 +11,7 @@ module ActivityNotification
       set_target_class_defaults
     end
 
-    #TODO From Rails 4.2
-    #class_methods do
-    module ClassMethods
+    class_methods do
       def set_target_class_defaults
         self._notification_email          = nil
         self._notification_email_allowed  = false
