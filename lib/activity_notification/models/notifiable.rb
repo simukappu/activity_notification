@@ -4,7 +4,6 @@ module ActivityNotification
 
     included do
       include Common
-      include ActsAsNotifiable
       include ActionDispatch::Routing::PolymorphicRoutes
       include Rails.application.routes.url_helpers
       class_attribute  :_notification_targets,

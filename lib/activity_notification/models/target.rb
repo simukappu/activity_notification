@@ -3,7 +3,6 @@ module ActivityNotification
     extend ActiveSupport::Concern
     included do
       include Common
-      include ActsAsTarget
       has_many :notifications,
         class_name: "::ActivityNotification::Notification",
         as: :target

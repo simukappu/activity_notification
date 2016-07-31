@@ -10,16 +10,17 @@ module ActivityNotification
       # [:targets]
       #TODO
       def acts_as_notifiable(target_type, opts = {})
+        include Notifiable
         options = opts.clone
-        assign_globals       target_type, options
+        assign_notifiable_globals(target_type, options)
         nil
       end
 
-      def available_options
+      def available_notifiable_options
         [:targets, :group, :notifier, :parameters, :email_allowed, :notifiable_path].freeze
       end
 
-      def assign_globals(target_type, options)
+      def assign_notifiable_globals(target_type, options)
         [:targets, :group, :parameters, :email_allowed].each do |key|
           if options[key]
             self.send("_notification_#{key}".to_sym).store(target_type.to_sym, options.delete(key))

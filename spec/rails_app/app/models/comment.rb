@@ -2,7 +2,6 @@ class Comment < ActiveRecord::Base
   belongs_to :article
   belongs_to :user
 
-  include ActivityNotification::Notifiable
   acts_as_notifiable :users,
     targets: ->(comment, key) { (comment.article.commented_users.to_a - [comment.user] + [comment.article.user]).uniq },
     group: :article,

@@ -6,13 +6,11 @@ module ActivityNotification
   extend ActiveSupport::Concern
   extend ActiveSupport::Autoload
 
+  autoload :NotificationApi,  'activity_notification/apis/notification_api'
   autoload :Notification,     'activity_notification/models/notification'
   autoload :Target,           'activity_notification/models/target'
   autoload :Notifiable,       'activity_notification/models/notifiable'
-  autoload :ActsAsTarget,     'activity_notification/roles/acts_as_target'
-  autoload :ActsAsNotifiable, 'activity_notification/roles/acts_as_notifiable'
   autoload :StoreController,  'activity_notification/controllers/store_controller'
-  autoload :NotificationApi,  'activity_notification/apis/notification_api'
   autoload :Common
   autoload :Config
   autoload :Renderable
@@ -47,6 +45,11 @@ end
 require 'activity_notification/helpers/polymorphic_helpers'
 require 'activity_notification/helpers/view_helpers'
 
+# Load role for models
+require 'activity_notification/roles/acts_as_target'
+require 'activity_notification/roles/acts_as_notifiable'
+require 'activity_notification/models'
+ActiveRecord::Base.include ActivityNotification::Models
+
 # Define Rails::Engine
 require 'activity_notification/rails'
-

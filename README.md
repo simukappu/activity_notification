@@ -89,23 +89,24 @@ $ rake db:migrate
 #### Configuring target model
 
 Configure your target model (e.g. app/models/user.rb).
-Add including statement and `acts_as_target` configuration to your target model to get notifications.
+Add `acts_as_notification_target` configuration to your target model to get notifications.
 
 ```ruby
 class User < ActiveRecord::Base
-  include ActivityNotification::Target
   # Example using confirmed_at of Device field
   # to decide whether activity_notification sends notification email to this user
-  acts_as_target email: :email, email_allowed: :confirmed_at
+  acts_as_notification_target email: :email, email_allowed: :confirmed_at
 end
 ```
+
+*Note*: `acts_as_target` is an alias for `acts_as_notification_target` and does the same.
 
 You can override several methods in your target model (e.g. `notification_index` or `notification_email_allowed?`).
 
 #### Configuring notifiable model
 
 Configure your notifiable model (e.g. app/models/comment.rb).
-Add including statement and `acts_as_notifiable` configuration to your notifiable model representing activity to notify.
+Add `acts_as_notifiable` configuration to your notifiable model representing activity to notify.
 You have to define notification targets for all notifications from this notifiable model by `:targets` option. Other configurations are options.
 
 ```ruby
@@ -113,7 +114,6 @@ class Comment < ActiveRecord::Base
   belongs_to :article
   belongs_to :user
 
-  include ActivityNotification::Notifiable
   # Example that ActivityNotification::Notifiable is configured with custom methods in your model as symbol
   acts_as_notifiable :users,
     targets: :custom_notification_users,

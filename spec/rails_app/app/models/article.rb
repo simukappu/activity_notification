@@ -1,5 +1,4 @@
 class Article < ActiveRecord::Base
-  include ActivityNotification::Notifiable
   acts_as_notifiable :users,
     targets: ->(article, key) { [article.user] },
     notifier: :user,
