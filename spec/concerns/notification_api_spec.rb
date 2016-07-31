@@ -482,25 +482,76 @@ shared_examples_for :notification_api do
     end
 
     describe "group_member_count" do
-      context "when the notification is group owner and has no group members" do
-        it "returns 0" do
-          expect(test_instance.group_member_count).to eq(0)
+      context "for unopened notification" do
+        context "when the notification is group owner and has no group members" do
+          it "returns 0" do
+            expect(test_instance.group_member_count).to eq(0)
+          end
+        end
+
+        context "when the notification is group owner and has group members" do
+          it "returns member count" do
+            create(test_class_name, target: test_instance.target, group_owner: test_instance)
+            create(test_class_name, target: test_instance.target, group_owner: test_instance)
+            expect(test_instance.group_member_count).to eq(2)
+          end
+        end
+
+        context "when the notification belongs to group" do
+          it "returns member count" do
+            group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance)
+                           create(test_class_name, target: test_instance.target, group_owner: test_instance)
+            expect(group_member.group_member_count).to eq(2)
+          end
         end
       end
 
-      context "when the notification is group owner and has group members" do
-        it "returns member count" do
-          create(test_class_name, target: test_instance.target, group_owner: test_instance)
-          create(test_class_name, target: test_instance.target, group_owner: test_instance)
-          expect(test_instance.group_member_count).to eq(2)
+      context "for opened notification" do
+        context "when the notification is group owner and has no group members" do
+          it "returns 0" do
+            test_instance.open!
+            expect(test_instance.group_member_count).to eq(0)
+          end
         end
-      end
 
-      context "when the notification belongs to group" do
-        it "returns member count" do
-          group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance)
-                         create(test_class_name, target: test_instance.target, group_owner: test_instance)
-          expect(group_member.group_member_count).to eq(2)
+        context "as default" do
+          context "when the notification is group owner and has group members" do
+            it "returns member count" do
+              create(test_class_name, target: test_instance.target, group_owner: test_instance)
+              create(test_class_name, target: test_instance.target, group_owner: test_instance)
+              test_instance.open!
+              expect(test_instance.group_member_count).to eq(2)
+            end
+          end
+
+          context "when the notification belongs to group" do
+            it "returns member count" do
+              group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance)
+                             create(test_class_name, target: test_instance.target, group_owner: test_instance)
+              test_instance.open!
+              expect(group_member.group_member_count).to eq(2)
+            end
+          end
+        end
+
+        context "with limit" do
+          context "when the notification is group owner and has group members" do
+            it "returns member count by limit" do
+              create(test_class_name, target: test_instance.target, group_owner: test_instance)
+              create(test_class_name, target: test_instance.target, group_owner: test_instance)
+              test_instance.open!
+              expect(test_instance.group_member_count(0)).to eq(0)
+            end
+          end
+
+          context "when the notification belongs to group" do
+            it "returns member count by limit" do
+              group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance)
+                             create(test_class_name, target: test_instance.target, group_owner: test_instance)
+              test_instance.open!
+              expect(group_member.group_member_count(0)).to eq(0)
+            end
+          end
         end
       end
     end
