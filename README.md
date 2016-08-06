@@ -6,7 +6,7 @@
 [![Gem Version](https://badge.fury.io/rb/activity_notification.svg)](https://badge.fury.io/rb/activity_notification)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](MIT-LICENSE)
 
-`activity_notification` provides integrated user activity notifications for Rails. You can easily use it to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc.
+`activity_notification` provides integrated user activity notifications for Ruby on Rails. You can easily use it to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc.
 
 Currently, `activity_notification` is only supported with ActiveRecord ORM in Rails 4.
 
