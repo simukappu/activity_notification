@@ -3,25 +3,24 @@ ENV["RAILS_ENV"] ||= "test"
 require 'bundler/setup'
 Bundler.setup
 
-#TODO set environment
-#if ENV['COV']
+if ENV['COV']
   require 'simplecov'
   SimpleCov.start do
     add_filter '/spec/'
   end
-#elsif ENV["TRAVIS"] # in Travis-CI
+elsif ENV["TRAVIS"]
   require 'coveralls'
   Coveralls.wear!
-#end
+end
 
 # Dummy application
+require 'devise'
 require 'rails_app/config/environment'
 
 #require 'rails'
 #require 'rspec-rails'
 require 'activity_notification'
 require 'factory_girl_rails'
-#require 'devise'
 
 # For active record ORM
 require 'active_record'

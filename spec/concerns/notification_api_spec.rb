@@ -1,7 +1,7 @@
 shared_examples_for :notification_api do
   include ActiveJob::TestHelper
   let(:test_class_name) { described_class.to_s.underscore.split('/').last.to_sym }
-  let(:test_instance) { create(test_class_name, target: create(:user, confirmed_at: DateTime.now)) }
+  let(:test_instance) { create(test_class_name) }
   before do
     ActiveJob::Base.queue_adapter = :test
     ActivityNotification::Mailer.deliveries.clear
@@ -11,9 +11,9 @@ shared_examples_for :notification_api do
   describe "as public class methods" do
     before do
       described_class.delete_all
-      @author_user = create(:user, confirmed_at: DateTime.now)
-      @user_1      = create(:user, confirmed_at: DateTime.now)
-      @user_2      = create(:user, confirmed_at: DateTime.now)
+      @author_user = create(:confirmed_user)
+      @user_1      = create(:confirmed_user)
+      @user_2      = create(:confirmed_user)
       @article     = create(:article, user: @author_user)
       @comment_1   = create(:comment, article: @article, user: @user_1)
       @comment_2   = create(:comment, article: @article, user: @user_2)
@@ -300,7 +300,7 @@ shared_examples_for :notification_api do
     describe "group_member_exists?" do
       context "when specified notifications have any group members" do
         let(:owner_notifications) do
-          target       = create(:user)
+          target       = create(:confirmed_user)
           group_owner  = create(:notification, target: target, group_owner: nil)
                          create(:notification, target: target, group_owner: nil)
           group_member = create(:notification, target: target, group_owner: group_owner)
@@ -315,7 +315,7 @@ shared_examples_for :notification_api do
 
       context "when specified notifications have no group members" do
         let(:owner_notifications) do
-          target       = create(:user)
+          target       = create(:confirmed_user)
           group_owner  = create(:notification, target: target, group_owner: nil)
                          create(:notification, target: target, group_owner: nil)
           target.notifications.group_owners_only

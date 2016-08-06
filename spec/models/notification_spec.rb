@@ -4,7 +4,7 @@ describe ActivityNotification::Notification, type: :model do
 
   describe "with association" do
     it "belongs to target" do
-      target = create(:user)
+      target = create(:confirmed_user)
       notification = create(:notification, target: target)
       expect(notification.reload.target).to eq(target)
     end
@@ -34,7 +34,7 @@ describe ActivityNotification::Notification, type: :model do
     end
 
     it "belongs to notifier" do
-      notifier = create(:user)
+      notifier = create(:confirmed_user)
       notification = create(:notification, notifier: notifier)
       expect(notification.reload.notifier).to eq(notifier)
     end
@@ -168,8 +168,8 @@ describe ActivityNotification::Notification, type: :model do
     context "to filter by association" do
       before do
         ActivityNotification::Notification.delete_all
-        @target_1, @notifiable_1, @group_1, @key_1 = create(:user), create(:article), nil, "key.1"
-        @target_2, @notifiable_2, @group_2, @key_2 = create(:user), create(:comment), @notifiable_1, "key.2"
+        @target_1, @notifiable_1, @group_1, @key_1 = create(:confirmed_user), create(:article), nil, "key.1"
+        @target_2, @notifiable_2, @group_2, @key_2 = create(:confirmed_user), create(:comment), @notifiable_1, "key.2"
         @notification_1 = create(:notification, target: @target_1, notifiable: @notifiable_1, group: @group_1, key: @key_1)
         @notification_2 = create(:notification, target: @target_2, notifiable: @notifiable_2, group: @group_2, key: @key_2)
       end

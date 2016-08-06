@@ -13,5 +13,4 @@ class Comment < ActiveRecord::Base
   def custom_notification_email_to_users_allowed?(user, key)
     true
   end
-
 end

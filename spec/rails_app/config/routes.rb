@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
-  notify_to :users
-
+  devise_for :users
   resources :articles
+
+  notify_to :users
 end
