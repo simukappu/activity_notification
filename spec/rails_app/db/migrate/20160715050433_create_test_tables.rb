@@ -5,14 +5,18 @@ class CreateTestTables < ActiveRecord::Migration
       ## Database authenticatable
       t.string :email,              null: false, default: "", index: true, unique: true
       t.string :encrypted_password, null: false, default: ""
-
       ## Confirmable
       t.string   :confirmation_token
       t.datetime :confirmed_at
       t.datetime :confirmation_sent_at
-
       # Apps
       t.string   :name
+
+      t.timestamps
+    end
+
+    create_table :admins do |t|
+      t.references :user, index: true
 
       t.timestamps
     end

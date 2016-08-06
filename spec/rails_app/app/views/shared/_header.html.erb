@@ -1,0 +1,8 @@
+<%= link_to 'Root', root_path %>
+<% if user_signed_in? %>
+  <%= "Login as #{current_user.name}" %>
+  <%= link_to 'Logout', destroy_user_session_path, method: :delete %>
+  <%= render_notifications_of current_user, fallback: :default, index_content: :with_attributes %>
+<% else %>
+  <%= link_to 'Login', new_user_session_path %>
+<% end %>

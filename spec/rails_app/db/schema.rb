@@ -13,6 +13,14 @@
 
 ActiveRecord::Schema.define(version: 20160715050433) do
 
+  create_table "admins", force: :cascade do |t|
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "admins", ["user_id"], name: "index_admins_on_user_id"
+
   create_table "articles", force: :cascade do |t|
     t.integer  "user_id"
     t.string   "title"

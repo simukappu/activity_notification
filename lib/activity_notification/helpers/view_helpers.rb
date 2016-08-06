@@ -41,6 +41,7 @@ module ActivityNotification
 
       if notification_index.present?
         content_for :notification_index do
+          @target = target
           begin
             render_notifications notification_index, notification_options
           rescue ActionView::MissingTemplate => e

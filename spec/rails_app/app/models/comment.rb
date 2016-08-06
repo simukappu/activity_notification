@@ -1,6 +1,8 @@
 class Comment < ActiveRecord::Base
   belongs_to :article
   belongs_to :user
+  validates :article, presence: true
+  validates :user, presence: true
 
   acts_as_notifiable :users,
     targets: ->(comment, key) { (comment.article.commented_users.to_a - [comment.user] + [comment.article.user]).uniq },

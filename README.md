@@ -110,30 +110,28 @@ Add `acts_as_notifiable` configuration to your notifiable model representing act
 You have to define notification targets for all notifications from this notifiable model by `:targets` option. Other configurations are options.
 
 ```ruby
+class Article < ActiveRecord::Base
+  belongs_to :user
+  has_many :comments, dependent: :delete_all
+  has_many :commented_users, through: :comments, source: :user
+end
+
 class Comment < ActiveRecord::Base
   belongs_to :article
   belongs_to :user
 
-  # Example that ActivityNotification::Notifiable is configured with custom methods in your model as symbol
+  # Example that ActivityNotification::Notifiable is configured with custom methods in your model as lambda or symbol
   acts_as_notifiable :users,
-    targets: :custom_notification_users,
+    # Notify to users who commented to the same article and article auther, except comment owner self
+    targets: ->(comment, key) { (comment.article.commented_users.to_a - [comment.user] + [comment.article.user]).uniq },
     group: :article,
     notifier: :user,
-    email_allowed: :custom_notification_email_to_users_allowed?,
+    email_allowed: true,
     notifiable_path: :custom_notifiable_path
-
-  def custom_notification_users(key)
-    User.where(id: self.article.comments.pluck(:user_id))
-  end
-
-  def custom_notification_email_to_users_allowed?(user, key)
-    true
-  end
 
   def custom_notifiable_path
     article_path(article)
   end
-
 end
 ```
 
@@ -226,13 +224,13 @@ You can trigger notifications by setting all your required parameters and trigge
 on the notifiable model, like this:
 
 ```ruby
-@comment.notify User key: 'article.commented_on', group: @comment.article
+@comment.notify :users key: 'article.commented_on', group: @comment.article
 ```
 
 Or, you can call public API as `ActivityNotification::Notification.notify`
 
 ```ruby
-ActivityNotification::Notification.notify User, @comment, group: @comment.article
+ActivityNotification::Notification.notify :users, @comment, group: @comment.article
 ```
 
 ### Displaying notifications

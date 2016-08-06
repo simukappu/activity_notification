@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'activerecord', '>= 3.0'
 
   s.add_development_dependency 'sqlite3', '~> 1.3.11'
+  s.add_development_dependency "jquery-rails", '~> 4.1.1'
   s.add_development_dependency "rspec-rails", '~> 3.5.1'
   s.add_development_dependency "factory_girl_rails", '~> 4.7.0'
   s.add_development_dependency 'simplecov', '~> 0.12.0'
