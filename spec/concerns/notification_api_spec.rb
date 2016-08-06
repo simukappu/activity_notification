@@ -23,8 +23,21 @@ shared_examples_for :notification_api do
     end
 
     describe "notify" do
+      it "returns array of created notifications" do
+        notifications = described_class.notify(:users, @comment_2)
+        expect(notifications).to be_a Array
+        expect(notifications.size).to eq(2)
+        if notifications[0].target == @author_user
+          validate_expected_notification(notifications[0], @author_user, @comment_2)
+          validate_expected_notification(notifications[1], @user_1, @comment_2)
+        else
+          validate_expected_notification(notifications[0], @user_1, @comment_2)
+          validate_expected_notification(notifications[1], @author_user, @comment_2)
+        end
+      end
+
       it "creates notification records" do
-        described_class.notify(User, @comment_2)
+        described_class.notify(:users, @comment_2)
         expect(@author_user.notifications.unopened_only.count).to eq(1)
         expect(@user_1.notifications.unopened_only.count).to eq(1)
         expect(@user_2.notifications.unopened_only.count).to eq(0)
@@ -34,7 +47,7 @@ shared_examples_for :notification_api do
         it "sends notification email later" do
           expect {
             perform_enqueued_jobs do
-              described_class.notify(User, @comment_2)
+              described_class.notify(:users, @comment_2)
             end
           }.to change { ActivityNotification::Mailer.deliveries.size }.by(2)
           expect(ActivityNotification::Mailer.deliveries.size).to eq(2)
@@ -44,14 +57,14 @@ shared_examples_for :notification_api do
   
         it "sends notification email with active job queue" do
           expect {
-            described_class.notify(User, @comment_2)
+            described_class.notify(:users, @comment_2)
           }.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(2)
         end
       end
 
       context "with send_later false" do
         it "sends notification email now" do
-          described_class.notify(User, @comment_2, send_later: false)
+          described_class.notify(:users, @comment_2, send_later: false)
           expect(ActivityNotification::Mailer.deliveries.size).to eq(2)
           expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@user_1.email)
           expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@author_user.email)
@@ -60,6 +73,14 @@ shared_examples_for :notification_api do
     end
 
     describe "notify_all" do
+      it "returns array of created notifications" do
+        notifications = described_class.notify_all([@author_user, @user_1], @comment_2)
+        expect(notifications).to be_a Array
+        expect(notifications.size).to eq(2)
+        validate_expected_notification(notifications[0], @author_user, @comment_2)
+        validate_expected_notification(notifications[1], @user_1, @comment_2)
+      end
+
       it "creates notification records" do
         described_class.notify_all([@author_user, @user_1], @comment_2)
         expect(@author_user.notifications.unopened_only.count).to eq(1)
@@ -97,6 +118,11 @@ shared_examples_for :notification_api do
     end
 
     describe "notify_to" do
+      it "returns reated notification" do
+        notification = described_class.notify_to(@user_1, @comment_2)
+        validate_expected_notification(notification, @user_1, @comment_2)
+      end
+
       it "creates notification records" do
         described_class.notify_to(@user_1, @comment_2)
         expect(@user_1.notifications.unopened_only.count).to eq(1)
@@ -284,6 +310,10 @@ shared_examples_for :notification_api do
         expect(@user_1.notifications.opened_only!.count).to eq(0)
       end
 
+      it "returns the number of opened notification records" do
+        expect(described_class.open_all_of(@user_1)).to eq(2)
+      end
+
       it "opens all notifications of the target" do
         described_class.open_all_of(@user_1)
         expect(@user_1.notifications.unopened_only.count).to eq(0)
@@ -377,6 +407,19 @@ shared_examples_for :notification_api do
     end
 
     describe "open!" do
+      before do
+        described_class.delete_all
+      end
+
+      it "returns the number of opened notification records" do
+        expect(test_instance.open!).to eq(1)
+      end
+
+      it "returns the number of opened notification records including group members" do
+        create(test_class_name, group_owner: test_instance, opened_at: nil)
+        expect(test_instance.open!).to eq(2)
+      end
+
       context "as default" do
         it "open notification with current time" do
           expect(test_instance.opened_at.blank?).to be_truthy
@@ -386,6 +429,18 @@ shared_examples_for :notification_api do
           expect(test_instance.opened_at).to        eq(DateTime.now)
           Timecop.return
         end
+
+        #TODO
+        # it "open group member notifications with current time" do
+          # group_member = create(test_class_name, group_owner: test_instance)
+          # expect(group_member.opened_at.blank?).to be_truthy
+          # Timecop.freeze(DateTime.now)
+          # test_instance.open!
+          # group_member = group_member.reload
+          # expect(group_member.opened_at.blank?).to be_falsey
+          # expect(group_member.opened_at).to        eq(DateTime.now)
+          # Timecop.return
+        # end
       end
 
       context "with an argument" do
@@ -396,6 +451,17 @@ shared_examples_for :notification_api do
           expect(test_instance.opened_at.blank?).to be_falsey
           expect(test_instance.opened_at).to        eq(datetime)
         end
+
+        #TODO
+        # it "open group member notifications with current time" do
+          # group_member = create(test_class_name, group_owner: test_instance)
+          # expect(group_member.opened_at.blank?).to be_truthy
+          # datetime = DateTime.now - 1.months
+          # test_instance.open!(datetime)
+          # group_member = group_member.reload
+          # expect(group_member.opened_at.blank?).to be_falsey
+          # expect(group_member.opened_at).to        eq(datetime)
+        # end
       end
     end
 
@@ -578,5 +644,12 @@ shared_examples_for :notification_api do
       end
     end
   end
+
+  private
+    def validate_expected_notification(notification, target, notifiable)
+      expect(notification).to be_a described_class
+      expect(notification.target).to eq(target)
+      expect(notification.notifiable).to eq(notifiable)
+    end
 
 end

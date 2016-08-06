@@ -17,9 +17,7 @@ module ActivityNotification
       end
     
       def notify_all(targets, notifiable, options = {})
-        targets.each do |target|
-          notify_to(target, notifiable, options)
-        end
+        Array(targets).map { |target| notify_to(target, notifiable, options) }
       end
     
       def notify_to(target, notifiable, options = {})
@@ -29,19 +27,20 @@ module ActivityNotification
         notification = store_notification(target, notifiable, options)
         # Send notification email
         notification.send_notification_email(send_later) if send_email
+        # Return created notification
         notification
       end
   
       # Open all notifications of specified target
       def open_all_of(target, opened_at = nil)
         opened_at = DateTime.now if opened_at.blank?
-        Notification.where(target: target, opened_at: nil).update_all(opened_at: opened_at)
+        where(target: target, opened_at: nil).update_all(opened_at: opened_at)
       end
   
       #TODO description
       # Call from controllers or views to avoid N+1
       def group_member_exists?(notifications)
-        Notification.where(group_owner_id: notifications.pluck(:id)).exists?
+        where(group_owner_id: notifications.pluck(:id)).exists?
       end
     
       def available_options
@@ -61,8 +60,8 @@ module ActivityNotification
   
         # Bundle notification group by target, notifiable_type, group and key
         # Defferent notifiable.id can be made in a same group
-        group_owner = Notification.where(target: target, notifiable_type: notifiable.to_class_name, key: key, group: group)
-                                  .where(group_owner_id: nil, opened_at: nil).earliest
+        group_owner = where(target: target, notifiable_type: notifiable.to_class_name, key: key, group: group)
+                     .where(group_owner_id: nil, opened_at: nil).earliest
         if group.present? and group_owner.present?
           create(target: target, notifiable: notifiable, key: key, group: group, group_owner: group_owner, parameters: parameters, notifier: notifier)
         else
@@ -85,7 +84,7 @@ module ActivityNotification
     def open!(opened_at = nil)
       opened_at = DateTime.now if opened_at.blank?
       update(opened_at: opened_at)
-      group_members.update_all(opened_at: opened_at)
+      group_members.update_all(opened_at: opened_at) + 1
     end
 
     def unopened?
@@ -128,18 +127,18 @@ module ActivityNotification
       def unopened_group_member_count
         # Cache group-by query result to avoid N+1 call
         unopened_group_member_counts = target.notifications
-                                              .unopened_index_group_members_only
-                                              .group(:group_owner_id)
-                                              .count
+                                             .unopened_index_group_members_only
+                                             .group(:group_owner_id)
+                                             .count
         unopened_group_member_counts[id] || 0
       end
     
       def opened_group_member_count(limit = ActivityNotification.config.opened_limit)
         # Cache group-by query result to avoid N+1 call
         opened_group_member_counts   = target.notifications
-                                              .opened_index_group_members_only(limit)
-                                              .group(:group_owner_id)
-                                              .count
+                                             .opened_index_group_members_only(limit)
+                                             .group(:group_owner_id)
+                                             .count
         opened_group_member_counts[id] || 0
       end
 
