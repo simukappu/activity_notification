@@ -4,6 +4,7 @@ module ActivityNotification
     included do
       include ActivityNotification::ActsAsTarget
       include ActivityNotification::ActsAsNotifiable
+      include ActivityNotification::ActsAsNotifier
     end
   end
 end
