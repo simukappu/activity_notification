@@ -5,7 +5,6 @@ module ActivityNotification
     class_methods do
       def acts_as_notifier
         include Notifier
-        true
       end
     end
   end

@@ -1,0 +1,40 @@
+describe ActivityNotification::ActsAsTarget do
+  let(:dummy_model_class) { DummyModel }
+
+  describe "as public class methods" do
+    describe "acts_as_target" do
+      it "have not included Target before calling" do
+        expect(dummy_model_class.respond_to?(:available_as_target?)).to be_falsey
+      end
+
+      it "includes Target" do
+        dummy_model_class.acts_as_target
+        expect(dummy_model_class.respond_to?(:available_as_target?)).to be_truthy
+        expect(dummy_model_class.available_as_target?).to be_truthy
+      end
+
+      context "with no options" do
+        it "returns hash of specified options" do
+          expect(dummy_model_class.acts_as_target).to eq({})
+        end
+      end
+
+      #TODO test other options
+    end
+
+    describe "acts_as_notification_target" do
+      it "is alias of acts_as_target" do
+        #TODO better way
+        #expect(dummy_model_class.acts_as_notification_target).to receive(:acts_as_target)
+        expect(dummy_model_class.respond_to?(:acts_as_notification_target)).to be_truthy
+      end
+    end
+
+    describe "available_target_options" do
+      it "returns list of available options in acts_as_target" do
+        expect(dummy_model_class.available_target_options)
+          .to eq([:skip_email, :email, :email_allowed])
+      end
+    end
+  end
+end

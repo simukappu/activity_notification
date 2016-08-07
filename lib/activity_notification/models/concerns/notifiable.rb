@@ -20,6 +20,10 @@ module ActivityNotification
     end
     
     class_methods do
+      def available_as_notifiable?
+        true
+      end
+
       def set_notifiable_class_defaults
         self._notification_targets        = {}
         self._notification_group          = {}
