@@ -1,9 +1,15 @@
 <div>
-  <%= link_to open_all_notifications_path_for(@target), method: :post, remote: true do %>
+  <%= link_to open_all_notifications_path_for(@target), method: :post, remote: true,
+      class: "dropdown-toggle", data: {toggle: "dropdown"} do %>
     <div id="notification_count"><%= @target.unopened_notification_count %></div>
   <% end %>
 
-  <div id="notification_index">
-    <%= yield :notification_index %>
-  </div>
+  <!-- Make this dropdown -->
+  <ul class="dropdown-menu">
+    <div id="notification_index">
+      <p>Notifications</p>
+      <%= yield :notification_index %>
+    </div>
+  </ul>
+  <%# end %>
 </div>
