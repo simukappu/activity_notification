@@ -3,15 +3,13 @@ ENV["RAILS_ENV"] ||= "test"
 require 'bundler/setup'
 Bundler.setup
 
-if ENV['COV']
-  require 'simplecov'
-  SimpleCov.start do
-    add_filter '/spec/'
-  end
-elsif ENV["TRAVIS"]
-  require 'coveralls'
-  Coveralls.wear!
+require 'simplecov'
+require 'coveralls'
+SimpleCov.formatter = Coveralls::SimpleCov::Formatter
+SimpleCov.start do
+  add_filter '/spec/'
 end
+#Coveralls.wear!
 
 # Dummy application
 require 'devise'
