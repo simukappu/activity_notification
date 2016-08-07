@@ -33,7 +33,7 @@ describe ActivityNotification::ActsAsTarget do
     describe "available_target_options" do
       it "returns list of available options in acts_as_target" do
         expect(dummy_model_class.available_target_options)
-          .to eq([:skip_email, :email, :email_allowed])
+          .to eq([:email, :email_allowed])
       end
     end
   end
