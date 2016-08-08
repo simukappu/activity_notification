@@ -108,9 +108,7 @@ module ActivityNotification
       else
         begin
           polymorphic_path(self)
-        rescue NoMethodError => e
-          raise NotImplementedError, "You have to implement #{self.class}##{__method__}, set :notifiable_path in acts_as_notifiable or set polymorphic_path routing for #{self.class}"
-        rescue ActionController::UrlGenerationError => e
+        rescue NoMethodError, ActionController::UrlGenerationError
           raise NotImplementedError, "You have to implement #{self.class}##{__method__}, set :notifiable_path in acts_as_notifiable or set polymorphic_path routing for #{self.class}"
         end
       end
