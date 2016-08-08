@@ -629,7 +629,7 @@ shared_examples_for :notification_api do
     end
   end
 
-  describe "with protected instance methods" do
+  describe "as protected instance methods" do
     describe "unopened_group_member_count" do
       it "is defined as protected method" do
         expect(test_instance.respond_to?(:unopened_group_member_count)).to       be_falsey

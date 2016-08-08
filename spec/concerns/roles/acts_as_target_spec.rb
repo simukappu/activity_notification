@@ -23,8 +23,8 @@ describe ActivityNotification::ActsAsTarget do
     end
 
     describe "acts_as_notification_target" do
-      it "is alias of acts_as_target" do
-        #TODO better way
+      it "is an alias of acts_as_target" do
+        #TODO make better way to test alias
         #expect(dummy_model_class.acts_as_notification_target).to receive(:acts_as_target)
         expect(dummy_model_class.respond_to?(:acts_as_notification_target)).to be_truthy
       end

@@ -58,7 +58,7 @@ module ActivityNotification
       if respond_to?(target_typed_method_name)
         send(target_typed_method_name, key)
       else
-        resolve_value(_notification_group[plural_target_type_sym])
+        resolve_value(_notification_group[plural_target_type_sym], key)
       end
     end
 
@@ -80,13 +80,17 @@ module ActivityNotification
       if respond_to?(target_typed_method_name)
         send(target_typed_method_name, key)
       else
-        resolve_value(_notifier[plural_target_type_sym])
+        resolve_value(_notifier[plural_target_type_sym], key)
       end
     end
 
     def notification_email_allowed?(target, key)
+      plural_target_type       = target.class.to_s.underscore.pluralize
       plural_target_type_sym   = target.to_resources_name.to_sym
-      if _notification_email_allowed[plural_target_type_sym]
+      target_typed_method_name = "notification_email_allowed_for_#{plural_target_type}?"
+      if respond_to?(target_typed_method_name)
+        send(target_typed_method_name, target, key)
+      elsif _notification_email_allowed[plural_target_type_sym]
         resolve_value(_notification_email_allowed[plural_target_type_sym], target, key)
       else
         ActivityNotification.config.email_enabled
@@ -100,7 +104,7 @@ module ActivityNotification
       if respond_to?(target_typed_method_name)
         send(target_typed_method_name, key)
       elsif _notifiable_path[plural_target_type_sym]
-        resolve_value(_notifiable_path[plural_target_type_sym])
+        resolve_value(_notifiable_path[plural_target_type_sym], key)
       else
         begin
           polymorphic_path(self)
