@@ -1,5 +1,5 @@
 describe ActivityNotification::ActsAsTarget do
-  let(:dummy_model_class) { DummyModel }
+  let(:dummy_model_class) { Dummy::DummyBase }
 
   describe "as public class methods" do
     describe "acts_as_target" do
