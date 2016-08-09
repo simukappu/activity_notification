@@ -40,7 +40,9 @@ module ActivityNotification
       #TODO description
       # Call from controllers or views to avoid N+1
       def group_member_exists?(notifications)
-        where(group_owner_id: notifications.pluck(:id)).exists?
+        notifications.present? ?
+          where(group_owner_id: notifications.pluck(:id)).exists? :
+          false
       end
     
       def available_options

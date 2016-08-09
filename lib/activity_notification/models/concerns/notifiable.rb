@@ -120,7 +120,7 @@ module ActivityNotification
     # TODO docs
     # overriding_notification_email_key(target, key)
 
-    # Wrapper methods of SimpleNotify class methods
+    # Wrapper methods of Notification class methods
   
     def notify(target_type, options = {})
       Notification.notify(target_type, self, options)

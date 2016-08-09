@@ -36,14 +36,14 @@ shared_examples_for :notifiable do
     end
 
     describe "notification_targets" do
-      describe "without any configuration" do
+      context "without any configuration" do
         it "raise NotImplementedError" do
           expect { test_instance.notification_targets(User, 'dummy_key') }
             .to raise_error(NotImplementedError, /You have to implement .+ or set :targets in acts_as_notifiable/)
         end
       end
 
-      describe "configured with overriden method" do
+      context "configured with overriden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notification_users(key)
@@ -55,7 +55,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      describe "configured with a field" do
+      context "configured with a field" do
         it "returns specified value" do
           described_class._notification_targets[:users] = User.all
           expect(test_instance.notification_targets(User, 'dummy_key')).to eq(User.all)
@@ -96,13 +96,13 @@ shared_examples_for :notifiable do
     end
 
     describe "notification_group" do
-      describe "without any configuration" do
+      context "without any configuration" do
         it "returns nil" do
           expect(test_instance.notification_group(User, 'dummy_key')).to be_nil
         end
       end
 
-      describe "configured with overriden method" do
+      context "configured with overriden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notification_group_for_users(key)
@@ -114,7 +114,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      describe "configured with a field" do
+      context "configured with a field" do
         it "returns specified value" do
           described_class._notification_group[:users] = User.all.first
           expect(test_instance.notification_group(User, 'dummy_key')).to eq(User.all.first)
@@ -155,13 +155,13 @@ shared_examples_for :notifiable do
     end
 
     describe "notification_parameters" do
-      describe "without any configuration" do
+      context "without any configuration" do
         it "returns blank hash" do
           expect(test_instance.notification_parameters(User, 'dummy_key')).to eq({})
         end
       end
 
-      describe "configured with overriden method" do
+      context "configured with overriden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notification_parameters_for_users(key)
@@ -173,7 +173,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      describe "configured with a field" do
+      context "configured with a field" do
         it "returns specified value" do
           described_class._notification_parameters[:users] = { hoge: 'fuga', foo: 'bar' }
           expect(test_instance.notification_parameters(User, 'dummy_key')).to eq({ hoge: 'fuga', foo: 'bar' })
@@ -214,13 +214,13 @@ shared_examples_for :notifiable do
     end
 
     describe "notifier" do
-      describe "without any configuration" do
+      context "without any configuration" do
         it "returns nil" do
           expect(test_instance.notifier(User, 'dummy_key')).to be_nil
         end
       end
 
-      describe "configured with overriden method" do
+      context "configured with overriden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notifier_for_users(key)
@@ -232,7 +232,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      describe "configured with a field" do
+      context "configured with a field" do
         it "returns specified value" do
           described_class._notifier[:users] = User.all.first
           expect(test_instance.notifier(User, 'dummy_key')).to eq(User.all.first)
@@ -273,9 +273,10 @@ shared_examples_for :notifiable do
     end
 
     describe "notification_email_allowed?" do
-      describe "without any configuration" do
+      context "without any configuration" do
         it "returns ActivityNotification.config.email_enabled" do
-          expect(test_instance.notification_email_allowed?(test_target, 'dummy_key')).to eq(ActivityNotification.config.email_enabled)
+          expect(test_instance.notification_email_allowed?(test_target, 'dummy_key'))
+            .to eq(ActivityNotification.config.email_enabled)
         end
 
         it "returns false as default" do
@@ -283,7 +284,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      describe "configured with overriden method" do
+      context "configured with overriden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notification_email_allowed_for_users?(target, key)
@@ -295,7 +296,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      describe "configured with a field" do
+      context "configured with a field" do
         it "returns specified value" do
           described_class._notification_email_allowed[:users] = true
           expect(test_instance.notification_email_allowed?(test_target, 'dummy_key')).to eq(true)
@@ -336,21 +337,21 @@ shared_examples_for :notifiable do
     end
 
     describe "notifiable_path" do
-      describe "without any configuration" do
+      context "without any configuration" do
         it "raise NotImplementedError" do
           expect { test_instance.notifiable_path(User, 'dummy_key') }
             .to raise_error(NotImplementedError, /You have to implement .+, set :notifiable_path in acts_as_notifiable or set polymorphic_path routing for/)
         end
       end
 
-      describe "configured with polymorphic_path" do
+      context "configured with polymorphic_path" do
         it "returns polymorphic_path" do
           article = create(:article)
           expect(article.notifiable_path(User, 'dummy_key')).to eq(article_path(article))
         end
       end
 
-      describe "configured with overriden method" do
+      context "configured with overriden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notifiable_path_for_users(key)
@@ -362,7 +363,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      describe "configured with a field" do
+      context "configured with a field" do
         it "returns specified value" do
           described_class._notifiable_path[:users] = article_path(1)
           expect(test_instance.notifiable_path(User, 'dummy_key')).to eq(article_path(1))

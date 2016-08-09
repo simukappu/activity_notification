@@ -60,7 +60,7 @@ module ActivityNotification
     end
 
 
-    # Wrapper methods of SimpleNotify class methods
+    # Wrapper methods of Notification class methods
   
     def notify_to(notifiable, options = {})
       Notification.notify_to(self, notifiable, options)
@@ -69,6 +69,7 @@ module ActivityNotification
     def open_all_notifications(opened_at = nil)
       Notification.open_all_of(self, opened_at)
     end
+
 
     # Methods to be overriden
 
@@ -85,15 +86,23 @@ module ActivityNotification
     end
 
     def unopened_notification_index_with_attributes(limit = nil)
-      Notification.group_member_exists?(unopened_notification_index(limit)) ?
-        unopened_notification_index(limit).with_target.with_notifiable.with_group.with_notifier :
-        unopened_notification_index(limit).with_target.with_notifiable.with_notifier
+      if unopened_notification_index(limit).present?
+        Notification.group_member_exists?(unopened_notification_index(limit)) ?
+          unopened_notification_index(limit).with_target.with_notifiable.with_group.with_notifier :
+          unopened_notification_index(limit).with_target.with_notifiable.with_notifier
+      else
+        notifications.none
+      end
     end
 
     def opened_notification_index_with_attributes(limit = ActivityNotification.config.opened_limit)
-      Notification.group_member_exists?(opened_notification_index(limit)) ?
-        opened_notification_index(limit).with_target.with_notifiable.with_group.with_notifier :
-        opened_notification_index(limit).with_target.with_notifiable.with_notifier
+      if opened_notification_index(limit).present?
+        Notification.group_member_exists?(opened_notification_index(limit)) ?
+          opened_notification_index(limit).with_target.with_notifiable.with_group.with_notifier :
+          opened_notification_index(limit).with_target.with_notifiable.with_notifier
+      else
+        notifications.none
+      end
     end
 
     def authenticate_with_devise?(current_resource)
