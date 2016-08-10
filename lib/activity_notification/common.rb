@@ -48,13 +48,13 @@ module ActivityNotification
       when Symbol
         begin
           __send__(thing, *args)
-        rescue ArgumentError => e
+        rescue ArgumentError
           __send__(thing)
         end
       when Proc
         begin
           thing.call(self, *args)
-        rescue ArgumentError => e
+        rescue ArgumentError
           thing.call(self)
         end
       when Hash
