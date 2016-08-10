@@ -61,7 +61,7 @@ shared_examples_for :notifiable do
           expect(test_instance.notification_targets(User, 'dummy_key')).to eq(User.all)
         end
 
-        it "returns specified symbol without argument" do
+        it "returns specified symbol without argumentss" do
           module AdditionalMethods
             def custom_notification_users
               User.all
@@ -120,7 +120,7 @@ shared_examples_for :notifiable do
           expect(test_instance.notification_group(User, 'dummy_key')).to eq(User.all.first)
         end
 
-        it "returns specified symbol without argument" do
+        it "returns specified symbol without argumentss" do
           module AdditionalMethods
             def custom_notification_group
               User.all.first
@@ -179,7 +179,7 @@ shared_examples_for :notifiable do
           expect(test_instance.notification_parameters(User, 'dummy_key')).to eq({ hoge: 'fuga', foo: 'bar' })
         end
 
-        it "returns specified symbol without argument" do
+        it "returns specified symbol without arguments" do
           module AdditionalMethods
             def custom_notification_parameters
               { hoge: 'fuga', foo: 'bar' }
@@ -238,7 +238,7 @@ shared_examples_for :notifiable do
           expect(test_instance.notifier(User, 'dummy_key')).to eq(User.all.first)
         end
 
-        it "returns specified symbol without argument" do
+        it "returns specified symbol without arguments" do
           module AdditionalMethods
             def custom_notifier
               User.all.first
@@ -302,7 +302,7 @@ shared_examples_for :notifiable do
           expect(test_instance.notification_email_allowed?(test_target, 'dummy_key')).to eq(true)
         end
 
-        it "returns specified symbol without argument" do
+        it "returns specified symbol without arguments" do
           module AdditionalMethods
             def custom_notification_email_allowed?
               true
@@ -369,7 +369,7 @@ shared_examples_for :notifiable do
           expect(test_instance.notifiable_path(User, 'dummy_key')).to eq(article_path(1))
         end
 
-        it "returns specified symbol without argument" do
+        it "returns specified symbol without arguments" do
           module AdditionalMethods
             def custom_notifiable_path
               article_path(1)

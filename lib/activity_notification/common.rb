@@ -8,15 +8,23 @@ module ActivityNotification
     case thing
     when Symbol
       begin
-        context.__send__(thing, *args)
-      rescue ArgumentError => e
-        context.__send__(thing)
+        context.__send__(thing, ActivityNotification.get_controller, *args)
+      rescue ArgumentError
+        begin
+          context.__send__(thing, ActivityNotification.get_controller)
+        rescue ArgumentError
+          context.__send__(thing)
+        end
       end
     when Proc
       begin
         thing.call(ActivityNotification.get_controller, context, *args)
-      rescue ArgumentError => e
-        thing.call(ActivityNotification.get_controller, context)
+      rescue ArgumentError
+        begin
+          thing.call(ActivityNotification.get_controller, context)
+        rescue ArgumentError
+          thing.call(context)
+        end
       end
     when Hash
       thing.dup.tap do |hash|
