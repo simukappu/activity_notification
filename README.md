@@ -347,10 +347,13 @@ notification:
   user:
     article:
       create: 'Article has been created'
-      update: 'Someone has edited the article'
       destroy: 'Some user removed an article!'
-      comment:
-        replied: "<p>%{notifier_name} posted comment to your article %{article_title}</p>"
+    comment:
+      post: "<p>%{notifier_name} posted comments to your article %{article_title}</p>"
+      reply: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
+  admin:
+    article:
+      post: '[Admin] Article has been created'
 ```
 
 This structure is valid for notifications with keys `"notification.article.comment.replied"` or `"article.comment.replied"`. As mentioned before, `"notification."` part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record.

@@ -1,0 +1,14 @@
+# Additional translations of ActivityNotification
+
+en:
+  notification:
+    user:
+      article:
+        create: 'Article has been created'
+        destroy: 'Some user removed an article!'
+      comment:
+        post: "<p>%{notifier_name} posted comments to your article %{article_title}</p>"
+        reply: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
+    admin:
+      article:
+        post: '[Admin] Article has been created'
