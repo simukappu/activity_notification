@@ -53,7 +53,7 @@ shared_examples_for :renderable do
             expect(test_instance.text).to eq(simple_text_original)
           end
 
-          context "when the text missing for the target type" do
+          context "when the text is missing for the target type" do
             it "returns translation missing text" do
               test_instance.target = create(:admin)
               test_instance.key = "notification.#{simple_text_key}"

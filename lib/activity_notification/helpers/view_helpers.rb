@@ -43,10 +43,10 @@ module ActivityNotification
         content_for :notification_index do
           @target = target
           begin
-            render_notifications notification_index, notification_options
-          rescue ActionView::MissingTemplate => e
+            render_notification notification_index, notification_options
+          rescue ActionView::MissingTemplate
             notification_options.delete(:target)
-            render_notifications notification_index, notification_options
+            render_notification notification_index, notification_options
           end
         end
       end
@@ -54,7 +54,7 @@ module ActivityNotification
       # Render partial index
       begin
         render options.merge(partial: partial, layout: layout, locals: locals)
-      rescue ActionView::MissingTemplate => e
+      rescue ActionView::MissingTemplate
         partial_root = "activity_notification/notifications/default"
         partial      = select_path(partial_path, partial_root)
         render options.merge(partial: partial, layout: layout, locals: locals)

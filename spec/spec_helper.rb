@@ -15,10 +15,9 @@ end
 require 'devise'
 require 'rails_app/config/environment'
 
-#require 'rails'
-#require 'rspec-rails'
-require 'activity_notification'
+require 'rspec/rails'
 require 'factory_girl_rails'
+require 'activity_notification'
 
 # For active record ORM
 require 'active_record'
