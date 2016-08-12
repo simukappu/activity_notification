@@ -22,7 +22,7 @@ shared_examples_for :notification_api do
       expect(@user_2.notifications.count).to eq(0)
     end
 
-    describe "notify" do
+    describe "#notify" do
       it "returns array of created notifications" do
         notifications = described_class.notify(:users, @comment_2)
         expect(notifications).to be_a Array
@@ -72,7 +72,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "notify_all" do
+    describe "#notify_all" do
       it "returns array of created notifications" do
         notifications = described_class.notify_all([@author_user, @user_1], @comment_2)
         expect(notifications).to be_a Array
@@ -117,7 +117,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "notify_to" do
+    describe "#notify_to" do
       it "returns reated notification" do
         notification = described_class.notify_to(@user_1, @comment_2)
         validate_expected_notification(notification, @user_1, @comment_2)
@@ -302,7 +302,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "open_all_of" do
+    describe "#open_all_of" do
       before do
         described_class.notify_to(@user_1, @comment_2)
         described_class.notify_to(@user_1, @comment_2)
@@ -327,7 +327,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "group_member_exists?" do
+    describe "#group_member_exists?" do
       context "when specified notifications have any group members" do
         let(:owner_notifications) do
           target       = create(:confirmed_user)
@@ -358,7 +358,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "available_options" do
+    describe "#available_options" do
       it "returns list of available options in notify api" do
         expect(described_class.available_options)
           .to eq([:key, :group, :parameters, :notifier, :send_email, :send_later])
@@ -367,7 +367,7 @@ shared_examples_for :notification_api do
   end
 
   describe "as private class methods" do
-    describe "store_notification" do
+    describe "#store_notification" do
       it "is defined as private method" do
         expect(described_class.respond_to?(:store_notification)).to       be_falsey
         expect(described_class.respond_to?(:store_notification, true)).to be_truthy
@@ -376,7 +376,7 @@ shared_examples_for :notification_api do
   end
 
   describe "as public instance methods" do
-    describe "send_notification_email" do
+    describe "#send_notification_email" do
       context "as default" do
         it "sends notification email later" do
           expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
@@ -406,7 +406,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "open!" do
+    describe "#open!" do
       before do
         described_class.delete_all
       end
@@ -465,7 +465,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "unopened?" do
+    describe "#unopened?" do
       context "when opened_at is blank" do
         it "returns true" do
           expect(test_instance.unopened?).to be_truthy
@@ -480,7 +480,7 @@ shared_examples_for :notification_api do
       end
     end
       
-    describe "opened?" do
+    describe "#opened?" do
       context "when opened_at is blank" do
         it "returns false" do
           expect(test_instance.opened?).to be_falsey
@@ -495,7 +495,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "group_owner?" do
+    describe "#group_owner?" do
       context "when the notification is group owner" do
         it "returns true" do
           expect(test_instance.group_owner?).to be_truthy
@@ -510,7 +510,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "group_member?" do
+    describe "#group_member?" do
       context "when the notification is group owner" do
         it "returns false" do
           expect(test_instance.group_member?).to be_falsey
@@ -525,7 +525,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "group_member_exists?" do
+    describe "#group_member_exists?" do
       context "when the notification is group owner and has no group members" do
         it "returns false" do
           expect(test_instance.group_member_exists?).to be_falsey
@@ -547,7 +547,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "group_member_count" do
+    describe "#group_member_count" do
       context "for unopened notification" do
         context "when the notification is group owner and has no group members" do
           it "returns 0" do
@@ -622,7 +622,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "notifiale_path" do
+    describe "#notifiale_path" do
       it "returns notifiable.notifiable_path" do
         expect(test_instance.notifiale_path).to eq(test_instance.notifiable.notifiable_path(test_instance.target_type))
       end
@@ -630,14 +630,14 @@ shared_examples_for :notification_api do
   end
 
   describe "as protected instance methods" do
-    describe "unopened_group_member_count" do
+    describe "#unopened_group_member_count" do
       it "is defined as protected method" do
         expect(test_instance.respond_to?(:unopened_group_member_count)).to       be_falsey
         expect(test_instance.respond_to?(:unopened_group_member_count, true)).to be_truthy
       end
     end
 
-    describe "opened_group_member_count" do
+    describe "#opened_group_member_count" do
       it "is defined as protected method" do
         expect(test_instance.respond_to?(:opened_group_member_count)).to       be_falsey
         expect(test_instance.respond_to?(:opened_group_member_count, true)).to be_truthy

@@ -14,13 +14,13 @@ shared_examples_for :target do
   end    
 
   describe "as public class methods" do
-    describe "available_as_target?" do
+    describe "#available_as_target?" do
       it "returns true" do
         expect(described_class.available_as_target?).to be_truthy
       end
     end
 
-    describe "set_target_class_defaults" do
+    describe "#set_target_class_defaults" do
       it "set parameter fields as default" do
         described_class.set_target_class_defaults
         expect(described_class._notification_email).to         eq(nil)
@@ -35,7 +35,7 @@ shared_examples_for :target do
       described_class.set_target_class_defaults
     end
 
-    describe "mailer_to" do
+    describe "#mailer_to" do
       context "without any configuration" do
         it "returns nil" do
           expect(test_instance.mailer_to).to be_nil
@@ -71,7 +71,7 @@ shared_examples_for :target do
       end
     end
 
-    describe "notification_email_allowed?" do
+    describe "#notification_email_allowed?" do
       context "without any configuration" do
         it "returns ActivityNotification.config.email_enabled" do
           expect(test_instance.notification_email_allowed?(test_notifiable, 'dummy_key'))
@@ -123,7 +123,7 @@ shared_examples_for :target do
       end
     end
 
-    describe "unopened_notification_count" do
+    describe "#unopened_notification_count" do
       it "returns count of unopened notification index" do
         create(:notification, target: test_instance)
         create(:notification, target: test_instance)
@@ -138,7 +138,7 @@ shared_examples_for :target do
       end
     end
 
-    describe "has_unopened_notifications?" do
+    describe "#has_unopened_notifications?" do
       context "when the target has no unopened notifications" do
         it "returns false" do
           expect(test_instance.has_unopened_notifications?).to be_falsey
@@ -153,7 +153,7 @@ shared_examples_for :target do
       end
     end
 
-    describe "notification_index" do
+    describe "#notification_index" do
       context "when the target has no notifications" do
         it "returns empty records" do
           expect(test_instance.notification_index).to be_empty
@@ -213,7 +213,7 @@ shared_examples_for :target do
       end
     end
 
-    describe "unopened_notification_index" do
+    describe "#unopened_notification_index" do
       context "when the target has no notifications" do
         it "returns empty records" do
           expect(test_instance.unopened_notification_index).to be_empty
@@ -268,7 +268,7 @@ shared_examples_for :target do
       end
     end
 
-    describe "opened_notification_index" do
+    describe "#opened_notification_index" do
       context "when the target has no notifications" do
         it "returns empty records" do
           expect(test_instance.opened_notification_index(1)).to be_empty
@@ -334,14 +334,14 @@ shared_examples_for :target do
 
     # Wrapper methods of Notification class methods
 
-    describe "notify_to" do
+    describe "#notify_to" do
       it "is an alias of ActivityNotification::Notification.notify_to" do
         expect(ActivityNotification::Notification).to receive(:notify_to)
         test_instance.notify_to create(:user)
       end
     end
 
-    describe "open_all_notifications" do
+    describe "#open_all_notifications" do
       it "is an alias of ActivityNotification::Notification.open_all_of" do
         expect(ActivityNotification::Notification).to receive(:open_all_of)
         test_instance.open_all_notifications
@@ -351,7 +351,7 @@ shared_examples_for :target do
 
     # Methods to be overriden
 
-    describe "notification_index_with_attributes" do
+    describe "#notification_index_with_attributes" do
       context "when the target has no notifications" do
         it "returns empty records" do
           expect(test_instance.notification_index_with_attributes).to be_empty
@@ -411,7 +411,7 @@ shared_examples_for :target do
       end
     end
 
-    describe "unopened_notification_index_with_attributes" do
+    describe "#unopened_notification_index_with_attributes" do
       it "calls unopened_notification_index" do
         expect(test_instance).to receive(:unopened_notification_index)
         test_instance.unopened_notification_index_with_attributes
@@ -469,7 +469,7 @@ shared_examples_for :target do
       end
     end
 
-    describe "opened_notification_index_with_attributes" do
+    describe "#opened_notification_index_with_attributes" do
       it "calls opened_notification_index" do
         expect(test_instance).to receive(:opened_notification_index)
         test_instance.opened_notification_index_with_attributes
@@ -527,7 +527,7 @@ shared_examples_for :target do
       end
     end
 
-    describe "authenticate_with_devise?" do
+    describe "#authenticate_with_devise?" do
       context "when the current device resource and called target are defferent class instance" do
         it "raise TypeError" do
           expect { test_instance.authenticate_with_devise?(test_notifiable) }

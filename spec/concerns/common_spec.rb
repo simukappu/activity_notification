@@ -3,7 +3,7 @@ shared_examples_for :common do
   let(:test_instance) { create(test_class_name) }
 
   describe "as public ActivityNotification methods with described class" do
-    describe "resolve_value" do
+    describe "#resolve_value" do
       before do
         allow(ActivityNotification).to receive(:get_controller).and_return('StubController')
       end
@@ -85,7 +85,7 @@ shared_examples_for :common do
   end
 
   describe "as public instance methods" do
-    describe "resolve_value" do
+    describe "#resolve_value" do
       context "with value" do
         it "returns specified value" do
           expect(test_instance.resolve_value(1)).to eq(1)

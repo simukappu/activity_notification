@@ -6,13 +6,13 @@ shared_examples_for :notifiable do
   include Rails.application.routes.url_helpers
 
   describe "as public class methods" do
-    describe "available_as_notifiable?" do
+    describe "#available_as_notifiable?" do
       it "returns true" do
         expect(described_class.available_as_notifiable?).to be_truthy
       end
     end
 
-    describe "set_notifiable_class_defaults" do
+    describe "#set_notifiable_class_defaults" do
       it "set parameter fields as default" do
         described_class.set_notifiable_class_defaults
         expect(described_class._notification_targets).to       eq({})
@@ -35,7 +35,7 @@ shared_examples_for :notifiable do
       expect(User.all.first).to be_an_instance_of(User)
     end
 
-    describe "notification_targets" do
+    describe "#notification_targets" do
       context "without any configuration" do
         it "raise NotImplementedError" do
           expect { test_instance.notification_targets(User, 'dummy_key') }
@@ -95,7 +95,7 @@ shared_examples_for :notifiable do
       end
     end
 
-    describe "notification_group" do
+    describe "#notification_group" do
       context "without any configuration" do
         it "returns nil" do
           expect(test_instance.notification_group(User, 'dummy_key')).to be_nil
@@ -154,7 +154,7 @@ shared_examples_for :notifiable do
       end
     end
 
-    describe "notification_parameters" do
+    describe "#notification_parameters" do
       context "without any configuration" do
         it "returns blank hash" do
           expect(test_instance.notification_parameters(User, 'dummy_key')).to eq({})
@@ -213,7 +213,7 @@ shared_examples_for :notifiable do
       end
     end
 
-    describe "notifier" do
+    describe "#notifier" do
       context "without any configuration" do
         it "returns nil" do
           expect(test_instance.notifier(User, 'dummy_key')).to be_nil
@@ -272,7 +272,7 @@ shared_examples_for :notifiable do
       end
     end
 
-    describe "notification_email_allowed?" do
+    describe "#notification_email_allowed?" do
       context "without any configuration" do
         it "returns ActivityNotification.config.email_enabled" do
           expect(test_instance.notification_email_allowed?(test_target, 'dummy_key'))
@@ -336,7 +336,7 @@ shared_examples_for :notifiable do
       end
     end
 
-    describe "notifiable_path" do
+    describe "#notifiable_path" do
       context "without any configuration" do
         it "raise NotImplementedError" do
           expect { test_instance.notifiable_path(User, 'dummy_key') }
@@ -403,28 +403,28 @@ shared_examples_for :notifiable do
       end
     end
 
-    describe "notify" do
+    describe "#notify" do
       it "is an alias of ActivityNotification::Notification.notify" do
         expect(ActivityNotification::Notification).to receive(:notify)
         test_instance.notify :users
       end
     end
 
-    describe "notify_to" do
+    describe "#notify_to" do
       it "is an alias of ActivityNotification::Notification.notify_to" do
         expect(ActivityNotification::Notification).to receive(:notify_to)
         test_instance.notify_to create(:user)
       end
     end
 
-    describe "notify_all" do
+    describe "#notify_all" do
       it "is an alias of ActivityNotification::Notification.notify_all" do
         expect(ActivityNotification::Notification).to receive(:notify_all)
         test_instance.notify_all [create(:user)]
       end
     end
 
-    describe "default_notification_key" do
+    describe "#default_notification_key" do
       it "returns '#to_resource_name.default'" do
         expect(test_instance.default_notification_key).to eq("#{test_instance.to_resource_name}.default")
       end
