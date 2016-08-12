@@ -30,7 +30,7 @@ module ActivityNotification
       end
 
       def copy_locale
-        copy_file "../../../config/locales/en.yml", "config/locales/activity_notification.en.yml"
+        template "locales/en.yml", "config/locales/activity_notification.en.yml"
       end
 
       def show_readme
