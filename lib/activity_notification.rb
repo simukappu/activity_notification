@@ -47,11 +47,7 @@ require 'activity_notification/helpers/polymorphic_helpers'
 require 'activity_notification/helpers/view_helpers'
 
 # Load role for models
-require 'activity_notification/roles/acts_as_target'
-require 'activity_notification/roles/acts_as_notifiable'
-require 'activity_notification/roles/acts_as_notifier'
 require 'activity_notification/models'
-ActiveRecord::Base.include ActivityNotification::Models
 
 # Define Rails::Engine
 require 'activity_notification/rails'
