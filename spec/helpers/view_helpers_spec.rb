@@ -228,28 +228,28 @@ describe ActivityNotification::ViewHelpers, type: :helper do
   end
 
   describe '#notification_url_for' do
-    it "returns path for the notification target" do
+    it "returns url for the notification target" do
       expect(notification_url_for(notification))
         .to eq(user_notification_url(target_user, notification))
     end
   end
 
   describe '#move_notification_url_for' do
-    it "returns path for the notification target" do
+    it "returns url for the notification target" do
       expect(move_notification_url_for(notification))
         .to eq(move_user_notification_url(target_user, notification))
     end
   end
 
   describe '#open_notification_url_for' do
-    it "returns path for the notification target" do
+    it "returns url for the notification target" do
       expect(open_notification_url_for(notification))
         .to eq(open_user_notification_url(target_user, notification))
     end
   end
 
   describe '#open_all_notifications_url_for' do
-    it "returns path for the notification target" do
+    it "returns url for the notification target" do
       expect(open_all_notifications_url_for(target_user))
         .to eq(open_all_user_notifications_url(target_user))
     end
