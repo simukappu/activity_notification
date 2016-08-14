@@ -12,6 +12,8 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new [
 ]
 SimpleCov.start('rails') do
   add_filter '/spec/'
+  add_filter '/lib/generators/templates/'
+  add_filter '/lib/activity_notification/version.rb'
 end
 
 # Dummy application
