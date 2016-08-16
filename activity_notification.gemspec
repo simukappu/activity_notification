@@ -30,5 +30,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec-rails", '~> 3.5.1'
   s.add_development_dependency "factory_girl_rails", '~> 4.7.0'
   s.add_development_dependency 'simplecov', '~> 0.12.0'
+  s.add_development_dependency 'ammeter',  '~> 1.1.3'
   s.add_development_dependency "devise", '~> 4.2.0'
 end

@@ -3,7 +3,7 @@ require 'rails/generators/base'
 module ActivityNotification
   module Generators
     class ControllersGenerator < Rails::Generators::Base
-      CONTROLLERS = %w(notifications notifications_with_devise).freeze
+      CONTROLLERS = ['notifications', 'notifications_with_devise'].freeze
 
       desc <<-DESC.strip_heredoc
         Create inherited ActivityNotification controllers in your app/controllers folder.

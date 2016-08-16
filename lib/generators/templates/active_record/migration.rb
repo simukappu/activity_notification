@@ -1,5 +1,5 @@
 # Migration responsible for creating a table with notifications
-class CreateNotifications < ActiveRecord::Migration
+class <%= @migration_name %> < ActiveRecord::Migration
   # Create table
   def change
     create_table :notifications do |t|

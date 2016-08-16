@@ -6,11 +6,12 @@ module ActivityNotification
     class NotificationGenerator < ActiveRecord::Generators::Base
       source_root File.expand_path("../../../templates/notification", __FILE__)
 
-      argument :name, type: :string, default: 'notification'
+      argument :name, type: :string, default: 'Notification'
 
-      # Create model in project's folder
-      def generate_files
-        copy_file 'notification.rb', "app/models/#{name}.rb"
+      # Create model in application directory
+      def create_models
+        @model_name = name
+        template 'notification.rb', "app/models/#{name.underscore}.rb"
       end
     end
   end

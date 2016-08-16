@@ -6,11 +6,12 @@ module ActivityNotification
     class MigrationGenerator < ActiveRecord::Generators::Base
       source_root File.expand_path("../../../templates/active_record", __FILE__)
 
-      argument :name, type: :string, default: 'create_notifications'
+      argument :name, type: :string, default: 'CreateNotifications'
 
-      # Create migration in project's folder
-      def generate_files
-        migration_template 'migration.rb', "db/migrate/#{name}.rb"
+      # Create migration files in application directory
+      def create_migrations
+        @migration_name = name
+        migration_template 'migration.rb', "db/migrate/#{name.underscore}.rb"
       end
     end
   end

@@ -6,7 +6,7 @@ module ActivityNotification
 
     class InstallGenerator < Rails::Generators::Base
       source_root File.expand_path("../../templates", __FILE__)
-``
+
       desc "Creates a ActivityNotification initializer and copy locale files to your application."
       class_option :orm
 
@@ -14,7 +14,7 @@ module ActivityNotification
         
         #TODO suport other orm e.g. mongoid
         unless options[:orm] == :active_record
-          raise MissingORMError, <<-ERROR.strip_heredoc
+          raise TypeError, <<-ERROR.strip_heredoc
           Currently ActivityNotification is only supported with Active Record ORM.
 
           Be sure to have an Active Record ORM loaded in your
@@ -37,9 +37,6 @@ module ActivityNotification
         readme "README" if behavior == :invoke
       end
 
-      def rails_4?
-        Rails::VERSION::MAJOR == 4
-      end
     end
   end
 end

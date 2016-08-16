@@ -21,6 +21,7 @@ require 'devise'
 require 'rails_app/config/environment'
 
 require 'rspec/rails'
+require 'ammeter/init'
 require 'factory_girl_rails'
 require 'activity_notification'
 
