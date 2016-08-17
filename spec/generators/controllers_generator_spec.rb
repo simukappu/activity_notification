@@ -15,7 +15,7 @@ describe ActivityNotification::Generators::ControllersGenerator, type: :generato
 
   describe 'the generated files' do
     context 'without target argument' do
-      it 'raise Thor::RequiredArgumentMissingError' do
+      it 'raises Thor::RequiredArgumentMissingError' do
         expect { run_generator }
         .to raise_error(Thor::RequiredArgumentMissingError)
       end

@@ -34,7 +34,7 @@ describe ActivityNotification::Generators::InstallGenerator, type: :generator do
     end
 
     context 'with orm option as not :active_record' do
-      it 'raise MissingORMError' do
+      it 'raises MissingORMError' do
         expect { run_generator %w(--orm dummy) }
         .to raise_error(TypeError)
       end

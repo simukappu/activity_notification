@@ -27,7 +27,7 @@ describe ActivityNotification::ViewHelpers, type: :helper do
   describe '#render_notification' do
     context "without fallback" do
       context "when the template is missing for the target type and key" do
-        it "raise ActionView::MissingTemplate" do
+        it "raises ActionView::MissingTemplate" do
           expect { render_notification notification }
             .to raise_error(ActionView::MissingTemplate)
         end
@@ -108,7 +108,7 @@ describe ActivityNotification::ViewHelpers, type: :helper do
   describe '#render_notification_of' do
     context "without fallback" do
       context "when the template is missing for the target type and key" do
-        it "raise ActionView::MissingTemplate" do
+        it "raises ActionView::MissingTemplate" do
           expect { render_notification_of target_user }
             .to raise_error(ActionView::MissingTemplate)
         end

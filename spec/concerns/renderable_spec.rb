@@ -63,7 +63,7 @@ shared_examples_for :renderable do
           end
 
           context "when the text has embedded parameters" do
-            it "raise MissingInterpolationArgument without embedded parameters" do
+            it "raises MissingInterpolationArgument without embedded parameters" do
               test_instance.key = params_text_key
               expect { test_instance.text }
                 .to raise_error(I18n::MissingInterpolationArgument)

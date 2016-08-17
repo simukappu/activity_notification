@@ -529,7 +529,7 @@ shared_examples_for :target do
 
     describe "#authenticate_with_devise?" do
       context "when the current device resource and called target are defferent class instance" do
-        it "raise TypeError" do
+        it "raises TypeError" do
           expect { test_instance.authenticate_with_devise?(test_notifiable) }
             .to raise_error(TypeError, /Defferent type of devise resource .+ has been passed to .+ You have to override .+ method/)
         end

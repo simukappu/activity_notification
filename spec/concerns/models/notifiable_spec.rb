@@ -37,7 +37,7 @@ shared_examples_for :notifiable do
 
     describe "#notification_targets" do
       context "without any configuration" do
-        it "raise NotImplementedError" do
+        it "raises NotImplementedError" do
           expect { test_instance.notification_targets(User, 'dummy_key') }
             .to raise_error(NotImplementedError, /You have to implement .+ or set :targets in acts_as_notifiable/)
         end
@@ -338,7 +338,7 @@ shared_examples_for :notifiable do
 
     describe "#notifiable_path" do
       context "without any configuration" do
-        it "raise NotImplementedError" do
+        it "raises NotImplementedError" do
           expect { test_instance.notifiable_path(User, 'dummy_key') }
             .to raise_error(NotImplementedError, /You have to implement .+, set :notifiable_path in acts_as_notifiable or set polymorphic_path routing for/)
         end
