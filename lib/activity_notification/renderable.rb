@@ -13,6 +13,7 @@ module ActivityNotification
       else
         k.insert(1, target.to_resource_name)
       end
+      k.push('text')
       k = k.join('.')
 
       I18n.t(k, (parameters.merge(params) || {}).merge(group_member_count: group_member_count))

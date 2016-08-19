@@ -224,7 +224,7 @@ You can trigger notifications by setting all your required parameters and trigge
 on the notifiable model, like this:
 
 ```ruby
-@comment.notify :users key: 'article.commented_on', group: @comment.article
+@comment.notify :users key: 'comment.reply', group: @comment.article
 ```
 
 Or, you can call public API as `ActivityNotification::Notification.notify`
@@ -340,20 +340,25 @@ If a view file does not exist then ActionView::MisingTemplate will be raised. If
 
 Translations are used by the `#text` method, to which you can pass additional options in form of a hash. `#render` method uses translations when view templates have not been provided. You can render pure i18n strings by passing `{i18n: true}` to `#render_notification` or `#render`.
 
-Translations should be put in your locale `.yml` files. To render pure strings from I18n example structure:
+Translations should be put in your locale `.yml` files as `text` field. To render pure strings from I18n example structure:
 
 ```yaml
 notification:
   user:
     article:
-      create: 'Article has been created'
-      destroy: 'Some user removed an article!'
+      create:
+        text: 'Article has been created'
+      destroy:
+        text: 'Some user removed an article!'
     comment:
-      post: "<p>%{notifier_name} posted comments to your article %{article_title}</p>"
-      reply: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
+      post:
+        text: "<p>%{notifier_name} posted comments to your article %{article_title}</p>"
+      reply:
+        text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
   admin:
     article:
-      post: '[Admin] Article has been created'
+      post:
+        text: '[Admin] Article has been created'
 ```
 
 This structure is valid for notifications with keys `"notification.article.comment.replied"` or `"article.comment.replied"`. As mentioned before, `"notification."` part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record.
@@ -363,7 +368,7 @@ This structure is valid for notifications with keys `"notification.article.comme
 `activity_notification` provides the function for automatically grouping notifications. When you created a notification like this, all *unopened* notifications to the same target will be grouped by `article` set as `:group` options:
 
 ```ruby
-@comment.notify User key: 'article.commented_on', group: @comment.article
+@comment.notify :users key: 'comment.reply', group: @comment.article
 ```
 
 You can use `group_owners_only` scope to filter owner notifications representing each group:
@@ -402,6 +407,7 @@ Email notification is disabled as default. You can configure to enable email not
 
 ```ruby
 config.email_enabled = true
+config.mailer_sender = 'your_notification_sender@example.com'
 ```
 
 You can also configure them for each model by acts_as roles like these.
@@ -440,7 +446,8 @@ notification:
   user:
     article:
       comment:
-        replied: "<p>%{notifier_name} posted comment to your article %{article_title}</p>"
+        reply:
+          text "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
           mail_subject: 'New comment to your article'
 ```
 

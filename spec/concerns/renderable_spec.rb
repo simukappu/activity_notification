@@ -18,22 +18,22 @@ shared_examples_for :renderable do
 
   describe "i18n configuration" do
     it "has key configured for simple text" do
-      expect(I18n.t("notification.#{target_type_key}.#{simple_text_key}"))
+      expect(I18n.t("notification.#{target_type_key}.#{simple_text_key}.text"))
         .to eq(simple_text_original)
     end
 
     it "has key configured with embedded params" do
-      expect(I18n.t("notification.#{target_type_key}.#{params_text_key}"))
+      expect(I18n.t("notification.#{target_type_key}.#{params_text_key}.text"))
         .to eq(params_text_original)
-      expect(I18n.t("notification.#{target_type_key}.#{params_text_key}",
+      expect(I18n.t("notification.#{target_type_key}.#{params_text_key}.text",
         {notifier_name: notifier_name, article_title: article_title}))
         .to eq(params_text_embedded)
     end
 
     it "has key configured with embedded params including group_member_count" do
-      expect(I18n.t("notification.#{target_type_key}.#{group_text_key}"))
+      expect(I18n.t("notification.#{target_type_key}.#{group_text_key}.text"))
         .to eq(group_text_original)
-      expect(I18n.t("notification.#{target_type_key}.#{group_text_key}",
+      expect(I18n.t("notification.#{target_type_key}.#{group_text_key}.text",
         {notifier_name: notifier_name, group_member_count: group_member_count}))
         .to eq(group_text_embedded)
     end
@@ -58,7 +58,7 @@ shared_examples_for :renderable do
               test_instance.target = create(:admin)
               test_instance.key = "notification.#{simple_text_key}"
               expect(test_instance.text)
-                .to eq("translation missing: en.notification.admin.#{simple_text_key}")
+                .to eq("translation missing: en.notification.admin.#{simple_text_key}.text")
             end
           end
 
