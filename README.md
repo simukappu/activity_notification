@@ -447,7 +447,7 @@ notification:
     article:
       comment:
         reply:
-          text "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
+          text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
           mail_subject: 'New comment to your article'
 ```
 
