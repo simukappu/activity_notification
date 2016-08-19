@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    activity_notification (0.0.8)
+    activity_notification (0.0.9)
       activerecord (>= 3.0)
       i18n (>= 0.5.0)
       rails (~> 4.2)
