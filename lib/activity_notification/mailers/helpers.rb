@@ -11,7 +11,7 @@ module ActivityNotification
         headers = headers_for(notification.key, options)
         begin
           mail headers
-        rescue ActionView::MissingTemplate => e
+        rescue ActionView::MissingTemplate
           mail headers.merge(template_name: 'default')
         end
       end
@@ -28,8 +28,8 @@ module ActivityNotification
         headers = {
           subject: subject_for(key),
           to: mailer_to(@target),
-          from: mailer_sender(@target.to_resource_name),
-          reply_to: mailer_reply_to(@target.to_resource_name),
+          from: mailer_from(@notification),
+          reply_to: mailer_reply_to(@notification),
           template_path: template_paths,
           template_name: template_name(key)
         }.merge(options)
@@ -42,20 +42,20 @@ module ActivityNotification
         target.mailer_to
       end
 
-      def mailer_reply_to(target_type)
-        mailer_sender(target_type, :reply_to)
+      def mailer_reply_to(notification)
+        mailer_sender(notification, :reply_to)
       end
 
-      def mailer_from(target_type)
-        mailer_sender(target_type, :from)
+      def mailer_from(notification)
+        mailer_sender(notification, :from)
       end
 
-      def mailer_sender(target_type, sender = :from)
+      def mailer_sender(notification, sender = :from)
         default_sender = default_params[sender]
         if default_sender.present?
           default_sender.respond_to?(:to_proc) ? instance_eval(&default_sender) : default_sender
         elsif ActivityNotification.config.mailer_sender.is_a?(Proc)
-          ActivityNotification.config.mailer_sender.call(target_type)
+          ActivityNotification.config.mailer_sender.call(notification)
         else
           ActivityNotification.config.mailer_sender
         end
