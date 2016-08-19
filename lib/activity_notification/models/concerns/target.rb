@@ -6,7 +6,7 @@ module ActivityNotification
       has_many :notifications,
         class_name: "::ActivityNotification::Notification",
         as: :target
-      class_attribute :_notification_email, :_notification_email_allowed
+      class_attribute :_notification_email, :_notification_email_allowed, :_notification_devise_resource
       set_target_class_defaults
     end
 
@@ -16,8 +16,9 @@ module ActivityNotification
       end
 
       def set_target_class_defaults
-        self._notification_email          = nil
-        self._notification_email_allowed  = ActivityNotification.config.email_enabled
+        self._notification_email            = nil
+        self._notification_email_allowed    = ActivityNotification.config.email_enabled
+        self._notification_devise_resource  = ->(model) { model }
       end
     end
 
@@ -27,6 +28,17 @@ module ActivityNotification
 
     def notification_email_allowed?(notifiable, key)
       resolve_value(_notification_email_allowed, notifiable, key)
+    end
+
+    def authenticated_with_devise?(current_resource)
+      devise_resource = resolve_value(_notification_devise_resource)
+      unless current_resource.instance_of? devise_resource.class
+        raise TypeError,
+          "Defferent type of current resource #{current_resource.class.to_s} "\
+          "with devise resource #{devise_resource.class.to_s} has been passed to #{self.class}##{__method__}. "\
+          "You have to override #{self.class}##{__method__} method or set devise_resource in acts_as_target."
+      end
+      current_resource == devise_resource
     end
 
     def unopened_notification_count
@@ -103,13 +115,6 @@ module ActivityNotification
       else
         notifications.none
       end
-    end
-
-    def authenticate_with_devise?(current_resource)
-      unless current_resource.instance_of? self.class
-        raise TypeError, "Defferent type of devise resource #{current_resource.class.to_s} has been passed to #{self.class}##{__method__}. You have to override #{self.class}##{__method__} method."
-      end
-      current_resource == self
     end
 
   end
