@@ -5,5 +5,5 @@ Rails.application.routes.draw do
   resources :comments, only: [:create, :destroy]
 
   notify_to :users
-  notify_to :admins
+  notify_to :admins, with_devise: :users
 end
