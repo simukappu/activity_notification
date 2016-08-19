@@ -116,7 +116,7 @@ module ActivityNotification
         notification.unopened_group_member_count
     end
 
-    def notifiale_path
+    def notifiable_path
       notifiable.notifiable_path(target_type)
     end
 

@@ -47,7 +47,7 @@ module ActivityNotification
     # GET /:target_type/:target_id/notifcations/:id/move
     def move
       @notification.open! if params[:open].to_s.to_boolean(false)
-      redirect_to @notification.notifiale_path
+      redirect_to @notification.notifiable_path
     end
   
     # No action routing
