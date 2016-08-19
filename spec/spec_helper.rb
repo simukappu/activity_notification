@@ -16,8 +16,9 @@ SimpleCov.start('rails') do
   add_filter '/lib/activity_notification/version.rb'
 end
 
-# Dummy application
+# Testing with Devise
 require 'devise'
+# Dummy application
 require 'rails_app/config/environment'
 
 require 'rspec/rails'
@@ -33,4 +34,5 @@ RSpec.configure do |config|
   config.before(:all) do
     FactoryGirl.reload
   end
+  config.include Devise::Test::ControllerHelpers, type: :controller
 end
