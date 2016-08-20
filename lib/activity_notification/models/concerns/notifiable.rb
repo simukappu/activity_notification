@@ -37,87 +37,72 @@ module ActivityNotification
     # Methods to be overriden
 
     def notification_targets(target_type, key)
-      plural_target_type       = target_type.to_s.underscore.pluralize
-      plural_target_type_sym   = plural_target_type.to_sym
-      target_typed_method_name = "notification_#{plural_target_type}"
-      if respond_to?(target_typed_method_name)
-        send(target_typed_method_name, key)
-      else
-        if _notification_targets[plural_target_type_sym]
-          resolve_value(_notification_targets[plural_target_type_sym], key)
-        else
-          raise NotImplementedError, "You have to implement #{self.class}##{target_typed_method_name} or set :targets in acts_as_notifiable"
-        end
+      target_typed_method_name = "notification_#{target_type.to_s.to_resources_name}"
+      resolved_parameter = resolve_parameter(
+        target_typed_method_name,
+        _notification_targets[target_type.to_s.to_resources_name.to_sym],
+        nil,
+        key)
+      unless resolved_parameter
+        raise NotImplementedError, "You have to implement #{self.class}##{target_typed_method_name} "\
+                                   "or set :targets in acts_as_notifiable"
       end
+      resolved_parameter
     end
 
     def notification_group(target_type, key)
-      plural_target_type       = target_type.to_s.underscore.pluralize
-      plural_target_type_sym   = plural_target_type.to_sym
-      target_typed_method_name = "notification_group_for_#{plural_target_type}"
-      if respond_to?(target_typed_method_name)
-        send(target_typed_method_name, key)
-      else
-        resolve_value(_notification_group[plural_target_type_sym], key)
-      end
+      resolved_parameter = resolve_parameter(
+        "notification_group_for_#{target_type.to_s.to_resources_name}",
+        _notification_group[target_type.to_s.to_resources_name.to_sym],
+        nil,
+        key)
     end
 
     def notification_parameters(target_type, key)
-      plural_target_type       = target_type.to_s.underscore.pluralize
-      plural_target_type_sym   = plural_target_type.to_sym
-      target_typed_method_name = "notification_parameters_for_#{plural_target_type}"
-      if respond_to?(target_typed_method_name)
-        send(target_typed_method_name, key)
-      else
-        resolve_value(_notification_parameters[plural_target_type_sym], key) || {}
-      end
+      resolved_parameter = resolve_parameter(
+        "notification_parameters_for_#{target_type.to_s.to_resources_name}",
+        _notification_parameters[target_type.to_s.to_resources_name.to_sym],
+        {},
+        key)
     end
 
     def notifier(target_type, key)
-      plural_target_type       = target_type.to_s.underscore.pluralize
-      plural_target_type_sym   = plural_target_type.to_sym
-      target_typed_method_name = "notifier_for_#{plural_target_type}"
-      if respond_to?(target_typed_method_name)
-        send(target_typed_method_name, key)
-      else
-        resolve_value(_notifier[plural_target_type_sym], key)
-      end
+      resolved_parameter = resolve_parameter(
+        "notifier_for_#{target_type.to_s.to_resources_name}",
+        _notifier[target_type.to_s.to_resources_name.to_sym],
+        nil,
+        key)
     end
 
     def notification_email_allowed?(target, key)
-      plural_target_type       = target.class.to_s.underscore.pluralize
-      plural_target_type_sym   = target.to_resources_name.to_sym
-      target_typed_method_name = "notification_email_allowed_for_#{plural_target_type}?"
-      if respond_to?(target_typed_method_name)
-        send(target_typed_method_name, target, key)
-      elsif _notification_email_allowed[plural_target_type_sym]
-        resolve_value(_notification_email_allowed[plural_target_type_sym], target, key)
-      else
-        ActivityNotification.config.email_enabled
-      end
+      resolved_parameter = resolve_parameter(
+        "notification_email_allowed_for_#{target.class.to_s.to_resources_name}?",
+        _notification_email_allowed[target.class.to_s.to_resources_name.to_sym],
+        ActivityNotification.config.email_enabled,
+        target, key)
     end
 
     def notifiable_path(target_type, key = nil)
-      plural_target_type       = target_type.to_s.underscore.pluralize
-      plural_target_type_sym   = plural_target_type.to_sym
-      target_typed_method_name = "notifiable_path_for_#{plural_target_type}"
-      if respond_to?(target_typed_method_name)
-        send(target_typed_method_name, key)
-      elsif _notifiable_path[plural_target_type_sym]
-        resolve_value(_notifiable_path[plural_target_type_sym], key)
-      else
+      resolved_parameter = resolve_parameter(
+        "notifiable_path_for_#{target_type.to_s.to_resources_name}",
+        _notifiable_path[target_type.to_s.to_resources_name.to_sym],
+        nil,
+        key)
+      unless resolved_parameter
         begin
-          polymorphic_path(self)
+          resolved_parameter = polymorphic_path(self)
         rescue NoMethodError, ActionController::UrlGenerationError
-          raise NotImplementedError, "You have to implement #{self.class}##{__method__}, set :notifiable_path in acts_as_notifiable or set polymorphic_path routing for #{self.class}"
+          raise NotImplementedError, "You have to implement #{self.class}##{__method__}, "\
+                                     "set :notifiable_path in acts_as_notifiable or "\
+                                     "set polymorphic_path routing for #{self.class}"
         end
       end
+      resolved_parameter
     end
 
+    # Methods to override key definition
     # TODO docs
     # overriding_notification_render_key(target, key)
-
-    # TODO docs
     # overriding_notification_email_key(target, key)
 
     # Wrapper methods of Notification class methods
@@ -137,5 +122,17 @@ module ActivityNotification
     def default_notification_key
       "#{to_resource_name}.default"
     end
+
+    private
+
+      def resolve_parameter(target_typed_method_name, parameter_field, default_value, *args)
+        if respond_to?(target_typed_method_name)
+          send(target_typed_method_name, *args)
+        elsif parameter_field
+          resolve_value(parameter_field, *args)
+        else
+          default_value
+        end
+      end
   end
 end

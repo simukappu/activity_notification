@@ -399,10 +399,6 @@ shared_examples_for :notification_controller do
           expect(response.status).to eq(302)
         end
 
-        it "assigns notification index as @notifications" do
-          expect(assigns(:notifications)).to eq([@notification])
-        end
-
         it "opens the notification" do
           expect(@notification.reload.opened?).to be_truthy
         end

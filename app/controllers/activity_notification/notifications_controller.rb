@@ -20,7 +20,6 @@ module ActivityNotification
     # POST /:target_type/:target_id/notifcations/open_all
     def open_all
       @target.open_all_notifications
-      @notifications = load_notification_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
       return_back_or_ajax(params[:filter], params[:limit])
     end
   
@@ -31,14 +30,12 @@ module ActivityNotification
     # DELETE /:target_type/:target_id/notifcations/:id
     def destroy
       @notification.destroy
-      @notifications = load_notification_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
       return_back_or_ajax(params[:filter], params[:limit])
     end
   
     # POST /:target_type/:target_id/notifcations/:id/open
     def open
       @notification.open!
-      @notifications = load_notification_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
       params[:move].to_s.to_boolean(false) ? 
         move : 
         return_back_or_ajax(params[:filter], params[:limit])
@@ -104,6 +101,7 @@ module ActivityNotification
       end
   
       def return_back_or_ajax(filter, limit)
+        @notifications = load_notification_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
         respond_to do |format|
           if request.xhr?
             format.js
