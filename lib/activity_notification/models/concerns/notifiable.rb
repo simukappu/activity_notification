@@ -51,7 +51,7 @@ module ActivityNotification
     end
 
     def notification_group(target_type, key)
-      resolved_parameter = resolve_parameter(
+      resolve_parameter(
         "notification_group_for_#{target_type.to_s.to_resources_name}",
         _notification_group[target_type.to_s.to_resources_name.to_sym],
         nil,
@@ -59,7 +59,7 @@ module ActivityNotification
     end
 
     def notification_parameters(target_type, key)
-      resolved_parameter = resolve_parameter(
+      resolve_parameter(
         "notification_parameters_for_#{target_type.to_s.to_resources_name}",
         _notification_parameters[target_type.to_s.to_resources_name.to_sym],
         {},
@@ -67,7 +67,7 @@ module ActivityNotification
     end
 
     def notifier(target_type, key)
-      resolved_parameter = resolve_parameter(
+      resolve_parameter(
         "notifier_for_#{target_type.to_s.to_resources_name}",
         _notifier[target_type.to_s.to_resources_name.to_sym],
         nil,
@@ -75,7 +75,7 @@ module ActivityNotification
     end
 
     def notification_email_allowed?(target, key)
-      resolved_parameter = resolve_parameter(
+      resolve_parameter(
         "notification_email_allowed_for_#{target.class.to_s.to_resources_name}?",
         _notification_email_allowed[target.class.to_s.to_resources_name.to_sym],
         ActivityNotification.config.email_enabled,
