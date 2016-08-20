@@ -95,7 +95,8 @@ module ActivityNotification
         begin
           render options.merge(partial: partial, layout: layout, locals: locals)
         rescue ActionView::MissingTemplate
-          render options.merge(partial: select_path(partial_path, "activity_notification/notifications/default"))
+          render options.merge(partial: select_path(partial_path, "activity_notification/notifications/default"),
+                               layout: layout, locals: locals)
         end
       end
 
