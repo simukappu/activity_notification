@@ -310,7 +310,7 @@ Sometimes, it's desirable to pass additional local variables to partials. It can
 
 `activity_notification` looks for views in `app/views/activity_notification/notifications/:target`.
 
-For example, if you have an notification with `:key` set to `"notification.article.comment.replied"` and rendered it with `:target` set to `:users`, the gem will look for a partial in `app/views/activity_notification/notifications/users/article/comment/_replied.html.(|erb|haml|slim|something_else)`.
+For example, if you have an notification with `:key` set to `"notification.article.comment.reply"` and rendered it with `:target` set to `:users`, the gem will look for a partial in `app/views/activity_notification/notifications/users/article/comment/_reply.html.(|erb|haml|slim|something_else)`.
 
 *Hint*: the `"notification."` prefix in `:key` is completely optional and kept for backwards compatibility, you can skip it in new projects.
 
@@ -361,7 +361,7 @@ notification:
         text: '[Admin] Article has been created'
 ```
 
-This structure is valid for notifications with keys `"notification.article.comment.replied"` or `"article.comment.replied"`. As mentioned before, `"notification."` part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record.
+This structure is valid for notifications with keys `"notification.article.comment.reply"` or `"article.comment.reply"`. As mentioned before, `"notification."` part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record.
 
 #### Grouping notifications
 
@@ -433,7 +433,7 @@ end
 
 #### Email templates
 
-`activity_notification` will look for email template in the same way as notification views. For example, if you have an notification with `:key` set to `"notification.article.comment.replied"` and target_type `users`, the gem will look for a partial in `app/views/activity_notification/mailer/users/article/comment/_replied.html.(|erb|haml|slim|something_else)`.
+`activity_notification` will look for email template in the same way as notification views. For example, if you have an notification with `:key` set to `"notification.article.comment.reply"` and target_type `users`, the gem will look for a partial in `app/views/activity_notification/mailer/users/article/comment/_reply.html.(|erb|haml|slim|something_else)`.
 
 If this template is missing, the gem will look for a partial in `default` as the target type which means `activity_notification/mailer/default/_default.html.(|erb|haml|slim|something_else)`.
 
