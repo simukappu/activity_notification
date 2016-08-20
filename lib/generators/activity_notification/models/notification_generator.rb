@@ -2,7 +2,7 @@ require 'rails/generators/active_record'
 
 module ActivityNotification
   module Generators
-    # Notification generator that creates notification model file from template
+    # Notification generator for notification model
     class NotificationGenerator < ActiveRecord::Generators::Base
       source_root File.expand_path("../../../templates/notification", __FILE__)
 

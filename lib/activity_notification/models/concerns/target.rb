@@ -34,8 +34,8 @@ module ActivityNotification
       devise_resource = resolve_value(_notification_devise_resource)
       unless current_resource.instance_of? devise_resource.class
         raise TypeError,
-          "Defferent type of current resource #{current_resource.class.to_s} "\
-          "with devise resource #{devise_resource.class.to_s} has been passed to #{self.class}##{__method__}. "\
+          "Defferent type of current resource #{current_resource.class} "\
+          "with devise resource #{devise_resource.class} has been passed to #{self.class}##{__method__}. "\
           "You have to override #{self.class}##{__method__} method or set devise_resource in acts_as_target."
       end
       current_resource == devise_resource
@@ -98,24 +98,24 @@ module ActivityNotification
     end
 
     def unopened_notification_index_with_attributes(limit = nil)
-      if unopened_notification_index(limit).present?
-        Notification.group_member_exists?(unopened_notification_index(limit)) ?
-          unopened_notification_index(limit).with_target.with_notifiable.with_group.with_notifier :
-          unopened_notification_index(limit).with_target.with_notifiable.with_notifier
-      else
-        notifications.none
-      end
+      include_attributes unopened_notification_index(limit), limit
     end
 
     def opened_notification_index_with_attributes(limit = ActivityNotification.config.opened_limit)
-      if opened_notification_index(limit).present?
-        Notification.group_member_exists?(opened_notification_index(limit)) ?
-          opened_notification_index(limit).with_target.with_notifiable.with_group.with_notifier :
-          opened_notification_index(limit).with_target.with_notifiable.with_notifier
-      else
-        notifications.none
-      end
+      include_attributes opened_notification_index(limit), limit
     end
+
+    private
+
+      def include_attributes(notification_index, limit)
+        if notification_index.present?
+          Notification.group_member_exists?(notification_index) ?
+            notification_index.with_target.with_notifiable.with_group.with_notifier :
+            notification_index.with_target.with_notifiable.with_notifier
+        else
+          notifications.none
+        end
+      end
 
   end
 end

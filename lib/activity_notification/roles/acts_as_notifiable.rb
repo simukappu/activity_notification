@@ -33,20 +33,24 @@ module ActivityNotification
         include Notifiable
         (
           [:targets, :group, :parameters, :email_allowed].map { |key|
-            options[key] ?
-              [key, self.send("_notification_#{key}".to_sym).store(target_type.to_sym, options.delete(key))] :
-              [nil, nil]
+            assign_parameter(target_type, key, "_notification_#{key}", options)
           }.to_h.merge [:notifier, :notifiable_path].map { |key|
-            options[key] ?
-              [key, self.send("_#{key}".to_sym).store(target_type.to_sym, options.delete(key))] :
-              [nil, nil]
+            assign_parameter(target_type, key, "_#{key}", options)
           }.to_h
-        ).delete_if { |k, v| k.nil? }
+        ).delete_if { |k, _| k.nil? }
       end
 
       def available_notifiable_options
         [:targets, :group, :notifier, :parameters, :email_allowed, :notifiable_path].freeze
       end
+
+      private
+
+        def assign_parameter(target_type, key, field_name, options)
+          options[key] ?
+            [key, self.send(field_name.to_sym).store(target_type.to_sym, options.delete(key))] :
+            [nil, nil]
+        end
     end
   end
 end
