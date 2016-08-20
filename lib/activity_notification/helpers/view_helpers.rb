@@ -87,8 +87,7 @@ module ActivityNotification
       end
 
       def render_partial_index(target, options)
-        partial_path = options.delete(:partial) || "index"
-        partial = select_path(partial_path,
+        partial = select_path(partial_path = options.delete(:partial) || "index",
                     options[:partial_root] || "activity_notification/notifications/#{target.to_resources_name}")
         layout  = options[:layout].present? ?
                          select_path(options.delete(:layout), (options[:layout_root] || "layouts")) : nil
@@ -96,8 +95,7 @@ module ActivityNotification
         begin
           render options.merge(partial: partial, layout: layout, locals: locals)
         rescue ActionView::MissingTemplate
-          partial = select_path(partial_path, "activity_notification/notifications/default")
-          render options.merge(partial: partial, layout: layout, locals: locals)
+          render options.merge(partial: select_path(partial_path, "activity_notification/notifications/default"))
         end
       end
 
