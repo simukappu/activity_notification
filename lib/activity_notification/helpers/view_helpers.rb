@@ -70,34 +70,45 @@ module ActivityNotification
 
     private
 
-      def select_path(path, root)
-        [root, path].map(&:to_s).join('/')
-      end
-
-      def prepare_content_for(target, notification_index, options)
+      def prepare_content_for(target, notification_index, params)
         content_for :notification_index do
           @target = target
           begin
-            render_notification notification_index, options
+            render_notification notification_index, params
           rescue ActionView::MissingTemplate
-            options.delete(:target)
-            render_notification notification_index, options
+            params.delete(:target)
+            render_notification notification_index, params
           end
         end
       end
 
-      def render_partial_index(target, options)
-        partial = select_path(partial_path = options.delete(:partial) || "index",
-                    options[:partial_root] || "activity_notification/notifications/#{target.to_resources_name}")
-        layout  = options[:layout].present? ?
-                         select_path(options.delete(:layout), (options[:layout_root] || "layouts")) : nil
-        locals  = (options[:locals] || {}).merge(target: target)
+      def render_partial_index(target, params)
+        index_path = params.delete(:partial)
+        partial    = partial_index_path(target, index_path, params[:partial_root])
+        layout     = layout_path(params.delete(:layout), params[:layout_root])
+        locals     = (params[:locals] || {}).merge(target: target)
         begin
-          render options.merge(partial: partial, layout: layout, locals: locals)
+          render params.merge(partial: partial, layout: layout, locals: locals)
         rescue ActionView::MissingTemplate
-          render options.merge(partial: select_path(partial_path, "activity_notification/notifications/default"),
-                               layout: layout, locals: locals)
+          partial = partial_index_path(target, index_path, "activity_notification/notifications/default")
+          render params.merge(partial: partial, layout: layout, locals: locals)
         end
+      end
+
+      def partial_index_path(target, path = nil, root = nil)
+        path ||= "index"
+        root ||= "activity_notification/notifications/#{target.to_resources_name}"
+        select_path(path, root)
+      end
+
+      def layout_path(path = nil, root = nil)
+        path.nil? and return
+        root ||= 'layouts'
+        select_path(path, root)
+      end
+
+      def select_path(path, root)
+        [root, path].map(&:to_s).join('/')
       end
 
   end
