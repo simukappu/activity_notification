@@ -98,16 +98,16 @@ module ActivityNotification
     end
 
     def unopened_notification_index_with_attributes(limit = nil)
-      include_attributes unopened_notification_index(limit), limit
+      include_attributes unopened_notification_index(limit)
     end
 
     def opened_notification_index_with_attributes(limit = ActivityNotification.config.opened_limit)
-      include_attributes opened_notification_index(limit), limit
+      include_attributes opened_notification_index(limit)
     end
 
     private
 
-      def include_attributes(notification_index, limit)
+      def include_attributes(notification_index)
         if notification_index.present?
           Notification.group_member_exists?(notification_index) ?
             notification_index.with_target.with_notifiable.with_group.with_notifier :
