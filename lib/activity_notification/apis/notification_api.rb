@@ -117,7 +117,7 @@ module ActivityNotification
     end
 
     def notifiable_path
-      notifiable.notifiable_path(target_type)
+      notifiable.notifiable_path(target_type, key)
     end
 
 

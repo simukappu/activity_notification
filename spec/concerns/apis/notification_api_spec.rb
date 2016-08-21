@@ -624,7 +624,8 @@ shared_examples_for :notification_api do
 
     describe "#notifiable_path" do
       it "returns notifiable.notifiable_path" do
-        expect(test_instance.notifiable_path).to eq(test_instance.notifiable.notifiable_path(test_instance.target_type))
+        expect(test_instance.notifiable_path)
+          .to eq(test_instance.notifiable.notifiable_path(test_instance.target_type, test_instance.key))
       end
     end
   end

@@ -82,7 +82,7 @@ module ActivityNotification
         target, key)
     end
 
-    def notifiable_path(target_type, key = nil)
+    def notifiable_path(target_type, key)
       resolved_parameter = resolve_parameter(
         "notifiable_path_for_#{target_type.to_s.to_resources_name}",
         _notifiable_path[target_type.to_s.to_resources_name.to_sym],
