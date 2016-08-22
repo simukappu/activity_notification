@@ -29,11 +29,13 @@ Currently, `activity_notification` is only supported with ActiveRecord ORM in Ra
     2. [Rendering notifications](#rendering-notifications)
     3. [Notification views](#notification-views)
     4. [i18n for notifications](#i18n-for-notifications)
-    5. [Grouping notifications](#grouping-notifications)
-  9. [Configuring email notification](#configuring-email-notification)
+3. [Functions](#functions)
+  1. [Email notification](#email-notification)
     1. [Setup mailer](#setup-mailer)
     2. [Email templates](#email-templates)
     3. [i18n for email](#i18n-for-email)
+  2. [Grouping notifications](#grouping-notifications)
+  3. [Integration with Devise](#integration-with-devise)
 4. [Testing](#testing)
 5. [Documentation](#documentation)
 6. **[Common examples](#common-examples)**
@@ -93,9 +95,9 @@ Add `acts_as_notification_target` configuration to your target model to get noti
 
 ```ruby
 class User < ActiveRecord::Base
-  # Example using confirmed_at of Device field
-  # to decide whether activity_notification sends notification email to this user
-  acts_as_notification_target email: :email, email_allowed: :confirmed_at
+  # Example that ActivityNotification::Target is configured
+  # with specified value, custom methods in your model as lambda or symbol
+  acts_as_notification_target email: :email
 end
 ```
 
@@ -107,7 +109,7 @@ You can override several methods in your target model (e.g. `notification_index`
 
 Configure your notifiable model (e.g. app/models/comment.rb).
 Add `acts_as_notifiable` configuration to your notifiable model representing activity to notify.
-You have to define notification targets for all notifications from this notifiable model by `:targets` option. Other configurations are options.
+You have to define notification targets for all notifications from this notifiable model by `:targets` option. Other configurations are options. `:notifiable_path` option is a path to move when the notification will be opened by the target user.
 
 ```ruby
 class Article < ActiveRecord::Base
@@ -120,18 +122,14 @@ class Comment < ActiveRecord::Base
   belongs_to :article
   belongs_to :user
 
-  # Example that ActivityNotification::Notifiable is configured with custom methods in your model as lambda or symbol
+  # Example that ActivityNotification::Notifiable is configured
+  # with specified value, custom methods in your model as lambda or symbol
   acts_as_notifiable :users,
-    # Notify to users who commented to the same article and article auther, except comment owner self
-    targets: ->(comment, key) { (comment.article.commented_users.to_a - [comment.user] + [comment.article.user]).uniq },
-    group: :article,
-    notifier: :user,
-    email_allowed: true,
-    notifiable_path: :custom_notifiable_path
-
-  def custom_notifiable_path
-    article_path(article)
-  end
+    # Notify to author and users who commented to the same article, except comment owner self
+    targets: ->(comment, key) {
+      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+    },
+    notifiable_path: ->(comment) { article_path(comment.article) }
 end
 ```
 
@@ -139,7 +137,7 @@ You can override several methods in your notifiable model (e.g. `notifiable_path
 
 ### Configuring views
 
-`activity_notification` provides view templates to customize your notification views. The view generater can generate default views for all targets.
+`activity_notification` provides view templates to customize your notification views. The view generator can generate default views for all targets.
 
 ```console
 $ rails generate activity_notification:views
@@ -155,7 +153,7 @@ If you would like to generate only a few sets of views, like the ones for the `n
 you can pass a list of modules to the generator with the `-v` flag.
 
 ```console
-$ rails generate activity_notification:views -v mailer
+$ rails generate activity_notification:views -v notifications
 ```
 
 ### Configuring controllers
@@ -177,7 +175,15 @@ If the customization at the views level is not enough, you can customize each co
       # def index
       #   super
       # end
-      ...
+
+      # ...
+
+      # POST /:target_type/:target_id/notifcations/:id/open
+      # def open
+      #   super
+      # end
+
+      # ...
     end
     ```
 
@@ -194,11 +200,14 @@ If the customization at the views level is not enough, you can customize each co
     You can completely override a controller action
     ```ruby
     class Users::NotificationsController < ActivityNotification::NotificationsController
+      # ...
+
       # POST /:target_type/:target_id/notifcations/:id/open
       def open
-        # custom open-notification code
+        # Custom code to open notification
       end
-      ...
+
+      # ...
     end
     ```
 
@@ -207,14 +216,8 @@ If the customization at the views level is not enough, you can customize each co
 `activity_notification` also provides routing helper. Add notification routing to `config/routes.rb` for the target (e.g. `:users`):
 
 ```ruby
-# Simply
 Rails.application.routes.draw do
   notify_to :users
-end
-
-# Or integrated with devise
-Rails.application.routes.draw do
-  notify_to :users, with_devise: :users
 end
 ```
 
@@ -224,14 +227,16 @@ You can trigger notifications by setting all your required parameters and trigge
 on the notifiable model, like this:
 
 ```ruby
-@comment.notify :users key: 'comment.reply', group: @comment.article
+@comment.notify :users, key: "comment.reply"
 ```
 
 Or, you can call public API as `ActivityNotification::Notification.notify`
 
 ```ruby
-ActivityNotification::Notification.notify :users, @comment, group: @comment.article
+ActivityNotification::Notification.notify :users, @comment, key: "comment.reply"
 ```
+
+*Hint*: `:key` is a option. Default key `#{notifiable_type}.default` which means `comment.default` will be used without specified key.
 
 ### Displaying notifications
 
@@ -294,10 +299,6 @@ Then, content named :notification_index will be prepared and you can use it in y
 ...
 ```
 
-##### Layouts
-
-Under construction
-
 ##### Locals
 
 Sometimes, it's desirable to pass additional local variables to partials. It can be done this way:
@@ -310,7 +311,7 @@ Sometimes, it's desirable to pass additional local variables to partials. It can
 
 `activity_notification` looks for views in `app/views/activity_notification/notifications/:target`.
 
-For example, if you have an notification with `:key` set to `"notification.article.comment.reply"` and rendered it with `:target` set to `:users`, the gem will look for a partial in `app/views/activity_notification/notifications/users/article/comment/_reply.html.(|erb|haml|slim|something_else)`.
+For example, if you have an notification with `:key` set to `"notification.comment.reply"` and rendered it with `:target` set to `:users`, the gem will look for a partial in `app/views/activity_notification/notifications/users/comment/_reply.html.(|erb|haml|slim|something_else)`.
 
 *Hint*: the `"notification."` prefix in `:key` is completely optional and kept for backwards compatibility, you can skip it in new projects.
 
@@ -361,9 +362,76 @@ notification:
         text: '[Admin] Article has been created'
 ```
 
-This structure is valid for notifications with keys `"notification.article.comment.reply"` or `"article.comment.reply"`. As mentioned before, `"notification."` part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record.
+This structure is valid for notifications with keys `"notification.comment.reply"` or `"comment.reply"`. As mentioned before, `"notification."` part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record.
 
-#### Grouping notifications
+
+## Functions
+
+### Email notification
+
+`activity_notification` provides email notification to the notification targets.
+
+#### Setup mailer
+
+First, you need to set up the default URL options for the `activity_notification` mailer in each environment. Here is a possible configuration for `config/environments/development.rb`:
+
+```ruby
+config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+```
+
+Email notification is disabled as default. You can configure to enable email notification in initializer `activity_notification.rb`.
+
+```ruby
+config.email_enabled = true
+config.mailer_sender = 'your_notification_sender@example.com'
+```
+
+You can also configure them for each model by acts_as roles like these.
+
+```ruby
+class User < ActiveRecord::Base
+  # Example using confirmed_at of Device field
+  # to decide whether activity_notification sends notification email to this user
+  acts_as_notification_target email: :email, email_allowed: :confirmed_at
+end
+```
+
+```ruby
+class Comment < ActiveRecord::Base
+  belongs_to :article
+  belongs_to :user
+
+  acts_as_notifiable :users,
+    targets: ->(comment, key) {
+      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+    },
+    # Allow notification email
+    email_allowed: true,
+    notifiable_path: ->(comment) { article_path(comment.article) }
+end
+```
+
+#### Email templates
+
+`activity_notification` will look for email template in the same way as notification views. For example, if you have an notification with `:key` set to `"notification.article.comment.reply"` and target_type `users`, the gem will look for a partial in `app/views/activity_notification/mailer/users/article/comment/_reply.html.(|erb|haml|slim|something_else)`.
+
+If this template is missing, the gem will look for a partial in `default` as the target type which means `activity_notification/mailer/default/_default.html.(|erb|haml|slim|something_else)`.
+
+#### i18n for email
+
+The subject of notification email can be put in your locale `.yml` files as `mail_subject` field:
+
+```yaml
+notification:
+  user:
+    article:
+      comment:
+        reply:
+          text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
+          mail_subject: 'New comment to your article'
+```
+
+### Grouping notifications
 
 `activity_notification` provides the function for automatically grouping notifications. When you created a notification like this, all *unopened* notifications to the same target will be grouped by `article` set as `:group` options:
 
@@ -393,53 +461,7 @@ And you can render them in a view like this:
 
 This presentation will be shown to target users as `Tom and other 7 people posted comments to your article "Let's use Ruby"`.
 
-### Configuring email notification
-
-#### Setup mailer
-
-First, you need to set up the default URL options for the `activity_notification` mailer in each environment. Here is a possible configuration for `config/environments/development.rb`:
-
-```ruby
-config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
-```
-
-Email notification is disabled as default. You can configure to enable email notification in initializer `activity_notification.rb`.
-
-```ruby
-config.email_enabled = true
-config.mailer_sender = 'your_notification_sender@example.com'
-```
-
-You can also configure them for each model by acts_as roles like these.
-
-```ruby
-class User < ActiveRecord::Base
-  acts_as_notification_target email: :email, email_allowed: true
-end
-```
-
-```ruby
-class Comment < ActiveRecord::Base
-  acts_as_notifiable :users,
-    targets: :custom_notification_users,
-    email_allowed: :custom_notification_email_allowed?
-
-  def custom_notification_email_allowed?(target, key)
-    # You can add enabled conditions from target and key
-    true
-  end
-end
-```
-
-#### Email templates
-
-`activity_notification` will look for email template in the same way as notification views. For example, if you have an notification with `:key` set to `"notification.article.comment.reply"` and target_type `users`, the gem will look for a partial in `app/views/activity_notification/mailer/users/article/comment/_reply.html.(|erb|haml|slim|something_else)`.
-
-If this template is missing, the gem will look for a partial in `default` as the target type which means `activity_notification/mailer/default/_default.html.(|erb|haml|slim|something_else)`.
-
-#### i18n for email
-
-The subject of notification email can be put in your locale `.yml` files as `mail_subject` field:
+You can also use `%{group_member_count}` in i18n text as a field:
 
 ```yaml
 notification:
@@ -451,21 +473,67 @@ notification:
           mail_subject: 'New comment to your article'
 ```
 
+Then, you will see `Tom and 7 people replied for your comments"`.
+
+### Integration with Devise
+
+`activity_notification` supports to integrate with Device authentication.
+
+First, add notification routing as integrated with devise to `config/routes.rb` for the target:
+
+```ruby
+Rails.application.routes.draw do
+  devise_for :users
+  # Integrated with devise
+  notify_to :users, with_devise: :users
+end
+```
+
+Then `activity_notification` will use `notifications_with_devise_controller` as a notification controller. The controller actions automatically call `authenticate_user!` and the user will be restricted to access and operate own notifications only, not others'.
+
+*Hint*: HTTP 403 Forbidden will be returned for unauthorized notifications.
+
+You can also use different model from device resource as a target. When you will add this to `config/routes.rb`:
+
+```ruby
+Rails.application.routes.draw do
+  devise_for :users
+  # Integrated with devise for different model
+  notify_to :admins, with_devise: :users
+end
+```
+
+and add `devise_resource` option to `acts_as_notification_target` in the target model:
+
+```ruby
+class Admin < ActiveRecord::Base
+  belongs_to :user
+  acts_as_target devise_resource: :user
+end
+```
+
+`activity_notification` will authenticate `:admin` notifications with devise authentication as `:user`.
+
+
 ## Testing
 
 Under construction
+
 
 ## Documentation
 
 Under construction
 
+
 ## Common examples
 
 Under construction
 
+
 ## Help
 
 Under construction
+
 
 ## License
 
