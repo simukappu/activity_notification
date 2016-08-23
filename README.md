@@ -46,7 +46,7 @@ Currently, `activity_notification` is only supported with ActiveRecord ORM in Ra
 * Notification API (creating notifications, query for notifications and managing notification parameters)
 * Notification controllers (managing open/unopen of notifications, link to notifiable activity page)
 * Notification views (presentation of notifications)
-* Notification grouping (grouping like `"Tom and other 7 people posted comments to this article"`)
+* Grouping notifications (grouping like `"Tom and other 7 people posted comments to this article"`)
 * Email notification
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
 
@@ -91,19 +91,19 @@ $ rake db:migrate
 #### Configuring target model
 
 Configure your target model (e.g. app/models/user.rb).
-Add `acts_as_notification_target` configuration to your target model to get notifications.
+Add `acts_as_target` configuration to your target model to get notifications.
 
 ```ruby
 class User < ActiveRecord::Base
-  # Example that ActivityNotification::Target is configured
-  # with specified value, custom methods in your model as lambda or symbol
-  acts_as_notification_target email: :email
+  # acts_as_target configures your model as ActivityNotification::Target
+  # with parameters as value or custom methods defined in your model as lambda or symbol
+
+  # This is an example without any options (default configuration) as the target
+  acts_as_target
 end
 ```
 
-*Note*: `acts_as_target` is an alias for `acts_as_notification_target` and does the same.
-
-You can override several methods in your target model (e.g. `notification_index` or `notification_email_allowed?`).
+*Note*: `acts_as_notification_target` is an alias for `acts_as_target` and does the same.
 
 #### Configuring notifiable model
 
@@ -122,18 +122,19 @@ class Comment < ActiveRecord::Base
   belongs_to :article
   belongs_to :user
 
-  # Example that ActivityNotification::Notifiable is configured
-  # with specified value, custom methods in your model as lambda or symbol
+  # acts_as_notifiable configures your model as ActivityNotification::Notifiable
+  # with parameters as value or custom methods defined in your model as lambda or symbol
   acts_as_notifiable :users,
-    # Notify to author and users who commented to the same article, except comment owner self
+    # Notification targets as :targets is a necessary option
+    # Set to notify to author and users commented to the article, except comment owner self
     targets: ->(comment, key) {
       ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
     },
+    # Path to move when the notification will be opened by the target user
+    # This is a optional since activity_notification uses polymorphic_path as default
     notifiable_path: ->(comment) { article_path(comment.article) }
 end
 ```
-
-You can override several methods in your notifiable model (e.g. `notifiable_path` or `notification_email_allowed?`).
 
 ### Configuring views
 
@@ -204,7 +205,9 @@ If the customization at the views level is not enough, you can customize each co
 
       # POST /:target_type/:target_id/notifcations/:id/open
       def open
-        # Custom code to open notification
+        # Custom code to open notification here
+
+        # super
       end
 
       # ...
@@ -299,8 +302,6 @@ Then, content named :notification_index will be prepared and you can use it in y
 ...
 ```
 
-##### Locals
-
 Sometimes, it's desirable to pass additional local variables to partials. It can be done this way:
 
 ```erb
@@ -390,7 +391,7 @@ You can also configure them for each model by acts_as roles like these.
 
 ```ruby
 class User < ActiveRecord::Base
-  # Example using confirmed_at of Device field
+  # Example using confirmed_at of devise field
   # to decide whether activity_notification sends notification email to this user
   acts_as_notification_target email: :email, email_allowed: :confirmed_at
 end
@@ -477,7 +478,7 @@ Then, you will see `Tom and 7 people replied for your comments"`.
 
 ### Integration with Devise
 
-`activity_notification` supports to integrate with Device authentication.
+`activity_notification` supports to integrate with devise authentication.
 
 First, add notification routing as integrated with devise to `config/routes.rb` for the target:
 
@@ -493,7 +494,7 @@ Then `activity_notification` will use `notifications_with_devise_controller` as 
 
 *Hint*: HTTP 403 Forbidden will be returned for unauthorized notifications.
 
-You can also use different model from device resource as a target. When you will add this to `config/routes.rb`:
+You can also use different model from Devise resource as a target. When you will add this to `config/routes.rb`:
 
 ```ruby
 Rails.application.routes.draw do
@@ -503,7 +504,7 @@ Rails.application.routes.draw do
 end
 ```
 
-and add `devise_resource` option to `acts_as_notification_target` in the target model:
+and add `devise_resource` option to `acts_as_target` in the target model:
 
 ```ruby
 class Admin < ActiveRecord::Base
@@ -512,7 +513,8 @@ class Admin < ActiveRecord::Base
 end
 ```
 
-`activity_notification` will authenticate `:admin` notifications with devise authentication as `:user`.
+`activity_notification` will authenticate `:admins` notifications with devise authentication for `:users`.
+In this example `activity_notification` will confirm the `user` belonged to `admin` with authenticated user by devise.
 
 
 ## Testing
