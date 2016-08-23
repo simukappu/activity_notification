@@ -514,7 +514,7 @@ end
 ```
 
 `activity_notification` will authenticate `:admins` notifications with devise authentication for `:users`.
-In this example `activity_notification` will confirm the `user` belonged to `admin` with authenticated user by devise.
+In this example `activity_notification` will confirm the `user` who `admin` belongs to with authenticated user by devise.
 
 
 ## Testing
