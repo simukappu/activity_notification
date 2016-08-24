@@ -1,6 +1,8 @@
 module ActivityNotification
   module Notifiable
     extend ActiveSupport::Concern
+    # include PolymorphicHelpers to resolve string extentions
+    include ActivityNotification::PolymorphicHelpers
 
     included do
       include Common

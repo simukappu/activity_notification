@@ -1,9 +1,6 @@
 # coding: utf-8
 # This file is seed file for test data on development environment.
 
-# include PolymorphicHelpers to resolve string extention in activity_notification gem
-include ActivityNotification::PolymorphicHelpers
-
 ActivityNotification::Notification.delete_all
 Comment.delete_all
 Article.delete_all

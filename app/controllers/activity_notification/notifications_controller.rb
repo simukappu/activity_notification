@@ -1,6 +1,8 @@
 module ActivityNotification
   class NotificationsController < ActivityNotification.config.parent_controller.constantize
+    # Include StoreController to allow p_a access to controller instance
     include ActivityNotification::StoreController
+    # Include PolymorphicHelpers to resolve string extentions
     include ActivityNotification::PolymorphicHelpers
     prepend_before_action :set_target
     before_action :set_notification, except: [:index, :open_all]
