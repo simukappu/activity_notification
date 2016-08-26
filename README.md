@@ -132,7 +132,11 @@ class Comment < ActiveRecord::Base
     },
     # Path to move when the notification will be opened by the target user
     # This is a optional since activity_notification uses polymorphic_path as default
-    notifiable_path: ->(comment) { article_path(comment.article) }
+    notifiable_path: :article_notifiable_path
+
+  def article_notifiable_path
+    article_path(article)
+  end
 end
 ```
 
@@ -408,7 +412,11 @@ class Comment < ActiveRecord::Base
     },
     # Allow notification email
     email_allowed: true,
-    notifiable_path: ->(comment) { article_path(comment.article) }
+    notifiable_path: :article_notifiable_path
+
+  def article_notifiable_path
+    article_path(article)
+  end
 end
 ```
 

@@ -5,14 +5,16 @@ class Comment < ActiveRecord::Base
   validates :user, presence: true
 
   acts_as_notifiable :users,
-    targets: ->(comment, key) { (comment.article.commented_users.to_a - [comment.user] + [comment.article.user]).uniq },
+    targets: ->(comment, key) {
+      (comment.article.commented_users.to_a - [comment.user] + [comment.article.user]).uniq
+    },
     group: :article,
     notifier: :user,
-    email_allowed: :custom_notification_email_to_users_allowed?,
-    parameters: {test_default_param: '1'}#,
-    #notifiable_path: :custom_notifiable_path
+    email_allowed: true,
+    parameters: { test_default_param: '1' },
+    notifiable_path: :article_notifiable_path
 
-  def custom_notification_email_to_users_allowed?(user, key)
-    true
+  def article_notifiable_path
+    article_path(article)
   end
 end

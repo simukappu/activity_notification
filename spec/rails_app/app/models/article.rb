@@ -7,6 +7,5 @@ class Article < ActiveRecord::Base
   acts_as_notifiable :users,
     targets: ->(article, key) { User.all.to_a - [article.user] },
     notifier: :user,
-    email_allowed: true#, 
-    #notifiable_path: ->(article) { concept_issue_path(issue.concept, issue) }
+    email_allowed: true
 end
