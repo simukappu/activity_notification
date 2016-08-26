@@ -519,7 +519,31 @@ In this example `activity_notification` will confirm the `user` who `admin` belo
 
 ## Testing
 
+### Testing your application
+
 Under construction
+
+
+### Testing gem alone
+
+#### Testing with RSpec
+Pull git repository and execute RSpec.
+```console
+$ git pull https://github.com/simukappu/activity_notification.git
+$ cd activity_notification
+$ bundle install —path vendor/bundle
+$ bundle exec rspec
+```
+
+#### Dummy Rails application
+Test module includes dummy Rails application. You can run the dummy application as common Rails application.
+```console
+$ cd spec/rails_app
+$ bin/rake db:migrate
+$ bin/rake db:seed
+$ bin/rails server
+```
+Then, you can access http://localhost:3000 for the dummy application.
 
 
 ## Documentation
