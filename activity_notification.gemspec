@@ -20,10 +20,9 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 2.1.0'
 
-  s.add_dependency 'rails', '~> 4.2'
-  #s.add_dependency 'railties', '>= 3.0.0'
+  s.add_dependency 'railties', '>= 4.0.0', '< 5.0'
   s.add_dependency 'i18n', '>= 0.5.0'
-  s.add_dependency 'activerecord', '>= 3.0'
+  s.add_dependency 'activerecord', '>= 4.0.0'
 
   s.add_development_dependency 'sqlite3', '~> 1.3.11'
   s.add_development_dependency "jquery-rails", '~> 4.1.1'
