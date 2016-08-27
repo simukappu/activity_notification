@@ -551,7 +551,7 @@ $ bin/rake db:migrate
 $ bin/rake db:seed
 $ bin/rails server
 ```
-Then, you can access http://localhost:3000 for the dummy application.
+Then, you can access <http://localhost:3000> for the dummy application.
 
 
 ## Documentation

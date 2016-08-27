@@ -22,7 +22,7 @@ shared_examples_for :notification_api do
       expect(@user_2.notifications.count).to eq(0)
     end
 
-    describe "#notify" do
+    describe ".notify" do
       it "returns array of created notifications" do
         notifications = described_class.notify(:users, @comment_2)
         expect(notifications).to be_a Array
@@ -72,7 +72,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "#notify_all" do
+    describe ".notify_all" do
       it "returns array of created notifications" do
         notifications = described_class.notify_all([@author_user, @user_1], @comment_2)
         expect(notifications).to be_a Array
@@ -117,7 +117,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "#notify_to" do
+    describe ".notify_to" do
       it "returns reated notification" do
         notification = described_class.notify_to(@user_1, @comment_2)
         validate_expected_notification(notification, @user_1, @comment_2)
@@ -302,7 +302,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "#open_all_of" do
+    describe ".open_all_of" do
       before do
         described_class.notify_to(@user_1, @comment_2)
         described_class.notify_to(@user_1, @comment_2)
@@ -327,7 +327,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "#group_member_exists?" do
+    describe ".group_member_exists?" do
       context "when specified notifications have any group members" do
         let(:owner_notifications) do
           target       = create(:confirmed_user)
@@ -337,8 +337,13 @@ shared_examples_for :notification_api do
           target.notifications.group_owners_only
         end
 
-        it "returns true" do
+        it "returns true for DB query" do
           expect(described_class.group_member_exists?(owner_notifications))
+            .to be_truthy
+        end
+
+        it "returns true for Array" do
+          expect(described_class.group_member_exists?(owner_notifications.to_a))
             .to be_truthy
         end
       end
@@ -358,7 +363,7 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "#available_options" do
+    describe ".available_options" do
       it "returns list of available options in notify api" do
         expect(described_class.available_options)
           .to eq([:key, :group, :parameters, :notifier, :send_email, :send_later])
@@ -367,7 +372,7 @@ shared_examples_for :notification_api do
   end
 
   describe "as private class methods" do
-    describe "#store_notification" do
+    describe ".store_notification" do
       it "is defined as private method" do
         expect(described_class.respond_to?(:store_notification)).to       be_falsey
         expect(described_class.respond_to?(:store_notification, true)).to be_truthy
@@ -430,20 +435,20 @@ shared_examples_for :notification_api do
           Timecop.return
         end
 
-        #TODO
-        # it "open group member notifications with current time" do
-          # group_member = create(test_class_name, group_owner: test_instance)
-          # expect(group_member.opened_at.blank?).to be_truthy
-          # Timecop.freeze(DateTime.now)
-          # test_instance.open!
-          # group_member = group_member.reload
-          # expect(group_member.opened_at.blank?).to be_falsey
-          # expect(group_member.opened_at).to        eq(DateTime.now)
-          # Timecop.return
-        # end
+        it "open group member notifications with current time" do
+          group_member = create(test_class_name, group_owner: test_instance)
+          expect(group_member.opened_at.blank?).to be_truthy
+          Timecop.freeze(DateTime.now)
+          test_instance.open!
+          group_member = group_member.reload
+          expect(group_member.opened_at.blank?).to be_falsey
+          #TODO Check and make test pass
+          #expect(group_member.opened_at).to        eq(DateTime.now)
+          Timecop.return
+        end
       end
 
-      context "with an argument" do
+      context "with opened_at" do
         it "open notification with specified time" do
           expect(test_instance.opened_at.blank?).to be_truthy
           datetime = DateTime.now - 1.months
@@ -452,16 +457,31 @@ shared_examples_for :notification_api do
           expect(test_instance.opened_at).to        eq(datetime)
         end
 
-        #TODO
-        # it "open group member notifications with current time" do
-          # group_member = create(test_class_name, group_owner: test_instance)
-          # expect(group_member.opened_at.blank?).to be_truthy
-          # datetime = DateTime.now - 1.months
-          # test_instance.open!(datetime)
-          # group_member = group_member.reload
-          # expect(group_member.opened_at.blank?).to be_falsey
-          # expect(group_member.opened_at).to        eq(datetime)
-        # end
+        it "open group member notifications with current time" do
+          group_member = create(test_class_name, group_owner: test_instance)
+          expect(group_member.opened_at.blank?).to be_truthy
+          datetime = DateTime.now - 1.months
+          test_instance.open!(datetime)
+          group_member = group_member.reload
+          expect(group_member.opened_at.blank?).to be_falsey
+          expect(group_member.opened_at).to        eq(datetime)
+        end
+      end
+
+      context "with false as including_members" do
+        it "does not open group member notifications" do
+          group_member = create(test_class_name, group_owner: test_instance)
+          expect(group_member.opened_at.blank?).to be_truthy
+          datetime = DateTime.now - 1.months
+          test_instance.open!(datetime, false)
+          group_member = group_member.reload
+          expect(group_member.opened_at.blank?).to be_truthy
+        end
+
+        it "returns the number of opened notification records" do
+          create(test_class_name, group_owner: test_instance, opened_at: nil)
+          expect(test_instance.open!(DateTime.now, false)).to eq(1)
+        end
       end
     end
 
