@@ -150,13 +150,13 @@ module ActivityNotification
     #
     # @param [Hash] options Options for opening notifications
     # @option options [DateTime] :opened_at (DateTime.now) Time to set to opened_at of the notification record
-    # @option options [Boolean] :including_members (true) If it opens notifications including group members
+    # @option options [Boolean] :with_members (true) If it opens notifications including group members
     # @return [Integer] Number of opened notification records
     def open!(options = {})
       opened_at = options[:opened_at] || DateTime.now
-      including_members = options.has_key?(:including_members) ? options[:including_members] : true
+      with_members = options.has_key?(:with_members) ? options[:with_members] : true
       update(opened_at: opened_at)
-      including_members ? group_members.update_all(opened_at: opened_at) + 1 : 1
+      with_members ? group_members.update_all(opened_at: opened_at) + 1 : 1
     end
 
     # Returns if the notification is unopened.

@@ -484,19 +484,19 @@ shared_examples_for :notification_api do
         end
       end
 
-      context "with false as including_members" do
+      context "with false as with_members" do
         it "does not open group member notifications" do
           group_member = create(test_class_name, group_owner: test_instance)
           expect(group_member.opened_at.blank?).to be_truthy
           opened_at = DateTime.now - 1.months
-          test_instance.open!(including_members: false)
+          test_instance.open!(with_members: false)
           group_member = group_member.reload
           expect(group_member.opened_at.blank?).to be_truthy
         end
 
         it "returns the number of opened notification records" do
           create(test_class_name, group_owner: test_instance, opened_at: nil)
-          expect(test_instance.open!(including_members: false)).to eq(1)
+          expect(test_instance.open!(with_members: false)).to eq(1)
         end
       end
     end
