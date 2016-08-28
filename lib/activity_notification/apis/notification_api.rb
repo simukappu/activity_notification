@@ -85,10 +85,12 @@ module ActivityNotification
       # Opens all notifications of the target.
       #
       # @param [Object] target Target of the notifications to open
-      # @param [DateTime] opened_at Time to set to opened_at of the notification record
+      # @param [Hash] options Options for opening notifications
+      # @option options [DateTime] :opened_at (DateTime.now) Time to set to opened_at of the notification record
       # @return [Integer] Number of opened notification records
       # @todo Add filter option
-      def open_all_of(target, opened_at = DateTime.now)
+      def open_all_of(target, options = {})
+        opened_at = options[:opened_at] || DateTime.now
         where(target: target, opened_at: nil).update_all(opened_at: opened_at)
       end
   
@@ -146,10 +148,13 @@ module ActivityNotification
 
     # Opens the notification.
     #
-    # @param [DateTime] opened_at Time to set to opened_at of the notification record
-    # @param [Boolean] including_members If it opens notifications including group members
+    # @param [Hash] options Options for opening notifications
+    # @option options [DateTime] :opened_at (DateTime.now) Time to set to opened_at of the notification record
+    # @option options [Boolean] :including_members (true) If it opens notifications including group members
     # @return [Integer] Number of opened notification records
-    def open!(opened_at = DateTime.now, including_members = true)
+    def open!(options = {})
+      opened_at = options[:opened_at] || DateTime.now
+      including_members = options.has_key?(:including_members) ? options[:including_members] : true
       update(opened_at: opened_at)
       including_members ? group_members.update_all(opened_at: opened_at) + 1 : 1
     end

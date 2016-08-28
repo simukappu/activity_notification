@@ -78,8 +78,8 @@ module ActivityNotification
       Notification.notify_to(self, notifiable, options)
     end
   
-    def open_all_notifications(opened_at = DateTime.now)
-      Notification.open_all_of(self, opened_at)
+    def open_all_notifications(options = {})
+      Notification.open_all_of(self, options)
     end
 
 
