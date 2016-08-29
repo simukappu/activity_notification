@@ -422,7 +422,7 @@ end
 
 #### Email templates
 
-`activity_notification` will look for email template in the same way as notification views. For example, if you have an notification with `:key` set to `"notification.article.comment.reply"` and target_type `users`, the gem will look for a partial in `app/views/activity_notification/mailer/users/article/comment/_reply.html.(|erb|haml|slim|something_else)`.
+`activity_notification` will look for email template in the same way as notification views. For example, if you have an notification with `:key` set to `"notification.comment.reply"` and target_type `users`, the gem will look for a partial in `app/views/activity_notification/mailer/users/comment/_reply.html.(|erb|haml|slim|something_else)`.
 
 If this template is missing, the gem will look for a partial in `default` as the target type which means `activity_notification/mailer/default/_default.html.(|erb|haml|slim|something_else)`.
 
@@ -433,11 +433,10 @@ The subject of notification email can be put in your locale `.yml` files as `mai
 ```yaml
 notification:
   user:
-    article:
-      comment:
-        reply:
-          text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
-          mail_subject: 'New comment to your article'
+    comment:
+      reply:
+        text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
+        mail_subject: 'New comment to your article'
 ```
 
 ### Grouping notifications
@@ -475,11 +474,10 @@ You can also use `%{group_member_count}` in i18n text as a field:
 ```yaml
 notification:
   user:
-    article:
-      comment:
-        reply:
-          text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
-          mail_subject: 'New comment to your article'
+    comment:
+      reply:
+        text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
+        mail_subject: 'New comment to your article'
 ```
 
 Then, you will see `Tom and 7 people replied for your comments"`.
