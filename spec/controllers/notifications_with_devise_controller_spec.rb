@@ -23,7 +23,7 @@ describe ActivityNotification::NotificationsWithDeviseController, type: :control
     describe "GET #index" do
       before do
         sign_in unauthenticated_user
-        get :index, target_params.merge({ typed_target_param => test_target }), valid_session
+        get_with_compatibility :index, target_params.merge({ typed_target_param => test_target }), valid_session
       end
   
       it "returns 403 as http status code" do
@@ -37,7 +37,7 @@ describe ActivityNotification::NotificationsWithDeviseController, type: :control
 
     describe "GET #index" do
       before do
-        get :index, target_params.merge({ typed_target_param => test_target }), valid_session
+        get_with_compatibility :index, target_params.merge({ typed_target_param => test_target }), valid_session
       end
   
       it "returns 302 as http status code" do
@@ -55,7 +55,7 @@ describe ActivityNotification::NotificationsWithDeviseController, type: :control
 
     describe "GET #index" do
       before do
-        get :index, target_params.merge({ typed_target_param => test_target }), valid_session
+        get_with_compatibility :index, target_params.merge({ typed_target_param => test_target }), valid_session
       end
   
       it "returns 400 as http status code" do
@@ -69,7 +69,7 @@ describe ActivityNotification::NotificationsWithDeviseController, type: :control
 
     describe "GET #index" do
       before do
-        get :index, target_params.merge({ typed_target_param => test_target }), valid_session
+        get_with_compatibility :index, target_params.merge({ typed_target_param => test_target }), valid_session
       end
   
       it "returns 403 as http status code" do
@@ -77,5 +77,15 @@ describe ActivityNotification::NotificationsWithDeviseController, type: :control
       end
     end
   end
+
+  private
+
+    def get_with_compatibility action, params, session
+      if Rails::VERSION::MAJOR <= 4
+        get action, params, session
+      else
+        get action, params: params, session: session
+      end
+    end
 
 end

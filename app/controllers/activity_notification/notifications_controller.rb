@@ -75,14 +75,14 @@ module ActivityNotification
             target_class.find_by_id!(params[:target_id]) : 
             target_class.find_by_id!(params["#{target_type.to_resource_name}_id"])
         else
-          render text: "400 Bad Request: Missing parameter", status: 400
+          render plain: "400 Bad Request: Missing parameter", status: 400
         end
       end
   
       def set_notification
         @notification = Notification.find_by_id!(params[:id])
         if @target.present? and @notification.target != @target
-          render text: "403 Forbidden: Wrong target", status: 403
+          render plain: "403 Forbidden: Wrong target", status: 403
         end
       end
 
@@ -107,6 +107,10 @@ module ActivityNotification
         respond_to do |format|
           if request.xhr?
             format.js
+          # :nocov:
+          elsif Rails::VERSION::MAJOR >= 5
+            redirect_back fallback_location: { action: :index }, filter: filter, limit: limit and return
+          # :nocov:
           elsif request.referer
             redirect_to :back, filter: filter, limit: limit and return
           else

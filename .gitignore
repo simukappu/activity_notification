@@ -44,6 +44,8 @@ build-iPhoneSimulator/
 ## Environment normalization:
 /.bundle/
 /vendor/bundle
+/gemfiles/.bundle/
+/gemfiles/vendor/bundle
 /lib/bundler/man/
 
 # for a library or gem, you might want to ignore these files since the code is

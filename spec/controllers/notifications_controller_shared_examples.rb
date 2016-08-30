@@ -5,7 +5,7 @@ shared_examples_for :notification_controller do
     context "with target_type and target_id parameters" do
       before do
         @notification = create(:notification, target: test_target)
-        get :index, target_params.merge({ target_id: test_target, typed_target_param => 'dummy' }), valid_session
+        get_with_compatibility :index, target_params.merge({ target_id: test_target, typed_target_param => 'dummy' }), valid_session
       end
 
       it "returns 200 as http status code" do
@@ -24,7 +24,7 @@ shared_examples_for :notification_controller do
     context "with target_type and (typed_target)_id parameters" do
       before do
         @notification = create(:notification, target: test_target)
-        get :index, target_params.merge({ typed_target_param => test_target }), valid_session
+        get_with_compatibility :index, target_params.merge({ typed_target_param => test_target }), valid_session
       end
   
       it "returns 200 as http status code" do
@@ -43,7 +43,7 @@ shared_examples_for :notification_controller do
     context "without target_type parameters" do
       before do
         @notification = create(:notification, target: test_target)
-        get :index, { typed_target_param => test_target }, valid_session
+        get_with_compatibility :index, { typed_target_param => test_target }, valid_session
       end
 
       it "returns 400 as http status code" do
@@ -58,7 +58,7 @@ shared_examples_for :notification_controller do
 
       it "raises ActiveRecord::RecordNotFound" do
         expect {
-          get :index, target_params.merge({ typed_target_param => 0 }), valid_session
+          get_with_compatibility :index, target_params.merge({ typed_target_param => 0 }), valid_session
         }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
@@ -66,7 +66,7 @@ shared_examples_for :notification_controller do
     context "with json as format parameter" do
       before do
         @notification = create(:notification, target: test_target)
-        get :index, target_params.merge({ typed_target_param => test_target, format: :json }), valid_session
+        get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, format: :json }), valid_session
       end
 
       it "returns 200 as http status code" do
@@ -83,7 +83,7 @@ shared_examples_for :notification_controller do
       context "with unopened as filter" do
         before do
           @notification = create(:notification, target: test_target)
-          get :index, target_params.merge({ typed_target_param => test_target, filter: 'unopened' }), valid_session
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filter: 'unopened' }), valid_session
         end
 
         it "assigns unopened notification index as @notifications" do
@@ -94,7 +94,7 @@ shared_examples_for :notification_controller do
       context "with opened as filter" do
         before do
           @notification = create(:notification, target: test_target)
-          get :index, target_params.merge({ typed_target_param => test_target, filter: 'opened' }), valid_session
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filter: 'opened' }), valid_session
         end
 
         it "assigns unopened notification index as @notifications" do
@@ -110,7 +110,7 @@ shared_examples_for :notification_controller do
       end
       context "with 2 as limit" do
         before do
-          get :index, target_params.merge({ typed_target_param => test_target, limit: 2 }), valid_session
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, limit: 2 }), valid_session
         end
 
         it "assigns notification index of size 2 as @notifications" do
@@ -120,7 +120,7 @@ shared_examples_for :notification_controller do
 
       context "with 1 as limit" do
         before do
-          get :index, target_params.merge({ typed_target_param => test_target, limit: 1 }), valid_session
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, limit: 1 }), valid_session
         end
 
         it "assigns notification index of size 1 as @notifications" do
@@ -133,7 +133,7 @@ shared_examples_for :notification_controller do
       context "with false as reload" do
         before do
           @notification = create(:notification, target: test_target)
-          get :index, target_params.merge({ typed_target_param => test_target, reload: false }), valid_session
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, reload: false }), valid_session
         end
     
         it "returns 200 as http status code" do
@@ -156,7 +156,7 @@ shared_examples_for :notification_controller do
       before do
         @notification = create(:notification, target: test_target)
         expect(@notification.opened?).to be_falsey
-        post :open_all, target_params.merge({ typed_target_param => test_target }), valid_session
+        post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -181,7 +181,7 @@ shared_examples_for :notification_controller do
         @notification = create(:notification, target: test_target)
         expect(@notification.opened?).to be_falsey
         request.env["HTTP_REFERER"] = root_path
-        post :open_all, target_params.merge({ typed_target_param => test_target }), valid_session
+        post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -201,7 +201,7 @@ shared_examples_for :notification_controller do
       before do
         @notification = create(:notification, target: test_target)
         expect(@notification.opened?).to be_falsey
-        xhr :post, :open_all, target_params.merge({ typed_target_param => test_target }), valid_session
+        xhr_with_compatibility :post, :open_all, target_params.merge({ typed_target_param => test_target }), valid_session
       end
 
       it "returns 200 as http status code" do
@@ -226,7 +226,7 @@ shared_examples_for :notification_controller do
     context "with id, target_type and (typed_target)_id parameters" do
       before do
         @notification = create(:notification, target: test_target)
-        get :show, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+        get_with_compatibility :show, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
       end
 
       it "returns 200 as http status code" do
@@ -245,7 +245,7 @@ shared_examples_for :notification_controller do
     context "with wrong id and (typed_target)_id parameters" do
       before do
         @notification = create(:notification, target: create(:user))
-        get :show, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+        get_with_compatibility :show, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
       end
 
       it "returns 403 as http status code" do
@@ -258,7 +258,7 @@ shared_examples_for :notification_controller do
     context "http direct DELETE request" do
       before do
         @notification = create(:notification, target: test_target)
-        delete :destroy, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+        delete_with_compatibility :destroy, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -278,7 +278,7 @@ shared_examples_for :notification_controller do
       before do
         @notification = create(:notification, target: test_target)
         request.env["HTTP_REFERER"] = root_path
-        delete :destroy, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+        delete_with_compatibility :destroy, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -297,7 +297,7 @@ shared_examples_for :notification_controller do
     context "Ajax DELETE request" do
       before do
         @notification = create(:notification, target: test_target)
-        xhr :delete, :destroy, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+        xhr_with_compatibility :delete, :destroy, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
       end
 
       it "returns 200 as http status code" do
@@ -324,7 +324,7 @@ shared_examples_for :notification_controller do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
-          post :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+          post_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
         end
 
         it "returns 302 as http status code" do
@@ -345,7 +345,7 @@ shared_examples_for :notification_controller do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
           request.env["HTTP_REFERER"] = root_path
-          post :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+          post_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
         end
 
         it "returns 302 as http status code" do
@@ -366,7 +366,7 @@ shared_examples_for :notification_controller do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
           request.env["HTTP_REFERER"] = root_path
-          xhr :post, :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+          xhr_with_compatibility :post, :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
         end
     
         it "returns 200 as http status code" do
@@ -392,7 +392,7 @@ shared_examples_for :notification_controller do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
-          post :open, target_params.merge({ id: @notification, typed_target_param => test_target, move: true }), valid_session
+          post_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target, move: true }), valid_session
         end
 
         it "returns 302 as http status code" do
@@ -415,7 +415,7 @@ shared_examples_for :notification_controller do
       context "http direct GET request" do
         before do
           @notification = create(:notification, target: test_target)
-          get :move, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+          get_with_compatibility :move, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
         end
 
         it "returns 302 as http status code" do
@@ -433,7 +433,7 @@ shared_examples_for :notification_controller do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
-          get :move, target_params.merge({ id: @notification, typed_target_param => test_target, open: true }), valid_session
+          get_with_compatibility :move, target_params.merge({ id: @notification, typed_target_param => test_target, open: true }), valid_session
         end
 
         it "returns 302 as http status code" do
@@ -450,4 +450,38 @@ shared_examples_for :notification_controller do
       end
     end
   end
+
+  private
+
+    def get_with_compatibility action, params, session
+      if Rails::VERSION::MAJOR <= 4
+        get action, params, session
+      else
+        get action, params: params, session: session
+      end
+    end
+
+    def post_with_compatibility action, params, session
+      if Rails::VERSION::MAJOR <= 4
+        post action, params, session
+      else
+        post action, params: params, session: session
+      end
+    end
+
+    def delete_with_compatibility action, params, session
+      if Rails::VERSION::MAJOR <= 4
+        delete action, params, session
+      else
+        delete action, params: params, session: session
+      end
+    end
+
+    def xhr_with_compatibility method, action, params, session
+      if Rails::VERSION::MAJOR <= 4
+        xhr method, action, params, session
+      else
+        send method.to_s, action, xhr: true, params: params, session: session
+      end
+    end
 end

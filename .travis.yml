@@ -8,8 +8,13 @@ rvm:
 
 gemfile:
   - Gemfile
+  - gemfiles/Gemfile.rails-5.0
+  - gemfiles/Gemfile.rails-4.2
 
 matrix:
+  exclude:
+    - rvm: 2.1.9
+      gemfile: gemfiles/Gemfile.rails-5.0
   allow_failures:
     - rvm: ruby-head
   fast_finish: true

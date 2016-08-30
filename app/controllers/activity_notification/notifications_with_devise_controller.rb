@@ -11,17 +11,17 @@ module ActivityNotification
           if respond_to?(authenticate_method_name)
             send(authenticate_method_name)
           else
-            render text: "403 Forbidden: Unauthenticated", status: 403
+            render plain: "403 Forbidden: Unauthenticated", status: 403
           end
         else
-          render text: "400 Bad Request: Missing parameter", status: 400
+          render plain: "400 Bad Request: Missing parameter", status: 400
         end
       end
 
       def authenticate_target!
         current_resource_method_name = "current_#{params[:devise_type].to_resource_name}"
         unless @target.authenticated_with_devise?(send(current_resource_method_name))
-          render text: "403 Forbidden: Unauthorized target", status: 403
+          render plain: "403 Forbidden: Unauthorized target", status: 403
         end
       end
 

@@ -14,7 +14,9 @@ require "activity_notification"
 module Dummy
   class Application < Rails::Application
     # Do not swallow errors in after_commit/after_rollback callbacks.
-    config.active_record.raise_in_transactional_callbacks = true
+    if Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR >= 2
+      config.active_record.raise_in_transactional_callbacks = true
+    end
   end
 end
 

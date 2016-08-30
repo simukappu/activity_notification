@@ -7,24 +7,21 @@ module ActivityNotification
   def self.resolve_value(context, thing, *args)
     case thing
     when Symbol
-      begin
-        context.__send__(thing, ActivityNotification.get_controller, *args)
-      rescue ArgumentError
-        begin
-          context.__send__(thing, ActivityNotification.get_controller)
-        rescue ArgumentError
-          context.__send__(thing)
-        end
+      symbol_method = context.method(thing)
+      if symbol_method.arity > 1
+        symbol_method.call(ActivityNotification.get_controller, *args)
+      elsif symbol_method.arity > 0
+        symbol_method.call(ActivityNotification.get_controller)
+      else
+        symbol_method.call
       end
     when Proc
-      begin
+      if thing.arity > 2
         thing.call(ActivityNotification.get_controller, context, *args)
-      rescue ArgumentError
-        begin
-          thing.call(ActivityNotification.get_controller, context)
-        rescue ArgumentError
-          thing.call(context)
-        end
+      elsif thing.arity > 1
+        thing.call(ActivityNotification.get_controller, context)
+      else
+        thing.call(context)
       end
     when Hash
       thing.dup.tap do |hash|
@@ -46,15 +43,16 @@ module ActivityNotification
     def resolve_value(thing, *args)
       case thing
       when Symbol
-        begin
-          __send__(thing, *args)
-        rescue ArgumentError
-          __send__(thing)
+        symbol_method = method(thing)
+        if symbol_method.arity > 0
+          symbol_method.call(*args)
+        else
+          symbol_method.call
         end
       when Proc
-        begin
+        if thing.arity > 1
           thing.call(self, *args)
-        rescue ArgumentError
+        else
           thing.call(self)
         end
       when Hash

@@ -194,10 +194,10 @@ describe ActivityNotification::Notification, type: :model do
       end
 
       it "works with filtered_by_type scope" do
-        notifications = ActivityNotification::Notification.filtered_by_type(@notifiable_1.class)
+        notifications = ActivityNotification::Notification.filtered_by_type(@notifiable_1.to_class_name)
         expect(notifications.size).to eq(1)
         expect(notifications.first).to eq(@notification_1)
-        notifications = ActivityNotification::Notification.filtered_by_type(@notifiable_2.class)
+        notifications = ActivityNotification::Notification.filtered_by_type(@notifiable_2.to_class_name)
         expect(notifications.size).to eq(1)
         expect(notifications.first).to eq(@notification_2)
       end

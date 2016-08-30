@@ -1,13 +1,14 @@
 source 'https://rubygems.org'
 
-gemspec
+gemspec path: '../'
 
-gem 'rails', '~> 4.2.7'
+gem 'rails', '~> 5.0.0'
 gem 'sqlite3'
 gem 'jquery-rails'
 
 group :test do
   gem 'ammeter'
+  gem 'rails-controller-testing'
   gem 'timecop'
   gem 'coveralls', require: false
 end
