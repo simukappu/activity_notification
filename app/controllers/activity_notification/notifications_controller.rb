@@ -107,15 +107,17 @@ module ActivityNotification
         respond_to do |format|
           if request.xhr?
             format.js
-          # :nocov:
+          # :skip-rails4:
           elsif Rails::VERSION::MAJOR >= 5
             redirect_back fallback_location: { action: :index }, filter: filter, limit: limit and return
-          # :nocov:
+          # :skip-rails4:
+          # :skip-rails5:
           elsif request.referer
             redirect_to :back, filter: filter, limit: limit and return
           else
             redirect_to action: :index, filter: filter, limit: limit and return
           end
+          # :skip-rails5:
         end
       end
 
