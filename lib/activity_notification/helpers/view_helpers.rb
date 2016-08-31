@@ -151,6 +151,12 @@ module ActivityNotification
 
     private
 
+      # Prepare content for notification index
+      # @api private
+      #
+      # @param [Object] target Notification target instance
+      # @param [Array] notification_index Array notification index
+      # @param [Hash] params Option parameter to send render_notification
       def prepare_content_for(target, notification_index, params)
         content_for :notification_index do
           @target = target
@@ -163,6 +169,12 @@ module ActivityNotification
         end
       end
 
+      # Render partial index of notifications
+      # @api private
+      #
+      # @param [Object] target Notification target instance
+      # @param [Hash] params Option parameter to send render
+      # @return [String] Rendered partial index view as string
       def render_partial_index(target, params)
         index_path = params.delete(:partial)
         partial    = partial_index_path(target, index_path, params[:partial_root])
@@ -176,18 +188,33 @@ module ActivityNotification
         end
       end
 
+      # Returns partial index path from options
+      # @api private
+      #
+      # @param [Object] target Notification target instance
+      # @param [String] path Partial index template name
+      # @param [String] root Root path of partial index template
+      # @return [String] Partial index template path
       def partial_index_path(target, path = nil, root = nil)
         path ||= 'index'
         root ||= "activity_notification/notifications/#{target.to_resources_name}"
         select_path(path, root)
       end
 
+      # Returns layout path from options
+      # @api private
+      #
+      # @param [String] path Layout template name
+      # @param [String] root Root path of layout template
+      # @return [String] Layout template path
       def layout_path(path = nil, root = nil)
         path.nil? and return
         root ||= 'layouts'
         select_path(path, root)
       end
 
+      # Select template path
+      # @api private
       def select_path(path, root)
         [root, path].map(&:to_s).join('/')
       end
