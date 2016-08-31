@@ -4,11 +4,13 @@
 [![Coverage Status](https://coveralls.io/repos/github/simukappu/activity_notification/badge.svg?branch=master)](https://coveralls.io/github/simukappu/activity_notification?branch=master)
 [![Code Climate](https://codeclimate.com/github/simukappu/activity_notification/badges/gpa.svg)](https://codeclimate.com/github/simukappu/activity_notification)
 [![Gem Version](https://badge.fury.io/rb/activity_notification.svg)](https://badge.fury.io/rb/activity_notification)
+[![Dependency Status](https://gemnasium.com/badges/github.com/simukappu/activity_notification.svg)](https://gemnasium.com/github.com/simukappu/activity_notification)
+[![Inline docs](http://inch-ci.org/github/simukappu/activity_notification.svg?branch=master)](http://inch-ci.org/github/simukappu/activity_notification)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](MIT-LICENSE)
 
 `activity_notification` provides integrated user activity notifications for Ruby on Rails. You can easily use it to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc.
 
-`activity_notification` supports Rails 5.0 and 4.2. Currently, it is only supported with ActiveRecord ORM.
+`activity_notification` supports Rails 5.0 and 4.2+. Currently, it is only supported with ActiveRecord ORM.
 
 
 ## Table of contents
