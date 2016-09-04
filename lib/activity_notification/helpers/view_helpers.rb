@@ -65,8 +65,8 @@ module ActivityNotification
     # @param [Notification] notification Notification instance
     # @param [Hash] params Request parameters
     # @return [String] notification_path for the notification
-    # @todo Is there any other better implementation?
-    # @todo We must handle devise namespace
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
     def notification_path_for(notification, params = {})
       send("#{notification.target.to_resource_name}_notification_path", notification.target, notification, params)
     end
@@ -76,8 +76,8 @@ module ActivityNotification
     # @param [Notification] notification Notification instance
     # @param [Hash] params Request parameters
     # @return [String] move_notification_path for the target
-    # @todo Is there any other better implementation?
-    # @todo We must handle devise namespace
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
     def move_notification_path_for(notification, params = {})
       send("move_#{notification.target.to_resource_name}_notification_path", notification.target, notification, params)
     end
@@ -87,8 +87,8 @@ module ActivityNotification
     # @param [Notification] notification Notification instance
     # @param [Hash] params Request parameters
     # @return [String] open_notification_path for the target
-    # @todo Is there any other better implementation?
-    # @todo We must handle devise namespace
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
     def open_notification_path_for(notification, params = {})
       send("open_#{notification.target.to_resource_name}_notification_path", notification.target, notification, params)
     end
@@ -98,8 +98,8 @@ module ActivityNotification
     # @param [Notification] notification Notification instance
     # @param [Hash] params Request parameters
     # @return [String] open_all_notifications_path for the target
-    # @todo Is there any other better implementation?
-    # @todo We must handle devise namespace
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
     def open_all_notifications_path_for(target, params = {})
       send("open_all_#{target.to_resource_name}_notifications_path", target, params)
     end
@@ -109,8 +109,8 @@ module ActivityNotification
     # @param [Notification] notification Notification instance
     # @param [Hash] params Request parameters
     # @return [String] notification_url for the target
-    # @todo Is there any other better implementation?
-    # @todo We must handle devise namespace
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
     def notification_url_for(notification, params = {})
       send("#{notification.target.to_resource_name}_notification_url", notification.target, notification, params)
     end
@@ -120,8 +120,8 @@ module ActivityNotification
     # @param [Notification] notification Notification instance
     # @param [Hash] params Request parameters
     # @return [String] move_notification_url for the target
-    # @todo Is there any other better implementation?
-    # @todo We must handle devise namespace
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
     def move_notification_url_for(notification, params = {})
       send("move_#{notification.target.to_resource_name}_notification_url", notification.target, notification, params)
     end
@@ -131,8 +131,8 @@ module ActivityNotification
     # @param [Notification] notification Notification instance
     # @param [Hash] params Request parameters
     # @return [String] open_notification_url for the target
-    # @todo Is there any other better implementation?
-    # @todo We must handle devise namespace
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
     def open_notification_url_for(notification, params = {})
       send("open_#{notification.target.to_resource_name}_notification_url", notification.target, notification, params)
     end
@@ -142,8 +142,8 @@ module ActivityNotification
     # @param [Notification] notification Notification instance
     # @param [Hash] params Request parameters
     # @return [String] open_all_notifications_url for the target
-    # @todo Is there any other better implementation?
-    # @todo We must handle devise namespace
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
     def open_all_notifications_url_for(target, params = {})
       send("open_all_#{target.to_resource_name}_notifications_url", target, params)
     end
