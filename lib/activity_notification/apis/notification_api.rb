@@ -218,6 +218,11 @@ module ActivityNotification
 
     protected
 
+      # Returns count of group members of the unopened notification.
+      # This method is designed to cache group by query result to avoid N+1 call.
+      # @api protected
+      #
+      # @return [Integer] Count of group members of the unopened notification
       def unopened_group_member_count
         # Cache group by query result to avoid N+1 call
         unopened_group_member_counts = target.notifications
@@ -227,6 +232,11 @@ module ActivityNotification
         unopened_group_member_counts[id] || 0
       end
     
+      # Returns count of group members of the opened notification.
+      # This method is designed to cache group by query result to avoid N+1 call.
+      # @api protected
+      #
+      # @return [Integer] Count of group members of the opened notification
       def opened_group_member_count(limit = ActivityNotification.config.opened_limit)
         # Cache group by query result to avoid N+1 call
         opened_group_member_counts   = target.notifications

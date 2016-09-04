@@ -9,6 +9,8 @@ module ActivityNotification
     end
 
     class_methods do
+      # Checks if the model includes notifier and notifier methods are available.
+      # @return [Boolean] Always true
       def available_as_notifier?
         true
       end
