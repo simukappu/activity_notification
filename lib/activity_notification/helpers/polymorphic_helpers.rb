@@ -18,7 +18,7 @@ module ActivityNotification
         end
 
         # Convets to singularized model name (resource name).
-        # @return [String] Dingularized model name (resource name)
+        # @return [String] Singularized model name (resource name)
         def to_resource_name
           singularize.underscore
         end

@@ -16,7 +16,7 @@ module ActivityNotification
     end
   end
 
-  # Module included in controllers to allow p_a access to controller instance
+  # Module included in controllers to allow ActivityNotification access to controller instance
   module StoreController
     extend ActiveSupport::Concern
 

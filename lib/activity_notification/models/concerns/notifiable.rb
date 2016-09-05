@@ -1,4 +1,5 @@
 module ActivityNotification
+  # Notifiable implementation included in notifiable model to be notified, like comments or any other user activities.
   module Notifiable
     extend ActiveSupport::Concern
     # include PolymorphicHelpers to resolve string extentions
@@ -216,7 +217,7 @@ module ActivityNotification
       # @api private
       #
       # @param [String] target_typed_method_name Method name overriden for the target type
-      # @param [Object] parameter_field Parameter field configured in this model
+      # @param [Object] parameter_field Parameter Configured field in this model
       # @param [Object] default_value Default parameter value
       # @param [Array] *args Arguments to pass to the method overriden or defined as parameter field
       # @return [Object] Resolved parameter value

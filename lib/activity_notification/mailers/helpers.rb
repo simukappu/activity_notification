@@ -1,5 +1,8 @@
 module ActivityNotification
+  # Mailer module of ActivityNotification
   module Mailers
+    # Provides helper methods for mailer.
+    # Use to resolve parameters from email configuration and send notification email.
     module Helpers
       extend ActiveSupport::Concern
 

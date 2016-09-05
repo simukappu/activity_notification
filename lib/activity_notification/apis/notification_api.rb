@@ -1,9 +1,10 @@
 module ActivityNotification
+  # Defines API for notification included in Notification model.
   module NotificationApi
     extend ActiveSupport::Concern
 
     included do
-      # Define store_notification as private clas method
+      # Defines store_notification as private clas method
       private_class_method :store_notification
     end
 

@@ -1,4 +1,5 @@
 module ActivityNotification
+  # Target implementation included in target model to notify, like users or administrators.
   module Target
     extend ActiveSupport::Concern
     included do

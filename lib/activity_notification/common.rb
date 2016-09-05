@@ -4,6 +4,13 @@ module ActivityNotification
   # Accepts Symbols, which it will send against context.
   # Accepts Procs, which it will execute with controller and context.
   # Both Symbols and Procs will be passed arguments of this method.
+  # Also accepts Hash of these Symbols or Procs.
+  # If any other value will be passed, returns original value.
+  #
+  # @param [Object] context Context to resolve parameter, which is usually target or notificable model
+  # @param [Symbol, Proc, Hash, Object] thing Symbol or Proc to resolve parameter
+  # @param [Array] *args Arguments to pass to thing as method
+  # @return [Object] Resolved parameter value
   def self.resolve_value(context, thing, *args)
     case thing
     when Symbol
@@ -34,12 +41,21 @@ module ActivityNotification
     end
   end
 
+  # Common module included in target and notifiable model.
+  # Provides methods to resolve parameters from configured field or defined method.
+  # Also provides methods to convert into resource name or class name as string.
   module Common
 
     # Used to transform value from metadata to data which belongs model instance.
-    # Accepts Symbols, which it will send against this instance.
+    # Accepts Symbols, which it will send against this instance,
     # Accepts Procs, which it will execute with this instance.
     # Both Symbols and Procs will be passed arguments of this method.
+    # Also accepts Hash of these Symbols or Procs.
+    # If any other value will be passed, returns original value.
+    #
+    # @param [Symbol, Proc, Hash, Object] thing Symbol or Proc to resolve parameter
+    # @param [Array] *args Arguments to pass to thing as method
+    # @return [Object] Resolved parameter value
     def resolve_value(thing, *args)
       case thing
       when Symbol
@@ -66,24 +82,34 @@ module ActivityNotification
       end
     end
 
+    # Convets to class name.
+    # @return [String] Class name
     def to_class_name
       self.class.name
     end
 
+    # Convets to singularized model name (resource name).
+    # @return [String] Singularized model name (resource name)
     def to_resource_name
       self.class.name.demodulize.singularize.underscore
     end
 
+    # Convets to pluralized model name (resources name).
+    # @return [String] Pluralized model name (resources name)
     def to_resources_name
       self.class.name.demodulize.pluralize.underscore
     end
 
-    #TODO Is it the best solution?
+    # Convets to printable model type name to be humanized.
+    # @return [String] Printable model type name
+    # @todo Is this the best to make readable?
     def printable_type
       "#{self.class.name.demodulize.humanize}"
     end
 
-    #TODO Is it the best solution?
+    # Convets to printable model name to show in view or email.
+    # @return [String] Printable model name
+    # @todo Is this the best to make readable?
     def printable_name
       "#{self.printable_type} (#{id})"
     end

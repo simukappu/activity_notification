@@ -1,6 +1,6 @@
 module ActivityNotification
   class NotificationsController < ActivityNotification.config.parent_controller.constantize
-    # Include StoreController to allow p_a access to controller instance
+    # Include StoreController to allow ActivityNotification access to controller instance
     include ActivityNotification::StoreController
     # Include PolymorphicHelpers to resolve string extentions
     include ActivityNotification::PolymorphicHelpers
