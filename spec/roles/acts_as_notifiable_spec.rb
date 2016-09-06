@@ -2,7 +2,7 @@ describe ActivityNotification::ActsAsNotifiable do
   let(:dummy_model_class) { Dummy::DummyBase }
 
   describe "as public class methods" do
-    describe "acts_as_notifiable" do
+    describe ".acts_as_notifiable" do
       it "have not included Notifiable before calling" do
         expect(dummy_model_class.respond_to?(:available_as_notifiable?)).to be_falsey
       end
@@ -22,7 +22,7 @@ describe ActivityNotification::ActsAsNotifiable do
       #TODO test other options
     end
 
-    describe "available_notifiable_options" do
+    describe ".available_notifiable_options" do
       it "returns list of available options in acts_as_notifiable" do
         expect(dummy_model_class.available_notifiable_options)
           .to eq([:targets, :group, :notifier, :parameters, :email_allowed, :notifiable_path])

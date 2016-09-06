@@ -13,7 +13,7 @@ shared_examples_for :notifier do
   end    
 
   describe "as public class methods" do
-    describe "#available_as_notifier?" do
+    describe ".available_as_notifier?" do
       it "returns true" do
         expect(described_class.available_as_notifier?).to be_truthy
       end

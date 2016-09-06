@@ -6,13 +6,13 @@ shared_examples_for :notifiable do
   include Rails.application.routes.url_helpers
 
   describe "as public class methods" do
-    describe "#available_as_notifiable?" do
+    describe ".available_as_notifiable?" do
       it "returns true" do
         expect(described_class.available_as_notifiable?).to be_truthy
       end
     end
 
-    describe "#set_notifiable_class_defaults" do
+    describe ".set_notifiable_class_defaults" do
       it "set parameter fields as default" do
         described_class.set_notifiable_class_defaults
         expect(described_class._notification_targets).to       eq({})

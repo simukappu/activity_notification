@@ -2,7 +2,7 @@ describe ActivityNotification::ActsAsTarget do
   let(:dummy_model_class) { Dummy::DummyBase }
 
   describe "as public class methods" do
-    describe "acts_as_target" do
+    describe ".acts_as_target" do
       it "have not included Target before calling" do
         expect(dummy_model_class.respond_to?(:available_as_target?)).to be_falsey
       end
@@ -22,7 +22,7 @@ describe ActivityNotification::ActsAsTarget do
       #TODO test other options
     end
 
-    describe "acts_as_notification_target" do
+    describe ".acts_as_notification_target" do
       it "is an alias of acts_as_target" do
         #TODO make better way to test alias
         #expect(dummy_model_class.acts_as_notification_target).to receive(:acts_as_target)
@@ -30,7 +30,7 @@ describe ActivityNotification::ActsAsTarget do
       end
     end
 
-    describe "available_target_options" do
+    describe ".available_target_options" do
       it "returns list of available options in acts_as_target" do
         expect(dummy_model_class.available_target_options)
           .to eq([:email, :email_allowed, :devise_resource])

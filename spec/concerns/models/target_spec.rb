@@ -10,17 +10,18 @@ shared_examples_for :target do
       expect(test_instance.notifications.count).to    eq(2)
       expect(test_instance.notifications.earliest).to eq(notification_1)
       expect(test_instance.notifications.latest).to   eq(notification_2)
+      expect(test_instance.notifications).to          eq (ActivityNotification::Notification.filtered_by_target(test_instance))
     end
   end    
 
   describe "as public class methods" do
-    describe "#available_as_target?" do
+    describe ".available_as_target?" do
       it "returns true" do
         expect(described_class.available_as_target?).to be_truthy
       end
     end
 
-    describe "#set_target_class_defaults" do
+    describe ".set_target_class_defaults" do
       it "set parameter fields as default" do
         described_class.set_target_class_defaults
         expect(described_class._notification_email).to         eq(nil)

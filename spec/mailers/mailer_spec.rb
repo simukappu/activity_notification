@@ -7,7 +7,7 @@ describe ActivityNotification::Mailer do
     expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
   end
 
-  describe "#send_notification_email" do
+  describe ".send_notification_email" do
     context "with deliver_now" do
       context "as default" do
         before do

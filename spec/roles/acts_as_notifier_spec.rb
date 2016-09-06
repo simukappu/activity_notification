@@ -2,7 +2,7 @@ describe ActivityNotification::ActsAsNotifier do
   let(:dummy_model_class) { Dummy::DummyBase }
 
   describe "as public class methods" do
-    describe "acts_as_notifier" do
+    describe ".acts_as_notifier" do
       it "have not included Notifier before calling" do
         expect(dummy_model_class.respond_to?(:available_as_notifier?)).to be_falsey
       end
