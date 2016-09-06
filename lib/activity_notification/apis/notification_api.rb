@@ -11,13 +11,13 @@ module ActivityNotification
     class_methods do
       # Generates notifications to configured targets with notifiable model.
       #
-      # @example target_type as Symbol
+      # @example Use with target_type as Symbol
       #   ActivityNotification::Notification.notify :users, @comment
-      # @example target_type as String
+      # @example Use with target_type as String
       #   ActivityNotification::Notification.notify 'User', @comment
-      # @example target_type as Class
+      # @example Use with target_type as Class
       #   ActivityNotification::Notification.notify User, @comment
-      # @example with options
+      # @example Use with options
       #   ActivityNotification::Notification.notify :users, @comment, key: 'custom.comment', group: @comment.article
       #   ActivityNotification::Notification.notify :users, @comment, parameters: { reply_to: @comment.reply_to }, send_later: false
       #
@@ -98,7 +98,7 @@ module ActivityNotification
       # Returns if group member of the notifications exists.
       # This method is designed to be called from controllers or views to avoid N+1.
       #
-      # @param [Array, ActiveRecord_AssociationRelation] notifications Array or database query of the notifications to test member exists
+      # @param [Array | ActiveRecord_AssociationRelation] notifications Array or database query of the notifications to test member exists
       # @return [Boolean] If group member of the notifications exists
       def group_member_exists?(notifications)
         notifications.present? && where(group_owner_id: notifications.map(&:id)).exists?

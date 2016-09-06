@@ -4,9 +4,14 @@ module ActivityNotification
     extend ActiveSupport::Concern
     included do
       include Common
+
+      # Has many notification instances of this target.
+      # @scope instance
+      # @return [Array] Array or database query of notifications of this target
       has_many :notifications,
         class_name: "::ActivityNotification::Notification",
         as: :target
+
       class_attribute :_notification_email, :_notification_email_allowed, :_notification_devise_resource
       set_target_class_defaults
     end
@@ -81,6 +86,9 @@ module ActivityNotification
     # Otherwise, returns opened index with opened_notification_index.
     # @todo Is this switching the best solution?
     #
+    # @example Get automatically arranged notification index of the @user
+    #   @notifications = @user.notification_index
+    #
     # @param [Integer] limit Limit to query for notifications
     # @return [Array] Notification index of the target
     def notification_index(limit = nil)
@@ -96,6 +104,9 @@ module ActivityNotification
 
     # Gets unopened notification index of the target.
     #
+    # @example Get unopened notification index of the @user
+    #   @notifications = @user.unopened_notification_index
+    #
     # @param [Integer] limit Limit to query for notifications
     # @return [Array] Unopened notification index of the target
     def unopened_notification_index(limit = nil)
@@ -105,6 +116,9 @@ module ActivityNotification
     end
 
     # Gets opened notification index of the target.
+    #
+    # @example Get opened notification index of the @user
+    #   @notifications = @user.opened_notification_index(10)
     #
     # @param [Integer] limit Limit to query for notifications
     # @return [Array] Opened notification index of the target
@@ -142,8 +156,11 @@ module ActivityNotification
     end
 
 
-    # Gets automatically arranged notification index of the target with including attributes like target, notifiable, group and notifier.
+    # Gets automatically arranged notification index of the target with included attributes like target, notifiable, group and notifier.
     # This method is the typical way to get notifications index from controller of view.
+    #
+    # @example Get automatically arranged notification index of the @user with included attributes
+    #   @notifications = @user.notification_index_with_attributes
     #
     # @param [Integer] limit Limit to query for notifications
     # @return [Array] Notification index of the target with attributes
@@ -158,7 +175,10 @@ module ActivityNotification
           opened_notification_index_with_attributes
     end
 
-    # Gets unopened notification index of the target with including attributes like target, notifiable, group and notifier.
+    # Gets unopened notification index of the target with included attributes like target, notifiable, group and notifier.
+    #
+    # @example Get unopened notification index of the @user with included attributes
+    #   @notifications = @user.unopened_notification_index_with_attributes
     #
     # @param [Integer] limit Limit to query for notifications
     # @return [Array] Unopened notification index of the target with attributes
@@ -167,6 +187,9 @@ module ActivityNotification
     end
 
     # Gets opened notification index of the target with including attributes like target, notifiable, group and notifier.
+    #
+    # @example Get opened notification index of the @user with included attributes
+    #   @notifications = @user.opened_notification_index_with_attributes(10)
     #
     # @param [Integer] limit Limit to query for notifications
     # @return [Array] Opened notification index of the target with attributes

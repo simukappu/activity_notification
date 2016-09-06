@@ -49,7 +49,7 @@ module ActivityNotification
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
-    # @return [Array, ActiveRecord_AssociationRelation] Array or database query of the notification targets
+    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of the notification targets
     def notification_targets(target_type, key)
       target_typed_method_name = "notification_#{target_type.to_s.to_resources_name}"
       resolved_parameter = resolve_parameter(
