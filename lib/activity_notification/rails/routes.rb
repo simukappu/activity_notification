@@ -2,6 +2,7 @@ require "active_support/core_ext/object/try"
 require "active_support/core_ext/hash/slice"
 
 module ActionDispatch::Routing
+  # Extended ActionDispatch::Routing::Mapper implementation to add routing method of ActivityNotification.
   class Mapper
     # Includes notify_to method for routes, which is responsible to generate all necessary routes for activity_notification.
     #
