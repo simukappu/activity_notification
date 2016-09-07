@@ -67,9 +67,9 @@ module ActivityNotification
       #
       # @param [Symbol] target_type Type of notification target as symbol
       # @param [Hash] options Options for notifiable model configuration
-      # @option options [Symbol, Proc, Array]   :email           (nil)    Email address to send notification email
-      # @option options [Symbol, Proc, Object]  :email_allowed   (false)  Whether activity_notification sends notification email to this target
-      # @option options [Symbol, Proc, Object]  :devise_resource (nil)    Integrated resource with devise authentication
+      # @option options [Symbol, Proc, Array]   :email           (nil) Email address to send notification email
+      # @option options [Symbol, Proc, Object]  :email_allowed   (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email to this target
+      # @option options [Symbol, Proc, Object]  :devise_resource (nil) Integrated resource with devise authentication
       # @return [Hash] Configured parameters as target model
       def acts_as_target(options = {})
         include Target
@@ -82,7 +82,7 @@ module ActivityNotification
       alias_method :acts_as_notification_target, :acts_as_target
 
       # Returns array of available target options in acts_as_target.
-      # @return [Array] Array of available target options
+      # @return [Array<Symbol>] Array of available target options
       def available_target_options
         [:email, :email_allowed, :devise_resource].freeze
       end

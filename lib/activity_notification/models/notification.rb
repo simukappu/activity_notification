@@ -32,7 +32,7 @@ module ActivityNotification
     # Only group owner instance has :group_members value.
     # Group member instance has nil as :group_members association.
     # @scope instance
-    # @return [Array] Array or database query of the group member notification instances of this notification
+    # @return [Array<Notificaion>] Array or database query of the group member notification instances of this notification
     has_many   :group_members, class_name: :Notification, foreign_key: :group_owner_id
 
     # Belongs to :otifier instance of this notification.
@@ -49,17 +49,17 @@ module ActivityNotification
 
     # Selects group owner notifications only.
     # @scope class
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :group_owners_only,                 ->        { where(group_owner_id: nil) }
 
     # Selects group member notifications only.
     # @scope class
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :group_members_only,                ->        { where.not(group_owner_id: nil) }
 
     # Selects unopened notifications only.
     # @scope class
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :unopened_only,                     ->        { where(opened_at: nil) }
 
     # Selects unopened notification index.
@@ -67,37 +67,37 @@ module ActivityNotification
     # @example Get unopened notificaton index of the @user
     #   @notifications = @user.unopened_index
     # @scope class
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :unopened_index,                    ->        { unopened_only.group_owners_only.latest_order }
 
     # Selects opened notifications only without limit.
     # Be careful to get too many records with this method.
     # @scope class
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :opened_only!,                      ->        { where.not(opened_at: nil) }
 
     # Selects opened notifications only with limit.
     # @scope class
     # @param [Integer] limit Limit to query for opened notifications
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :opened_only,                       ->(limit) { opened_only!.limit(limit) }
 
     # Selects unopened notification index.
     # Defined same as `opened_only(limit).group_owners_only.latest_order`.
     # @scope class
     # @param [Integer] limit Limit to query for opened notifications
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :opened_index,                      ->(limit) { opened_only(limit).group_owners_only.latest_order }
 
     # Selects group member notifications in unopened_index.
     # @scope class
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :unopened_index_group_members_only, ->        { where(group_owner_id: unopened_index.pluck(:id)) }
 
     # Selects group member notifications in opened_index.
     # @scope class
     # @param [Integer] limit Limit to query for opened notifications
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :opened_index_group_members_only,   ->(limit) { where(group_owner_id: opened_index(limit).map(&:id)) }
 
     # Selects filtered notifications by target instance.
@@ -106,7 +106,7 @@ module ActivityNotification
     #   @user.notifications
     # @scope class
     # @param [Object] target Target instance for filter
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :filtered_by_target,   ->(target)             { where(target: target) }
 
     # Selects filtered notifications by notifiable instance.
@@ -114,7 +114,7 @@ module ActivityNotification
     #   @notifications = @user.notifications.unopened_only.filtered_by_instance(@comment)
     # @scope class
     # @param [Object] notifiable Notifiable instance for filter
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :filtered_by_instance, ->(notifiable)         { where(notifiable: notifiable) }
 
     # Selects filtered notifications by notifiable_type.
@@ -122,7 +122,7 @@ module ActivityNotification
     #   @notifications = @user.notifications.unopened_only.filtered_by_type('Comment')
     # @scope class
     # @param [String] notifiable_type Notifiable type for filter
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :filtered_by_type,     ->(notifiable_type)    { where(notifiable_type: notifiable_type) }
 
     # Selects filtered notifications by group instance.
@@ -130,7 +130,7 @@ module ActivityNotification
     #   @notifications = @user.notifications.unopened_only.filtered_by_group(@article)
     # @scope class
     # @param [Object] group Group instance for filter
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :filtered_by_group,    ->(group)              { where(group: group) }
 
     # Selects filtered notifications by key.
@@ -138,7 +138,7 @@ module ActivityNotification
     #   @notifications = @user.notifications.unopened_only.filtered_by_key('comment.reply')
     # @scope class
     # @param [String] key Key of the notification for filter
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of filtered notifications
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :filtered_by_key,      ->(key)                { where(key: key) }
 
     # Includes target instance with query for notifications.

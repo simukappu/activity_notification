@@ -9,7 +9,7 @@ module ActivityNotification
   #
   # @param [Object] context Context to resolve parameter, which is usually target or notificable model
   # @param [Symbol, Proc, Hash, Object] thing Symbol or Proc to resolve parameter
-  # @param [Array] *args Arguments to pass to thing as method
+  # @param [Array] args Arguments to pass to thing as method
   # @return [Object] Resolved parameter value
   def self.resolve_value(context, thing, *args)
     case thing
@@ -54,7 +54,7 @@ module ActivityNotification
     # If any other value will be passed, returns original value.
     #
     # @param [Symbol, Proc, Hash, Object] thing Symbol or Proc to resolve parameter
-    # @param [Array] *args Arguments to pass to thing as method
+    # @param [Array] args Arguments to pass to thing as method
     # @return [Object] Resolved parameter value
     def resolve_value(thing, *args)
       case thing

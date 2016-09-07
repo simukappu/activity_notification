@@ -7,7 +7,7 @@ module ActivityNotification
 
       # Has many notification instances of this target.
       # @scope instance
-      # @return [Array] Array or database query of notifications of this target
+      # @return [Array<Notificaion>] Array or database query of notifications of this target
       has_many :notifications,
         class_name: "::ActivityNotification::Notification",
         as: :target
@@ -90,7 +90,7 @@ module ActivityNotification
     #   @notifications = @user.notification_index
     #
     # @param [Integer] limit Limit to query for notifications
-    # @return [Array] Notification index of the target
+    # @return [Array<Notificaion>] Notification index of the target
     def notification_index(limit = nil)
       # When the target have unopened notifications
       notifications.unopened_index.exists? ?
@@ -108,7 +108,7 @@ module ActivityNotification
     #   @notifications = @user.unopened_notification_index
     #
     # @param [Integer] limit Limit to query for notifications
-    # @return [Array] Unopened notification index of the target
+    # @return [Array<Notificaion>] Unopened notification index of the target
     def unopened_notification_index(limit = nil)
       limit.present? ?
         notifications.unopened_index.limit(limit) :
@@ -121,7 +121,7 @@ module ActivityNotification
     #   @notifications = @user.opened_notification_index(10)
     #
     # @param [Integer] limit Limit to query for notifications
-    # @return [Array] Opened notification index of the target
+    # @return [Array<Notificaion>] Opened notification index of the target
     def opened_notification_index(limit = ActivityNotification.config.opened_limit)
       notifications.opened_index(limit)
     end
@@ -163,7 +163,7 @@ module ActivityNotification
     #   @notifications = @user.notification_index_with_attributes
     #
     # @param [Integer] limit Limit to query for notifications
-    # @return [Array] Notification index of the target with attributes
+    # @return [Array<Notificaion>] Notification index of the target with attributes
     def notification_index_with_attributes(limit = nil)
       # When the target have unopened notifications
       unopened_notification_index.exists? ?
@@ -181,7 +181,7 @@ module ActivityNotification
     #   @notifications = @user.unopened_notification_index_with_attributes
     #
     # @param [Integer] limit Limit to query for notifications
-    # @return [Array] Unopened notification index of the target with attributes
+    # @return [Array<Notificaion>] Unopened notification index of the target with attributes
     def unopened_notification_index_with_attributes(limit = nil)
       include_attributes unopened_notification_index(limit)
     end
@@ -192,7 +192,7 @@ module ActivityNotification
     #   @notifications = @user.opened_notification_index_with_attributes(10)
     #
     # @param [Integer] limit Limit to query for notifications
-    # @return [Array] Opened notification index of the target with attributes
+    # @return [Array<Notificaion>] Opened notification index of the target with attributes
     def opened_notification_index_with_attributes(limit = ActivityNotification.config.opened_limit)
       include_attributes opened_notification_index(limit)
     end
@@ -204,8 +204,8 @@ module ActivityNotification
       # Otherwise, target, notifiable and or notifier will be include without group.
       # @api private
       #
-      # @param [Array] Notification index
-      # @return [Array] Notification index with attributes
+      # @param [Array<Notificaion>] notification_index Notification index
+      # @return [Array<Notificaion>] Notification index with attributes
       def include_attributes(notification_index)
         if notification_index.present?
           Notification.group_member_exists?(notification_index) ?

@@ -92,7 +92,7 @@ module ActivityNotification
   
         # Returns template paths to find email view
         #
-        # @return [Array] Template paths to find email view
+        # @return [Array<String>] Template paths to find email view
         def template_paths
           paths = ['activity_notification/mailer/default']
           paths.unshift("activity_notification/mailer/#{@target.to_resources_name}") if @target.present?

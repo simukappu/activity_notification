@@ -30,7 +30,7 @@ module ActivityNotification
       # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
       # @option options [Boolean] :send_email (true)                                If it sends notification email
       # @option options [Boolean] :send_later (true)                                If it sends notification email asynchronously
-      # @return [Array] Array of generated notifications
+      # @return [Array<Notificaion>] Array of generated notifications
       def notify(target_type, notifiable, options = {})
         targets = notifiable.notification_targets(target_type, options[:key])
         unless targets.blank?
@@ -43,7 +43,7 @@ module ActivityNotification
       # @example Notify to all users
       #   ActivityNotification::Notification.notify_all User.all, @comment
       #
-      # @param [Array] targets Targets to send notifications
+      # @param [Array<Object>] targets Targets to send notifications
       # @param [Object] notifiable Notifiable instance
       # @param [Hash] options Options for notifications
       # @option options [String]  :key        (notifiable.default_notification_key) Notification key
@@ -52,7 +52,7 @@ module ActivityNotification
       # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
       # @option options [Boolean] :send_email (true)                                Whether it sends notification email
       # @option options [Boolean] :send_later (true)                                Whether it sends notification email asynchronously
-      # @return [Array] Array of generated notifications
+      # @return [Array<Notificaion>] Array of generated notifications
       def notify_all(targets, notifiable, options = {})
         Array(targets).map { |target| notify_to(target, notifiable, options) }
       end
@@ -98,7 +98,7 @@ module ActivityNotification
       # Returns if group member of the notifications exists.
       # This method is designed to be called from controllers or views to avoid N+1.
       #
-      # @param [Array | ActiveRecord_AssociationRelation] notifications Array or database query of the notifications to test member exists
+      # @param [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] notifications Array or database query of the notifications to test member exists
       # @return [Boolean] If group member of the notifications exists
       def group_member_exists?(notifications)
         notifications.present? && where(group_owner_id: notifications.map(&:id)).exists?
@@ -106,7 +106,7 @@ module ActivityNotification
 
       # Returns available options for kinds of notify methods.
       #
-      # @return [Array] Available options for kinds of notify methods
+      # @return [Array<Notificaion>] Available options for kinds of notify methods
       def available_options
         [:key, :group, :parameters, :notifier, :send_email, :send_later].freeze
       end

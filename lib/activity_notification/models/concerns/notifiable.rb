@@ -49,7 +49,7 @@ module ActivityNotification
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
-    # @return [Array | ActiveRecord_AssociationRelation] Array or database query of the notification targets
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of the notification targets
     def notification_targets(target_type, key)
       target_typed_method_name = "notification_#{target_type.to_s.to_resources_name}"
       resolved_parameter = resolve_parameter(
@@ -163,7 +163,7 @@ module ActivityNotification
     # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
     # @option options [Boolean] :send_email (true)                                If it sends notification email
     # @option options [Boolean] :send_later (true)                                If it sends notification email asynchronously
-    # @return [Array] Array of generated notifications
+    # @return [Array<Notificaion>] Array of generated notifications
     def notify(target_type, options = {})
       Notification.notify(target_type, self, options)
     end
@@ -172,7 +172,7 @@ module ActivityNotification
     # This method calls NotificationApi#notify_all internally with self notifiable instance.
     # @see NotificationApi#notify_all
     #
-    # @param [Array] targets Targets to send notifications
+    # @param [Array<Object>] targets Targets to send notifications
     # @param [Hash] options Options for notifications
     # @option options [String]  :key        (notifiable.default_notification_key) Notification key
     # @option options [Object]  :group      (nil)                                 Group unit of the notifications
@@ -180,7 +180,7 @@ module ActivityNotification
     # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
     # @option options [Boolean] :send_email (true)                                Whether it sends notification email
     # @option options [Boolean] :send_later (true)                                Whether it sends notification email asynchronously
-    # @return [Array] Array of generated notifications
+    # @return [Array<Notificaion>] Array of generated notifications
     def notify_all(targets, options = {})
       Notification.notify_all(targets, self, options)
     end
@@ -219,7 +219,7 @@ module ActivityNotification
       # @param [String] target_typed_method_name Method name overriden for the target type
       # @param [Object] parameter_field Parameter Configured field in this model
       # @param [Object] default_value Default parameter value
-      # @param [Array] *args Arguments to pass to the method overriden or defined as parameter field
+      # @param [Array] args Arguments to pass to the method overriden or defined as parameter field
       # @return [Object] Resolved parameter value
       def resolve_parameter(target_typed_method_name, parameter_field, default_value, *args)
         if respond_to?(target_typed_method_name)

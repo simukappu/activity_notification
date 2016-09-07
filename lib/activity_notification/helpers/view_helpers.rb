@@ -5,7 +5,7 @@ module ActivityNotification
     # View helper for rendering an notification, calls {Notification#render} internally.
     # @see Notification#render
     #
-    # @param [Notification, Array] Array or single instance of notifications to render
+    # @param [Notification, Array<Notificaion>] Array or single instance of notifications to render
     # @param [Hash] options Options for rendering notifications
     # @option options [String, Symbol] :target       (nil)                     Target type name to find template or i18n text
     # @option options [String]         :partial      ("activity_notification/notifications/#{target}", controller.target_view_path, 'activity_notification/notifications/default') Partial template name
@@ -25,8 +25,8 @@ module ActivityNotification
     alias_method :render_notifications, :render_notification
 
     # View helper for rendering on notifications of the target to embedded partial template.
-    # It calls {Notification#render} to prepare view as {content_for :index_content}
-    # and render partial index calling {yield :index_content} internally.
+    # It calls {Notification#render} to prepare view as `content_for :index_content`
+    # and render partial index calling `yield :index_content` internally.
     # For example, this method can be used for notification index as dropdown in common header.
     # @todo Show examples
     #
@@ -155,7 +155,7 @@ module ActivityNotification
       # @api private
       #
       # @param [Object] target Notification target instance
-      # @param [Array] notification_index Array notification index
+      # @param [Array<Notificaion>] notification_index Array notification index
       # @param [Hash] params Option parameter to send render_notification
       def prepare_content_for(target, notification_index, params)
         content_for :notification_index do

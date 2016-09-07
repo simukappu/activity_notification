@@ -93,7 +93,7 @@ module ActivityNotification
       # @option options [Symbol, Proc, Object]  :group           (nil)                    Group unit of the notifications
       # @option options [Symbol, Proc, Object]  :notifier        (nil)                    Notifier of the notifications
       # @option options [Symbol, Proc, Hash]    :parameters      ({})                     Additional parameters of the notifications
-      # @option options [Symbol, Proc, Boolean] :email_allowed   (false)                  Whether activity_notification sends notification email
+      # @option options [Symbol, Proc, Boolean] :email_allowed   (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email
       # @option options [Symbol, Proc, String]  :notifiable_path (polymorphic_path(self)) Path to redirect from open or move action of notification controller
       # @return [Hash] Configured parameters as notifiable model
       def acts_as_notifiable(target_type, options = {})
@@ -108,7 +108,7 @@ module ActivityNotification
       end
 
       # Returns array of available notifiable options in acts_as_notifiable.
-      # @return [Array] Array of available notifiable options
+      # @return [Array<Symbol>] Array of available notifiable options
       def available_notifiable_options
         [:targets, :group, :notifier, :parameters, :email_allowed, :notifiable_path].freeze
       end
