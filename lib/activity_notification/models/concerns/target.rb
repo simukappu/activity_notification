@@ -133,9 +133,9 @@ module ActivityNotification
     # @param [Object] notifiable Notifiable instance to notify
     # @param [Hash] options Options for notifications
     # @option options [String]  :key        (notifiable.default_notification_key) Notification key
-    # @option options [Object]  :group      (nil)                                 Group of the notifications
-    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
+    # @option options [Object]  :group      (nil)                                 Group unit of the notifications
     # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
+    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
     # @option options [Boolean] :send_email (true)                                Whether it sends notification email
     # @option options [Boolean] :send_later (true)                                Whether it sends notification email asynchronously
     # @return [Notification] Generated notification instance

@@ -158,9 +158,9 @@ module ActivityNotification
     # @param [Symbol, String, Class] target_type Type of target
     # @param [Hash] options Options for notifications
     # @option options [String]  :key        (notifiable.default_notification_key) Notification key
-    # @option options [Object]  :group      (nil)                                 Group of the notifications
-    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
+    # @option options [Object]  :group      (nil)                                 Group unit of the notifications
     # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
+    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
     # @option options [Boolean] :send_email (true)                                If it sends notification email
     # @option options [Boolean] :send_later (true)                                If it sends notification email asynchronously
     # @return [Array] Array of generated notifications
@@ -172,12 +172,12 @@ module ActivityNotification
     # This method calls NotificationApi#notify_all internally with self notifiable instance.
     # @see NotificationApi#notify_all
     #
-    # @param [Array] targets Targets to notify
+    # @param [Array] targets Targets to send notifications
     # @param [Hash] options Options for notifications
     # @option options [String]  :key        (notifiable.default_notification_key) Notification key
-    # @option options [Object]  :group      (nil)                                 Group of the notifications
-    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
+    # @option options [Object]  :group      (nil)                                 Group unit of the notifications
     # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
+    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
     # @option options [Boolean] :send_email (true)                                Whether it sends notification email
     # @option options [Boolean] :send_later (true)                                Whether it sends notification email asynchronously
     # @return [Array] Array of generated notifications
@@ -189,12 +189,12 @@ module ActivityNotification
     # This method calls NotificationApi#notify_to internally with self notifiable instance.
     # @see NotificationApi#notify_to
     #
-    # @param [Object] target Target to notify
+    # @param [Object] target Target to send notifications
     # @param [Hash] options Options for notifications
     # @option options [String]  :key        (notifiable.default_notification_key) Notification key
-    # @option options [Object]  :group      (nil)                                 Group of the notifications
-    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
+    # @option options [Object]  :group      (nil)                                 Group unit of the notifications
     # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
+    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
     # @option options [Boolean] :send_email (true)                                Whether it sends notification email
     # @option options [Boolean] :send_later (true)                                Whether it sends notification email asynchronously
     # @return [Notification] Generated notification instance

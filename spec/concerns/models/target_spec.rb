@@ -126,20 +126,20 @@ shared_examples_for :target do
 
     describe "#authenticated_with_devise?" do
       context "without any configuration" do
-        context "when the current device resource and called target are defferent class instance" do
+        context "when the current devise resource and called target are defferent class instance" do
           it "raises TypeError" do
             expect { test_instance.authenticated_with_devise?(test_notifiable) }
               .to raise_error(TypeError, /Defferent type of .+ has been passed to .+ You have to override .+ /)
           end
         end
   
-        context "when the current device resource equals called target" do
+        context "when the current devise resource equals called target" do
           it "returns true" do
             expect(test_instance.authenticated_with_devise?(test_instance)).to be_truthy
           end
         end
   
-        context "when the current device resource does not equal called target" do
+        context "when the current devise resource does not equal called target" do
           it "returns false" do
             expect(test_instance.authenticated_with_devise?(create(test_class_name))).to be_falsey
           end
@@ -147,7 +147,7 @@ shared_examples_for :target do
       end
 
       context "configured with a field" do
-        context "when the current device resource and called target are defferent class instance" do
+        context "when the current devise resource and called target are defferent class instance" do
           it "raises TypeError" do
             described_class._notification_devise_resource = test_notifiable
             expect { test_instance.authenticated_with_devise?(test_instance) }
@@ -155,14 +155,14 @@ shared_examples_for :target do
           end
         end
   
-        context "when the current device resource equals called target" do
+        context "when the current devise resource equals called target" do
           it "returns true" do
             described_class._notification_devise_resource = test_notifiable
             expect(test_instance.authenticated_with_devise?(test_notifiable)).to be_truthy
           end
         end
   
-        context "when the current device resource does not equal called target" do
+        context "when the current devise resource does not equal called target" do
           it "returns false" do
             described_class._notification_devise_resource = test_instance
             expect(test_instance.authenticated_with_devise?(create(test_class_name))).to be_falsey

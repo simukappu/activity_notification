@@ -65,7 +65,7 @@ module ActionDispatch::Routing
       if (with_devise = options.delete(:with_devise)).present?
         options[:controller] ||= "activity_notification/notifications_with_devise"
         options[:as]         ||= "notifications"
-        #TODO check device configuration in model
+        #TODO check devise configuration in model
         devise_defaults        = { devise_type: with_devise.to_s }
       else
         options[:controller] ||= "activity_notification/notifications"
