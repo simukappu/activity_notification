@@ -2,6 +2,7 @@ require 'rails/generators/base'
 
 module ActivityNotification
   module Generators
+    # View generator to copy customizable view files to rails application.
     # Include this module in your generator to generate ActivityNotification views.
     # `copy_views` is the main method and by default copies all views of ActivityNotification.
     class ViewsGenerator < Rails::Generators::Base
@@ -16,6 +17,7 @@ module ActivityNotification
         desc: "Select specific view directories to generate (notifications, mailer)"
       public_task :copy_views
 
+      # Copies view files in application directory
       def copy_views
         target_views = options[:views] || VIEWS
         target_views.each do |directory|

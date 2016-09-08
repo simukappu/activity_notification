@@ -2,16 +2,16 @@ require 'rails/generators/base'
 require 'securerandom'
 
 module ActivityNotification
-  module Generators
-
+  module Generators #:nodoc:
+    # Install generator to copy initializer and locale file to rails application.
     class InstallGenerator < Rails::Generators::Base
       source_root File.expand_path("../../templates", __FILE__)
 
       desc "Creates a ActivityNotification initializer and copy locale files to your application."
       class_option :orm
 
+      # Copies initializer file in application directory
       def copy_initializer
-        
         #TODO suport other orm e.g. mongoid
         unless options[:orm] == :active_record
           raise TypeError, <<-ERROR.strip_heredoc
@@ -29,10 +29,12 @@ module ActivityNotification
         template "activity_notification.rb", "config/initializers/activity_notification.rb"
       end
 
+      # Copies locale files in application directory
       def copy_locale
         template "locales/en.yml", "config/locales/activity_notification.en.yml"
       end
 
+      # Shows readme to console
       def show_readme
         readme "README" if behavior == :invoke
       end

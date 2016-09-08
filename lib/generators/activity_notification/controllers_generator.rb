@@ -2,6 +2,7 @@ require 'rails/generators/base'
 
 module ActivityNotification
   module Generators
+    # Controller generator to create customizable controller files from templates.
     class ControllersGenerator < Rails::Generators::Base
       CONTROLLERS = ['notifications', 'notifications_with_devise'].freeze
 
@@ -27,6 +28,7 @@ module ActivityNotification
       class_option :controllers, aliases: "-c", type: :array,
         desc: "Select specific controllers to generate (#{CONTROLLERS.join(', ')})"
 
+      # Creates controller files in application directory
       def create_controllers
         @target_prefix = target.blank? ? '' : (target.camelize + '::')
         controllers = options[:controllers] || CONTROLLERS
@@ -36,6 +38,7 @@ module ActivityNotification
         end
       end
 
+      # Shows readme to console
       def show_readme
         readme "README" if behavior == :invoke
       end
