@@ -3,6 +3,8 @@ require 'rails/generators/base'
 module ActivityNotification
   module Generators
     # Controller generator to create customizable controller files from templates.
+    # @example Run controller generator for users as target
+    #   rails generate activity_notification:controllers users
     class ControllersGenerator < Rails::Generators::Base
       CONTROLLERS = ['notifications', 'notifications_with_devise'].freeze
 

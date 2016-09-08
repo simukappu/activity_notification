@@ -3,6 +3,8 @@ require 'rails/generators/active_record'
 module ActivityNotification
   module Generators
     # Migration generator to create migration files from templates.
+    # @example Run migration generator
+    #   rails generate activity_notification:migration
     class MigrationGenerator < ActiveRecord::Generators::Base
       source_root File.expand_path("../../../templates/active_record", __FILE__)
 

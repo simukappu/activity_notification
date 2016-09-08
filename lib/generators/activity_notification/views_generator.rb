@@ -5,6 +5,14 @@ module ActivityNotification
     # View generator to copy customizable view files to rails application.
     # Include this module in your generator to generate ActivityNotification views.
     # `copy_views` is the main method and by default copies all views of ActivityNotification.
+    # @example Run view generator to create customizable default views for all targets
+    #   rails generate activity_notification:views
+    # @example Run view generator to create views for users as the specified target
+    #   rails generate activity_notification:views users
+    # @example Run view generator to create only notification views
+    #   rails generate activity_notification:views -v notifications
+    # @example Run view generator to create only notification email views
+    #   rails generate activity_notification:views -v mailer
     class ViewsGenerator < Rails::Generators::Base
       VIEWS = [:notifications, :mailer].freeze
 
@@ -27,14 +35,24 @@ module ActivityNotification
 
       protected
 
+        # Copies view files to target directory
+        # @api protected
+        # @param [String] name Set name of views (notifications or mailer)
+        # @param [String] _target_path Target path to create views
         def view_directory(name, _target_path = nil)
           directory "#{name.to_s}/default", _target_path || "#{target_path}/#{name}/#{plural_target || :default}"
         end
   
+        # Gets target_path from an argument or default value
+        # @api protected
+        # @return [String ] target_path from an argument or default value
         def target_path
           @target_path ||= "app/views/activity_notification"
         end
   
+        # Gets plural_target from target argument or default value
+        # @api protected
+        # @return [String] target_path from target argument or default value
         def plural_target
           @plural_target ||= target.presence && target.to_s.underscore.pluralize
         end

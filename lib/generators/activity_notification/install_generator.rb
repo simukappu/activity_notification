@@ -4,6 +4,8 @@ require 'securerandom'
 module ActivityNotification
   module Generators #:nodoc:
     # Install generator to copy initializer and locale file to rails application.
+    # @example Run install generator
+    #   rails generate activity_notification:install
     class InstallGenerator < Rails::Generators::Base
       source_root File.expand_path("../../templates", __FILE__)
 
