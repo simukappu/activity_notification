@@ -528,8 +528,58 @@ In this example `activity_notification` will confirm the `user` who `admin` belo
 
 ### Testing your application
 
-Under construction
+First, you need to configure ActivityNotification as described above.
 
+#### Testing notifications with RSpec
+Prepare target and notifiable model instances to test generating notifications (e.g. `@user` and `@comment`).
+Then, you can call notify API and test if notifications of the target are generated.
+```ruby
+# Prepare
+@article_author = create(:user)
+@comment = @article_author.articles.create.comments.create
+expect(@article_author.notifications.unopened_only.count).to eq(0)
+
+# Call notify API
+@comment.notify :users
+
+# Test generated notifications
+expect(@article_author_user.notifications.unopened_only.count).to eq(1)
+expect(@article_author_user.notifications.unopened_only.latest.notifiable).to eq(@comment)
+```
+
+#### Testing email notifications with RSpec
+Prepare target and notifiable model instances to test sending notification email.
+Then, you can call notify API and test if notification email is sent.
+```ruby
+# Prepare
+@article_author = create(:user)
+@comment = @article_author.articles.create.comments.create
+expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
+
+# Call notify API and send email now
+@comment.notify :users, send_later: false
+
+# Test sent notification email
+expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
+expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@article_author.email)
+```
+Note that notification email will be sent asynchronously without false as `send_later` option.
+```ruby
+# Prepare
+include ActiveJob::TestHelper
+@article_author = create(:user)
+@comment = @article_author.articles.create.comments.create
+expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
+
+# Call notify API and send email asynchronously as default
+# Test sent notification email with ActiveJob queue
+expect {
+  perform_enqueued_jobs do
+    @comment.notify :users
+  end
+}.to change { ActivityNotification::Mailer.deliveries.size }.by(1)
+expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@article_author.email)
+```
 
 ### Testing gem alone
 
@@ -555,7 +605,7 @@ Then, you can access <http://localhost:3000> for the dummy application.
 
 ## Documentation
 
-Under construction
+Please see API reference in [RubyDoc.info](http://www.rubydoc.info/github/simukappu/activity_notification).
 
 
 ## Common examples
