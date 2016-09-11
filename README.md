@@ -607,6 +607,14 @@ Then, you can access <http://localhost:3000> for the dummy application.
 
 See more details at [API reference](http://www.rubydoc.info/github/simukappu/activity_notification/index).
 
+Currently, RubyDoc.info does not support parsing methods in included and class_methods of ActiveSupport::Concern.
+If you would like to read complete documents, please generate yard documents at your local machine:
+```console
+$ git pull https://github.com/simukappu/activity_notification.git
+$ bundle exec yardoc
+$ bundle exec yard server
+```
+And you can see the documents at <http://localhost:8808/docs/index>.
 
 ## Common examples
 
