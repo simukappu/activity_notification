@@ -605,7 +605,7 @@ Then, you can access <http://localhost:3000> for the dummy application.
 
 ## Documentation
 
-Please see API reference in [RubyDoc.info](http://www.rubydoc.info/github/simukappu/activity_notification).
+See more details at [API reference](http://www.rubydoc.info/github/simukappu/activity_notification).
 
 
 ## Common examples
