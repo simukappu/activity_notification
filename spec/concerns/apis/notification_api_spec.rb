@@ -304,8 +304,8 @@ shared_examples_for :notification_api do
 
     describe ".open_all_of" do
       before do
-        described_class.notify_to(@user_1, @comment_2)
-        described_class.notify_to(@user_1, @comment_2)
+        described_class.notify_to(@user_1, @article, group: @article, key: 'key.1')
+        described_class.notify_to(@user_1, @comment_2, group: @comment_2, key: 'key.2')
         expect(@user_1.notifications.unopened_only.count).to eq(2)
         expect(@user_1.notifications.opened_only!.count).to eq(0)
       end
@@ -326,7 +326,7 @@ shared_examples_for :notification_api do
         expect(@user_1.notifications.opened_only!.count).to eq(0)
       end
 
-      it "open all notification with current time" do
+      it "opens all notification with current time" do
         expect(@user_1.notifications.first.opened_at).to be_nil
         Timecop.freeze(DateTime.now)
         described_class.open_all_of(@user_1)
@@ -335,11 +335,43 @@ shared_examples_for :notification_api do
       end
 
       context "with opened_at option" do
-        it "open all notification with specified time" do
+        it "opens all notification with specified time" do
           expect(@user_1.notifications.first.opened_at).to be_nil
           opened_at = DateTime.now - 1.months
           described_class.open_all_of(@user_1, opened_at: opened_at)
           expect(@user_1.notifications.first.opened_at.to_i).to eq(opened_at.to_i)
+        end
+      end
+
+      context 'with filtered_by_type options' do
+        it "opens filtered notifications only" do
+          described_class.open_all_of(@user_1, { filtered_by_type: @comment_2.to_class_name })
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_1.notifications.opened_only!.count).to eq(1)
+        end
+      end
+
+      context 'with filtered_by_group options' do
+        it "opens filtered notifications only" do
+          described_class.open_all_of(@user_1, { filtered_by_group: @comment_2 })
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_1.notifications.opened_only!.count).to eq(1)
+        end
+      end
+
+      context 'with filtered_by_group_type and :filtered_by_group_id options' do
+        it "opens filtered notifications only" do
+          described_class.open_all_of(@user_1, { filtered_by_group_type: 'Comment', filtered_by_group_id: @comment_2.id.to_s })
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_1.notifications.opened_only!.count).to eq(1)
+        end
+      end
+
+      context 'with filtered_by_key options' do
+        it "opens filtered notifications only" do
+          described_class.open_all_of(@user_1, { filtered_by_key: 'key.2' })
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_1.notifications.opened_only!.count).to eq(1)
         end
       end
     end

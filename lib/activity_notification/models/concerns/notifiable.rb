@@ -157,7 +157,7 @@ module ActivityNotification
     #
     # @param [Symbol, String, Class] target_type Type of target
     # @param [Hash] options Options for notifications
-    # @option options [String]  :key        (notifiable.default_notification_key) Notification key
+    # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
     # @option options [Object]  :group      (nil)                                 Group unit of the notifications
     # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
     # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
@@ -174,7 +174,7 @@ module ActivityNotification
     #
     # @param [Array<Object>] targets Targets to send notifications
     # @param [Hash] options Options for notifications
-    # @option options [String]  :key        (notifiable.default_notification_key) Notification key
+    # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
     # @option options [Object]  :group      (nil)                                 Group unit of the notifications
     # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
     # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
@@ -191,7 +191,7 @@ module ActivityNotification
     #
     # @param [Object] target Target to send notifications
     # @param [Hash] options Options for notifications
-    # @option options [String]  :key        (notifiable.default_notification_key) Notification key
+    # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
     # @option options [Object]  :group      (nil)                                 Group unit of the notifications
     # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
     # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
@@ -202,11 +202,11 @@ module ActivityNotification
       Notification.notify_to(target, self, options)
     end
 
-    # Returns default notification key.
+    # Returns default key of the notification.
     # This method is able to be overriden.
     # "#{to_resource_name}.default" is defined as default key.
     #
-    # @return [String] Default notification key
+    # @return [String] Default Key of the notification
     def default_notification_key
       "#{to_resource_name}.default"
     end

@@ -141,6 +141,44 @@ module ActivityNotification
     # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :filtered_by_key,      ->(key)                { where(key: key) }
 
+    # Selects filtered notifications by notifiable_type, group or key with filter options.
+    # @example Get filtered unopened notificatons of the @user for Comment notifiable class
+    #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment' })
+    # @example Get filtered unopened notificatons of the @user for @article as group
+    #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_group: @article })
+    # @example Get filtered unopened notificatons of the @user for Article instance id=1 as group
+    #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_group_type: 'Article', filtered_by_group_id: '1' })
+    # @example Get filtered unopened notificatons of the @user with key 'comment.reply'
+    #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_key: 'comment.reply' })
+    # @example Get filtered unopened notificatons of the @user for Comment notifiable class with key 'comment.reply'
+    #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment', filtered_by_key: 'comment.reply' })
+    # @scope class
+    # @param [Hash] options Options for filter
+    # @option options [String] :filtered_by_type       (nil) Notifiable type for filter
+    # @option options [Object] :filtered_by_group      (nil) Group instance for filter
+    # @option options [String] :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+    # @option options [String] :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String] :filtered_by_key        (nil) Key of the notification for filter 
+    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
+    scope :filtered_by_options,  ->(options = {})       {
+      options = options.with_indifferent_access
+      filtered_notifications = all
+      if options.has_key?(:filtered_by_type)
+        filtered_notifications = filtered_notifications.filtered_by_type(options[:filtered_by_type])
+      end
+      if options.has_key?(:filtered_by_group)
+        filtered_notifications = filtered_notifications.filtered_by_group(options[:filtered_by_group])
+      end
+      if options.has_key?(:filtered_by_group_type) and options.has_key?(:filtered_by_group_id)
+        filtered_notifications = filtered_notifications
+                                 .where(group_type: options[:filtered_by_group_type], group_id: options[:filtered_by_group_id])
+      end
+      if options.has_key?(:filtered_by_key)
+        filtered_notifications = filtered_notifications.filtered_by_key(options[:filtered_by_key])
+      end
+      filtered_notifications
+    }
+
     # Includes target instance with query for notifications.
     # @return [ActiveRecord_AssociationRelation] Database query of notifications with target
     scope :with_target,                       ->        { includes(:target) }

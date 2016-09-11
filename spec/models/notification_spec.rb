@@ -169,7 +169,7 @@ describe ActivityNotification::Notification, type: :model do
     context "to filter by association" do
       before do
         ActivityNotification::Notification.delete_all
-        @target_1, @notifiable_1, @group_1, @key_1 = create(:confirmed_user), create(:article), nil, "key.1"
+        @target_1, @notifiable_1, @group_1, @key_1 = create(:confirmed_user), create(:article), nil,           "key.1"
         @target_2, @notifiable_2, @group_2, @key_2 = create(:confirmed_user), create(:comment), @notifiable_1, "key.2"
         @notification_1 = create(:notification, target: @target_1, notifiable: @notifiable_1, group: @group_1, key: @key_1)
         @notification_2 = create(:notification, target: @target_2, notifiable: @notifiable_2, group: @group_2, key: @key_2)
@@ -218,6 +218,60 @@ describe ActivityNotification::Notification, type: :model do
         notifications = ActivityNotification::Notification.filtered_by_key(@key_2)
         expect(notifications.size).to eq(1)
         expect(notifications.first).to eq(@notification_2)
+      end
+
+      describe 'filtered_by_options scope' do
+        context 'with filtered_by_type options' do
+          it "works with filtered_by_options scope" do
+            notifications = ActivityNotification::Notification.filtered_by_options({ filtered_by_type: @notifiable_1.to_class_name })
+            expect(notifications.size).to eq(1)
+            expect(notifications.first).to eq(@notification_1)
+            notifications = ActivityNotification::Notification.filtered_by_options({ filtered_by_type: @notifiable_2.to_class_name })
+            expect(notifications.size).to eq(1)
+            expect(notifications.first).to eq(@notification_2)
+          end
+        end
+  
+        context 'with filtered_by_group options' do
+          it "works with filtered_by_options scope" do
+            notifications = ActivityNotification::Notification.filtered_by_options({ filtered_by_group: @group_1 })
+            expect(notifications.size).to eq(1)
+            expect(notifications.first).to eq(@notification_1)
+            notifications = ActivityNotification::Notification.filtered_by_options({ filtered_by_group: @group_2 })
+            expect(notifications.size).to eq(1)
+            expect(notifications.first).to eq(@notification_2)
+          end
+        end
+
+        context 'with filtered_by_group_type and :filtered_by_group_id options' do
+          it "works with filtered_by_options scope" do
+            notifications = ActivityNotification::Notification.filtered_by_options({ filtered_by_group_type: 'Article', filtered_by_group_id: @group_2.id.to_s })
+            expect(notifications.size).to eq(1)
+            expect(notifications.first).to eq(@notification_2)
+            notifications = ActivityNotification::Notification.filtered_by_options({ filtered_by_group_type: 'Article' })
+            expect(notifications.size).to eq(2)
+            notifications = ActivityNotification::Notification.filtered_by_options({ filtered_by_group_id: @group_2.id.to_s })
+            expect(notifications.size).to eq(2)
+          end
+        end
+
+        context 'with filtered_by_key options' do
+          it "works with filtered_by_options scope" do
+            notifications = ActivityNotification::Notification.filtered_by_options({ filtered_by_key: @key_1 })
+            expect(notifications.size).to eq(1)
+            expect(notifications.first).to eq(@notification_1)
+            notifications = ActivityNotification::Notification.filtered_by_options({ filtered_by_key: @key_2 })
+            expect(notifications.size).to eq(1)
+            expect(notifications.first).to eq(@notification_2)
+          end
+        end
+  
+        context 'with no options' do
+          it "works with filtered_by_options scope" do
+            notifications = ActivityNotification::Notification.filtered_by_options
+            expect(notifications.size).to eq(2)
+          end
+        end
       end
     end
 

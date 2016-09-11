@@ -220,6 +220,49 @@ shared_examples_for :notification_controller do
         expect(response).to render_template :open_all, format: :js
       end
     end
+
+    context "with filter request parameters" do
+      before do
+        @target_1, @notifiable_1, @group_1, @key_1 = create(:confirmed_user), create(:article), nil,           "key.1"
+        @target_2, @notifiable_2, @group_2, @key_2 = create(:confirmed_user), create(:comment), @notifiable_1, "key.2"
+        @notification_1 = create(:notification, target: test_target, notifiable: @notifiable_1, group: @group_1, key: @key_1)
+        @notification_2 = create(:notification, target: test_target, notifiable: @notifiable_2, group: @group_2, key: @key_2)
+        expect(@notification_1.opened?).to be_falsey
+        expect(@notification_2.opened?).to be_falsey
+      end
+
+      context "with filtered_by_type request parameters" do
+        it "opens filtered notifications only" do
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, 'filtered_by_type' => @notifiable_2.to_class_name }), valid_session
+          expect(@notification_1.reload.opened?).to be_falsey
+          expect(@notification_2.reload.opened?).to be_truthy
+        end
+      end
+  
+      context 'with filtered_by_group_type and :filtered_by_group_id request parameters' do
+        it "opens filtered notifications only" do
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, 'filtered_by_group_type' => 'Article', 'filtered_by_group_id' => @group_2.id.to_s }), valid_session
+          expect(@notification_1.reload.opened?).to be_falsey
+          expect(@notification_2.reload.opened?).to be_truthy
+        end
+      end
+
+      context 'with filtered_by_key request parameters' do
+        it "opens filtered notifications only" do
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, 'filtered_by_key' => 'key.2' }), valid_session
+          expect(@notification_1.reload.opened?).to be_falsey
+          expect(@notification_2.reload.opened?).to be_truthy
+        end
+      end
+
+      context "with no filter request parameters" do
+        it "opens all notifications of the target" do
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target}), valid_session
+          expect(@notification_1.reload.opened?).to be_truthy
+          expect(@notification_2.reload.opened?).to be_truthy
+        end
+      end
+    end
   end
 
   describe "GET #show" do

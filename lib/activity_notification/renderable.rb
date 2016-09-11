@@ -1,6 +1,6 @@
 module ActivityNotification
   # Provides logic for rendering notifications.
-  # Handles both i18n strings support and smart partials rendering (different templates per notification key).
+  # Handles both i18n strings support and smart partials rendering (different templates per the notification key).
   # This module deeply uses PublicActivity gem as reference.
   module Renderable
     # Virtual attribute returning text description of the notification

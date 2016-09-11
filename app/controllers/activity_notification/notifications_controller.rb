@@ -12,8 +12,8 @@ module ActivityNotification
     DEFAULT_VIEW_DIRECTORY = "default"
   
     # Shows notification index of the target.
-    # GET /:target_type/:target_id/notifcations
     #
+    # GET /:target_type/:target_id/notifcations
     # @overload index(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :filter  (nil)     Filter option to load notification index. Nothing means auto loading. 'opened' means opened only and 'unopened' means unopened only.
@@ -29,22 +29,26 @@ module ActivityNotification
     end
 
     # Opens all notifications of the target.
-    # POST /:target_type/:target_id/notifcations/open_all
     #
+    # POST /:target_type/:target_id/notifcations/open_all
     # @overload open_all(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :filter  (nil)     Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
     #   @option params [String] :limit   (nil)     Limit to query for notifications
     #   @option params [String] :reload  ('true')  Whether notification index will be reloaded
+    #   @option params [String] :filtered_by_type       (nil) Notifiable type for filter
+    #   @option params [String] :filtered_by_group_type (nil) Group type for filter, valid only :filtered_by_group_id
+    #   @option params [String] :filtered_by_group_id   (nil) Group instance id for filter, valid only :filtered_by_group_type
+    #   @option params [String] :filtered_by_key        (nil) Key of the notification for filter 
     #   @return [Responce] JavaScript view for ajax request or redirects to back as default
     def open_all
-      @target.open_all_notifications
+      @target.open_all_notifications(params)
       return_back_or_ajax(params[:filter], params[:limit])
     end
   
     # Shows a notification.
-    # GET /:target_type/:target_id/notifcations/:id
     #
+    # GET /:target_type/:target_id/notifcations/:id
     # @overload show(params)
     #   @param [Hash] params Request parameters
     #   @return [Responce] HTML view as default
@@ -52,6 +56,7 @@ module ActivityNotification
     end
   
     # Deletes a notification.
+    #
     # DELETE /:target_type/:target_id/notifcations/:id
     #
     # @overload destroy(params)
@@ -66,6 +71,7 @@ module ActivityNotification
     end
   
     # Opens a notification.
+    #
     # POST /:target_type/:target_id/notifcations/:id/open
     # @overload open(params)
     #   @param [Hash] params Request parameters
@@ -82,6 +88,7 @@ module ActivityNotification
     end
 
     # Moves to notifiable_path of the notification.
+    #
     # GET /:target_type/:target_id/notifcations/:id/move
     # @overload open(params)
     #   @param [Hash] params Request parameters

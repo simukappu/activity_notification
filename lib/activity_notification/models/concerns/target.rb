@@ -132,7 +132,7 @@ module ActivityNotification
     #
     # @param [Object] notifiable Notifiable instance to notify
     # @param [Hash] options Options for notifications
-    # @option options [String]  :key        (notifiable.default_notification_key) Notification key
+    # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
     # @option options [Object]  :group      (nil)                                 Group unit of the notifications
     # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
     # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications

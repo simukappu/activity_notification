@@ -24,7 +24,7 @@ module ActivityNotification
       # @param [Symbol, String, Class] target_type Type of target
       # @param [Object] notifiable Notifiable instance
       # @param [Hash] options Options for notifications
-      # @option options [String]  :key        (notifiable.default_notification_key) Notification key
+      # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
       # @option options [Object]  :group      (nil)                                 Group unit of the notifications
       # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
       # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
@@ -46,7 +46,7 @@ module ActivityNotification
       # @param [Array<Object>] targets Targets to send notifications
       # @param [Object] notifiable Notifiable instance
       # @param [Hash] options Options for notifications
-      # @option options [String]  :key        (notifiable.default_notification_key) Notification key
+      # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
       # @option options [Object]  :group      (nil)                                 Group unit of the notifications
       # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
       # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
@@ -65,7 +65,7 @@ module ActivityNotification
       # @param [Object] target Target to send notifications
       # @param [Object] notifiable Notifiable instance
       # @param [Hash] options Options for notifications
-      # @option options [String]  :key        (notifiable.default_notification_key) Notification key
+      # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
       # @option options [Object]  :group      (nil)                                 Group unit of the notifications
       # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
       # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
@@ -88,11 +88,16 @@ module ActivityNotification
       # @param [Object] target Target of the notifications to open
       # @param [Hash] options Options for opening notifications
       # @option options [DateTime] :opened_at (DateTime.now) Time to set to opened_at of the notification record
+      # @option options [String]   :filtered_by_type       (nil) Notifiable type for filter
+      # @option options [Object]   :filtered_by_group      (nil) Group instance for filter
+      # @option options [String]   :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+      # @option options [String]   :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+      # @option options [String]   :filtered_by_key        (nil) Key of the notification for filter 
       # @return [Integer] Number of opened notification records
       # @todo Add filter option
       def open_all_of(target, options = {})
         opened_at = options[:opened_at] || DateTime.now
-        where(target: target, opened_at: nil).update_all(opened_at: opened_at)
+        target.notifications.unopened_only.filtered_by_options(options).update_all(opened_at: opened_at)
       end
   
       # Returns if group member of the notifications exists.
