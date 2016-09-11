@@ -611,10 +611,12 @@ RubyDoc.info does not support parsing methods in `included` and `class_methods` 
 To read complete documents, please generate YARD documents on your local environment:
 ```console
 $ git pull https://github.com/simukappu/activity_notification.git
+$ cd activity_notification
+$ bundle install —path vendor/bundle
 $ bundle exec yard doc
 $ bundle exec yard server
 ```
-You can see the documents at <http://localhost:8808/docs/index>.
+Then you can see the documents at <http://localhost:8808/docs/index>.
 
 ## Common examples
 
