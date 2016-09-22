@@ -1,5 +1,10 @@
-<h1>New Article</h1>
+<article>
+  <section>
+    <h1>New Article</h1>
+    <%= render 'form' %>
+    <div class="left_button_wrapper">
+      <%= link_to 'Back', articles_path, class: "gray_button" %>
+    </div>
+  </section>
+</article>
 
-<%= render 'form' %>
-
-<%= link_to 'Back', articles_path %>
