@@ -1,10 +1,25 @@
-<%= link_to 'Root', root_path %>
-<% if user_signed_in? %>
-  <%= "Login as #{current_user.name}" %>
-  <%= link_to 'Logout', destroy_user_session_path, method: :delete %>
-  <%#= render_notifications_of current_user, fallback: :default, index_content: :simple %>
-  <%= render_notifications_of current_user, fallback: :default, index_content: :with_attributes %>
-  <%#= render_notifications_of current_user, fallback: :default, index_content: :none %>
-<% else %>
-  <%= link_to 'Login', new_user_session_path %>
+<% if notice.present? %>
+    <div class="notice_wrapper">
+      <p class="notice">
+        <%= notice %>
+      </p>
+    </div>
 <% end %>
+
+<header>
+  <div class="header_area">
+    <div class="root_wrapper">
+      <%= link_to 'ActivityNotification', root_path %>
+    </div>
+    <div class="session_wrapper">
+      <% if user_signed_in? %>
+          <p><%= current_user.name %><%= link_to 'Logout', destroy_user_session_path, method: :delete %></p>
+          <%#= render_notifications_of current_user, fallback: :default, index_content: :simple %>
+          <%= render_notifications_of current_user, fallback: :default, index_content: :with_attributes %>
+          <%#= render_notifications_of current_user, fallback: :default, index_content: :none %>
+      <% else %>
+          <%= link_to 'Login', new_user_session_path %>
+      <% end %>
+    </div>
+  </div>
+</header>
