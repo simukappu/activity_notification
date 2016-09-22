@@ -11,7 +11,6 @@ module ActivityNotification
   autoload :Target,           'activity_notification/models/concerns/target'
   autoload :Notifiable,       'activity_notification/models/concerns/notifiable'
   autoload :Notifier,         'activity_notification/models/concerns/notifier'
-  autoload :StoreController,  'activity_notification/controllers/store_controller'
   autoload :Common
   autoload :Config
   autoload :Renderable
@@ -49,6 +48,7 @@ end
 # Load ActivityNotification helpers
 require 'activity_notification/helpers/polymorphic_helpers'
 require 'activity_notification/helpers/view_helpers'
+require 'activity_notification/controllers/store_controller'
 
 # Load role for models
 require 'activity_notification/models'
