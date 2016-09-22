@@ -1,12 +1,6 @@
-<h1>Notifications for <%= @target.printable_name %></h1>
-<div id="notification_count"><%= @target.unopened_notification_count %></div>
-
-<div>
-  <%= link_to "Open all", open_all_notifications_path_for(@target), method: :post %>
-</div>
-<div>
-  <%= link_to "Open all (ajax)", open_all_notifications_path_for(@target), method: :post, remote: true %>
-</div>
+<h1>Notifications for <%= @target.printable_name %> · <%= @target.unopened_notification_count %></h1>
+<%#= link_to "Open all", open_all_notifications_path_for(@target), method: :post %>
+<%#= link_to "Open all (ajax)", open_all_notifications_path_for(@target), method: :post, remote: true %>
 <ul>
   <div id="notifications">
     <%= render_notification(@notifications, fallback: :default) %>
