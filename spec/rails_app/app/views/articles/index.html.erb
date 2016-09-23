@@ -1,7 +1,6 @@
-<article>
-  <section>
-    <h1>Listing Users</h1>
-    <% User.all.each do |user| %>
+<section>
+  <h1>Listing Users</h1>
+  <% User.all.each do |user| %>
       <div class="list_wrapper">
         <div class="list_image"></div>
         <div class="list_description_wrapper">
@@ -11,12 +10,12 @@
           </p>
         </div>
       </div>
-    <% end %>
-  </section>
+  <% end %>
+</section>
 
-  <section>
-    <h1>Listing Admins</h1>
-    <% Admin.all.each do |admin| %>
+<section>
+  <h1>Listing Admins</h1>
+  <% Admin.all.each do |admin| %>
       <div class="list_wrapper">
         <div class="list_image"></div>
         <div class="list_description_wrapper">
@@ -26,15 +25,15 @@
           </p>
         </div>
       </div>
-    <% end %>
-  </section>
+  <% end %>
+</section>
 
-  <section>
-    <div class="create_button_wrapper">
-      <%= link_to 'New Article', new_article_path, class: "create_button green_button" %>
-    </div>
-    <h1>Listing Articles</h1>
-    <% @articles.each do |article| %>
+<section>
+  <div class="create_button_wrapper">
+    <%= link_to 'New Article', new_article_path, class: "create_button green_button" %>
+  </div>
+  <h1>Listing Articles</h1>
+  <% @articles.each do |article| %>
       <div class="list_wrapper">
         <div class="list_image large"></div>
         <div class="list_description_wrapper">
@@ -52,6 +51,5 @@
           </div>
         </div>
       </div>
-    <% end %>
-  </section>
-</article>
+  <% end %>
+</section>

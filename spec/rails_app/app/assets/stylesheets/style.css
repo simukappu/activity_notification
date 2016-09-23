@@ -37,22 +37,25 @@ header .header_area:after{
     clear: both;
     display: block;
 }
-header .header_area .root_wrapper{
+header .header_area .header_root_wrapper{
     float: left;
 }
-header .header_area .root_wrapper a{
+header .header_area .header_root_wrapper a{
     font-size: 24px;
     letter-spacing: 0.1em;
 }
-header .header_area .session_wrapper{
+header .header_area .header_session_wrapper,
+header .header_area .header_notification_wrapper {
     float: right;
 }
-header .header_area .session_wrapper p{
+header .header_area .header_session_wrapper p,
+header .header_area .header_notification_wrapper p {
     font-size: 14px;
     font-weight: bold;
     height: 24px;
 }
-header .header_area .session_wrapper p a{
+header .header_area .header_session_wrapper p a,
+header .header_area .header_notification_wrapper p a {
     margin-left: 10px;
 }
 
