@@ -1,2 +1,2 @@
 <h1>Notification for <%= "#{@target.class.to_s.underscore} (#{@target.id})" %></h1>
-<%= render_notification(@notification, fallback: "default") %>
+<%= render_notification(@notification, fallback: :default) %>
