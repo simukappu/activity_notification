@@ -1,14 +1,50 @@
-<div>
-  <%= link_to open_all_notifications_path_for(@target), method: :post, remote: true,
-      class: "dropdown-toggle", data: {toggle: "dropdown"} do %>
-    <div id="notification_count"><%= @target.unopened_notification_count %></div>
-  <% end %>
-
-  <!-- Make this dropdown -->
-  <ul class="dropdown-menu">
-    <div id="notification_index">
-      <p>Notifications</p>
-      <%= yield :notification_index %>
-    </div>
-  </ul>
+<div class="notification_wrapper">
+  <a class="dropdown_notification">
+    <p>Notifications · <%= @target.unopened_notification_count %></p>
+  </a>
+  <div class="notification_list_wrapper">
+    <%= yield :notification_index %>
+  </div>
 </div>
+
+<style>
+  .notification_wrapper {
+    margin-left: 20px;
+    margin-right: 10px;
+    float: left;
+    position: relative;
+  }
+  .notification_wrapper .dropdown_notification{
+    cursor: pointer;
+  }
+  .notification_wrapper.open .notification_list_wrapper {
+    display: block;
+  }
+  .notification_wrapper .notification_list_wrapper {
+    display: none;
+    z-index: 999;
+    width: 330px;
+    height: 500px;
+    overflow: scroll;
+    border: 1px solid #e5e5e5;
+    position: absolute;
+    right: -10px;
+    background-color: #fff;
+  }
+</style>
+
+<script>
+  $(document).click(function(e){
+      if( !$(e.target).is(".notification_list_wrapper") ){
+        if($(".notification_wrapper").hasClass("open") && !$(".notification_wrapper").hasClass("opened")){
+          $(".notification_wrapper").addClass("opened");
+        }else if($(".notification_wrapper").hasClass("opened")){
+          $(".notification_wrapper").removeClass("open").removeClass("opened");
+        }
+      }
+  });
+
+  $(".dropdown_notification").click(function(){
+    $(this).parent().toggleClass("open");
+  });
+</script>
