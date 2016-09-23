@@ -6,7 +6,7 @@ class Comment < ActiveRecord::Base
 
   acts_as_notifiable :users,
     targets: ->(comment, key) {
-      (comment.article.commented_users.to_a - [comment.user] + [comment.article.user]).uniq
+      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
     },
     group: :article,
     notifier: :user,
@@ -16,5 +16,9 @@ class Comment < ActiveRecord::Base
 
   def article_notifiable_path
     article_path(article)
+  end
+
+  def printable_name
+    "comment - \"#{body}\""
   end
 end

@@ -8,7 +8,7 @@ Admin.delete_all
 User.delete_all
 User.connection.execute("UPDATE sqlite_sequence SET seq = 0;")
 
-['ichiro', 'stephen', 'klay'].each do |name|
+['ichiro', 'stephen', 'klay', 'kevin'].each do |name|
   user = User.new(
     email:                 "#{name}@example.com",
     password:              'changeit',
@@ -36,7 +36,7 @@ Article.all.each do |article|
   User.all.each do |user|
     comment = article.comments.create(
       user: user,
-      body:  "This is the first #{user.name}'s comment for #{article.user.name}'s article."
+      body:  "This is the first #{user.name}'s comment to #{article.user.name}'s article."
     )
     comment.notify :users, send_email: false
   end

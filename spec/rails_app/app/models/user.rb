@@ -5,4 +5,8 @@ class User < ActiveRecord::Base
   has_many :comments, through: :articles, dependent: :delete_all
 
   acts_as_target email: :email, email_allowed: :confirmed_at
+
+  def printable_name
+    name
+  end
 end

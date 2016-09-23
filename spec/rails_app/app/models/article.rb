@@ -8,4 +8,8 @@ class Article < ActiveRecord::Base
     targets: ->(article, key) { User.all.to_a - [article.user] },
     notifier: :user,
     email_allowed: true
+
+  def printable_name
+    "article - \"#{title}\""
+  end
 end
