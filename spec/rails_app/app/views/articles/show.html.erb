@@ -14,17 +14,6 @@
     </div>
   </div>
   <h2>Listing Comments</h2>
-  <%= form_for(@comment) do |f| %>
-    <%= f.hidden_field :article_id, value: @article.id %>
-      <div class="textarea_wrapper">
-        <%= f.text_area :body, placeholder: "Write a comment..." %>
-      </div>
-      <div class="submit_button_wrapper">
-        <button class="green_button" type="submit">
-          Create Comment
-        </button>
-    </div>
-  <% end %>
   <% @article.comments.each do |comment| %>
     <div class="list_wrapper">
       <div class="list_image"></div>
@@ -38,6 +27,19 @@
         </div>
       </div>
     </div>
+  <% end %>
+  <% if user_signed_in? %>
+    <%= form_for(@comment) do |f| %>
+      <%= f.hidden_field :article_id, value: @article.id %>
+        <div class="textarea_wrapper">
+          <%= f.text_area :body, placeholder: "Write a comment..." %>
+        </div>
+        <div class="submit_button_wrapper">
+          <button class="green_button" type="submit">
+            Create Comment
+          </button>
+      </div>
+    <% end %>
   <% end %>
   <div class="left_button_wrapper">
     <%= link_to 'Back', articles_path, class: "gray_button" %>
