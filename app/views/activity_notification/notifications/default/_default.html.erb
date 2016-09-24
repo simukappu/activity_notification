@@ -1,53 +1,45 @@
+<% content_for :notification_content, flush: true do %>
+  <li class="notification_list <%= notification.opened? ? "opened" : "unopened" %>">
+    <div class="list_image"></div>
+    <div class="list_text_wrapper">
+      <p class="list_text">
+        <strong><%= notification.notifier.present? ? notification.notifier.printable_name : 'Someone' %></strong>
+        <% if notification.group_member_notifier_exists? %>
+          <%= " and #{notification.group_member_notifier_count} other" %>
+          <%= notification.notifier.present? ? notification.notifier.printable_type.pluralize.downcase : 'people' %>
+        <% end %>
+        notified you of
+        <% if notification.group_member_exists? %>
+          <%= " #{notification.group_notification_count} #{notification.notifiable.printable_type.pluralize.downcase} including" %>
+        <% end %>
+          <%= notification.notifiable.printable_name %>
+        <%= "in #{notification.group.printable_name}" if notification.group.present? %>
+        <br>
+        <span><%= notification.created_at.strftime("%b %d %H:%M") %></span>
+      </p>
+    </div>
+  </li>
+<% end %>
+
 <% if notification.unopened? %>
   <%= link_to open_notification_path_for(notification, move: true), method: :post do %>
-    <li class="notification_list <%= notification.opened? ? "opened" : "unopened" %>">
-      <div class="list_image"></div>
-      <div class="list_text_wrapper">
-        <p class="list_text">
-          <strong><%= notification.notifier.present? ? notification.notifier.printable_name : 'Someone' %></strong>
-          <% if notification.group_member_exists? %>
-            <%= " and other #{notification.group_member_count} people" %>
-          <% end %>
-          notified you of <%= notification.notifiable.printable_name %>
-          <% if notification.group_member_exists? %>
-            and others
-          <% end %>
-          <%= "in #{notification.group.printable_name}" if notification.group.present? %>
-          <br>
-          <span><%= notification.created_at.strftime("%b %d %H:%M") %></span>
-        </p>
-      </div>
-    </li>
+    <%= yield :notification_content %>
   <% end %>
 <% else %>
   <%= link_to move_notification_path_for(notification) do %>
-    <li class="notification_list <%= notification.opened? ? "opened" : "unopened" %>">
-      <div class="list_image"></div>
-      <div class="list_text_wrapper">
-        <p class="list_text">
-          <strong><%= notification.notifier.present? ? notification.notifier.printable_name : 'Someone' %></strong>
-          <% if notification.group_member_exists? %>
-            <%= " and other #{notification.group_member_count} people" %>
-          <% end %>
-          notified you of <%= notification.notifiable.printable_name %>
-          <%= "in #{notification.group.printable_name}" if notification.group.present? %>
-          <br>
-          <span><%= notification.created_at.strftime("%b %d %H:%M") %></span>
-        </p>
-      </div>
-    </li>
+    <%= yield :notification_content %>
   <% end %>
 <% end %>
 
 <%#= link_to "Move", move_notification_path_for(notification) %>
 <%# if notification.unopened? %>
-    <%#= link_to "Open and move (GET)", move_notification_path_for(notification, open: true) %
-    <%#= link_to "Open and move (POST)", open_notification_path_for(notification, move: true), method: :post %>
-    <%#= link_to "Open", open_notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :post %>
-    <%#= link_to "Open (Ajax)", open_notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :post, remote: true %>
-    <%#= link_to "Destroy", notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :delete %>
-    <%#= link_to "Destroy (Ajax)", notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :delete, remote: true %>
+  <%#= link_to "Open and move (GET)", move_notification_path_for(notification, open: true) %
+  <%#= link_to "Open and move (POST)", open_notification_path_for(notification, move: true), method: :post %>
+  <%#= link_to "Open", open_notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :post %>
+  <%#= link_to "Open (Ajax)", open_notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :post, remote: true %>
 <%# end %>
+<%#= link_to "Destroy", notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :delete %>
+<%#= link_to "Destroy (Ajax)", notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :delete, remote: true %>
 
 <style>
   /* list */

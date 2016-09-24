@@ -202,6 +202,17 @@ module ActivityNotification
       group_member_count(limit) > 0
     end
 
+    # Returns if group member notifier except group owner notifier exists.
+    # It always returns false if group owner notifier is blank.
+    # It counts only the member notifier of the same type with group owner notifier.
+    # This method is designed to cache group by query result to avoid N+1 call.
+    #
+    # @param [Integer] limit Limit to query for opened notifications
+    # @return [Boolean] If group member of the notification exists
+    def group_member_notifier_exists?(limit = ActivityNotification.config.opened_limit)
+      group_member_notifier_count(limit) > 0
+    end
+
     # Returns count of group members of the notification.
     # This method is designed to cache group by query result to avoid N+1 call.
     #
@@ -212,6 +223,40 @@ module ActivityNotification
       notification.opened? ?
         notification.opened_group_member_count(limit) :
         notification.unopened_group_member_count
+    end
+
+    # Returns count of group notifications including owner and members.
+    # This method is designed to cache group by query result to avoid N+1 call.
+    #
+    # @param [Integer] limit Limit to query for opened notifications
+    # @return [Integer] Count of group notifications including owner and members
+    def group_notification_count(limit = ActivityNotification.config.opened_limit)
+      group_member_count(limit) + 1
+    end
+
+    # Returns count of group member notifiers of the notification not including group owner notifier.
+    # It always returns 0 if group owner notifier is blank.
+    # It counts only the member notifier of the same type with group owner notifier.
+    # This method is designed to cache group by query result to avoid N+1 call.
+    #
+    # @param [Integer] limit Limit to query for opened notifications
+    # @return [Integer] Count of group member notifiers of the notification
+    def group_member_notifier_count(limit = ActivityNotification.config.opened_limit)
+      notification = group_member? ? group_owner : self
+      notification.opened? ?
+        notification.opened_group_member_notifier_count(limit) :
+        notification.unopened_group_member_notifier_count
+    end
+
+    # Returns count of group member notifiers including group owner notifier.
+    # It always returns 0 if group owner notifier is blank.
+    # This method is designed to cache group by query result to avoid N+1 call.
+    #
+    # @param [Integer] limit Limit to query for opened notifications
+    # @return [Integer] Count of group notifications including owner and members
+    def group_notifier_count(limit = ActivityNotification.config.opened_limit)
+      notification = group_member? ? group_owner : self
+      notification.notifier.present? ? group_member_notifier_count(limit) + 1 : 0
     end
 
     # Returns notifiable_path to move after opening notification with notifiable.notifiable_path.
@@ -237,7 +282,7 @@ module ActivityNotification
                                              .count
         unopened_group_member_counts[id] || 0
       end
-    
+
       # Returns count of group members of the opened notification.
       # This method is designed to cache group by query result to avoid N+1 call.
       # @api protected
@@ -250,6 +295,42 @@ module ActivityNotification
                                              .group(:group_owner_id)
                                              .count
         opened_group_member_counts[id] || 0
+      end
+
+      # Returns count of group member notifiers of the unopened notification not including group owner notifier.
+      # This method is designed to cache group by query result to avoid N+1 call.
+      # @api protected
+      #
+      # @return [Integer] Count of group member notifiers of the unopened notification
+      def unopened_group_member_notifier_count
+        # Cache group by query result to avoid N+1 call
+        unopened_group_member_notifier_counts = target.notifications
+                                                      .unopened_index_group_members_only
+                                                      .includes(:group_owner)
+                                                      .where('group_owners_notifications.notifier_type = notifications.notifier_type')
+                                                      .where.not('group_owners_notifications.notifier_id = notifications.notifier_id')
+                                                      .references(:group_owner)
+                                                      .group(:group_owner_id, :notifier_type)
+                                                      .count('distinct notifications.notifier_id')
+        unopened_group_member_notifier_counts[[id, notifier_type]] || 0
+      end
+
+      # Returns count of group member notifiers of the opened notification not including group owner notifier.
+      # This method is designed to cache group by query result to avoid N+1 call.
+      # @api protected
+      #
+      # @return [Integer] Count of group member notifiers of the opened notification
+      def opened_group_member_notifier_count(limit = ActivityNotification.config.opened_limit)
+        # Cache group by query result to avoid N+1 call
+        opened_group_member_notifier_counts   = target.notifications
+                                                      .opened_index_group_members_only(limit)
+                                                      .includes(:group_owner)
+                                                      .where('group_owners_notifications.notifier_type = notifications.notifier_type')
+                                                      .where.not('group_owners_notifications.notifier_id = notifications.notifier_id')
+                                                      .references(:group_owner)
+                                                      .group(:group_owner_id, :notifier_type)
+                                                      .count('distinct notifications.notifier_id')
+        opened_group_member_notifier_counts[[id, notifier_type]] || 0
       end
 
   end

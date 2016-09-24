@@ -10,6 +10,6 @@ class Article < ActiveRecord::Base
     email_allowed: true
 
   def printable_name
-    "article - \"#{title}\""
+    "article \"#{title}\""
   end
 end

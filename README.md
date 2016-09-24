@@ -47,7 +47,7 @@
 * Notification API (creating notifications, query for notifications and managing notification parameters)
 * Notification controllers (managing open/unopen of notifications, link to notifiable activity page)
 * Notification views (presentation of notifications)
-* Grouping notifications (grouping like `"Tom and other 7 people posted comments to this article"`)
+* Grouping notifications (grouping like `"Kevin and 7 other users posted comments to this article"`)
 * Email notification
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
 
@@ -361,7 +361,7 @@ notification:
       post:
         text: "<p>%{notifier_name} posted comments to your article %{article_title}</p>"
       reply:
-        text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
+        text: "<p>%{notifier_name} and %{group_member_count} other users replied for your comments</p>"
   admin:
     article:
       post:
@@ -436,7 +436,7 @@ notification:
   user:
     comment:
       reply:
-        text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
+        text: "<p>%{notifier_name} and %{group_member_count} other users replied for your comments</p>"
         mail_subject: 'New comment to your article'
 ```
 
@@ -461,14 +461,14 @@ end
 And you can render them in a view like this:
 ```erb
 <% if notification.group_member_exists? %>
-  <%= "#{notification.notifier.name} and other #{notification.group_member_count} people" %>
+  <%= "#{notification.notifier.name} and #{notification.group_member_count} other users" %>
 <% else %>
   <%= "#{notification.notifier.name}" %>
 <% end %>
 <%= "posted comments to your article \"#{notification.group.title}\"" %>
 ```
 
-This presentation will be shown to target users as `Tom and other 7 people posted comments to your article "Let's use Ruby"`.
+This presentation will be shown to target users as `Kevin and 7 other users posted comments to your article "Let's use Ruby"`.
 
 You can also use `%{group_member_count}` in i18n text as a field:
 
@@ -477,11 +477,11 @@ notification:
   user:
     comment:
       reply:
-        text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
+        text: "<p>%{notifier_name} and %{group_member_count} other users replied for your comments</p>"
         mail_subject: 'New comment to your article'
 ```
 
-Then, you will see `Tom and 7 people replied for your comments"`.
+Then, you will see `Kevin and 7 other users replied for your comments"`.
 
 ### Integration with Devise
 
@@ -590,6 +590,8 @@ $ git pull https://github.com/simukappu/activity_notification.git
 $ cd activity_notification
 $ bundle install —path vendor/bundle
 $ bundle exec rspec
+  - or -
+$ bundle exec rake
 ```
 
 #### Dummy Rails application

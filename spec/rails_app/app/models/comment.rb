@@ -19,6 +19,6 @@ class Comment < ActiveRecord::Base
   end
 
   def printable_name
-    "comment - \"#{body}\""
+    "comment \"#{body}\""
   end
 end

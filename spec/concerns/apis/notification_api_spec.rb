@@ -615,11 +615,97 @@ shared_examples_for :notification_api do
       end
     end
 
-    describe "#group_member_count" do
+    # Returns if group member notifier except group owner notifier exists.
+    # It always returns false if group owner notifier is blank.
+    # It counts only the member notifier of the same type with group owner notifier.
+    describe "#group_member_notifier_exists?" do
+      context "with notifier" do
+        before do
+          test_instance.update(notifier: create(:user))
+        end
+
+        context "when the notification is group owner and has no group members" do
+          it "returns false" do
+            expect(test_instance.group_member_notifier_exists?).to be_falsey
+          end
+        end
+
+        context "when the notification is group owner and has group members with the same notifier with the owner's" do
+          it "returns false" do
+            create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+            expect(test_instance.group_member_notifier_exists?).to be_falsey
+          end
+        end
+
+        context "when the notification is group owner and has group members with different notifier from the owner's" do
+          it "returns true" do
+            create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+            expect(test_instance.group_member_notifier_exists?).to be_truthy
+          end
+        end
+
+        context "when the notification belongs to group and has group members with the same notifier with the owner's" do
+          it "returns false" do
+            group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+            expect(group_member.group_member_notifier_exists?).to be_falsey
+          end
+        end
+
+        context "when the notification belongs to group and has group members with different notifier from the owner's" do
+          it "returns true" do
+            group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+            expect(group_member.group_member_notifier_exists?).to be_truthy
+          end
+        end
+      end
+
+      context "without notifier" do
+        before do
+          test_instance.update(notifier: nil)
+        end
+
+        context "when the notification is group owner and has no group members" do
+          it "returns false" do
+            expect(test_instance.group_member_notifier_exists?).to be_falsey
+          end
+        end
+
+        context "when the notification is group owner and has group members without notifier" do
+          it "returns false" do
+            create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: nil)
+            expect(test_instance.group_member_notifier_exists?).to be_falsey
+          end
+        end
+
+        context "when the notification is group owner and has group members with notifier" do
+          it "returns false" do
+            create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+            expect(test_instance.group_member_notifier_exists?).to be_falsey
+          end
+        end
+
+        context "when the notification belongs to group and has group members without notifier" do
+          it "returns false" do
+            group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: nil)
+            expect(group_member.group_member_notifier_exists?).to be_falsey
+          end
+        end
+
+        context "when the notification belongs to group and has group members with notifier" do
+          it "returns false" do
+            group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+            expect(group_member.group_member_notifier_exists?).to be_falsey
+          end
+        end
+      end
+    end
+
+    describe "#group_member_count (with #group_notification_count)" do
       context "for unopened notification" do
         context "when the notification is group owner and has no group members" do
           it "returns 0" do
             expect(test_instance.group_member_count).to eq(0)
+            expect(test_instance.group_notification_count).to eq(1)
           end
         end
 
@@ -628,6 +714,7 @@ shared_examples_for :notification_api do
             create(test_class_name, target: test_instance.target, group_owner: test_instance)
             create(test_class_name, target: test_instance.target, group_owner: test_instance)
             expect(test_instance.group_member_count).to eq(2)
+            expect(test_instance.group_notification_count).to eq(3)
           end
         end
 
@@ -636,6 +723,7 @@ shared_examples_for :notification_api do
             group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance)
                            create(test_class_name, target: test_instance.target, group_owner: test_instance)
             expect(group_member.group_member_count).to eq(2)
+            expect(group_member.group_notification_count).to eq(3)
           end
         end
       end
@@ -645,6 +733,7 @@ shared_examples_for :notification_api do
           it "returns 0" do
             test_instance.open!
             expect(test_instance.group_member_count).to eq(0)
+            expect(test_instance.group_notification_count).to eq(1)
           end
         end
 
@@ -655,6 +744,7 @@ shared_examples_for :notification_api do
               create(test_class_name, target: test_instance.target, group_owner: test_instance)
               test_instance.open!
               expect(test_instance.group_member_count).to eq(2)
+              expect(test_instance.group_notification_count).to eq(3)
             end
           end
 
@@ -664,6 +754,7 @@ shared_examples_for :notification_api do
                              create(test_class_name, target: test_instance.target, group_owner: test_instance)
               test_instance.open!
               expect(group_member.group_member_count).to eq(2)
+              expect(group_member.group_notification_count).to eq(3)
             end
           end
         end
@@ -675,6 +766,7 @@ shared_examples_for :notification_api do
               create(test_class_name, target: test_instance.target, group_owner: test_instance)
               test_instance.open!
               expect(test_instance.group_member_count(0)).to eq(0)
+              expect(test_instance.group_notification_count(0)).to eq(1)
             end
           end
 
@@ -684,6 +776,259 @@ shared_examples_for :notification_api do
                              create(test_class_name, target: test_instance.target, group_owner: test_instance)
               test_instance.open!
               expect(group_member.group_member_count(0)).to eq(0)
+              expect(group_member.group_notification_count(0)).to eq(1)
+            end
+          end
+        end
+      end
+    end
+
+    # Returns count of group member notifiers of the notification not including group owner notifier.
+    # It always returns 0 if group owner notifier is blank.
+    # It counts only the member notifier of the same type with group owner notifier.
+    describe "#group_member_notifier_count (with #group_notifier_count)" do
+      context "for unopened notification" do
+        context "with notifier" do
+          before do
+            test_instance.update(notifier: create(:user))
+          end
+
+          context "when the notification is group owner and has no group members" do
+            it "returns 0" do
+              expect(test_instance.group_member_notifier_count).to eq(0)
+              expect(test_instance.group_notifier_count).to eq(1)
+            end
+          end
+
+          context "when the notification is group owner and has group members with the same notifier with the owner's" do
+            it "returns 0" do
+              create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+              create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+              expect(test_instance.group_member_notifier_count).to eq(0)
+              expect(test_instance.group_notifier_count).to eq(1)
+            end
+          end
+
+          context "when the notification is group owner and has group members with different notifier from the owner's" do
+            it "returns member notifier count" do
+              create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+              create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+              expect(test_instance.group_member_notifier_count).to eq(2)
+              expect(test_instance.group_notifier_count).to eq(3)
+            end
+
+            it "returns member notifier count with selecting distinct notifier" do
+              group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                             create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: group_member.notifier)
+              expect(test_instance.group_member_notifier_count).to eq(1)
+              expect(test_instance.group_notifier_count).to eq(2)
+            end
+          end
+
+          context "when the notification belongs to group and has group members with the same notifier with the owner's" do
+            it "returns 0" do
+              group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+                             create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+              expect(group_member.group_member_notifier_count).to eq(0)
+              expect(group_member.group_notifier_count).to eq(1)
+            end
+          end
+
+          context "when the notification belongs to group and has group members with different notifier from the owner's" do
+            it "returns member notifier count" do
+              group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                             create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+              expect(group_member.group_member_notifier_count).to eq(2)
+              expect(group_member.group_notifier_count).to eq(3)
+            end
+
+            it "returns member notifier count with selecting distinct notifier" do
+              group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                             create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: group_member.notifier)
+              expect(group_member.group_member_notifier_count).to eq(1)
+              expect(group_member.group_notifier_count).to eq(2)
+            end
+          end
+        end
+
+        context "without notifier" do
+          before do
+            test_instance.update(notifier: nil)
+          end
+
+          context "when the notification is group owner and has no group members" do
+            it "returns 0" do
+              expect(test_instance.group_member_notifier_count).to eq(0)
+              expect(test_instance.group_notifier_count).to eq(0)
+            end
+          end
+
+          context "when the notification is group owner and has group members with the same notifier with the owner's" do
+            it "returns 0" do
+              create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+              create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+              expect(test_instance.group_member_notifier_count).to eq(0)
+              expect(test_instance.group_notifier_count).to eq(0)
+            end
+          end
+
+          context "when the notification is group owner and has group members with different notifier from the owner's" do
+            it "returns 0" do
+              create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+              create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+              expect(test_instance.group_member_notifier_count).to eq(0)
+              expect(test_instance.group_notifier_count).to eq(0)
+            end
+          end
+
+          context "when the notification belongs to group and has group members with the same notifier with the owner's" do
+            it "returns 0" do
+              group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+                             create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+              expect(group_member.group_member_notifier_count).to eq(0)
+              expect(group_member.group_notifier_count).to eq(0)
+            end
+          end
+
+          context "when the notification belongs to group and has group members with different notifier from the owner's" do
+            it "returns 0" do
+              group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                             create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+              expect(group_member.group_member_notifier_count).to eq(0)
+              expect(group_member.group_notifier_count).to eq(0)
+            end
+          end
+        end
+      end
+
+      context "for opened notification" do
+        context "as default" do
+          context "with notifier" do
+            before do
+              test_instance.update(notifier: create(:user))
+            end
+
+            context "when the notification is group owner and has group members with the same notifier with the owner's" do
+              it "returns 0" do
+                create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+                create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+                test_instance.open!
+                expect(test_instance.group_member_notifier_count).to eq(0)
+              end
+            end
+
+            context "when the notification is group owner and has group members with different notifier from the owner's" do
+              it "returns member notifier count" do
+                create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                test_instance.open!
+                expect(test_instance.group_member_notifier_count).to eq(2)
+              end
+
+              it "returns member notifier count with selecting distinct notifier" do
+                group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                               create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: group_member.notifier)
+                test_instance.open!
+                expect(test_instance.group_member_notifier_count).to eq(1)
+              end
+            end
+
+            context "when the notification belongs to group and has group members with the same notifier with the owner's" do
+              it "returns 0" do
+                group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+                               create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+                test_instance.open!
+                expect(group_member.group_member_notifier_count).to eq(0)
+              end
+            end
+
+            context "when the notification belongs to group and has group members with different notifier from the owner's" do
+              it "returns member notifier count" do
+                group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                               create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                test_instance.open!
+                expect(group_member.group_member_notifier_count).to eq(2)
+              end
+
+              it "returns member notifier count with selecting distinct notifier" do
+                group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                               create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: group_member.notifier)
+                test_instance.open!
+                expect(group_member.group_member_notifier_count).to eq(1)
+              end
+            end
+          end
+
+          context "without notifier" do
+            before do
+              test_instance.update(notifier: nil)
+            end
+
+            context "when the notification is group owner and has no group members" do
+              it "returns 0" do
+                test_instance.open!
+                expect(test_instance.group_member_notifier_count).to eq(0)
+              end
+            end
+
+            context "when the notification is group owner and has group members with the same notifier with the owner's" do
+              it "returns 0" do
+                create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+                create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+                test_instance.open!
+                expect(test_instance.group_member_notifier_count).to eq(0)
+              end
+            end
+
+            context "when the notification is group owner and has group members with different notifier from the owner's" do
+              it "returns 0" do
+                create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                test_instance.open!
+                expect(test_instance.group_member_notifier_count).to eq(0)
+              end
+            end
+
+            context "when the notification belongs to group and has group members with the same notifier with the owner's" do
+              it "returns 0" do
+                group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+                               create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: test_instance.notifier)
+                test_instance.open!
+                expect(group_member.group_member_notifier_count).to eq(0)
+              end
+            end
+
+            context "when the notification belongs to group and has group members with different notifier from the owner's" do
+              it "returns 0" do
+                group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                               create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                test_instance.open!
+                expect(group_member.group_member_notifier_count).to eq(0)
+              end
+            end
+          end
+        end
+
+        context "with limit" do
+          before do
+            test_instance.update(notifier: create(:user))
+          end
+
+          context "when the notification is group owner and has group members with different notifier from the owner's" do
+            it "returns member notifier count by limit" do
+              create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+              create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+              test_instance.open!
+              expect(test_instance.group_member_notifier_count(0)).to eq(0)
+            end
+          end
+
+          context "when the notification belongs to group and has group members with different notifier from the owner's" do
+            it "returns member count by limit" do
+              group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+                             create(test_class_name, target: test_instance.target, group_owner: test_instance, notifier: create(:user))
+              test_instance.open!
+              expect(group_member.group_member_notifier_count(0)).to eq(0)
             end
           end
         end
@@ -710,6 +1055,20 @@ shared_examples_for :notification_api do
       it "is defined as protected method" do
         expect(test_instance.respond_to?(:opened_group_member_count)).to       be_falsey
         expect(test_instance.respond_to?(:opened_group_member_count, true)).to be_truthy
+      end
+    end
+
+    describe "#unopened_group_member_notifier_count" do
+      it "is defined as protected method" do
+        expect(test_instance.respond_to?(:unopened_group_member_notifier_count)).to       be_falsey
+        expect(test_instance.respond_to?(:unopened_group_member_notifier_count, true)).to be_truthy
+      end
+    end
+
+    describe "#opened_group_member_notifier_count" do
+      it "is defined as protected method" do
+        expect(test_instance.respond_to?(:opened_group_member_notifier_count)).to       be_falsey
+        expect(test_instance.respond_to?(:opened_group_member_notifier_count, true)).to be_truthy
       end
     end
   end
