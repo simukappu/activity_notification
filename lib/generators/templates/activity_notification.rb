@@ -23,6 +23,6 @@ ActivityNotification.configure do |config|
   # config.parent_mailer = 'ActionMailer::Base'
 
   # Configure default limit number of opened notifications you can get from opened* scope
-  config.opened_limit = 10
+  config.opened_index_limit = 10
 
 end

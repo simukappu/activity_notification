@@ -30,14 +30,14 @@ module ActivityNotification
   # All available options and their defaults are in the example below:
   # @example Initializer for Rails
   #   ActivityNotification.configure do |config|
-  #     config.enabled           = true
-  #     config.table_name        = "notifications"
-  #     config.email_enabled     = false
-  #     config.mailer_sender     = nil
-  #     config.mailer            = 'ActivityNotification::Mailer'
-  #     config.parent_mailer     = 'ActionMailer::Base'
-  #     config.parent_controller = 'ApplicationController'
-  #     config.opened_limit      = 10
+  #     config.enabled            = true
+  #     config.table_name         = "notifications"
+  #     config.email_enabled      = false
+  #     config.mailer_sender      = nil
+  #     config.mailer             = 'ActivityNotification::Mailer'
+  #     config.parent_mailer      = 'ActionMailer::Base'
+  #     config.parent_controller  = 'ApplicationController'
+  #     config.opened_index_limit = 10
   #   end
   def self.configure(&block)
     yield(config) if block_given?

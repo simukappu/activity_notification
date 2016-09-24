@@ -198,7 +198,7 @@ module ActivityNotification
     #
     # @param [Integer] limit Limit to query for opened notifications
     # @return [Boolean] If group member of the notification exists
-    def group_member_exists?(limit = ActivityNotification.config.opened_limit)
+    def group_member_exists?(limit = ActivityNotification.config.opened_index_limit)
       group_member_count(limit) > 0
     end
 
@@ -209,7 +209,7 @@ module ActivityNotification
     #
     # @param [Integer] limit Limit to query for opened notifications
     # @return [Boolean] If group member of the notification exists
-    def group_member_notifier_exists?(limit = ActivityNotification.config.opened_limit)
+    def group_member_notifier_exists?(limit = ActivityNotification.config.opened_index_limit)
       group_member_notifier_count(limit) > 0
     end
 
@@ -218,7 +218,7 @@ module ActivityNotification
     #
     # @param [Integer] limit Limit to query for opened notifications
     # @return [Integer] Count of group members of the notification
-    def group_member_count(limit = ActivityNotification.config.opened_limit)
+    def group_member_count(limit = ActivityNotification.config.opened_index_limit)
       notification = group_member? ? group_owner : self
       notification.opened? ?
         notification.opened_group_member_count(limit) :
@@ -230,7 +230,7 @@ module ActivityNotification
     #
     # @param [Integer] limit Limit to query for opened notifications
     # @return [Integer] Count of group notifications including owner and members
-    def group_notification_count(limit = ActivityNotification.config.opened_limit)
+    def group_notification_count(limit = ActivityNotification.config.opened_index_limit)
       group_member_count(limit) + 1
     end
 
@@ -241,7 +241,7 @@ module ActivityNotification
     #
     # @param [Integer] limit Limit to query for opened notifications
     # @return [Integer] Count of group member notifiers of the notification
-    def group_member_notifier_count(limit = ActivityNotification.config.opened_limit)
+    def group_member_notifier_count(limit = ActivityNotification.config.opened_index_limit)
       notification = group_member? ? group_owner : self
       notification.opened? ?
         notification.opened_group_member_notifier_count(limit) :
@@ -254,7 +254,7 @@ module ActivityNotification
     #
     # @param [Integer] limit Limit to query for opened notifications
     # @return [Integer] Count of group notifications including owner and members
-    def group_notifier_count(limit = ActivityNotification.config.opened_limit)
+    def group_notifier_count(limit = ActivityNotification.config.opened_index_limit)
       notification = group_member? ? group_owner : self
       notification.notifier.present? ? group_member_notifier_count(limit) + 1 : 0
     end
@@ -288,7 +288,7 @@ module ActivityNotification
       # @api protected
       #
       # @return [Integer] Count of group members of the opened notification
-      def opened_group_member_count(limit = ActivityNotification.config.opened_limit)
+      def opened_group_member_count(limit = ActivityNotification.config.opened_index_limit)
         # Cache group by query result to avoid N+1 call
         opened_group_member_counts   = target.notifications
                                              .opened_index_group_members_only(limit)
@@ -320,7 +320,7 @@ module ActivityNotification
       # @api protected
       #
       # @return [Integer] Count of group member notifiers of the opened notification
-      def opened_group_member_notifier_count(limit = ActivityNotification.config.opened_limit)
+      def opened_group_member_notifier_count(limit = ActivityNotification.config.opened_index_limit)
         # Cache group by query result to avoid N+1 call
         opened_group_member_notifier_counts   = target.notifications
                                                       .opened_index_group_members_only(limit)

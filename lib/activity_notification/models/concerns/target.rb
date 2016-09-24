@@ -122,7 +122,7 @@ module ActivityNotification
     #
     # @param [Integer] limit Limit to query for notifications
     # @return [Array<Notificaion>] Opened notification index of the target
-    def opened_notification_index(limit = ActivityNotification.config.opened_limit)
+    def opened_notification_index(limit = ActivityNotification.config.opened_index_limit)
       notifications.opened_index(limit)
     end
 
@@ -193,7 +193,7 @@ module ActivityNotification
     #
     # @param [Integer] limit Limit to query for notifications
     # @return [Array<Notificaion>] Opened notification index of the target with attributes
-    def opened_notification_index_with_attributes(limit = ActivityNotification.config.opened_limit)
+    def opened_notification_index_with_attributes(limit = ActivityNotification.config.opened_index_limit)
       include_attributes opened_notification_index(limit)
     end
 

@@ -330,12 +330,12 @@ shared_examples_for :target do
         end
 
         context "without limit" do
-          it "uses ActivityNotification.config.opened_limit as limit" do
-            configured_opened_limit = ActivityNotification.config.opened_limit
-            ActivityNotification.config.opened_limit = 1
+          it "uses ActivityNotification.config.opened_index_limit as limit" do
+            configured_opened_index_limit = ActivityNotification.config.opened_index_limit
+            ActivityNotification.config.opened_index_limit = 1
             expect(test_instance.opened_notification_index(1).size).to eq(1)
             expect(test_instance.opened_notification_index(1).first).to eq(@notification_2)
-            ActivityNotification.config.opened_limit = configured_opened_limit
+            ActivityNotification.config.opened_index_limit = configured_opened_index_limit
           end
 
           it "returns opened notification index" do

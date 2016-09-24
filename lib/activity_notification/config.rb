@@ -57,26 +57,26 @@ module ActivityNotification
     #   @return [String] Base controller class for notifications_controller.
     attr_accessor :parent_controller
 
-    # @overload opened_limit
+    # @overload opened_index_limit
     #   @return [Integer] Default limit to query for opened notifications.
-    # @overload opened_limit=(value)
-    #   Sets the opened_limit
-    #   @param [Integer] opened_limit The new opened_limit
+    # @overload opened_index_limit=(value)
+    #   Sets the opened_index_limit
+    #   @param [Integer] opened_index_limit The new opened_index_limit
     #   @return [Integer] Default limit to query for opened notifications.
-    attr_accessor :opened_limit
+    attr_accessor :opened_index_limit
 
     # Initialize configuration for ActivityNotification.
     # These configuration can be overriden in initializer.
     # @return [Config] A new instance of Config
     def initialize
-      @enabled           = true
-      @table_name        = 'notifications'
-      @email_enabled     = false
-      @mailer_sender     = nil
-      @mailer            = 'ActivityNotification::Mailer'
-      @parent_mailer     = 'ActionMailer::Base'
-      @parent_controller = 'ApplicationController'
-      @opened_limit      = 10
+      @enabled            = true
+      @table_name         = 'notifications'
+      @email_enabled      = false
+      @mailer_sender      = nil
+      @mailer             = 'ActivityNotification::Mailer'
+      @parent_mailer      = 'ActionMailer::Base'
+      @parent_controller  = 'ApplicationController'
+      @opened_index_limit = 10
     end
 
   end
