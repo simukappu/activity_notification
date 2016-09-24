@@ -145,6 +145,42 @@ shared_examples_for :common do
         end
       end
     end
+
+    describe "#to_class_name" do
+      it "returns resource name" do
+        expect(create(:user).to_class_name).to eq 'User'
+        expect(test_instance.to_class_name).to eq test_instance.class.name
+      end
+    end
+
+    describe "#to_resource_name" do
+      it "returns singularized model name (resource name)" do
+        expect(create(:user).to_resource_name).to eq 'user'
+        expect(test_instance.to_resource_name).to eq test_instance.class.name.demodulize.singularize.underscore
+      end
+    end
+
+    describe "#to_resources_name" do
+      it "returns pluralized model name (resources name)" do
+        expect(create(:user).to_resources_name).to eq 'users'
+        expect(test_instance.to_resources_name).to eq test_instance.class.name.demodulize.pluralize.underscore
+      end
+    end
+
+    describe "#printable_type" do
+      it "returns printable model type name to be humanized" do
+        expect(create(:user).printable_type).to eq 'User'
+        expect(test_instance.printable_type).to eq test_instance.class.name.demodulize.humanize
+      end
+    end
+
+    describe "#printable_name" do
+      it "returns printable model name to show in view or email" do
+        user = create(:user)
+        expect(user.printable_name).to eq "User (#{user.id})"
+        expect(test_instance.printable_name).to eq "#{test_instance.printable_type} (#{test_instance.id})"
+      end
+    end
   end
 
 end

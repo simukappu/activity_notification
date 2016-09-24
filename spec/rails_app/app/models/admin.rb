@@ -4,9 +4,6 @@ class Admin < ActiveRecord::Base
 
   acts_as_notification_target email: :email,
     email_allowed: ->(admin, key) { admin.user.confirmed_at.present? },
-    devise_resource: :user
-
-  def printable_name
-    "admin (#{user.name})"
-  end
+    devise_resource: :user,
+    printable_name: ->(admin) { "admin (#{admin.user.name})" }
 end

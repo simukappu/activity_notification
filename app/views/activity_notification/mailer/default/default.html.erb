@@ -1,7 +1,7 @@
 <p>Dear <%= @target.mailer_to %></p>
 
-<p>This is a notification of <%= @notifiable.printable_name %> for you.</p>
+<p>This is a notification of <%= @notifiable.printable_notifiable_name(@target) %> for you.</p>
 
-<p><%= link_to "Move to #{@notifiable.printable_name}", move_notification_url_for(@notification, open: true) %></p>
+<p><%= link_to "Move to notified #{@notifiable.printable_type.downcase}", move_notification_url_for(@notification, open: true) %></p>
 
 <p>Thank you!</p>

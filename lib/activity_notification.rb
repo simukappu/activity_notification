@@ -11,6 +11,7 @@ module ActivityNotification
   autoload :Target,           'activity_notification/models/concerns/target'
   autoload :Notifiable,       'activity_notification/models/concerns/notifiable'
   autoload :Notifier,         'activity_notification/models/concerns/notifier'
+  autoload :Group,            'activity_notification/models/concerns/group'
   autoload :Common
   autoload :Config
   autoload :Renderable

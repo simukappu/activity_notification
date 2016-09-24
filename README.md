@@ -435,8 +435,8 @@ The subject of notification email can be put in your locale `.yml` files as `mai
 notification:
   user:
     comment:
-      reply:
-        text: "<p>%{notifier_name} and %{group_member_count} other users replied for your comments</p>"
+      post:
+        text: "<p>Someone posted comments to your article</p>"
         mail_subject: 'New comment to your article'
 ```
 
@@ -445,7 +445,16 @@ notification:
 `activity_notification` provides the function for automatically grouping notifications. When you created a notification like this, all *unopened* notifications to the same target will be grouped by `article` set as `:group` options:
 
 ```ruby
-@comment.notify :users key: 'comment.reply', group: @comment.article
+@comment.notify :users key: 'comment.post', group: @comment.article
+```
+
+When you use default notification view, it is helpful to configure `acts_as_notification_group` (or `acts_as_group`) with `printable_name` option to render group instance.
+
+```ruby
+class Article < ActiveRecord::Base
+  belongs_to :user
+  acts_as_notification_group printable_name: ->(article) { "article \"#{article.title}\"" }
+end
 ```
 
 You can use `group_owners_only` scope to filter owner notifications representing each group:
@@ -470,18 +479,18 @@ And you can render them in a view like this:
 
 This presentation will be shown to target users as `Kevin and 7 other users posted comments to your article "Let's use Ruby"`.
 
-You can also use `%{group_member_count}` in i18n text as a field:
+You can also use `%{group_member_count}`, `%{group_notification_count}`, `%{group_member_notifier_count}` and `%{group_notifier_count}` in i18n text as a field:
 
 ```yaml
 notification:
   user:
     comment:
-      reply:
-        text: "<p>%{notifier_name} and %{group_member_count} other users replied for your comments</p>"
+      post:
+        text: "<p>%{notifier_name} and %{group_member_notifier_count} other users posted %{group_notification_count} comments to your article</p>"
         mail_subject: 'New comment to your article'
 ```
 
-Then, you will see `Kevin and 7 other users replied for your comments"`.
+Then, you will see `Kevin and 7 other users replied 10 comments to your article"`.
 
 ### Integration with Devise
 

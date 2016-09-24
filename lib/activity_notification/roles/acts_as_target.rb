@@ -11,6 +11,7 @@ module ActivityNotification
       #   * Email address to send notification email.
       #     This is a necessary option when you enables email notification.
       # @example Simply use :email field
+      #   # app/models/user.rb
       #   class User < ActiveRecord::Base
       #     validates :email, presence: true
       #     acts_as_target email: :email
@@ -23,10 +24,12 @@ module ActivityNotification
       #     To use notification email, email_allowed option must return true (not nil) in both of notifiable and target model.
       #     This can be also configured default option in initializer.
       # @example Always enable email notification for this target
+      #   # app/models/user.rb
       #   class User < ActiveRecord::Base
       #     acts_as_target email: :email, email_allowed: true
       #   end
       # @example Use confirmed_at of devise field to decide whether activity_notification sends notification email to this user
+      #   # app/models/user.rb
       #   class User < ActiveRecord::Base
       #     acts_as_target email: :email, email_allowed: :confirmed_at
       #   end
@@ -65,26 +68,49 @@ module ActivityNotification
       #       devise_resource: :user
       #   end
       #
-      # @param [Symbol] target_type Type of notification target as symbol
+      # * :printable_name or :printable_notification_target_name
+      #   * Printable notification target name.
+      #     This parameter is a optional since `ActivityNotification::Common.printable_name` is used as default value.
+      #     :printable_name is the same option as :printable_notification_target_name
+      # @example Define printable name with user name of name field
+      #   # app/models/user.rb
+      #   class User < ActiveRecord::Base
+      #     acts_as_target printable_name: :name
+      #   end
+      #
+      # @example Define printable name with associated user name
+      #   # app/models/admin.rb
+      #   class Admin < ActiveRecord::Base
+      #     acts_as_target printable_notification_target_name: ->(admin) { "admin (#{admin.user.name})" }
+      #   end
+      #
       # @param [Hash] options Options for notifiable model configuration
-      # @option options [Symbol, Proc, Array]   :email           (nil) Email address to send notification email
-      # @option options [Symbol, Proc, Object]  :email_allowed   (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email to this target
+      # @option options [Symbol, Proc, String]  :email           (nil) Email address to send notification email
+      # @option options [Symbol, Proc, Boolean] :email_allowed   (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email to this target
       # @option options [Symbol, Proc, Object]  :devise_resource (nil) Integrated resource with devise authentication
+      # @option options [Symbol, Proc, String]  :printable_name  (ActivityNotification::Common.printable_name) Printable notification target name
       # @return [Hash] Configured parameters as target model
       def acts_as_target(options = {})
         include Target
-        available_target_options.map { |key|
-          options[key] ?
-            [key, self.send("_notification_#{key}=".to_sym, options.delete(key))] :
-            [nil, nil]
-        }.to_h.delete_if { |k, v| k.nil? }
+        options[:printable_notification_target_name] = options.delete(:printable_name) if options.has_key?(:printable_name)
+        (
+          [:email, :email_allowed, :devise_resource].map { |key|
+            options[key] ?
+              [key, self.send("_notification_#{key}=".to_sym, options.delete(key))] :
+              [nil, nil]
+          }.to_h.merge [:printable_notification_target_name].map { |key|
+            options[key] ?
+              [key, self.send("_#{key}=".to_sym, options.delete(key))] :
+              [nil, nil]
+          }.to_h
+        ).delete_if { |k, _| k.nil? }
       end
       alias_method :acts_as_notification_target, :acts_as_target
 
       # Returns array of available target options in acts_as_target.
       # @return [Array<Symbol>] Array of available target options
       def available_target_options
-        [:email, :email_allowed, :devise_resource].freeze
+        [:email, :email_allowed, :devise_resource, :printable_notification_target_name, :printable_name].freeze
       end
     end
   end

@@ -7,9 +7,7 @@ class Article < ActiveRecord::Base
   acts_as_notifiable :users,
     targets: ->(article, key) { User.all.to_a - [article.user] },
     notifier: :user,
-    email_allowed: true
-
-  def printable_name
-    "article \"#{title}\""
-  end
+    email_allowed: true,
+    printable_name: ->(article) { "new article \"#{article.title}\"" }
+  acts_as_notification_group printable_name: ->(article) { "article \"#{article.title}\"" }
 end

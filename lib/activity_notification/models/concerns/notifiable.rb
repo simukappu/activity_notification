@@ -14,16 +14,17 @@ module ActivityNotification
                        :_notifier,
                        :_notification_parameters,
                        :_notification_email_allowed,
-                       :_notifiable_path
+                       :_notifiable_path,
+                       :_printable_notifiable_name
       set_notifiable_class_defaults
     end
-  
+
     # Returns default_url_options for polymorphic_path.
     # @return [Hash] Rails.application.routes.default_url_options
     def default_url_options
       Rails.application.routes.default_url_options
     end
-    
+
     class_methods do
       # Checks if the model includes notifiable and notifiable methods are available.
       # @return [Boolean] Always true
@@ -40,6 +41,7 @@ module ActivityNotification
         self._notification_parameters     = {}
         self._notification_email_allowed  = {}
         self._notifiable_path             = {}
+        self._printable_notifiable_name   = {}
         nil
       end
     end
@@ -50,7 +52,7 @@ module ActivityNotification
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
     # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of the notification targets
-    def notification_targets(target_type, key)
+    def notification_targets(target_type, key = nil)
       target_typed_method_name = "notification_#{target_type.to_s.to_resources_name}"
       resolved_parameter = resolve_parameter(
         target_typed_method_name,
@@ -70,7 +72,7 @@ module ActivityNotification
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
     # @return [Object] Group owner of the notification
-    def notification_group(target_type, key)
+    def notification_group(target_type, key = nil)
       resolve_parameter(
         "notification_group_for_#{target_type.to_s.to_resources_name}",
         _notification_group[target_type.to_s.to_resources_name.to_sym],
@@ -84,7 +86,7 @@ module ActivityNotification
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
     # @return [Hash] Additional notification parameters
-    def notification_parameters(target_type, key)
+    def notification_parameters(target_type, key = nil)
       resolve_parameter(
         "notification_parameters_for_#{target_type.to_s.to_resources_name}",
         _notification_parameters[target_type.to_s.to_resources_name.to_sym],
@@ -98,7 +100,7 @@ module ActivityNotification
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
     # @return [Object] Notifier of the notification
-    def notifier(target_type, key)
+    def notifier(target_type, key = nil)
       resolve_parameter(
         "notifier_for_#{target_type.to_s.to_resources_name}",
         _notifier[target_type.to_s.to_resources_name.to_sym],
@@ -112,7 +114,7 @@ module ActivityNotification
     # @param [Object] target Target instance to notify
     # @param [String] key Key of the notification
     # @return [Boolean] If sending notification email is allowed for the notifiable
-    def notification_email_allowed?(target, key)
+    def notification_email_allowed?(target, key = nil)
       resolve_parameter(
         "notification_email_allowed_for_#{target.class.to_s.to_resources_name}?",
         _notification_email_allowed[target.class.to_s.to_resources_name.to_sym],
@@ -126,7 +128,7 @@ module ActivityNotification
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
     # @return [String] Notifiable path URL to move after opening notification
-    def notifiable_path(target_type, key)
+    def notifiable_path(target_type, key = nil)
       resolved_parameter = resolve_parameter(
         "notifiable_path_for_#{target_type.to_s.to_resources_name}",
         _notifiable_path[target_type.to_s.to_resources_name.to_sym],
@@ -142,6 +144,16 @@ module ActivityNotification
         end
       end
       resolved_parameter
+    end
+
+    # Returns printable notifiable model name to show in view or email.
+    # @return [String] Printable notifiable model name
+    def printable_notifiable_name(target, key = nil)
+      resolve_parameter(
+        "printable_notifiable_name_for_#{target.class.to_s.to_resources_name}?",
+        _printable_notifiable_name[target.class.to_s.to_resources_name.to_sym],
+        printable_name,
+        target, key)
     end
 
     # overriding_notification_email_key is the method to override key definition for Mailer

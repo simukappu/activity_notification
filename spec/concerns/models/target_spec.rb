@@ -24,8 +24,10 @@ shared_examples_for :target do
     describe ".set_target_class_defaults" do
       it "set parameter fields as default" do
         described_class.set_target_class_defaults
-        expect(described_class._notification_email).to         eq(nil)
-        expect(described_class._notification_email_allowed).to eq(ActivityNotification.config.email_enabled)
+        expect(described_class._notification_email).to                 eq(nil)
+        expect(described_class._notification_email_allowed).to         eq(ActivityNotification.config.email_enabled)
+        expect(described_class._notification_devise_resource).to       be_a_kind_of(Proc)
+        expect(described_class._printable_notification_target_name).to eq(:printable_name)
       end
     end    
   end
@@ -65,7 +67,7 @@ shared_examples_for :target do
           expect(test_instance.mailer_to).to eq('test@example.com')
         end
 
-        it "returns specified lambda with single notifiable argument" do
+        it "returns specified lambda with single target argument" do
           described_class._notification_email = ->(target){ 'test@example.com' }
           expect(test_instance.mailer_to).to eq('test@example.com')
         end
@@ -167,6 +169,42 @@ shared_examples_for :target do
             described_class._notification_devise_resource = test_instance
             expect(test_instance.authenticated_with_devise?(create(test_class_name))).to be_falsey
           end
+        end
+      end
+    end
+
+    describe "#printable_target_name" do
+      context "without any configuration" do
+        it "returns ActivityNotification::Common.printable_name" do
+          expect(test_instance.printable_target_name).to eq(test_instance.printable_name)
+        end
+      end
+
+      context "configured with a field" do
+        it "returns specified value" do
+          described_class._printable_notification_target_name = 'test_printable_name'
+          expect(test_instance.printable_target_name).to eq('test_printable_name')
+        end
+
+        it "returns specified symbol of field" do
+          described_class._printable_notification_target_name = :name
+          expect(test_instance.printable_target_name).to eq(test_instance.name)
+        end
+
+        it "returns specified symbol of method" do
+          module AdditionalMethods
+            def custom_printable_name
+              'test_printable_name'
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._printable_notification_target_name = :custom_printable_name
+          expect(test_instance.printable_target_name).to eq('test_printable_name')
+        end
+
+        it "returns specified lambda with single target argument" do
+          described_class._printable_notification_target_name = ->(target){ 'test_printable_name' }
+          expect(test_instance.printable_target_name).to eq('test_printable_name')
         end
       end
     end

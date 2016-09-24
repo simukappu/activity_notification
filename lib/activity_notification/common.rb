@@ -109,7 +109,6 @@ module ActivityNotification
 
     # Convets to printable model name to show in view or email.
     # @return [String] Printable model name
-    # @todo Is this the best to make readable?
     def printable_name
       "#{self.printable_type} (#{id})"
     end

@@ -12,13 +12,10 @@ class Comment < ActiveRecord::Base
     notifier: :user,
     email_allowed: true,
     parameters: { test_default_param: '1' },
-    notifiable_path: :article_notifiable_path
+    notifiable_path: :article_notifiable_path,
+    printable_name: ->(comment) { "comment \"#{comment.body}\"" }
 
   def article_notifiable_path
     article_path(article)
-  end
-
-  def printable_name
-    "comment \"#{body}\""
   end
 end

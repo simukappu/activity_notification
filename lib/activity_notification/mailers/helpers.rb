@@ -117,7 +117,7 @@ module ActivityNotification
         #           mail_subject: '...'
         #
         # If one does not exist, it fallbacks to default:
-        #   Notification for #{notification.printable_type}
+        #   Notification for #{notification.printable_notifiable_type}
         #
         # @param [String] key Key of the notification
         # @return [String] Subject of notification email
@@ -127,7 +127,7 @@ module ActivityNotification
           k.insert(1, @target.to_resource_name)
           k = k.join('.')
           I18n.t(:mail_subject, scope: k,
-            default: ["Notification of #{@notifiable.printable_type}"])
+            default: ["Notification of #{@notifiable.printable_type.downcase}"])
         end
 
     end

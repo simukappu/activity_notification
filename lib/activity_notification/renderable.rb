@@ -21,7 +21,12 @@ module ActivityNotification
       k.push('text')
       k = k.join('.')
 
-      I18n.t(k, (parameters.merge(params) || {}).merge(group_member_count: group_member_count))
+      I18n.t(k, (parameters.merge(params) || {}).merge(
+        group_member_count:          group_member_count,
+        group_notification_count:    group_notification_count,
+        group_member_notifier_count: group_member_notifier_count,
+        group_notifier_count:        group_notifier_count
+      ))
     end
 
     # Renders notification from views.

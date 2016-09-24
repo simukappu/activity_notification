@@ -21,6 +21,7 @@ shared_examples_for :notifiable do
         expect(described_class._notification_parameters).to    eq({})
         expect(described_class._notification_email_allowed).to eq({})
         expect(described_class._notifiable_path).to            eq({})
+        expect(described_class._printable_notifiable_name).to  eq({})
       end
     end    
   end
@@ -399,6 +400,42 @@ shared_examples_for :notifiable do
         it "returns specified lambda with notifiable and key arguments" do
           described_class._notifiable_path[:users] = ->(notifiable, key){ article_path(1) }
           expect(test_instance.notifiable_path(User, 'dummy_key')).to eq(article_path(1))
+        end
+      end
+    end
+
+    describe "#printable_notifiable_name" do
+      context "without any configuration" do
+        it "returns ActivityNotification::Common.printable_name" do
+          expect(test_instance.printable_notifiable_name(test_target, 'dummy_key')).to eq(test_instance.printable_name)
+        end
+      end
+
+      context "configured with a field" do
+        it "returns specified value" do
+          described_class._printable_notifiable_name[:users] = 'test_printable_name'
+          expect(test_instance.printable_notifiable_name(test_target, 'dummy_key')).to eq('test_printable_name')
+        end
+
+        it "returns specified symbol of field" do
+          described_class._printable_notifiable_name[:users] = :title
+          expect(test_instance.printable_notifiable_name(test_target, 'dummy_key')).to eq(test_instance.title)
+        end
+
+        it "returns specified symbol of method" do
+          module AdditionalMethods
+            def custom_printable_name
+              'test_printable_name'
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._printable_notifiable_name[:users] = :custom_printable_name
+          expect(test_instance.printable_notifiable_name(test_target, 'dummy_key')).to eq('test_printable_name')
+        end
+
+        it "returns specified lambda with single target argument" do
+          described_class._printable_notifiable_name[:users] = ->(target){ 'test_printable_name' }
+          expect(test_instance.printable_notifiable_name(test_target, 'dummy_key')).to eq('test_printable_name')
         end
       end
     end

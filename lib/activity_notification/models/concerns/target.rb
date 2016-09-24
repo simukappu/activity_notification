@@ -12,7 +12,10 @@ module ActivityNotification
         class_name: "::ActivityNotification::Notification",
         as: :target
 
-      class_attribute :_notification_email, :_notification_email_allowed, :_notification_devise_resource
+      class_attribute :_notification_email,
+                      :_notification_email_allowed,
+                      :_notification_devise_resource,
+                      :_printable_notification_target_name
       set_target_class_defaults
     end
 
@@ -26,9 +29,10 @@ module ActivityNotification
       # Sets default values to target class fields.
       # @return [Nil] nil
       def set_target_class_defaults
-        self._notification_email            = nil
-        self._notification_email_allowed    = ActivityNotification.config.email_enabled
-        self._notification_devise_resource  = ->(model) { model }
+        self._notification_email                 = nil
+        self._notification_email_allowed         = ActivityNotification.config.email_enabled
+        self._notification_devise_resource       = ->(model) { model }
+        self._printable_notification_target_name = :printable_name
         nil
       end
     end
@@ -65,6 +69,12 @@ module ActivityNotification
           "You have to override #{self.class}##{__method__} method or set devise_resource in acts_as_target."
       end
       current_resource == devise_resource
+    end
+
+    # Returns printable target model name to show in view or email.
+    # @return [String] Printable target model name
+    def printable_target_name
+      resolve_value(_printable_notification_target_name)
     end
 
     # Returns count of unopened notifications of the target.

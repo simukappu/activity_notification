@@ -29,7 +29,7 @@ describe ActivityNotification::Mailer do
 
         it "sends with default notification subject" do
           expect(ActivityNotification::Mailer.deliveries.last.subject)
-            .to eq("Notification of Article")
+            .to eq("Notification of article")
         end
       end
 
