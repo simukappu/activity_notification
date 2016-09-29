@@ -5,7 +5,7 @@ module ActivityNotification
     include Common
     include NotificationApi
     self.table_name = ActivityNotification.config.table_name
-  
+
     # Belongs to target instance of this notification as polymorphic association.
     # @scope instance
     # @return [Object] Target instance of this notification

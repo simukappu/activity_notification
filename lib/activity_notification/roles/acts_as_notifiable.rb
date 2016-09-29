@@ -101,21 +101,41 @@ module ActivityNotification
       # @example Define printable name with comment body
       #   # app/models/comment.rb
       #   class Comment < ActiveRecord::Base
-      #     acts_as_target :users, targets: User.all, printable_name: ->(comment) { "comment \"#{comment.body}\"" }
+      #     acts_as_notifiable :users, targets: User.all, printable_name: ->(comment) { "comment \"#{comment.body}\"" }
+      #   end
+      #
+      # * :dependent_notifications
+      #   * Dependency for notifications to delete generated notifications with this notifiable.
+      #     This option is used to configure generated_notifications_as_notifiable association.
+      #     You can use :delete_all, :destroy, or :nullify for this option.
+      #     This parameter is a optional since no dependent option is used as default.
+      # @example Define :delete_all dependency to generated notifications
+      #   # app/models/comment.rb
+      #   class Comment < ActiveRecord::Base
+      #     acts_as_notifiable :users, targets: User.all, dependent_notifications: :delete_all
       #   end
       #
       # @param [Symbol] target_type Type of notification target as symbol
       # @param [Hash] options Options for notifiable model configuration
-      # @option options [Symbol, Proc, Array]   :targets         (nil)                    Targets to send notifications
-      # @option options [Symbol, Proc, Object]  :group           (nil)                    Group unit of the notifications
-      # @option options [Symbol, Proc, Object]  :notifier        (nil)                    Notifier of the notifications
-      # @option options [Symbol, Proc, Hash]    :parameters      ({})                     Additional parameters of the notifications
-      # @option options [Symbol, Proc, Boolean] :email_allowed   (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email
-      # @option options [Symbol, Proc, String]  :notifiable_path (polymorphic_path(self)) Path to redirect from open or move action of notification controller
-      # @option options [Symbol, Proc, String]  :printable_name  (ActivityNotification::Common.printable_name) Printable notifiable name
+      # @option options [Symbol, Proc, Array]   :targets                 (nil)                    Targets to send notifications
+      # @option options [Symbol, Proc, Object]  :group                   (nil)                    Group unit of the notifications
+      # @option options [Symbol, Proc, Object]  :notifier                (nil)                    Notifier of the notifications
+      # @option options [Symbol, Proc, Hash]    :parameters              ({})                     Additional parameters of the notifications
+      # @option options [Symbol, Proc, Boolean] :email_allowed           (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email
+      # @option options [Symbol, Proc, String]  :notifiable_path         (polymorphic_path(self)) Path to redirect from open or move action of notification controller
+      # @option options [Symbol, Proc, String]  :printable_name          (ActivityNotification::Common.printable_name) Printable notifiable name
+      # @option options [Symbol, Proc]          :dependent_notifications (nil)                    Dependency for notifications to delete generated notifications with this notifiable
       # @return [Hash] Configured parameters as notifiable model
       def acts_as_notifiable(target_type, options = {})
         include Notifiable
+
+        if [:delete_all, :destroy, :nullify].include? options[:dependent_notifications] 
+          has_many :generated_notifications_as_notifiable,
+            class_name: "::ActivityNotification::Notification",
+            as: :notifiable,
+            dependent: options[:dependent_notifications]
+        end
+
         options[:printable_notifiable_name] = options.delete(:printable_name) if options.has_key?(:printable_name)
         (
           [:targets, :group, :parameters, :email_allowed].map { |key|
@@ -129,7 +149,15 @@ module ActivityNotification
       # Returns array of available notifiable options in acts_as_notifiable.
       # @return [Array<Symbol>] Array of available notifiable options
       def available_notifiable_options
-        [:targets, :group, :notifier, :parameters, :email_allowed, :notifiable_path, :printable_notifiable_name, :printable_name].freeze
+        [ :targets,
+          :group,
+          :notifier,
+          :parameters,
+          :email_allowed,
+          :notifiable_path,
+          :printable_notifiable_name, :printable_name,
+          :dependent_notifications
+        ].freeze
       end
 
       private

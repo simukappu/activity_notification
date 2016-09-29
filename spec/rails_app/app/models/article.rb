@@ -8,7 +8,8 @@ class Article < ActiveRecord::Base
     targets: ->(article, key) { User.all.to_a - [article.user] },
     notifier: :user,
     email_allowed: true,
-    printable_name: ->(article) { "new article \"#{article.title}\"" }
+    printable_name: ->(article) { "new article \"#{article.title}\"" },
+    dependent_notifications: :delete_all
   acts_as_notification_group printable_name: ->(article) { "article \"#{article.title}\"" }
 
   def author?(user)

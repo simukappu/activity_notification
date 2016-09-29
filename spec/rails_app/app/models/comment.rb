@@ -13,9 +13,14 @@ class Comment < ActiveRecord::Base
     email_allowed: true,
     parameters: { test_default_param: '1' },
     notifiable_path: :article_notifiable_path,
-    printable_name: ->(comment) { "comment \"#{comment.body}\"" }
+    printable_name: ->(comment) { "comment \"#{comment.body}\"" },
+    dependent_notifications: :delete_all
 
   def article_notifiable_path
     article_path(article)
+  end
+
+  def author?(user)
+    self.user == user
   end
 end
