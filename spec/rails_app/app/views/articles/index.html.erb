@@ -1,30 +1,30 @@
 <section>
   <h1>Listing Users</h1>
   <% User.all.each do |user| %>
-      <div class="list_wrapper">
-        <div class="list_image"></div>
-        <div class="list_description_wrapper">
-          <p class="list_description">
-            <span><%= user.name %></span> · <%= user.email %><br>
-            <%= link_to 'Notifications', user_notifications_path(user) %>
-          </p>
-        </div>
+    <div class="list_wrapper">
+      <div class="list_image"></div>
+      <div class="list_description_wrapper">
+        <p class="list_description">
+          <span><%= user.name %></span> · <%= user.email %><br>
+          <%= link_to 'Notifications', user_notifications_path(user) %>
+        </p>
       </div>
+    </div>
   <% end %>
 </section>
 
 <section>
   <h1>Listing Admins</h1>
   <% Admin.all.each do |admin| %>
-      <div class="list_wrapper">
-        <div class="list_image"></div>
-        <div class="list_description_wrapper">
-          <p class="list_description">
-            <span><%= admin.user.name %></span> · <%= admin.user.email %><br>
-            <%= link_to 'Notifications', admin_notifications_path(admin) %>
-          </p>
-        </div>
+    <div class="list_wrapper">
+      <div class="list_image"></div>
+      <div class="list_description_wrapper">
+        <p class="list_description">
+          <span><%= admin.user.name %></span> · <%= admin.user.email %><br>
+          <%= link_to 'Notifications', admin_notifications_path(admin) %>
+        </p>
       </div>
+    </div>
   <% end %>
 </section>
 
@@ -56,4 +56,10 @@
         </div>
       </div>
   <% end %>
+</section>
+<section>
+  <h1>Previews of notification email</h1>
+  <div class="list_wrapper">
+    <%= link_to 'Preview', "rails/mailers" %>
+  </div>
 </section>
