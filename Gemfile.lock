@@ -51,6 +51,9 @@ GEM
     arel (6.0.3)
     bcrypt (3.1.11)
     builder (3.2.2)
+    bullet (5.4.2)
+      activesupport (>= 3.0.0)
+      uniform_notifier (~> 1.10.0)
     concurrent-ruby (1.0.2)
     coveralls (0.8.15)
       json (>= 1.8, < 3)
@@ -162,6 +165,7 @@ GEM
     tins (1.12.0)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
+    uniform_notifier (1.10.0)
     warden (1.2.6)
       rack (>= 1.0)
     yard (0.9.5)
@@ -174,6 +178,7 @@ PLATFORMS
 DEPENDENCIES
   activity_notification!
   ammeter
+  bullet
   coveralls
   devise (~> 4.2.0)
   factory_girl_rails (~> 4.7.0)

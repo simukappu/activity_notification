@@ -41,4 +41,11 @@ Rails.application.configure do
 
   # For devise and notification email
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+
+  # Configration for bullet
+  config.after_initialize do
+    Bullet.enable = true
+    Bullet.alert = true
+  end
 end
