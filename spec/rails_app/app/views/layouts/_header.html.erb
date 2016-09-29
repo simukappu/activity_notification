@@ -13,7 +13,11 @@
     </div>
     <div class="header_session_wrapper">
       <% if user_signed_in? %>
-        <p><%= current_user.name %><%= link_to 'Logout', destroy_user_session_path, method: :delete %></p>
+        <p>
+          <%= current_user.name %>
+          <%= "(admin)" if current_user.admin? %>
+          <%= link_to 'Logout', destroy_user_session_path, method: :delete %>
+        </p>
       <% else %>
         <%= link_to 'Login', new_user_session_path %>
       <% end %>

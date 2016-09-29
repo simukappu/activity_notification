@@ -266,8 +266,9 @@ shared_examples_for :target do
 
         context "with limit" do
           it "returns the same as unopened_notification_index with limit" do
-            expect(test_instance.notification_index(1)).to eq(test_instance.unopened_notification_index(1))
-            expect(test_instance.notification_index(1).size).to eq(1)
+            options = { limit: 1 }
+            expect(test_instance.notification_index(options)).to eq(test_instance.unopened_notification_index(options))
+            expect(test_instance.notification_index(options).size).to eq(1)
           end
         end
       end
@@ -292,8 +293,9 @@ shared_examples_for :target do
 
         context "with limit" do
           it "returns the same as opened_notification_index with limit" do
-            expect(test_instance.notification_index(1)).to eq(test_instance.opened_notification_index(1))
-            expect(test_instance.notification_index(1).size).to eq(1)
+            options = { limit: 1 }
+            expect(test_instance.notification_index(options)).to eq(test_instance.opened_notification_index(options))
+            expect(test_instance.notification_index(options).size).to eq(1)
           end
         end
       end
@@ -336,8 +338,9 @@ shared_examples_for :target do
 
         context "with limit" do
           it "returns unopened notification index with limit" do
-            expect(test_instance.unopened_notification_index(1).size).to eq(1)
-            expect(test_instance.unopened_notification_index(1).first).to eq(@notification_2)
+            options = { limit: 1 }
+            expect(test_instance.unopened_notification_index(options).size).to eq(1)
+            expect(test_instance.unopened_notification_index(options).first).to eq(@notification_2)
           end
         end
       end
@@ -357,7 +360,7 @@ shared_examples_for :target do
     describe "#opened_notification_index" do
       context "when the target has no notifications" do
         it "returns empty records" do
-          expect(test_instance.opened_notification_index(1)).to be_empty
+          expect(test_instance.opened_notification_index).to be_empty
         end
       end
 
@@ -371,8 +374,8 @@ shared_examples_for :target do
           it "uses ActivityNotification.config.opened_index_limit as limit" do
             configured_opened_index_limit = ActivityNotification.config.opened_index_limit
             ActivityNotification.config.opened_index_limit = 1
-            expect(test_instance.opened_notification_index(1).size).to eq(1)
-            expect(test_instance.opened_notification_index(1).first).to eq(@notification_2)
+            expect(test_instance.opened_notification_index.size).to eq(1)
+            expect(test_instance.opened_notification_index.first).to eq(@notification_2)
             ActivityNotification.config.opened_index_limit = configured_opened_index_limit
           end
 
@@ -399,8 +402,9 @@ shared_examples_for :target do
 
         context "with limit" do
           it "returns opened notification index with limit" do
-            expect(test_instance.opened_notification_index(1).size).to eq(1)
-            expect(test_instance.opened_notification_index(1).first).to eq(@notification_2)
+            options = { limit: 1 }
+            expect(test_instance.opened_notification_index(options).size).to eq(1)
+            expect(test_instance.opened_notification_index(options).first).to eq(@notification_2)
           end
         end
       end
@@ -464,8 +468,9 @@ shared_examples_for :target do
 
         context "with limit" do
           it "returns the same as unopened_notification_index_with_attributes with limit" do
-            expect(test_instance.notification_index_with_attributes(1)).to eq(test_instance.unopened_notification_index_with_attributes(1))
-            expect(test_instance.notification_index_with_attributes(1).size).to eq(1)
+            options = { limit: 1 }
+            expect(test_instance.notification_index_with_attributes(options)).to eq(test_instance.unopened_notification_index_with_attributes(options))
+            expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
           end
         end
       end
@@ -490,8 +495,9 @@ shared_examples_for :target do
 
         context "with limit" do
           it "returns the same as opened_notification_index_with_attributes with limit" do
-            expect(test_instance.notification_index_with_attributes(1)).to eq(test_instance.opened_notification_index_with_attributes(1))
-            expect(test_instance.notification_index_with_attributes(1).size).to eq(1)
+            options = { limit: 1 }
+            expect(test_instance.notification_index_with_attributes(options)).to eq(test_instance.opened_notification_index_with_attributes(options))
+            expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
           end
         end
       end

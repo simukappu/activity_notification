@@ -14,7 +14,7 @@
     </div>
   </div>
   <h2>Listing Comments</h2>
-  <% @article.comments.each do |comment| %>
+  <% @article.comments.includes(:user).each do |comment| %>
     <div class="list_wrapper">
       <div class="list_image"></div>
       <div class="list_description_wrapper">

@@ -46,8 +46,12 @@
             <%= link_to 'Read', article %>
           </p>
           <div class="list_button_wrapper">
-            <%= link_to 'Edit Article', edit_article_path(article), class: "gray_button" if user_signed_in? and current_user == article.user %>
-            <%= link_to 'Destroy Article', article, method: :delete, data: { confirm: 'Are you sure?' }, class: "gray_button" %>
+            <% if user_signed_in? and article.author?(current_user) %>
+              <%= link_to 'Edit Article', edit_article_path(article), class: "gray_button" %>
+            <% end %>
+            <% if user_signed_in? and current_user.admin? %>
+              <%= link_to 'Destroy Article', article, method: :delete, data: { confirm: 'Are you sure?' }, class: "gray_button" %>
+            <% end %>
           </div>
         </div>
       </div>

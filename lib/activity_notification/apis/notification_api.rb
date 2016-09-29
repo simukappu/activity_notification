@@ -92,7 +92,7 @@ module ActivityNotification
       # @option options [Object]   :filtered_by_group      (nil) Group instance for filter
       # @option options [String]   :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
       # @option options [String]   :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
-      # @option options [String]   :filtered_by_key        (nil) Key of the notification for filter 
+      # @option options [String]   :filtered_by_key        (nil) Key of the notification for filter
       # @return [Integer] Number of opened notification records
       # @todo Add filter option
       def open_all_of(target, options = {})

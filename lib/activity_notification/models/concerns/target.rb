@@ -10,7 +10,8 @@ module ActivityNotification
       # @return [Array<Notificaion>] Array or database query of notifications of this target
       has_many :notifications,
         class_name: "::ActivityNotification::Notification",
-        as: :target
+        as: :target,
+        dependent: :delete_all
 
       class_attribute :_notification_email,
                       :_notification_email_allowed,
@@ -79,16 +80,22 @@ module ActivityNotification
 
     # Returns count of unopened notifications of the target.
     #
+    # @param [Hash] options Options for notification index
+    # @option options [Integer] :limit                  (nil) Limit to query for notifications
     # @return [Integer] Count of unopened notifications of the target
-    def unopened_notification_count
-      unopened_notification_index.count
+    # @todo Add filter and reverse options
+    def unopened_notification_count(options = {})
+      unopened_notification_index(options).count
     end
 
     # Returns if the target has unopened notifications.
     #
+    # @param [Hash] options Options for notification index
+    # @option options [Integer] :limit                  (nil) Limit to query for notifications
     # @return [Boolean] If the target has unopened notifications
-    def has_unopened_notifications?
-      unopened_notification_index.exists?
+    # @todo Add filter and reverse options
+    def has_unopened_notifications?(options = {})
+      unopened_notification_index(options).present?
     end
 
     # Gets automatically arranged notification index of the target.
@@ -99,17 +106,17 @@ module ActivityNotification
     # @example Get automatically arranged notification index of the @user
     #   @notifications = @user.notification_index
     #
-    # @param [Integer] limit Limit to query for notifications
+    # @param [Hash] options Options for notification index
+    # @option options [Integer] :limit                  (nil) Limit to query for notifications
     # @return [Array<Notificaion>] Notification index of the target
-    def notification_index(limit = nil)
+    # @todo Add filter and reverse options
+    def notification_index(options = {})
       # When the target have unopened notifications
-      notifications.unopened_index.exists? ?
+      has_unopened_notifications?(options) ?
         # Return unopened notifications
-        unopened_notification_index(limit) :
+        unopened_notification_index(options) :
         # Otherwise, return opened notifications
-        limit.present? ?
-          opened_notification_index(limit) :
-          opened_notification_index
+        opened_notification_index(options)
     end
 
     # Gets unopened notification index of the target.
@@ -117,11 +124,13 @@ module ActivityNotification
     # @example Get unopened notification index of the @user
     #   @notifications = @user.unopened_notification_index
     #
-    # @param [Integer] limit Limit to query for notifications
+    # @param [Hash] options Options for notification index
+    # @option options [Integer] :limit                  (nil) Limit to query for notifications
     # @return [Array<Notificaion>] Unopened notification index of the target
-    def unopened_notification_index(limit = nil)
-      limit.present? ?
-        notifications.unopened_index.limit(limit) :
+    # @todo Add filter and reverse options
+    def unopened_notification_index(options = {})
+      options[:limit].present? ?
+        notifications.unopened_index.limit(options[:limit]) :
         notifications.unopened_index
     end
 
@@ -130,9 +139,12 @@ module ActivityNotification
     # @example Get opened notification index of the @user
     #   @notifications = @user.opened_notification_index(10)
     #
-    # @param [Integer] limit Limit to query for notifications
+    # @param [Hash] options Options for notification index
+    # @option options [Integer] :limit                  (ActivityNotification.config.opened_index_limit) Limit to query for notifications
     # @return [Array<Notificaion>] Opened notification index of the target
-    def opened_notification_index(limit = ActivityNotification.config.opened_index_limit)
+    # @todo Add filter and reverse options
+    def opened_notification_index(options = {})
+      limit = options[:limit] || ActivityNotification.config.opened_index_limit
       notifications.opened_index(limit)
     end
 
@@ -159,8 +171,12 @@ module ActivityNotification
     #
     # @param [Hash] options Options for opening notifications
     # @option options [DateTime] :opened_at (DateTime.now) Time to set to opened_at of the notification record
+    # @option options [String]   :filtered_by_type       (nil) Notifiable type for filter
+    # @option options [Object]   :filtered_by_group      (nil) Group instance for filter
+    # @option options [String]   :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]   :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]   :filtered_by_key        (nil) Key of the notification for filter
     # @return [Integer] Number of opened notification records
-    # @todo Add filter option
     def open_all_notifications(options = {})
       Notification.open_all_of(self, options)
     end
@@ -172,17 +188,17 @@ module ActivityNotification
     # @example Get automatically arranged notification index of the @user with included attributes
     #   @notifications = @user.notification_index_with_attributes
     #
-    # @param [Integer] limit Limit to query for notifications
+    # @param [Hash] options Options for notification index
+    # @option options [Integer] :limit                  (nil) Limit to query for notifications
     # @return [Array<Notificaion>] Notification index of the target with attributes
-    def notification_index_with_attributes(limit = nil)
+    # @todo Add filter and reverse options
+    def notification_index_with_attributes(options = {})
       # When the target have unopened notifications
-      unopened_notification_index.exists? ?
+      has_unopened_notifications? ?
         # Return unopened notifications
-        unopened_notification_index_with_attributes(limit) :
+        unopened_notification_index_with_attributes(options) :
         # Otherwise, return opened notifications
-        limit.present? ?
-          opened_notification_index_with_attributes(limit) :
-          opened_notification_index_with_attributes
+        opened_notification_index_with_attributes(options)
     end
 
     # Gets unopened notification index of the target with included attributes like target, notifiable, group and notifier.
@@ -190,10 +206,12 @@ module ActivityNotification
     # @example Get unopened notification index of the @user with included attributes
     #   @notifications = @user.unopened_notification_index_with_attributes
     #
-    # @param [Integer] limit Limit to query for notifications
+    # @param [Hash] options Options for notification index
+    # @option options [Integer] :limit                  (nil) Limit to query for notifications
     # @return [Array<Notificaion>] Unopened notification index of the target with attributes
-    def unopened_notification_index_with_attributes(limit = nil)
-      include_attributes unopened_notification_index(limit)
+    # @todo Add filter and reverse options
+    def unopened_notification_index_with_attributes(options = {})
+      include_attributes unopened_notification_index(options)
     end
 
     # Gets opened notification index of the target with including attributes like target, notifiable, group and notifier.
@@ -201,10 +219,12 @@ module ActivityNotification
     # @example Get opened notification index of the @user with included attributes
     #   @notifications = @user.opened_notification_index_with_attributes(10)
     #
-    # @param [Integer] limit Limit to query for notifications
+    # @param [Hash] options Options for notification index
+    # @option options [Integer] :limit                  (ActivityNotification.config.opened_index_limit) Limit to query for notifications
     # @return [Array<Notificaion>] Opened notification index of the target with attributes
-    def opened_notification_index_with_attributes(limit = ActivityNotification.config.opened_index_limit)
-      include_attributes opened_notification_index(limit)
+    # @todo Add filter and reverse options
+    def opened_notification_index_with_attributes(options = {})
+      include_attributes opened_notification_index(options)
     end
 
     private
@@ -214,15 +234,15 @@ module ActivityNotification
       # Otherwise, target, notifiable and or notifier will be include without group.
       # @api private
       #
-      # @param [Array<Notificaion>] notification_index Notification index
-      # @return [Array<Notificaion>] Notification index with attributes
-      def include_attributes(notification_index)
-        if notification_index.present?
-          Notification.group_member_exists?(notification_index) ?
-            notification_index.with_target.with_notifiable.with_group.with_notifier :
-            notification_index.with_target.with_notifiable.with_notifier
+      # @param [ActiveRecord_AssociationRelation<Notificaion>] target_index Notification index
+      # @return [ActiveRecord_AssociationRelation<Notificaion>] Notification index with attributes
+      def include_attributes(target_index)
+        if target_index.present?
+          Notification.group_member_exists?(target_index) ?
+            target_index.with_target.with_notifiable.with_group.with_notifier :
+            target_index.with_target.with_notifiable.with_notifier
         else
-          notifications.none
+          Notification.none
         end
       end
 

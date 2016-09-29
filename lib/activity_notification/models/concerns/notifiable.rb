@@ -9,6 +9,16 @@ module ActivityNotification
       include Common
       include ActionDispatch::Routing::PolymorphicRoutes
       include Rails.application.routes.url_helpers
+
+      # Has many notification instances for this notifiable.
+      # As a default, these notifications are dependent as delete_all for this notifiable instance.
+      # @scope instance
+      # @return [Array<Notificaion>] Array or database query of notifications for this notifiable
+      has_many :generated_notifications_as_notifiable,
+        class_name: "::ActivityNotification::Notification",
+        as: :notifiable,
+        dependent: :delete_all
+
       class_attribute  :_notification_targets,
                        :_notification_group,
                        :_notifier,

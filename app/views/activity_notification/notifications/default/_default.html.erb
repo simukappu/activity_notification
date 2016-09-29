@@ -9,11 +9,21 @@
           <%= notification.notifier.present? ? notification.notifier.printable_type.pluralize.downcase : 'people' %>
         <% end %>
         notified you of
-        <% if notification.group_member_exists? %>
-          <%= " #{notification.group_notification_count} #{notification.notifiable.printable_type.pluralize.downcase} including" %>
-        <% end %>
+        <% if notification.notifiable.present? %>
+          <% if notification.group_member_exists? %>
+            <%= " #{notification.group_notification_count} #{notification.notifiable_type.humanize.pluralize.downcase} including" %>
+          <% end %>
           <%= notification.notifiable.printable_notifiable_name(notification.target) %>
-        <%= "in #{notification.group.printable_group_name}" if notification.group.present? %>
+          <%= "in #{notification.group.printable_group_name}" if notification.group.present? %>
+        <% else %>
+          <% if notification.group_member_exists? %>
+            <%= " #{notification.group_notification_count} #{notification.notifiable_type.humanize.pluralize.downcase}" %>
+          <% else %>
+            <%= " a #{notification.notifiable_type.humanize.singularize.downcase}" %>
+          <% end %>
+          <%= "in #{notification.group.printable_group_name}" if notification.group.present? %>
+          but the notifiable is not found. It may have been deleted.
+        <% end %>
         <br>
         <span><%= notification.created_at.strftime("%b %d %H:%M") %></span>
       </p>

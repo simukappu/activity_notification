@@ -50,7 +50,7 @@ module ActivityNotification
       notification_index =
         case options[:index_content]
         when :simple then target.notification_index
-        when :none   then target.notifications.none
+        when :none   then []
         else              target.notification_index_with_attributes
         end
       prepare_content_for(target, notification_index, notification_options)

@@ -155,11 +155,11 @@ module ActivityNotification
         limit = nil unless limit.to_i > 0
         case filter
         when 'opened'
-          @target.opened_notification_index_with_attributes(limit)
+          @target.opened_notification_index_with_attributes({ limit: limit })
         when 'unopened'
-          @target.unopened_notification_index_with_attributes(limit)
+          @target.unopened_notification_index_with_attributes({ limit: limit })
         else
-          @target.notification_index_with_attributes(limit)
+          @target.notification_index_with_attributes({ limit: limit })
         end
       end
 
