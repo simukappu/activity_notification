@@ -17,8 +17,12 @@ module ActivityNotification
           headers = headers_for(notification.key, options)
           begin
             mail headers
-          rescue ActionView::MissingTemplate
-            mail headers.merge(template_name: 'default')
+          rescue ActionView::MissingTemplate => e
+            if options[:fallback].present?
+              mail headers.merge(template_name: options[:fallback])
+            else
+              raise e
+            end
           end
         end
   

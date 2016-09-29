@@ -8,7 +8,7 @@ if defined?(ActionMailer)
     def send_notification_email(notification)
       if notification.target.notification_email_allowed?(notification.notifiable, notification.key) and 
          notification.notifiable.notification_email_allowed?(notification.target, notification.key)
-        notification_mail(notification)
+        notification_mail(notification, fallback: :default)
       end
     end
   

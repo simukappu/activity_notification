@@ -42,6 +42,8 @@ Rails.application.configure do
   # For devise and notification email
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
+  # For notification email preview
+  config.action_mailer.preview_path = "#{Rails.root}/lib/mailer_previews"
 
   # Configration for bullet
   config.after_initialize do
