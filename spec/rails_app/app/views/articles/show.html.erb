@@ -23,7 +23,9 @@
           <%= comment.body %>
         </p>
         <div class="list_button_wrapper">
-          <%= link_to 'Destroy Comment', comment, method: :delete, data: { confirm: 'Are you sure?' }, class: "gray_button" %>
+          <% if user_signed_in? and (comment.author?(current_user) or current_user.admin?) %>
+            <%= link_to 'Destroy Comment', comment, method: :delete, data: { confirm: 'Are you sure?' }, class: "gray_button" %>
+          <% end %>
         </div>
       </div>
     </div>
