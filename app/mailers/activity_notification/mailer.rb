@@ -4,7 +4,6 @@ if defined?(ActionMailer)
     include ActivityNotification::Mailers::Helpers
 
     # Sends notification email
-    #
     # @param [Notification] notification Notification instance to send email
     # @param [Hash] options Options for notification email
     # @option options [String, Symbol] :fallback (:default) Fallback template to use when MissingTemplate is raised
