@@ -76,6 +76,13 @@ describe ActivityNotification::Mailer do
             .to eq("New comment to your article")
         end
       end
+
+      context "when fallback option is :none and the template is missing" do
+        it "raise ActionView::MissingTemplate" do
+          expect { ActivityNotification::Mailer.send_notification_email(notification, fallback: :none).deliver_now }
+            .to raise_error(ActionView::MissingTemplate)
+        end
+      end
     end
 
     context "with deliver_later" do
