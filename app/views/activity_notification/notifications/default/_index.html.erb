@@ -1,7 +1,7 @@
 <div class="notification_wrapper">
-  <a class="dropdown_notification">
-    <p>Notifications · <%= @target.unopened_notification_count %></p>
-  </a>
+  <%= link_to open_all_notifications_path_for(@target), method: :post, remote: true, class: "dropdown_notification" do %>
+    <p><span class="<%= 'unopened' if @target.has_unopened_notifications? %>"><%= @target.unopened_notification_count %></span></p>
+  <% end %>
   <div class="notification_list_wrapper">
     <%= yield :notification_index %>
   </div>
@@ -17,6 +17,16 @@
   .notification_wrapper .dropdown_notification{
     cursor: pointer;
   }
+  .notification_wrapper .dropdown_notification p span{
+    color: #fff;
+    background-color: #e5e5e5;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  .notification_wrapper .dropdown_notification p span.unopened{
+    background-color: #f87880;
+  }
   .notification_wrapper.open .notification_list_wrapper {
     display: block;
   }
@@ -28,6 +38,7 @@
     overflow: scroll;
     border: 1px solid #e5e5e5;
     position: absolute;
+    top: calc(100% + 20px);
     right: -10px;
     background-color: #fff;
   }
