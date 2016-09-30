@@ -152,7 +152,7 @@ module ActivityNotification
       # @param [String] limit Limit to query for notifications
       # @return [Array] Array of notification index
       def load_notification_index(filter, limit)
-        limit = nil unless limit.to_i > 0
+        limit = limit.to_i > 0 ? limit.to_i : nil
         case filter
         when 'opened'
           @target.opened_notification_index_with_attributes({ limit: limit })

@@ -99,8 +99,9 @@ module ActivityNotification
     end
 
     # Gets automatically arranged notification index of the target.
-    # When the target has unopened notifications, returns unopened index with unopened_notification_index.
-    # Otherwise, returns opened index with opened_notification_index.
+    # This method is the typical way to get notifications index from controller of view.
+    # When the target have unopened notifications, it returns unopened notifications first.
+    # Additionaly, it returns opened notifications unless unopened index size overs the limit.
     # @todo Is this switching the best solution?
     #
     # @example Get automatically arranged notification index of the @user
@@ -117,6 +118,24 @@ module ActivityNotification
         unopened_notification_index(options) :
         # Otherwise, return opened notifications
         opened_notification_index(options)
+
+      # When the target have unopened notifications
+      if has_unopened_notifications?(options)
+        # Total limit if notification index
+        total_limit = options[:limit] || ActivityNotification.config.opened_index_limit
+        # Return unopened notifications first
+        target_unopened_index = unopened_notification_index(options).to_a
+        # Additionaly, return opened notifications unless unopened index size overs the limit
+        if (opened_limit = total_limit - target_unopened_index.size) > 0
+          target_opened_index = opened_notification_index(options.merge(limit: opened_limit))
+          target_unopened_index.concat(target_opened_index.to_a)
+        else
+          target_unopened_index
+        end
+      else
+        # Otherwise, return opened notifications
+        opened_notification_index(options)
+      end
     end
 
     # Gets unopened notification index of the target.
@@ -184,6 +203,9 @@ module ActivityNotification
 
     # Gets automatically arranged notification index of the target with included attributes like target, notifiable, group and notifier.
     # This method is the typical way to get notifications index from controller of view.
+    # When the target have unopened notifications, it returns unopened notifications first.
+    # Additionaly, it returns opened notifications unless unopened index size overs the limit.
+    # @todo Is this switching the best solution?
     #
     # @example Get automatically arranged notification index of the @user with included attributes
     #   @notifications = @user.notification_index_with_attributes
@@ -194,11 +216,22 @@ module ActivityNotification
     # @todo Add filter and reverse options
     def notification_index_with_attributes(options = {})
       # When the target have unopened notifications
-      has_unopened_notifications? ?
-        # Return unopened notifications
-        unopened_notification_index_with_attributes(options) :
+      if has_unopened_notifications?(options)
+        # Total limit if notification index
+        total_limit = options[:limit] || ActivityNotification.config.opened_index_limit
+        # Return unopened notifications first
+        target_unopened_index = unopened_notification_index_with_attributes(options).to_a
+        # Additionaly, return opened notifications unless unopened index size overs the limit
+        if (opened_limit = total_limit - target_unopened_index.size) > 0
+          target_opened_index = opened_notification_index_with_attributes(options.merge(limit: opened_limit))
+          target_unopened_index.concat(target_opened_index.to_a)
+        else
+          target_unopened_index
+        end
+      else
         # Otherwise, return opened notifications
         opened_notification_index_with_attributes(options)
+      end
     end
 
     # Gets unopened notification index of the target with included attributes like target, notifiable, group and notifier.

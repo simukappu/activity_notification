@@ -106,7 +106,7 @@ module ActivityNotification
       # @param [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] notifications Array or database query of the notifications to test member exists
       # @return [Boolean] If group member of the notifications exists
       def group_member_exists?(notifications)
-        notifications.present? && where(group_owner_id: notifications.map(&:id)).exists?
+        notifications.present? and where(group_owner_id: notifications.map(&:id)).exists?
       end
 
       # Returns available options for kinds of notify methods.

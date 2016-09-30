@@ -250,17 +250,20 @@ shared_examples_for :target do
         before do
           create(:notification, target: test_instance)
           create(:notification, target: test_instance)
+          create(:notification, target: test_instance).open!
         end
 
         it "calls unopened_notification_index" do
-          expect(test_instance).to receive(:unopened_notification_index)
+          expect(test_instance).to receive(:unopened_notification_index).at_least(:once)
           test_instance.notification_index
         end
 
         context "without limit" do
-          it "returns the same as unopened_notification_index" do
-            expect(test_instance.notification_index).to eq(test_instance.unopened_notification_index)
-            expect(test_instance.notification_index.size).to eq(2)
+          it "returns the combined array of unopened_notification_index and opened_notification_index" do
+            expect(test_instance.notification_index[0]).to eq(test_instance.unopened_notification_index[0])
+            expect(test_instance.notification_index[1]).to eq(test_instance.unopened_notification_index[1])
+            expect(test_instance.notification_index[2]).to eq(test_instance.opened_notification_index[0])
+            expect(test_instance.notification_index.size).to eq(3)
           end
         end
 
@@ -280,7 +283,7 @@ shared_examples_for :target do
         end
 
         it "calls unopened_notification_index" do
-          expect(test_instance).to receive(:opened_notification_index)
+          expect(test_instance).to receive(:opened_notification_index).at_least(:once)
           test_instance.notification_index
         end
 
@@ -452,17 +455,20 @@ shared_examples_for :target do
         before do
           create(:notification, target: test_instance)
           create(:notification, target: test_instance)
+          create(:notification, target: test_instance).open!
         end
 
         it "calls unopened_notification_index_with_attributes" do
-          expect(test_instance).to receive(:unopened_notification_index_with_attributes)
+          expect(test_instance).to receive(:unopened_notification_index_with_attributes).at_least(:once)
           test_instance.notification_index_with_attributes
         end
 
         context "without limit" do
-          it "returns the same as unopened_notification_index_with_attributes" do
-            expect(test_instance.notification_index_with_attributes).to eq(test_instance.unopened_notification_index_with_attributes)
-            expect(test_instance.notification_index_with_attributes.size).to eq(2)
+          it "returns the combined array of unopened_notification_index and opened_notification_index" do
+            expect(test_instance.notification_index_with_attributes[0]).to eq(test_instance.unopened_notification_index[0])
+            expect(test_instance.notification_index_with_attributes[1]).to eq(test_instance.unopened_notification_index[1])
+            expect(test_instance.notification_index_with_attributes[2]).to eq(test_instance.opened_notification_index[0])
+            expect(test_instance.notification_index.size).to eq(3)
           end
         end
 
