@@ -139,7 +139,7 @@ module ActivityNotification
     # @option params [String]         :partial      (self.key.gsub('.', '/')) Root path of partial template
     # @option params [String]         :layout       (nil)                     Layout template name
     # @option params [String]         :layout_root  ('layouts')               Root path of layout template
-    # @option params [String]         :fallback     (nil)                     Fallback template to use when MissingTemplate is raised. Set :text to use i18n text as fallback.
+    # @option params [String, Symbol] :fallback     (nil)                     Fallback template to use when MissingTemplate is raised. Set :text to use i18n text as fallback.
     # @option params [Hash]           others                                  Parameters to be set as locals
     # @return [String] Rendered view or text as string
     def render(context, params = {})
