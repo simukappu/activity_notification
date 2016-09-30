@@ -60,6 +60,17 @@ module ActivityNotification
     end
     alias_method :render_notifications_of, :render_notification_of
 
+    # Returns notifications_path for the target
+    #
+    # @param [Object] target Target instance
+    # @param [Hash] params Request parameters
+    # @return [String] notifications_path for the target
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
+    def notifications_path_for(target, params = {})
+      send("#{target.to_resource_name}_notifications_path", target, params)
+    end
+
     # Returns notification_path for the notification
     #
     # @param [Notification] notification Notification instance
@@ -93,15 +104,26 @@ module ActivityNotification
       send("open_#{notification.target.to_resource_name}_notification_path", notification.target, notification, params)
     end
 
-    # Returns open_all_notifications_path for the target of specified notification
+    # Returns open_all_notifications_path for the target
     #
-    # @param [Notification] notification Notification instance
+    # @param [Object] target Target instance
     # @param [Hash] params Request parameters
     # @return [String] open_all_notifications_path for the target
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def open_all_notifications_path_for(target, params = {})
       send("open_all_#{target.to_resource_name}_notifications_path", target, params)
+    end
+
+    # Returns notifications_url for the target
+    #
+    # @param [Object] target Target instance
+    # @param [Hash] params Request parameters
+    # @return [String] notifications_url for the target
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
+    def notifications_url_for(target, params = {})
+      send("#{target.to_resource_name}_notifications_url", target, params)
     end
 
     # Returns notification_url for the target of specified notification

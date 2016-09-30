@@ -198,6 +198,12 @@ describe ActivityNotification::ViewHelpers, type: :helper do
     end
   end
 
+  describe '#notifications_path_for' do
+    it "returns path for the notification target" do
+      expect(notifications_path_for(target_user))
+        .to eq(user_notifications_path(target_user))
+    end
+  end
 
   describe '#notification_path_for' do
     it "returns path for the notification target" do
@@ -224,6 +230,13 @@ describe ActivityNotification::ViewHelpers, type: :helper do
     it "returns path for the notification target" do
       expect(open_all_notifications_path_for(target_user))
         .to eq(open_all_user_notifications_path(target_user))
+    end
+  end
+
+  describe '#notifications_url_for' do
+    it "returns url for the notification target" do
+      expect(notifications_url_for(target_user))
+        .to eq(user_notifications_url(target_user))
     end
   end
 
