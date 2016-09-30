@@ -9,7 +9,7 @@
 <header>
   <div class="header_area">
     <div class="header_root_wrapper">
-      <%= link_to 'Test Application for ActivityNotification', root_path %>
+      <%= link_to 'ActivityNotification', root_path %>
     </div>
     <div class="header_session_wrapper">
       <% if user_signed_in? %>
@@ -24,9 +24,7 @@
     </div>
     <div class="header_notification_wrapper">
       <% if user_signed_in? %>
-          <%#= render_notifications_of current_user, fallback: :default, index_content: :simple %>
-          <%= render_notifications_of current_user, fallback: :default, index_content: :with_attributes %>
-          <%#= render_notifications_of current_user, fallback: :default, index_content: :none %>
+        <%= render_notifications_of current_user, fallback: :default, index_content: :with_attributes %>
       <% end %>
     </div>
   </div>

@@ -1,2 +1,3 @@
 $("#notification_count").html("<%= @target.unopened_notification_count %>");
+$("#partial_notification_count").html("<span class=\"<%= 'unopened' if @target.has_unopened_notifications? %>\"><%= @target.unopened_notification_count %></span>");
 $("#notifications").html("<%= escape_javascript( render_notification(@notifications, fallback: :default) ) %>");
