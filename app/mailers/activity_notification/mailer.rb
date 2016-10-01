@@ -1,9 +1,10 @@
 if defined?(ActionMailer)
+
   # Mailer for email notification of ActivityNotificaion.
   class ActivityNotification::Mailer < ActivityNotification.config.parent_mailer.constantize
     include ActivityNotification::Mailers::Helpers
 
-    # Sends notification email
+    # Sends notification email.
     # @param [Notification] notification Notification instance to send email
     # @param [Hash] options Options for notification email
     # @option options [String, Symbol] :fallback (:default) Fallback template to use when MissingTemplate is raised
@@ -15,6 +16,6 @@ if defined?(ActionMailer)
         notification_mail(notification, options)
       end
     end
-  
   end
+
 end
