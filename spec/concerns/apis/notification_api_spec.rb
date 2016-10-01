@@ -453,7 +453,7 @@ shared_examples_for :notification_api do
       context "with send_later false" do
         it "sends notification email now" do
           expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
-          test_instance.send_notification_email false
+          test_instance.send_notification_email send_later: false
           expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
           expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(test_instance.target.email)
         end

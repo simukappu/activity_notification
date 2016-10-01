@@ -78,7 +78,7 @@ module ActivityNotification
         # Store notification
         notification = store_notification(target, notifiable, options)
         # Send notification email
-        notification.send_notification_email(send_later) if send_email
+        notification.send_notification_email({ send_later: send_later }) if send_email
         # Return created notification
         notification
       end
@@ -142,13 +142,16 @@ module ActivityNotification
 
     # Sends notification email to the target.
     #
-    # @param [Boolean] send_later If it sends notification email asynchronously
+    # @param [Hash] options Options for notification email
+    # @option send_later [Boolean] :send_later If it sends notification email asynchronously
+    # @option options [String, Symbol] :fallback (:default) Fallback template to use when MissingTemplate is raised
     # @return [Mail::Message, ActionMailer::DeliveryJob] Email message or its delivery job
-    def send_notification_email(send_later = true)
+    def send_notification_email(options = {})
+      send_later = options.has_key?(:send_later) ? options[:send_later] : true
       if send_later
-        Mailer.send_notification_email(self).deliver_later
+        Mailer.send_notification_email(self, options).deliver_later
       else
-        Mailer.send_notification_email(self).deliver_now
+        Mailer.send_notification_email(self, options).deliver_now
       end
     end
 
