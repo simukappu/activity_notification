@@ -319,7 +319,7 @@ Sometimes, it's desirable to pass additional local variables to partials. It can
 
 For example, if you have an notification with `:key` set to `"notification.comment.reply"` and rendered it with `:target` set to `:users`, the gem will look for a partial in `app/views/activity_notification/notifications/users/comment/_reply.html.(|erb|haml|slim|something_else)`.
 
-*Hint*: the `"notification."` prefix in `:key` is completely optional and kept for backwards compatibility, you can skip it in new projects.
+*Hint*: the `"notification."` prefix in `:key` is completely optional, you can skip it in your projects or use this prefix only to make namespace.
 
 If you would like to fallback to a partial, you can utilize the `fallback` parameter to specify the path of a partial to use when one is missing:
 
