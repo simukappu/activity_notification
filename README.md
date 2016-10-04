@@ -53,6 +53,12 @@
 
 `activity_notification` deeply uses [PublicActivity](https://github.com/pokonski/public_activity) as reference in presentation layer.
 
+### Notification index
+![notification-index](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_index.png)
+
+### Plugin notifications
+![plugin-notifications](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin.png)
+
 ## Setup
 
 ### Gem installation
@@ -631,12 +637,14 @@ Then you can see the documents at <http://localhost:8808/docs/index>.
 
 ## Common examples
 
-Under construction
+To be prepared.
+
+`activity_notification` is used in [Wemake](https://www.wemake.jp).
 
 
 ## Help
 
-Under construction
+Contact us by email of this repository.
 
 
 ## License
