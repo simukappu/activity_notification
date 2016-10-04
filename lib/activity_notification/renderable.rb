@@ -212,7 +212,7 @@ module ActivityNotification
     # @param [Hash] params Parameters to prepare
     # @return [Hash] Prepared parameters
     def prepare_parameters(params)
-      @prepared_params ||= self.parameters.with_indifferent_access.merge(params)
+      @prepared_params ||= ActivityNotification.cast_to_indifferent_hash(parameters).merge(params)
     end
 
 

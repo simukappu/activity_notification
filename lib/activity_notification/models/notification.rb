@@ -161,7 +161,7 @@ module ActivityNotification
     # @option options [String] :filtered_by_key        (nil) Key of the notification for filter 
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :filtered_by_options,  ->(options = {})       {
-      options = options.with_indifferent_access
+      options = ActivityNotification.cast_to_indifferent_hash(options)
       filtered_notifications = all
       if options.has_key?(:filtered_by_type)
         filtered_notifications = filtered_notifications.filtered_by_type(options[:filtered_by_type])

@@ -41,6 +41,17 @@ module ActivityNotification
     end
   end
 
+  # Casts to indifferent hash
+  # @param [ActionController::Parameters, Hash] new_hash
+  # @return [HashWithIndifferentAccess] Converted indifferent hash
+  def self.cast_to_indifferent_hash(hash = {})
+    # This is the typical (not-ActionView::TestCase) code path.
+    hash = hash.to_unsafe_h if hash.respond_to?(:to_unsafe_h)
+    # In Rails 5 to_unsafe_h returns a HashWithIndifferentAccess, in Rails 4 it returns Hash
+    hash = hash.with_indifferent_access if hash.instance_of? Hash
+    hash
+  end
+
   # Common module included in target and notifiable model.
   # Provides methods to resolve parameters from configured field or defined method.
   # Also provides methods to convert into resource name or class name as string.
@@ -112,6 +123,5 @@ module ActivityNotification
     def printable_name
       "#{self.printable_type} (#{id})"
     end
-
   end
 end
