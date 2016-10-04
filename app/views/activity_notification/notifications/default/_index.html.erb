@@ -1,15 +1,16 @@
 <div class="notification_wrapper">
-  <%= link_to open_all_notifications_path_for(@target), method: :post, remote: true, class: "dropdown_notification" do %>
+  <a class="dropdown_notification">
     <p><span class="notification_count"><span class="<%= 'unopened' if @target.has_unopened_notifications? %>"><%= @target.unopened_notification_count %></span></span></p>
-  <% end %>
+  </a>
   <div class="notification_list_wrapper">
+    <%= link_to "Open all", open_all_notifications_path_for(@target), method: :post, remote: true %>
     <div class="notifications">
       <%= yield :notification_index %>
     </div>
     <%= link_to notifications_path_for(@target) do %>
     <div class="notification_link_wrapper">
       <p class="notification_link">
-        See notification index
+        See notifications
       </p>
     </div>
     <% end %>
