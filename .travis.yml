@@ -1,5 +1,9 @@
 language: ruby
 
+branches:
+  except:
+    - images
+
 rvm:
   - 2.1.9
   - 2.2.5
