@@ -6,7 +6,13 @@
     <div class="notifications">
       <%= yield :notification_index %>
     </div>
-    <%= link_to 'See notification index', notifications_path_for(@target) %>
+    <%= link_to notifications_path_for(@target) do %>
+    <div class="notification_link_wrapper">
+      <p class="notification_link">
+        See notification index
+      </p>
+    </div>
+    <% end %>
   </div>
 </div>
 
@@ -38,18 +44,40 @@
     z-index: 999;
     width: 330px;
     height: 500px;
-    overflow: scroll;
     border: 1px solid #e5e5e5;
     position: absolute;
     top: calc(100% + 20px);
     right: -10px;
     background-color: #fff;
   }
+  .notification_wrapper .notification_list_wrapper .notifications {
+    position: relative;
+    width: 330px;
+    height: 465px;
+    overflow: scroll;
+  }
+  .notification_wrapper .notification_list_wrapper .notification_link_wrapper{
+    position: absolute;
+    bottom: 0;
+    width: 330px;
+    height: 22px;
+    border-top: 1px solid #e5e5e5;
+    padding: 4px 0 8px 0;
+    text-align: center;
+    background-color: #fff;
+  }
+  .notification_wrapper .notification_list_wrapper .notification_link_wrapper:hover{
+    background-color: #f8f9fb;
+  }
+  .notification_wrapper .notification_list_wrapper .notification_link_wrapper .notification_link{
+    text-align: center;
+    font-size: 14px;
+  }
 </style>
 
 <script>
   $(document).click(function(e){
-      if( !$(e.target).is(".notification_list_wrapper") ){
+      if( !$(e.target).is(".notification_list_cover") && !$(e.target).is(".unopned_circle_wrapper") ){
         if($(".notification_wrapper").hasClass("open") && !$(".notification_wrapper").hasClass("opened")){
           $(".notification_wrapper").addClass("opened");
         }else if($(".notification_wrapper").hasClass("opened")){
