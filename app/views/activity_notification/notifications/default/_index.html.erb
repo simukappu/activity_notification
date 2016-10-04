@@ -3,16 +3,23 @@
     <p><span class="notification_count"><span class="<%= 'unopened' if @target.has_unopened_notifications? %>"><%= @target.unopened_notification_count %></span></span></p>
   </a>
   <div class="notification_list_wrapper">
-    <%= link_to "Open all", open_all_notifications_path_for(@target), method: :post, remote: true %>
+    <div class="notification_header_wrapper">
+      <p class="notification_header_title">
+        Notifications
+      </p>
+      <p class="notification_header_menu">
+        <%= link_to "Open all", open_all_notifications_path_for(@target), method: :post, remote: true %>
+      </p>
+    </div>
     <div class="notifications">
       <%= yield :notification_index %>
     </div>
     <%= link_to notifications_path_for(@target) do %>
-    <div class="notification_link_wrapper">
-      <p class="notification_link">
-        See notifications
-      </p>
-    </div>
+      <div class="notification_link_wrapper">
+        <p class="notification_link">
+          See notifications
+        </p>
+      </div>
     <% end %>
   </div>
 </div>
@@ -51,21 +58,43 @@
     right: -10px;
     background-color: #fff;
   }
+  .notification_wrapper .notification_list_wrapper .notification_header_wrapper {
+    position: relative;
+    width: 330px;
+    height: 37px;
+    border-bottom: 1px solid #e5e5e5;
+    box-sizing: border-box;
+    background-color: #fff;
+  }
+  .notification_wrapper .notification_list_wrapper .notification_header_wrapper .notification_header_title {
+    position: absolute;
+    top: 4px;
+    left: 10px;
+    font-size: 14px;
+  }
+  .notification_wrapper .notification_list_wrapper .notification_header_wrapper .notification_header_menu {
+    position: absolute;
+    top: 4px;
+    right: 10px;
+    font-size: 14px;
+  }
+
   .notification_wrapper .notification_list_wrapper .notifications {
     position: relative;
     width: 330px;
-    height: 465px;
+    height: calc(500px - 37px - 37px);
     overflow: scroll;
   }
   .notification_wrapper .notification_list_wrapper .notification_link_wrapper{
     position: absolute;
     bottom: 0;
     width: 330px;
-    height: 22px;
+    height: 26px;
     border-top: 1px solid #e5e5e5;
     padding: 4px 0 8px 0;
     text-align: center;
     background-color: #fff;
+    z-index: 2;
   }
   .notification_wrapper .notification_list_wrapper .notification_link_wrapper:hover{
     background-color: #f8f9fb;
@@ -78,7 +107,7 @@
 
 <script>
   $(document).click(function(e){
-      if( !$(e.target).is(".notification_list_cover") && !$(e.target).is(".unopned_circle_wrapper") ){
+      if( !$(e.target).is(".notification_list_cover") && !$(e.target).is(".notification_wrapper a") ){
         if($(".notification_wrapper").hasClass("open") && !$(".notification_wrapper").hasClass("opened")){
           $(".notification_wrapper").addClass("opened");
         }else if($(".notification_wrapper").hasClass("opened")){
