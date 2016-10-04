@@ -16,7 +16,7 @@ module ActivityNotification
       end
 
       # Sets default values to group class fields.
-      # @return [Nil] nil
+      # @return [NilClass] nil
       def set_group_class_defaults
         self._printable_notification_group_name = :printable_name
         nil

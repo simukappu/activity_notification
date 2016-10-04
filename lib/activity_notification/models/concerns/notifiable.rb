@@ -42,7 +42,7 @@ module ActivityNotification
       end
 
       # Sets default values to notifiable class fields.
-      # @return [Nil] nil
+      # @return [NilClass] nil
       def set_notifiable_class_defaults
         self._notification_targets        = {}
         self._notification_group          = {}

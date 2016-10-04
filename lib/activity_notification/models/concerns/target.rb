@@ -28,7 +28,7 @@ module ActivityNotification
       end
 
       # Sets default values to target class fields.
-      # @return [Nil] nil
+      # @return [NilClass] nil
       def set_target_class_defaults
         self._notification_email                 = nil
         self._notification_email_allowed         = ActivityNotification.config.email_enabled

@@ -19,7 +19,7 @@ module ActivityNotification
       end
 
       # Sets default values to notifier class fields.
-      # @return [Nil] nil
+      # @return [NilClass] nil
       def set_notifier_class_defaults
         self._printable_notifier_name = :printable_name
         nil
