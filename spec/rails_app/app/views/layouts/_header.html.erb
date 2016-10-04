@@ -11,21 +11,27 @@
     <div class="header_root_wrapper">
       <%= link_to 'ActivityNotification', root_path %>
     </div>
-    <div class="header_session_wrapper">
-      <% if user_signed_in? %>
-        <p>
+    <div class="header_menu_wrapper">
+      <p>
+        <% if user_signed_in? %>
           <%= current_user.name %>
           <%= "(admin)" if current_user.admin? %>
           <%= link_to 'Logout', destroy_user_session_path, method: :delete %>
-        </p>
-      <% else %>
-        <%= link_to 'Login', new_user_session_path %>
-      <% end %>
+        <% else %>
+          <%= link_to 'Login', new_user_session_path %>
+        <% end %>
+      </p>
     </div>
     <div class="header_notification_wrapper">
       <% if user_signed_in? %>
         <%= render_notifications_of current_user, fallback: :default, index_content: :with_attributes %>
       <% end %>
+    </div>
+    <div class="header_menu_wrapper">
+      <p>
+        <%= link_to 'Preview email', "rails/mailers" %>
+        <%= " · " unless user_signed_in? %>
+      </p>
     </div>
   </div>
 </header>
