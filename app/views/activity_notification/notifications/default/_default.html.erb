@@ -1,5 +1,6 @@
 <% content_for :notification_content, flush: true do %>
   <li class="notification_list <%= notification.opened? ? "opened" : "unopened" %>">
+    <div class="notification_list_cover"></div>
     <div class="list_image"></div>
     <div class="list_text_wrapper">
       <p class="list_text">
@@ -32,9 +33,16 @@
 <% end %>
 
 <% if notification.unopened? %>
+  <%= link_to open_notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :post, remote: true, class: "unopned_wrapper" do %>
+    <div class="unopned_circle"></div>
+    <div class="unopned_description_wrapper">
+      <p class="unopned_description">Open</p>
+    </div>
+  <% end %>
   <%= link_to open_notification_path_for(notification, move: true), method: :post do %>
     <%= yield :notification_content %>
   <% end %>
+  <div class="unopened_wrapper"></div>
 <% else %>
   <%= link_to move_notification_path_for(notification) do %>
     <%= yield :notification_content %>
@@ -52,6 +60,57 @@
 <%#= link_to "Destroy (Ajax)", notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :delete, remote: true %>
 
 <style>
+  /* unopned_circle */
+  .unopned_wrapper{
+    position: absolute;
+    margin-top: 20px;
+    margin-left: 56px;
+  }
+  .unopned_wrapper .unopned_circle {
+    display: block;
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    border-radius: 50%;
+    background-color: #27a5eb;
+    z-index: 2;
+  }
+  .unopned_wrapper:hover > .unopned_description_wrapper{
+    display: block;
+  }
+  .unopned_wrapper .unopned_description_wrapper {
+    display: none;
+    position: absolute;
+    margin-top: 26px;
+    margin-left: -24px;
+  }
+  .unopned_wrapper .unopned_description_wrapper .unopned_description {
+    position: absolute;
+    color: #fff;
+    font-size: 12px;
+    text-align: center;
+
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 4px 12px;
+    z-index: 999;
+  }
+  .unopned_wrapper .unopned_description_wrapper .unopned_description:before {
+     border: solid transparent;
+     border-top-width: 0;
+     content: "";
+     display: block;
+     position: absolute;
+     width: 0;
+     left: 50%;
+     top: -5px;
+     margin-left: -5px;
+     height: 0;
+     border-width: 0 5px 5px 5px;
+     border-color: transparent transparent rgba(0, 0, 0, 0.8) transparent;
+     z-index: 0;
+  }
+
   /* list */
   .notification_list {
     padding: 15px 10px;
@@ -72,6 +131,16 @@
     clear: both;
     display: block;
   }
+  .notification_list .notification_list_cover{
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+
+  }
   .notification_list .list_image {
     float: left;
     width: 40px;
@@ -83,8 +152,8 @@
   }
   .notification_list .list_text_wrapper {
     float: left;
-    width: calc(100% - 50px);
-    margin-left: 10px;
+    width: calc(100% - 60px);
+    margin-left: 20px;
   }
   .notification_list .list_text_wrapper .list_text {
     color: #4f4f4f;
