@@ -349,6 +349,13 @@ If a view file does not exist then ActionView::MisingTemplate will be raised. If
 <%= render_notification(@notification, fallback: :text) %>
 ```
 
+Default views of `activity_notification` depends on jQuery and you have to add requirements to `application.js` in your apps:
+
+```app/assets/javascripts/application.js
+//= require jquery
+//= require jquery_ujs
+```
+
 #### i18n for notifications
 
 Translations are used by the `#text` method, to which you can pass additional options in form of a hash. `#render` method uses translations when view templates have not been provided. You can render pure i18n strings by passing `{i18n: true}` to `#render_notification` or `#render`.
@@ -637,9 +644,7 @@ Then you can see the documents at <http://localhost:8808/docs/index>.
 
 ## Common examples
 
-To be prepared.
-
-`activity_notification` is used in [Wemake](https://www.wemake.jp).
+To be prepared. See dummy Rails application in `spec/rails_app`.
 
 
 ## Help
