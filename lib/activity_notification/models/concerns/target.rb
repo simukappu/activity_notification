@@ -112,30 +112,9 @@ module ActivityNotification
     # @return [Array<Notificaion>] Notification index of the target
     # @todo Add filter and reverse options
     def notification_index(options = {})
-      # When the target have unopened notifications
-      has_unopened_notifications?(options) ?
-        # Return unopened notifications
-        unopened_notification_index(options) :
-        # Otherwise, return opened notifications
-        opened_notification_index(options)
-
-      # When the target have unopened notifications
-      if has_unopened_notifications?(options)
-        # Total limit if notification index
-        total_limit = options[:limit] || ActivityNotification.config.opened_index_limit
-        # Return unopened notifications first
-        target_unopened_index = unopened_notification_index(options).to_a
-        # Additionaly, return opened notifications unless unopened index size overs the limit
-        if (opened_limit = total_limit - target_unopened_index.size) > 0
-          target_opened_index = opened_notification_index(options.merge(limit: opened_limit))
-          target_unopened_index.concat(target_opened_index.to_a)
-        else
-          target_unopened_index
-        end
-      else
-        # Otherwise, return opened notifications
-        opened_notification_index(options)
-      end
+      arrange_notification_index(method(:unopened_notification_index),
+                                 method(:opened_notification_index),
+                                 options)
     end
 
     # Gets unopened notification index of the target.
@@ -215,23 +194,9 @@ module ActivityNotification
     # @return [Array<Notificaion>] Notification index of the target with attributes
     # @todo Add filter and reverse options
     def notification_index_with_attributes(options = {})
-      # When the target have unopened notifications
-      if has_unopened_notifications?(options)
-        # Total limit if notification index
-        total_limit = options[:limit] || ActivityNotification.config.opened_index_limit
-        # Return unopened notifications first
-        target_unopened_index = unopened_notification_index_with_attributes(options).to_a
-        # Additionaly, return opened notifications unless unopened index size overs the limit
-        if (opened_limit = total_limit - target_unopened_index.size) > 0
-          target_opened_index = opened_notification_index_with_attributes(options.merge(limit: opened_limit))
-          target_unopened_index.concat(target_opened_index.to_a)
-        else
-          target_unopened_index
-        end
-      else
-        # Otherwise, return opened notifications
-        opened_notification_index_with_attributes(options)
-      end
+      arrange_notification_index(method(:unopened_notification_index_with_attributes),
+                                 method(:opened_notification_index_with_attributes),
+                                 options)
     end
 
     # Gets unopened notification index of the target with included attributes like target, notifiable, group and notifier.
@@ -276,6 +241,37 @@ module ActivityNotification
             target_index.with_target.with_notifiable.with_notifier
         else
           Notification.none
+        end
+      end
+
+      # Gets automatically arranged notification index of the target.
+      # When the target have unopened notifications, it returns unopened notifications first.
+      # Additionaly, it returns opened notifications unless unopened index size overs the limit.
+      # @api private
+      # @todo Is this switching the best solution?
+      #
+      # @param [Method] loading_unopened_index_method Method to load unopened index
+      # @param [Method] loading_opened_index_method Method to load opened index
+      # @param [Hash] options Options for notification index
+      # @option options [Integer] :limit (nil) Limit to query for notifications
+      # @return [Array<Notificaion>] Notification index of the target
+      def arrange_notification_index(loading_unopened_index_method, loading_opened_index_method, options = {})
+        # When the target have unopened notifications
+        if has_unopened_notifications?(options)
+          # Return unopened notifications first
+          target_unopened_index = loading_unopened_index_method.call(options).to_a
+          # Total limit if notification index
+          total_limit = options[:limit] || ActivityNotification.config.opened_index_limit
+          # Additionaly, return opened notifications unless unopened index size overs the limit
+          if (opened_limit = total_limit - target_unopened_index.size) > 0
+            target_opened_index = loading_opened_index_method.call(options.merge(limit: opened_limit))
+            target_unopened_index.concat(target_opened_index.to_a)
+          else
+            target_unopened_index
+          end
+        else
+          # Otherwise, return opened notifications
+          loading_opened_index_method.call(options)
         end
       end
 

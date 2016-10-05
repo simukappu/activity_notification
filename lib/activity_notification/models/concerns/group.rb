@@ -4,7 +4,7 @@ module ActivityNotification
     extend ActiveSupport::Concern
     included do
       include Common
-      class_attribute  :_printable_notification_group_name
+      class_attribute :_printable_notification_group_name
       set_group_class_defaults
     end
 
