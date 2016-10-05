@@ -222,10 +222,7 @@ module ActivityNotification
     # @param [Integer] limit Limit to query for opened notifications
     # @return [Integer] Count of group members of the notification
     def group_member_count(limit = ActivityNotification.config.opened_index_limit)
-      notification = group_member? ? group_owner : self
-      notification.opened? ?
-        notification.opened_group_member_count(limit) :
-        notification.unopened_group_member_count
+      meta_group_member_count(:opened_group_member_count, :unopened_group_member_count, limit)
     end
 
     # Returns count of group notifications including owner and members.
@@ -245,10 +242,7 @@ module ActivityNotification
     # @param [Integer] limit Limit to query for opened notifications
     # @return [Integer] Count of group member notifiers of the notification
     def group_member_notifier_count(limit = ActivityNotification.config.opened_index_limit)
-      notification = group_member? ? group_owner : self
-      notification.opened? ?
-        notification.opened_group_member_notifier_count(limit) :
-        notification.unopened_group_member_notifier_count
+      meta_group_member_count(:opened_group_member_notifier_count, :unopened_group_member_notifier_count, limit)
     end
 
     # Returns count of group member notifiers including group owner notifier.
@@ -335,6 +329,21 @@ module ActivityNotification
                                                       .group(:group_owner_id, :notifier_type)
                                                       .count('distinct notifications.notifier_id')
         opened_group_member_notifier_counts[[id, notifier_type]] || 0
+      end
+
+      # Returns count of various members of the notification.
+      # This method is designed to cache group by query result to avoid N+1 call.
+      # @api protected
+      #
+      # @param [Symbol] opened_member_count_method_name Method name to count members of unopened index
+      # @param [Symbol] unopened_member_count_method_name Method name to count members of opened index
+      # @param [Integer] limit Limit to query for opened notifications
+      # @return [Integer] Count of various members of the notification
+      def meta_group_member_count(opened_member_count_method_name, unopened_member_count_method_name, limit)
+        notification = group_member? ? group_owner : self
+        notification.opened? ?
+          notification.send(opened_member_count_method_name, limit) :
+          notification.send(unopened_member_count_method_name)
       end
 
   end

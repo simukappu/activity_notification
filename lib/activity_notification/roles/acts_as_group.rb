@@ -22,12 +22,10 @@ module ActivityNotification
       # @return [Hash] Configured parameters as notifier model
       def acts_as_group(options = {})
         include Group
-        options[:printable_notification_group_name] ||= options.delete(:printable_name)
-        [:printable_notification_group_name].map { |key|
-          options[key] ?
-            [key, self.send("_#{key}=".to_sym, options.delete(key))] :
-            [nil, nil]
-        }.to_h.delete_if { |k, _| k.nil? }
+        key = :printable_notification_group_name
+        options[key] ||= options.delete(:printable_name)
+        options[key] ?
+          [key, self.send("_#{key}=".to_sym, options.delete(key))] : {}
       end
       alias_method :acts_as_notification_group, :acts_as_group
 
