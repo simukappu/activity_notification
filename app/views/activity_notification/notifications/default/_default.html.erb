@@ -34,7 +34,7 @@
 
 <div class="<%= "notification_#{notification.id}" %>">
   <% if notification.unopened? %>
-    <%= link_to open_notification_path_for(notification, filter: params[:filter], limit: params[:limit]), method: :post, remote: true, class: "unopned_wrapper" do %>
+    <%= link_to open_notification_path_for(notification, filter: params[:filter], limit: params[:limit], reload: false), method: :post, remote: true, class: "unopned_wrapper" do %>
       <div class="unopned_circle"></div>
       <div class="unopned_description_wrapper">
         <p class="unopned_description">Open</p>
