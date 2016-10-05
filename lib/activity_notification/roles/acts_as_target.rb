@@ -92,18 +92,10 @@ module ActivityNotification
       # @return [Hash] Configured parameters as target model
       def acts_as_target(options = {})
         include Target
-        options[:printable_notification_target_name] = options.delete(:printable_name) if options.has_key?(:printable_name)
-        (
-          [:email, :email_allowed, :devise_resource].map { |key|
-            options[key] ?
-              [key, self.send("_notification_#{key}=".to_sym, options.delete(key))] :
-              [nil, nil]
-          }.to_h.merge [:printable_notification_target_name].map { |key|
-            options[key] ?
-              [key, self.send("_#{key}=".to_sym, options.delete(key))] :
-              [nil, nil]
-          }.to_h
-        ).delete_if { |k, _| k.nil? }
+
+        options[:printable_notification_target_name] ||= options.delete(:printable_name)
+        set_acts_as_parameters([:email, :email_allowed, :devise_resource], options, "notification_")
+          .merge set_acts_as_parameters([:printable_notification_target_name], options)
       end
       alias_method :acts_as_notification_target, :acts_as_target
 

@@ -22,10 +22,9 @@ module ActivityNotification
       # @return [Hash] Configured parameters as notifier model
       def acts_as_notifier(options = {})
         include Notifier
-        key = :printable_notifier_name
-        options[key] ||= options.delete(:printable_name)
-        options[key] ?
-          [key, self.send("_#{key}=".to_sym, options.delete(key))] : {}
+
+        options[:printable_notifier_name] ||= options.delete(:printable_name)
+        set_acts_as_parameters([:printable_notifier_name], options)
       end
 
       # Returns array of available notifier options in acts_as_notifier.

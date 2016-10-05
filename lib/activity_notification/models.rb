@@ -1,3 +1,4 @@
+require 'activity_notification/roles/acts_as_common'
 require 'activity_notification/roles/acts_as_target'
 require 'activity_notification/roles/acts_as_notifiable'
 require 'activity_notification/roles/acts_as_notifier'
@@ -7,6 +8,7 @@ module ActivityNotification
   module Models
     extend ActiveSupport::Concern
     included do
+      include ActivityNotification::ActsAsCommon
       include ActivityNotification::ActsAsTarget
       include ActivityNotification::ActsAsNotifiable
       include ActivityNotification::ActsAsNotifier

@@ -136,14 +136,9 @@ module ActivityNotification
             dependent: options[:dependent_notifications]
         end
 
-        options[:printable_notifiable_name] = options.delete(:printable_name) if options.has_key?(:printable_name)
-        (
-          [:targets, :group, :parameters, :email_allowed].map { |key|
-            assign_parameter(target_type, key, "_notification_#{key}", options)
-          }.to_h.merge [:notifier, :notifiable_path, :printable_notifiable_name].map { |key|
-            assign_parameter(target_type, key, "_#{key}", options)
-          }.to_h
-        ).delete_if { |k, _| k.nil? }
+        options[:printable_notifiable_name] ||= options.delete(:printable_name)
+        set_acts_as_parameters_for_target(target_type, [:targets, :group, :parameters, :email_allowed], options, "notification_")
+          .merge set_acts_as_parameters_for_target(target_type, [:notifier, :notifiable_path, :printable_notifiable_name], options)
       end
 
       # Returns array of available notifiable options in acts_as_notifiable.
@@ -159,14 +154,6 @@ module ActivityNotification
           :dependent_notifications
         ].freeze
       end
-
-      private
-
-        def assign_parameter(target_type, key, field_name, options)
-          options[key] ?
-            [key, self.send(field_name.to_sym).store(target_type.to_sym, options.delete(key))] :
-            [nil, nil]
-        end
     end
   end
 end

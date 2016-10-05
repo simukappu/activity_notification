@@ -66,8 +66,7 @@ module ActivityNotification
       resolved_parameter = resolve_parameter(
         target_typed_method_name,
         _notification_targets[target_type.to_s.to_resources_name.to_sym],
-        nil,
-        key)
+        nil, key)
       unless resolved_parameter
         raise NotImplementedError, "You have to implement #{self.class}##{target_typed_method_name} "\
                                    "or set :targets in acts_as_notifiable"
@@ -85,8 +84,7 @@ module ActivityNotification
       resolve_parameter(
         "notification_group_for_#{target_type.to_s.to_resources_name}",
         _notification_group[target_type.to_s.to_resources_name.to_sym],
-        nil,
-        key)
+        nil, key)
     end
 
     # Returns additional notification parameters from configured field or overriden method.
@@ -99,8 +97,7 @@ module ActivityNotification
       resolve_parameter(
         "notification_parameters_for_#{target_type.to_s.to_resources_name}",
         _notification_parameters[target_type.to_s.to_resources_name.to_sym],
-        {},
-        key)
+        {}, key)
     end
 
     # Returns notifier of the notification from configured field or overriden method.
@@ -113,8 +110,7 @@ module ActivityNotification
       resolve_parameter(
         "notifier_for_#{target_type.to_s.to_resources_name}",
         _notifier[target_type.to_s.to_resources_name.to_sym],
-        nil,
-        key)
+        nil, key)
     end
 
     # Returns if sending notification email is allowed for the notifiable from configured field or overriden method.
@@ -141,8 +137,7 @@ module ActivityNotification
       resolved_parameter = resolve_parameter(
         "notifiable_path_for_#{target_type.to_s.to_resources_name}",
         _notifiable_path[target_type.to_s.to_resources_name.to_sym],
-        nil,
-        key)
+        nil, key)
       unless resolved_parameter
         begin
           resolved_parameter = polymorphic_path(self)
