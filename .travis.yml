@@ -1,0 +1,39 @@
+language: ruby
+
+branches:
+  except:
+    - images
+
+rvm:
+  - 2.1.9
+  - 2.2.5
+  - 2.3.1
+  - ruby-head
+
+gemfile:
+  - Gemfile
+  - gemfiles/Gemfile.rails-5.0
+  - gemfiles/Gemfile.rails-4.2
+
+matrix:
+  exclude:
+    - rvm: 2.1.9
+      gemfile: gemfiles/Gemfile.rails-5.0
+    - rvm: 2.1.9
+      gemfile: Gemfile
+  allow_failures:
+    - rvm: ruby-head
+  fast_finish: true
+
+sudo: false
+
+cache: bundler
+
+before_install: "rm ${BUNDLE_GEMFILE}.lock"
+
+before_script: "bundle update"
+
+script: bundle exec rspec
+
+notifications:
+  email: true 
