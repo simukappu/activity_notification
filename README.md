@@ -3,13 +3,33 @@
 [![Build Status](https://travis-ci.org/simukappu/activity_notification.svg?branch=master)](https://travis-ci.org/simukappu/activity_notification)
 [![Coverage Status](https://coveralls.io/repos/github/simukappu/activity_notification/badge.svg?branch=master)](https://coveralls.io/github/simukappu/activity_notification?branch=master)
 [![Code Climate](https://codeclimate.com/github/simukappu/activity_notification/badges/gpa.svg)](https://codeclimate.com/github/simukappu/activity_notification)
-[![Gem Version](https://badge.fury.io/rb/activity_notification.svg)](https://badge.fury.io/rb/activity_notification)
+[![Dependency Status](https://gemnasium.com/badges/github.com/simukappu/activity_notification.svg)](https://gemnasium.com/github.com/simukappu/activity_notification)
 [![Inline docs](http://inch-ci.org/github/simukappu/activity_notification.svg?branch=master)](http://inch-ci.org/github/simukappu/activity_notification)
+[![Gem Version](https://badge.fury.io/rb/activity_notification.svg)](https://badge.fury.io/rb/activity_notification)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](MIT-LICENSE)
 
 `activity_notification` provides integrated user activity notifications for Ruby on Rails. You can easily use it to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc.
 
 `activity_notification` supports Rails 5.0 and 4.2+. Currently, it is only supported with ActiveRecord ORM.
+
+
+## About
+
+`activity_notification` provides following functions:
+* Notification API (creating notifications, query for notifications and managing notification parameters)
+* Notification controllers (managing open/unopen of notifications, link to notifiable activity page)
+* Notification views (presentation of notifications)
+* Grouping notifications (grouping like `"Kevin and 7 other users posted comments to this article"`)
+* Email notification
+* Integration with [Devise](https://github.com/plataformatec/devise) authentication
+
+### Notification index
+<kbd>![notification-index](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_index.png)</kbd>
+
+### Plugin notifications
+<kbd>![plugin-notifications](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus.png)</kbd>
+
+`activity_notification` deeply uses [PublicActivity](https://github.com/pokonski/public_activity) as reference in presentation layer.
 
 
 ## Table of contents
@@ -41,23 +61,6 @@
 5. [Documentation](#documentation)
 6. **[Common examples](#common-examples)**
 
-## About
-
-`activity_notification` provides following functions:
-* Notification API (creating notifications, query for notifications and managing notification parameters)
-* Notification controllers (managing open/unopen of notifications, link to notifiable activity page)
-* Notification views (presentation of notifications)
-* Grouping notifications (grouping like `"Kevin and 7 other users posted comments to this article"`)
-* Email notification
-* Integration with [Devise](https://github.com/plataformatec/devise) authentication
-
-`activity_notification` deeply uses [PublicActivity](https://github.com/pokonski/public_activity) as reference in presentation layer.
-
-### Notification index
-<kbd>![notification-index](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_index.png)</kbd>
-
-### Plugin notifications
-<kbd>![plugin-notifications](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus.png)</kbd>
 
 ## Setup
 
@@ -121,7 +124,7 @@ You have to define notification targets for all notifications from this notifiab
 ```ruby
 class Article < ActiveRecord::Base
   belongs_to :user
-  has_many :comments, dependent: :delete_all
+  has_many :comments, dependent: :destroy
   has_many :commented_users, through: :comments, source: :user
 end
 
