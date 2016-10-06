@@ -62,10 +62,10 @@ module ActivityNotification
     # @param [String] key Key of the notification
     # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of the notification targets
     def notification_targets(target_type, key = nil)
-      target_typed_method_name = "notification_#{target_type.to_s.to_resources_name}"
+      target_typed_method_name = "notification_#{cast_to_resources_name(target_type)}"
       resolved_parameter = resolve_parameter(
         target_typed_method_name,
-        _notification_targets[target_type.to_s.to_resources_name.to_sym],
+        _notification_targets[cast_to_resources_sym(target_type)],
         nil, key)
       unless resolved_parameter
         raise NotImplementedError, "You have to implement #{self.class}##{target_typed_method_name} "\
@@ -82,8 +82,8 @@ module ActivityNotification
     # @return [Object] Group owner of the notification
     def notification_group(target_type, key = nil)
       resolve_parameter(
-        "notification_group_for_#{target_type.to_s.to_resources_name}",
-        _notification_group[target_type.to_s.to_resources_name.to_sym],
+        "notification_group_for_#{cast_to_resources_name(target_type)}",
+        _notification_group[cast_to_resources_sym(target_type)],
         nil, key)
     end
 
@@ -95,8 +95,8 @@ module ActivityNotification
     # @return [Hash] Additional notification parameters
     def notification_parameters(target_type, key = nil)
       resolve_parameter(
-        "notification_parameters_for_#{target_type.to_s.to_resources_name}",
-        _notification_parameters[target_type.to_s.to_resources_name.to_sym],
+        "notification_parameters_for_#{cast_to_resources_name(target_type)}",
+        _notification_parameters[cast_to_resources_sym(target_type)],
         {}, key)
     end
 
@@ -108,8 +108,8 @@ module ActivityNotification
     # @return [Object] Notifier of the notification
     def notifier(target_type, key = nil)
       resolve_parameter(
-        "notifier_for_#{target_type.to_s.to_resources_name}",
-        _notifier[target_type.to_s.to_resources_name.to_sym],
+        "notifier_for_#{cast_to_resources_name(target_type)}",
+        _notifier[cast_to_resources_sym(target_type)],
         nil, key)
     end
 
@@ -121,8 +121,8 @@ module ActivityNotification
     # @return [Boolean] If sending notification email is allowed for the notifiable
     def notification_email_allowed?(target, key = nil)
       resolve_parameter(
-        "notification_email_allowed_for_#{target.class.to_s.to_resources_name}?",
-        _notification_email_allowed[target.class.to_s.to_resources_name.to_sym],
+        "notification_email_allowed_for_#{cast_to_resources_name(target.class)}?",
+        _notification_email_allowed[cast_to_resources_sym(target.class)],
         ActivityNotification.config.email_enabled,
         target, key)
     end
@@ -135,8 +135,8 @@ module ActivityNotification
     # @return [String] Notifiable path URL to move after opening notification
     def notifiable_path(target_type, key = nil)
       resolved_parameter = resolve_parameter(
-        "notifiable_path_for_#{target_type.to_s.to_resources_name}",
-        _notifiable_path[target_type.to_s.to_resources_name.to_sym],
+        "notifiable_path_for_#{cast_to_resources_name(target_type)}",
+        _notifiable_path[cast_to_resources_sym(target_type)],
         nil, key)
       unless resolved_parameter
         begin
@@ -154,8 +154,8 @@ module ActivityNotification
     # @return [String] Printable notifiable model name
     def printable_notifiable_name(target, key = nil)
       resolve_parameter(
-        "printable_notifiable_name_for_#{target.class.to_s.to_resources_name}?",
-        _printable_notifiable_name[target.class.to_s.to_resources_name.to_sym],
+        "printable_notifiable_name_for_#{cast_to_resources_name(target.class)}?",
+        _printable_notifiable_name[cast_to_resources_sym(target.class)],
         printable_name,
         target, key)
     end
@@ -245,6 +245,18 @@ module ActivityNotification
         else
           default_value
         end
+      end
+
+      # Casts to resources name.
+      # @api private
+      def cast_to_resources_name(target_type)
+        target_type.to_s.to_resources_name
+      end
+
+      # Casts to symbol of resources name.
+      # @api private
+      def cast_to_resources_sym(target_type)
+        target_type.to_s.to_resources_name.to_sym
       end
   end
 end
