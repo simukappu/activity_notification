@@ -54,10 +54,10 @@
 `activity_notification` deeply uses [PublicActivity](https://github.com/pokonski/public_activity) as reference in presentation layer.
 
 ### Notification index
-![notification-index](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_index.png)
+<kbd>![notification-index](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_index.png)</kbd>
 
 ### Plugin notifications
-![plugin-notifications](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin.png)
+<kbd>![plugin-notifications](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus.png)</kbd>
 
 ## Setup
 
