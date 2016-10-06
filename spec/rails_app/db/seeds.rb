@@ -6,11 +6,11 @@ Comment.delete_all
 Article.delete_all
 Admin.delete_all
 User.delete_all
-User.connection.execute("UPDATE sqlite_sequence SET seq = 0;")
+ActivityNotification::Notification.connection.execute("UPDATE sqlite_sequence SET seq = 0;")
 
-['ichiro', 'stephen', 'klay', 'kevin'].each do |name|
+['Ichiro', 'Stephen', 'Klay', 'Kevin'].each do |name|
   user = User.new(
-    email:                 "#{name}@example.com",
+    email:                 "#{name.downcase}@example.com",
     password:              'changeit',
     password_confirmation: 'changeit',
     name:                  name,
@@ -19,7 +19,7 @@ User.connection.execute("UPDATE sqlite_sequence SET seq = 0;")
   user.save!
 end
 
-['ichiro'].each do |name|
+['Ichiro'].each do |name|
   user = User.find_by_name(name)
   Admin.create(user: user)
 end
