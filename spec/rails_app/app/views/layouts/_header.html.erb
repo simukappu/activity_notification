@@ -25,6 +25,7 @@
     <div class="header_notification_wrapper">
       <% if user_signed_in? %>
         <%= render_notifications_of current_user, fallback: :default, index_content: :with_attributes %>
+        <%#= render_notifications_of current_user, fallback: :default, index_content: :unopened_with_attributes, reverse: true %>
       <% end %>
     </div>
     <div class="header_menu_wrapper">

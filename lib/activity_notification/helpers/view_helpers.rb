@@ -33,6 +33,7 @@ module ActivityNotification
     # @param [Object] target Target instance of the rendering notifications
     # @param [Hash] options Options for rendering notifications
     # @option options [String, Symbol] :target               (nil)       Target type name to find template or i18n text
+    # @option options [Symbol]         :index_content        (:with_attributes) Option method to load target notification index, [:simple, :unopened_simple, :opened_simple, :with_attributes, :unopened_with_attributes, :opened_with_attributes, :none] are available
     # @option options [String]         :partial_root         ("activity_notification/notifications/#{target.to_resources_name}", 'activity_notification/notifications/default') Root path of partial template
     # @option options [String]         :notification_partial ("activity_notification/notifications/#{target.to_resources_name}", controller.target_view_path, 'activity_notification/notifications/default') Partial template name of the notification index content
     # @option options [String]         :layout_root          ('layouts') Root path of layout template
@@ -40,18 +41,29 @@ module ActivityNotification
     # @option options [String]         :fallback             (nil)       Fallback template to use when MissingTemplate is raised. Set :text to use i18n text as fallback.
     # @option options [String]         :partial              ('index')   Partial template name of the partial index
     # @option options [String]         :layout               (nil)       Layout template name of the partial index
+    # @option options [Integer]        :limit                (nil)       Limit to query for notifications
+    # @option options [Boolean]        :reverse              (false)     If notification index will be ordered as earliest first
     # @return [String] Rendered view or text as string
     def render_notification_of target, options = {}
       return unless target.is_a? ActivityNotification::Target
 
       # Prepare content for notifications index
-      notification_options = options.merge target: target.to_resources_name, 
-                               partial: options[:notification_partial], layout: options[:notification_layout]
+      notification_options = options.merge(
+                                       target: target.to_resources_name,
+                                       partial: options[:notification_partial],
+                                       layout: options[:notification_layout]
+                                     )
+      index_options = options.slice(:limit, :reverse)
       notification_index =
         case options[:index_content]
-        when :simple then target.notification_index
-        when :none   then []
-        else              target.notification_index_with_attributes
+        when :simple                   then target.notification_index(index_options)
+        when :unopened_simple          then target.unopened_notification_index(index_options)
+        when :opened_simple            then target.opened_notification_index(index_options)
+        when :with_attributes          then target.notification_index_with_attributes(index_options)
+        when :unopened_with_attributes then target.unopened_notification_index_with_attributes(index_options)
+        when :opened_with_attributes   then target.opened_notification_index_with_attributes(index_options)
+        when :none                     then []
+        else                                target.notification_index_with_attributes(index_options)
         end
       prepare_content_for(target, notification_index, notification_options)
 

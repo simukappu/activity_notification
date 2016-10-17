@@ -85,7 +85,8 @@ module ActivityNotification
     # @return [Integer] Count of unopened notifications of the target
     # @todo Add filter and reverse options
     def unopened_notification_count(options = {})
-      unopened_notification_index(options).count
+      target_notifications = unopened_notification_index(options)
+      target_notifications.present? ? target_notifications.count : 0
     end
 
     # Returns if the target has unopened notifications.
@@ -108,7 +109,8 @@ module ActivityNotification
     #   @notifications = @user.notification_index
     #
     # @param [Hash] options Options for notification index
-    # @option options [Integer] :limit                  (nil) Limit to query for notifications
+    # @option options [Integer] :limit                  (nil)   Limit to query for notifications
+    # @option options [Boolean] :reverse                (false) If notification index will be ordered as earliest first
     # @return [Array<Notificaion>] Notification index of the target
     # @todo Add filter and reverse options
     def notification_index(options = {})
@@ -123,13 +125,15 @@ module ActivityNotification
     #   @notifications = @user.unopened_notification_index
     #
     # @param [Hash] options Options for notification index
-    # @option options [Integer] :limit                  (nil) Limit to query for notifications
+    # @option options [Integer] :limit                  (nil)   Limit to query for notifications
+    # @option options [Boolean] :reverse                (false) If notification index will be ordered as earliest first
     # @return [Array<Notificaion>] Unopened notification index of the target
     # @todo Add filter and reverse options
     def unopened_notification_index(options = {})
+      reverse = options[:reverse] || false
       options[:limit].present? ?
-        notifications.unopened_index.limit(options[:limit]) :
-        notifications.unopened_index
+        notifications.unopened_index(reverse).limit(options[:limit]) :
+        notifications.unopened_index(reverse)
     end
 
     # Gets opened notification index of the target.
@@ -139,11 +143,13 @@ module ActivityNotification
     #
     # @param [Hash] options Options for notification index
     # @option options [Integer] :limit                  (ActivityNotification.config.opened_index_limit) Limit to query for notifications
+    # @option options [Boolean] :reverse                (false) If notification index will be ordered as earliest first
     # @return [Array<Notificaion>] Opened notification index of the target
     # @todo Add filter and reverse options
     def opened_notification_index(options = {})
       limit = options[:limit] || ActivityNotification.config.opened_index_limit
-      notifications.opened_index(limit)
+      reverse = options[:reverse] || false
+      notifications.opened_index(limit, reverse)
     end
 
     # Generates notifications to this target.

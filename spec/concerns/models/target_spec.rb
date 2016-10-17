@@ -274,6 +274,25 @@ shared_examples_for :target do
             expect(test_instance.notification_index(options).size).to eq(1)
           end
         end
+
+        context "without limit" do
+          it "returns the combined array of unopened_notification_index and opened_notification_index" do
+            expect(test_instance.notification_index[0]).to eq(test_instance.unopened_notification_index[0])
+            expect(test_instance.notification_index[1]).to eq(test_instance.unopened_notification_index[1])
+            expect(test_instance.notification_index[2]).to eq(test_instance.opened_notification_index[0])
+            expect(test_instance.notification_index.size).to eq(3)
+          end
+        end
+
+        context "with reverse" do
+          it "returns the earliest order" do
+            options = { reverse: true }
+            expect(test_instance.notification_index(options)[0]).to eq(test_instance.notification_index[1])
+            expect(test_instance.notification_index(options)[1]).to eq(test_instance.notification_index[0])
+            expect(test_instance.notification_index[2]).to eq(test_instance.notification_index[2])
+            expect(test_instance.notification_index.size).to eq(3)
+          end
+        end
       end
 
       context "when the target has no unopened notifications" do
@@ -468,7 +487,7 @@ shared_examples_for :target do
             expect(test_instance.notification_index_with_attributes[0]).to eq(test_instance.unopened_notification_index[0])
             expect(test_instance.notification_index_with_attributes[1]).to eq(test_instance.unopened_notification_index[1])
             expect(test_instance.notification_index_with_attributes[2]).to eq(test_instance.opened_notification_index[0])
-            expect(test_instance.notification_index.size).to eq(3)
+            expect(test_instance.notification_index_with_attributes.size).to eq(3)
           end
         end
 
@@ -477,6 +496,16 @@ shared_examples_for :target do
             options = { limit: 1 }
             expect(test_instance.notification_index_with_attributes(options)).to eq(test_instance.unopened_notification_index_with_attributes(options))
             expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
+          end
+        end
+
+        context "with reverse" do
+          it "returns the earliest order" do
+            options = { reverse: true }
+            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(test_instance.notification_index_with_attributes[1])
+            expect(test_instance.notification_index_with_attributes(options)[1]).to eq(test_instance.notification_index_with_attributes[0])
+            expect(test_instance.notification_index_with_attributes[2]).to eq(test_instance.notification_index_with_attributes[2])
+            expect(test_instance.notification_index_with_attributes.size).to eq(3)
           end
         end
       end
