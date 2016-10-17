@@ -111,6 +111,11 @@ module ActivityNotification
     # @param [Hash] options Options for notification index
     # @option options [Integer] :limit                  (nil)   Limit to query for notifications
     # @option options [Boolean] :reverse                (false) If notification index will be ordered as earliest first
+    # @option options [String]  :filtered_by_type       (nil) Notifiable type for filter
+    # @option options [Object]  :filtered_by_group      (nil) Group instance for filter
+    # @option options [String]  :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]  :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]  :filtered_by_key        (nil) Key of the notification for filter
     # @return [Array<Notificaion>] Notification index of the target
     # @todo Add filter and reverse options
     def notification_index(options = {})
@@ -127,13 +132,18 @@ module ActivityNotification
     # @param [Hash] options Options for notification index
     # @option options [Integer] :limit                  (nil)   Limit to query for notifications
     # @option options [Boolean] :reverse                (false) If notification index will be ordered as earliest first
+    # @option options [String]  :filtered_by_type       (nil) Notifiable type for filter
+    # @option options [Object]  :filtered_by_group      (nil) Group instance for filter
+    # @option options [String]  :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]  :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]  :filtered_by_key        (nil) Key of the notification for filter
     # @return [Array<Notificaion>] Unopened notification index of the target
     # @todo Add filter and reverse options
     def unopened_notification_index(options = {})
       reverse = options[:reverse] || false
       options[:limit].present? ?
-        notifications.unopened_index(reverse).limit(options[:limit]) :
-        notifications.unopened_index(reverse)
+        notifications.unopened_index(reverse).filtered_by_options(options).limit(options[:limit]) :
+        notifications.unopened_index(reverse).filtered_by_options(options)
     end
 
     # Gets opened notification index of the target.
@@ -144,12 +154,17 @@ module ActivityNotification
     # @param [Hash] options Options for notification index
     # @option options [Integer] :limit                  (ActivityNotification.config.opened_index_limit) Limit to query for notifications
     # @option options [Boolean] :reverse                (false) If notification index will be ordered as earliest first
+    # @option options [String]  :filtered_by_type       (nil) Notifiable type for filter
+    # @option options [Object]  :filtered_by_group      (nil) Group instance for filter
+    # @option options [String]  :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]  :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]  :filtered_by_key        (nil) Key of the notification for filter
     # @return [Array<Notificaion>] Opened notification index of the target
     # @todo Add filter and reverse options
     def opened_notification_index(options = {})
       limit = options[:limit] || ActivityNotification.config.opened_index_limit
       reverse = options[:reverse] || false
-      notifications.opened_index(limit, reverse)
+      notifications.opened_index(limit, reverse).filtered_by_options(options)
     end
 
     # Generates notifications to this target.
@@ -197,6 +212,12 @@ module ActivityNotification
     #
     # @param [Hash] options Options for notification index
     # @option options [Integer] :limit                  (nil) Limit to query for notifications
+    # @option options [Boolean] :reverse                (false) If notification index will be ordered as earliest first
+    # @option options [String]  :filtered_by_type       (nil) Notifiable type for filter
+    # @option options [Object]  :filtered_by_group      (nil) Group instance for filter
+    # @option options [String]  :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]  :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]  :filtered_by_key        (nil) Key of the notification for filter
     # @return [Array<Notificaion>] Notification index of the target with attributes
     # @todo Add filter and reverse options
     def notification_index_with_attributes(options = {})
@@ -212,6 +233,12 @@ module ActivityNotification
     #
     # @param [Hash] options Options for notification index
     # @option options [Integer] :limit                  (nil) Limit to query for notifications
+    # @option options [Boolean] :reverse                (false) If notification index will be ordered as earliest first
+    # @option options [String]  :filtered_by_type       (nil) Notifiable type for filter
+    # @option options [Object]  :filtered_by_group      (nil) Group instance for filter
+    # @option options [String]  :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]  :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]  :filtered_by_key        (nil) Key of the notification for filter
     # @return [Array<Notificaion>] Unopened notification index of the target with attributes
     # @todo Add filter and reverse options
     def unopened_notification_index_with_attributes(options = {})
@@ -225,6 +252,12 @@ module ActivityNotification
     #
     # @param [Hash] options Options for notification index
     # @option options [Integer] :limit                  (ActivityNotification.config.opened_index_limit) Limit to query for notifications
+    # @option options [Boolean] :reverse                (false) If notification index will be ordered as earliest first
+    # @option options [String]  :filtered_by_type       (nil) Notifiable type for filter
+    # @option options [Object]  :filtered_by_group      (nil) Group instance for filter
+    # @option options [String]  :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]  :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]  :filtered_by_key        (nil) Key of the notification for filter
     # @return [Array<Notificaion>] Opened notification index of the target with attributes
     # @todo Add filter and reverse options
     def opened_notification_index_with_attributes(options = {})
