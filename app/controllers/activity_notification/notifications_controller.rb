@@ -21,7 +21,7 @@ module ActivityNotification
     #   @option params [String] :reload  ('true')  Whether notification index will be reloaded
     #   @return [Responce] HTML view as default or JSON of notification index with json format parameter
     def index
-      @notifications = load_notification_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
+      @notifications = load_notification_index(params) if params[:reload].to_s.to_boolean(true)
       respond_to do |format|
         format.html # index.html.erb
         format.json { render json: @notifications.to_json(include: [:target, :notifiable, :group]) }
@@ -148,18 +148,27 @@ module ActivityNotification
 
       # Loads notification index with request parameters.
       # @api protected
-      # @param [String] filter Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
-      # @param [String] limit Limit to query for notifications
+      # @param [Hash] params Request parameter options for notification index
+      # @option params [String]  :filter                 (nil)   Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
+      # @option params [Integer] :limit                  (nil)   Limit to query for notifications
+      # @option params [Boolean] :reverse                (false) If notification index will be ordered as earliest first
+      # @option params [String]  :filtered_by_type       (nil)   Notifiable type for filter
+      # @option params [String]  :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
+      # @option params [String]  :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
+      # @option params [String]  :filtered_by_key        (nil)   Key of the notification for filter
       # @return [Array] Array of notification index
-      def load_notification_index(filter, limit)
-        limit = limit.to_i > 0 ? limit.to_i : nil
-        case filter
+      def load_notification_index(params = {})
+        limit   = params[:limit].to_i > 0 ? params[:limit].to_i : nil
+        reverse = params[:reverse].to_s.to_boolean(false)
+        options = params.slice(:filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key )
+                        .merge(limit: limit, reverse: reverse)
+        case params[:filter]
         when 'opened'
-          @target.opened_notification_index_with_attributes({ limit: limit })
+          @target.opened_notification_index_with_attributes(options)
         when 'unopened'
-          @target.unopened_notification_index_with_attributes({ limit: limit })
+          @target.unopened_notification_index_with_attributes(options)
         else
-          @target.notification_index_with_attributes({ limit: limit })
+          @target.notification_index_with_attributes(options)
         end
       end
 
@@ -175,7 +184,7 @@ module ActivityNotification
       # @param [String] limit Limit to query for notifications
       # @return [Responce] JavaScript view for ajax request or redirects to back as default
       def return_back_or_ajax(filter, limit)
-        @notifications = load_notification_index(params[:filter], params[:limit]) if params[:reload].to_s.to_boolean(true)
+        @notifications = load_notification_index(params) if params[:reload].to_s.to_boolean(true)
         respond_to do |format|
           if request.xhr?
             format.js

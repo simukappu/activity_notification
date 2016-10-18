@@ -248,12 +248,13 @@ shared_examples_for :target do
 
       context "when the target has unopened notifications" do
         before do
-          @notifiable = create(:article)
-          @group = create(:article)
-          @key = 'test.key.1'
-          create(:notification, target: test_instance, notifiable: @notifiable)
-          create(:notification, target: test_instance, notifiable: create(:comment), group: @group)
-          create(:notification, target: test_instance, notifiable: create(:article), key: @key).open!
+          @notifiable    = create(:article)
+          @group         = create(:article)
+          @key           = 'test.key.1'
+          @notification2 = create(:notification, target: test_instance, notifiable: @notifiable)
+          @notification1 = create(:notification, target: test_instance, notifiable: create(:comment), group: @group)
+          @notification3 = create(:notification, target: test_instance, notifiable: create(:article), key: @key)
+          @notification3.open!
         end
 
         it "calls unopened_notification_index" do
@@ -261,11 +262,11 @@ shared_examples_for :target do
           test_instance.notification_index
         end
 
-        context "without limit" do
+        context "without any options" do
           it "returns the combined array of unopened_notification_index and opened_notification_index" do
-            expect(test_instance.notification_index[0]).to eq(test_instance.unopened_notification_index[0])
-            expect(test_instance.notification_index[1]).to eq(test_instance.unopened_notification_index[1])
-            expect(test_instance.notification_index[2]).to eq(test_instance.opened_notification_index[0])
+            expect(test_instance.notification_index[0]).to eq(@notification1)
+            expect(test_instance.notification_index[1]).to eq(@notification2)
+            expect(test_instance.notification_index[2]).to eq(@notification3)
             expect(test_instance.notification_index.size).to eq(3)
           end
         end
@@ -273,26 +274,17 @@ shared_examples_for :target do
         context "with limit" do
           it "returns the same as unopened_notification_index with limit" do
             options = { limit: 1 }
-            expect(test_instance.notification_index(options)).to eq(test_instance.unopened_notification_index(options))
+            expect(test_instance.notification_index(options)[0]).to eq(@notification1)
             expect(test_instance.notification_index(options).size).to eq(1)
-          end
-        end
-
-        context "without limit" do
-          it "returns the combined array of unopened_notification_index and opened_notification_index" do
-            expect(test_instance.notification_index[0]).to eq(test_instance.unopened_notification_index[0])
-            expect(test_instance.notification_index[1]).to eq(test_instance.unopened_notification_index[1])
-            expect(test_instance.notification_index[2]).to eq(test_instance.opened_notification_index[0])
-            expect(test_instance.notification_index.size).to eq(3)
           end
         end
 
         context "with reverse" do
           it "returns the earliest order" do
             options = { reverse: true }
-            expect(test_instance.notification_index(options)[0]).to eq(test_instance.notification_index[1])
-            expect(test_instance.notification_index(options)[1]).to eq(test_instance.notification_index[0])
-            expect(test_instance.notification_index(options)[2]).to eq(test_instance.notification_index[2])
+            expect(test_instance.notification_index(options)[0]).to eq(@notification2)
+            expect(test_instance.notification_index(options)[1]).to eq(@notification1)
+            expect(test_instance.notification_index(options)[2]).to eq(@notification3)
             expect(test_instance.notification_index(options).size).to eq(3)
           end
         end
@@ -300,8 +292,11 @@ shared_examples_for :target do
         context 'with filtered_by_type options' do
           it "returns filtered notifications only" do
             options = { filtered_by_type: 'Article' }
+            expect(test_instance.notification_index(options)[0]).to eq(@notification2)
+            expect(test_instance.notification_index(options)[1]).to eq(@notification3)
             expect(test_instance.notification_index(options).size).to eq(2)
             options = { filtered_by_type: 'Comment' }
+            expect(test_instance.notification_index(options)[0]).to eq(@notification1)
             expect(test_instance.notification_index(options).size).to eq(1)
           end
         end
@@ -309,6 +304,7 @@ shared_examples_for :target do
         context 'with filtered_by_group options' do
           it "returns filtered notifications only" do
             options = { filtered_by_group: @group }
+            expect(test_instance.notification_index(options)[0]).to eq(@notification1)
             expect(test_instance.notification_index(options).size).to eq(1)
           end
         end
@@ -316,6 +312,7 @@ shared_examples_for :target do
         context 'with filtered_by_group_type and :filtered_by_group_id options' do
           it "returns filtered notifications only" do
             options = { filtered_by_group_type: 'Article', filtered_by_group_id: @group.id.to_s }
+            expect(test_instance.notification_index(options)[0]).to eq(@notification1)
             expect(test_instance.notification_index(options).size).to eq(1)
           end
         end
@@ -323,6 +320,7 @@ shared_examples_for :target do
         context 'with filtered_by_key options' do
           it "returns filtered notifications only" do
             options = { filtered_by_key: @key }
+            expect(test_instance.notification_index(options)[0]).to eq(@notification3)
             expect(test_instance.notification_index(options).size).to eq(1)
           end
         end
@@ -505,12 +503,13 @@ shared_examples_for :target do
 
       context "when the target has unopened notifications" do
         before do
-          @notifiable = create(:article)
-          @group = create(:article)
-          @key = 'test.key.1'
-          create(:notification, target: test_instance, notifiable: @notifiable)
-          create(:notification, target: test_instance, notifiable: create(:comment), group: @group)
-          create(:notification, target: test_instance, notifiable: create(:article), key: @key).open!
+          @notifiable    = create(:article)
+          @group         = create(:article)
+          @key           = 'test.key.1'
+          @notification2 = create(:notification, target: test_instance, notifiable: @notifiable)
+          @notification1 = create(:notification, target: test_instance, notifiable: create(:comment), group: @group)
+          @notification3 = create(:notification, target: test_instance, notifiable: create(:article), key: @key)
+          @notification3.open!
         end
 
         it "calls unopened_notification_index_with_attributes" do
@@ -518,11 +517,11 @@ shared_examples_for :target do
           test_instance.notification_index_with_attributes
         end
 
-        context "without limit" do
-          it "returns the combined array of unopened_notification_index and opened_notification_index" do
-            expect(test_instance.notification_index_with_attributes[0]).to eq(test_instance.unopened_notification_index[0])
-            expect(test_instance.notification_index_with_attributes[1]).to eq(test_instance.unopened_notification_index[1])
-            expect(test_instance.notification_index_with_attributes[2]).to eq(test_instance.opened_notification_index[0])
+        context "without any options" do
+          it "returns the combined array of unopened_notification_index_with_attributes and opened_notification_index_with_attributes" do
+            expect(test_instance.notification_index_with_attributes[0]).to eq(@notification1)
+            expect(test_instance.notification_index_with_attributes[1]).to eq(@notification2)
+            expect(test_instance.notification_index_with_attributes[2]).to eq(@notification3)
             expect(test_instance.notification_index_with_attributes.size).to eq(3)
           end
         end
@@ -530,7 +529,7 @@ shared_examples_for :target do
         context "with limit" do
           it "returns the same as unopened_notification_index_with_attributes with limit" do
             options = { limit: 1 }
-            expect(test_instance.notification_index_with_attributes(options)).to eq(test_instance.unopened_notification_index_with_attributes(options))
+            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(@notification1)
             expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
           end
         end
@@ -538,9 +537,9 @@ shared_examples_for :target do
         context "with reverse" do
           it "returns the earliest order" do
             options = { reverse: true }
-            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(test_instance.notification_index_with_attributes[1])
-            expect(test_instance.notification_index_with_attributes(options)[1]).to eq(test_instance.notification_index_with_attributes[0])
-            expect(test_instance.notification_index_with_attributes(options)[2]).to eq(test_instance.notification_index_with_attributes[2])
+            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(@notification2)
+            expect(test_instance.notification_index_with_attributes(options)[1]).to eq(@notification1)
+            expect(test_instance.notification_index_with_attributes(options)[2]).to eq(@notification3)
             expect(test_instance.notification_index_with_attributes(options).size).to eq(3)
           end
         end
@@ -548,8 +547,11 @@ shared_examples_for :target do
         context 'with filtered_by_type options' do
           it "returns filtered notifications only" do
             options = { filtered_by_type: 'Article' }
+            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(@notification2)
+            expect(test_instance.notification_index_with_attributes(options)[1]).to eq(@notification3)
             expect(test_instance.notification_index_with_attributes(options).size).to eq(2)
             options = { filtered_by_type: 'Comment' }
+            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(@notification1)
             expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
           end
         end
@@ -557,6 +559,7 @@ shared_examples_for :target do
         context 'with filtered_by_group options' do
           it "returns filtered notifications only" do
             options = { filtered_by_group: @group }
+            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(@notification1)
             expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
           end
         end
@@ -564,6 +567,7 @@ shared_examples_for :target do
         context 'with filtered_by_group_type and :filtered_by_group_id options' do
           it "returns filtered notifications only" do
             options = { filtered_by_group_type: 'Article', filtered_by_group_id: @group.id.to_s }
+            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(@notification1)
             expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
           end
         end
@@ -571,6 +575,7 @@ shared_examples_for :target do
         context 'with filtered_by_key options' do
           it "returns filtered notifications only" do
             options = { filtered_by_key: @key }
+            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(@notification3)
             expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
           end
         end
