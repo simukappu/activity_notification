@@ -54,7 +54,7 @@ module ActivityNotification
       # @option options [Boolean] :send_later (true)                                Whether it sends notification email asynchronously
       # @return [Array<Notificaion>] Array of generated notifications
       def notify_all(targets, notifiable, options = {})
-        Array(targets).map { |target| notify_to(target, notifiable, options) }
+        targets.map { |target| target.notify_to(notifiable, options) }
       end
 
       # Generates notifications to one target.
