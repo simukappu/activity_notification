@@ -61,17 +61,7 @@ module ActivityNotification
       index_options = options.slice( :limit, :reverse, :with_group_members,
                                      :filtered_by_group, :filtered_by_group_type, :filtered_by_group_id,
                                      :filtered_by_type, :filtered_by_key, :custom_filter )
-      notification_index =
-        case options[:index_content]
-        when :simple                   then target.notification_index(index_options)
-        when :unopened_simple          then target.unopened_notification_index(index_options)
-        when :opened_simple            then target.opened_notification_index(index_options)
-        when :with_attributes          then target.notification_index_with_attributes(index_options)
-        when :unopened_with_attributes then target.unopened_notification_index_with_attributes(index_options)
-        when :opened_with_attributes   then target.opened_notification_index_with_attributes(index_options)
-        when :none                     then []
-        else                                target.notification_index_with_attributes(index_options)
-        end
+      notification_index = load_notification_index(target, options[:index_content], index_options)
       prepare_content_for(target, notification_index, notification_options)
 
       # Render partial index
@@ -191,6 +181,26 @@ module ActivityNotification
 
 
     private
+
+      # Load notification index from :index_content parameter
+      # @api private
+      #
+      # @param [Object] target Notification target instance
+      # @param [Symbol] index_content Method to load target notification index, [:simple, :unopened_simple, :opened_simple, :with_attributes, :unopened_with_attributes, :opened_with_attributes, :none] are available
+      # @param [Hash] params Option parameter to load notification index
+      # @return [Array<Notification>] Array of notification index
+      def load_notification_index(target, index_content, options = {})
+        case index_content
+        when :simple                   then target.notification_index(options)
+        when :unopened_simple          then target.unopened_notification_index(options)
+        when :opened_simple            then target.opened_notification_index(options)
+        when :with_attributes          then target.notification_index_with_attributes(options)
+        when :unopened_with_attributes then target.unopened_notification_index_with_attributes(options)
+        when :opened_with_attributes   then target.opened_notification_index_with_attributes(options)
+        when :none                     then []
+        else                                target.notification_index_with_attributes(options)
+        end
+      end
 
       # Prepare content for notification index
       # @api private
