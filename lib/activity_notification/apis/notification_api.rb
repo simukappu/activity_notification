@@ -256,6 +256,15 @@ module ActivityNotification
       notification.notifier.present? ? group_member_notifier_count(limit) + 1 : 0
     end
 
+    # Returns the latest group member notification instance of this notification.
+    # If this group owner has no group members, group owner instance self will be returned.
+    #
+    # @return [Notificaion] Notification instance of the latest group member notification
+    def latest_group_member
+      notification = group_member? ? group_owner : self
+      notification.group_member_exists? ? notification.group_members.latest : self
+    end
+
     # Returns notifiable_path to move after opening notification with notifiable.notifiable_path.
     #
     # @return [String] Notifiable path URL to move after opening notification

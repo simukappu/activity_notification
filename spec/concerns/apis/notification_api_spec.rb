@@ -1035,6 +1035,22 @@ shared_examples_for :notification_api do
       end
     end
 
+    describe "#latest_group_member" do
+      context "with group member" do
+        it "returns latest group member" do
+          member1 = create(test_class_name, target: test_instance.target, group_owner: test_instance)
+          member2 = create(test_class_name, target: test_instance.target, group_owner: test_instance)
+          expect(test_instance.latest_group_member).to eq(member2)
+        end
+      end
+
+      context "without group members" do
+        it "returns group owner self" do
+          expect(test_instance.latest_group_member).to eq(test_instance)
+        end
+      end
+    end
+
     describe "#notifiable_path" do
       it "returns notifiable.notifiable_path" do
         expect(test_instance.notifiable_path)

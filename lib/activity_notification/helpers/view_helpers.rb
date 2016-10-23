@@ -43,11 +43,13 @@ module ActivityNotification
     # @option options [String]         :layout                 (nil)       Layout template name of the partial index
     # @option options [Integer]        :limit                  (nil)       Limit to query for notifications
     # @option options [Boolean]        :reverse                (false)     If notification index will be ordered as earliest first
-    # @option options [String]         :filtered_by_type       (nil) Notifiable type for filter
-    # @option options [Object]         :filtered_by_group      (nil) Group instance for filter
-    # @option options [String]         :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
-    # @option options [String]         :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
-    # @option options [String]         :filtered_by_key        (nil) Key of the notification for filter
+    # @option options [Boolean]        :with_group_members     (false)     If notification index will include group members
+    # @option options [String]         :filtered_by_type       (nil)       Notifiable type for filter
+    # @option options [Object]         :filtered_by_group      (nil)       Group instance for filter
+    # @option options [String]         :filtered_by_group_type (nil)       Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]         :filtered_by_group_id   (nil)       Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]         :filtered_by_key        (nil)       Key of the notification for filter
+    # @option options [Array]          :custom_filter          (nil)       Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [String] Rendered view or text as string
     def render_notification_of target, options = {}
       return unless target.is_a? ActivityNotification::Target
@@ -56,10 +58,9 @@ module ActivityNotification
       notification_options = options.merge( target: target.to_resources_name,
                                             partial: options[:notification_partial],
                                             layout: options[:notification_layout] )
-      index_options = options.slice( :limit, :reverse,
-                                     :filtered_by_type,
+      index_options = options.slice( :limit, :reverse, :with_group_members,
                                      :filtered_by_group, :filtered_by_group_type, :filtered_by_group_id,
-                                     :filtered_by_key )
+                                     :filtered_by_type, :filtered_by_key, :custom_filter )
       notification_index =
         case options[:index_content]
         when :simple                   then target.notification_index(index_options)
@@ -212,14 +213,14 @@ module ActivityNotification
       # Render partial index of notifications
       # @api private
       #
-      # @param [Object] target Notification target instance
-      # @param [Hash] params Option parameter to send render
+      # @param [Object] target        Notification target instance
+      # @param [Hash]   params        Option parameter to send render
       # @return [String] Rendered partial index view as string
       def render_partial_index(target, params)
         index_path = params.delete(:partial)
         partial    = partial_index_path(target, index_path, params[:partial_root])
         layout     = layout_path(params.delete(:layout), params[:layout_root])
-        locals     = (params[:locals] || {}).merge(target: target)
+        locals     = (params[:locals] || {}).merge(target: target, parameters: params)
         begin
           render params.merge(partial: partial, layout: layout, locals: locals)
         rescue ActionView::MissingTemplate

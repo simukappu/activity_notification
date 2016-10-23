@@ -1,6 +1,6 @@
 <div class="notification_wrapper">
   <a class="dropdown_notification">
-    <p><span class="notification_count"><span class="<%= 'unopened' if @target.has_unopened_notifications? %>"><%= @target.unopened_notification_count %></span></span></p>
+    <p><span class="notification_count"><span class="<%= 'unopened' if @target.has_unopened_notifications?(parameters) %>"><%= @target.unopened_notification_count(parameters) %></span></span></p>
   </a>
   <div class="notification_list_wrapper">
     <div class="notification_header_wrapper">
@@ -8,7 +8,7 @@
         Notifications
       </p>
       <p class="notification_header_menu">
-        <%= link_to "Open all", open_all_notifications_path_for(@target), method: :post, remote: true %>
+        <%= link_to "Open all", open_all_notifications_path_for(@target, parameters), method: :post, remote: true %>
       </p>
     </div>
     <div class="notifications">

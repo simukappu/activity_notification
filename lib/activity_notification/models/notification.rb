@@ -68,9 +68,10 @@ module ActivityNotification
     #   @notifications = @user.unopened_index
     # @scope class
     # @param [Boolean] reverse If notification index will be ordered as earliest first
+    # @param [Boolean] with_group_members If notification index will include group members
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
-    scope :unopened_index,                    ->(reverse = false) {
-      target_index = unopened_only.group_owners_only
+    scope :unopened_index,                    ->(reverse = false, with_group_members = false) {
+      target_index = with_group_members ? unopened_only : unopened_only.group_owners_only
       reverse ? target_index.earliest_order : target_index.latest_order
     }
 
@@ -91,9 +92,10 @@ module ActivityNotification
     # @scope class
     # @param [Integer] limit Limit to query for opened notifications
     # @param [Boolean] reverse If notification index will be ordered as earliest first
+    # @param [Boolean] with_group_members If notification index will include group members
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
-    scope :opened_index,                      ->(limit, reverse = false) {
-      target_index = opened_only(limit).group_owners_only
+    scope :opened_index,                      ->(limit, reverse = false, with_group_members = false) {
+      target_index = with_group_members ? opened_only(limit) : opened_only(limit).group_owners_only
       reverse ? target_index.earliest_order : target_index.latest_order
     }
 
@@ -160,13 +162,16 @@ module ActivityNotification
     #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_key: 'comment.reply' })
     # @example Get filtered unopened notificatons of the @user for Comment notifiable class with key 'comment.reply'
     #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment', filtered_by_key: 'comment.reply' })
+    # @example Get custom filtered notificatons of the @user
+    #   @notifications = @user.notifications.unopened_only.filtered_by_options({ custom_filter: ["created_at >= ?", time.hour.ago] })
     # @scope class
     # @param [Hash] options Options for filter
-    # @option options [String] :filtered_by_type       (nil) Notifiable type for filter
-    # @option options [Object] :filtered_by_group      (nil) Group instance for filter
-    # @option options [String] :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
-    # @option options [String] :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
-    # @option options [String] :filtered_by_key        (nil) Key of the notification for filter 
+    # @option options [String]     :filtered_by_type       (nil) Notifiable type for filter
+    # @option options [Object]     :filtered_by_group      (nil) Group instance for filter
+    # @option options [String]     :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]     :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]     :filtered_by_key        (nil) Key of the notification for filter 
+    # @option options [Array|Hash] :custom_filter          (nil) Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :filtered_by_options,               ->(options = {}) {
       options = ActivityNotification.cast_to_indifferent_hash(options)
@@ -184,6 +189,9 @@ module ActivityNotification
       if options.has_key?(:filtered_by_key)
         filtered_notifications = filtered_notifications.filtered_by_key(options[:filtered_by_key])
       end
+      if options.has_key?(:custom_filter)
+        filtered_notifications = filtered_notifications.where(options[:custom_filter])
+      end
       filtered_notifications
     }
 
@@ -198,6 +206,14 @@ module ActivityNotification
     # Includes group instance with query for notifications.
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with group
     scope :with_group,                        -> { includes(:group) }
+
+    # Includes group owner instances with query for notifications.
+    # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with group owner
+    scope :with_group_owner,                 -> { includes(:group_owner) }
+
+    # Includes group member instances with query for notifications.
+    # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with group members
+    scope :with_group_members,                -> { includes(:group_members) }
 
     # Includes notifier instance with query for notifications.
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with notifier

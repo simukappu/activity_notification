@@ -122,7 +122,7 @@ describe ActivityNotification::ViewHelpers, type: :helper do
         expect(render_notification_of target_user, fallback: :default)
           .to eq(
             render partial: 'activity_notification/notifications/default/index',
-                   locals: { target: target_user }
+                   locals: { target: target_user, parameters: { fallback: :default } }
           )
       end
     end
@@ -149,7 +149,7 @@ describe ActivityNotification::ViewHelpers, type: :helper do
         expect(self).to receive(:render).with({
           partial: 'activity_notification/notifications/users/index',
           layout:  'layouts/test',
-          locals:  { target: target_user }
+          locals:  { target: target_user, parameters: {} }
         })
         render_notification_of target_user, layout: 'test'
       end

@@ -253,6 +253,7 @@ shared_examples_for :target do
           @key           = 'test.key.1'
           @notification2 = create(:notification, target: test_instance, notifiable: @notifiable)
           @notification1 = create(:notification, target: test_instance, notifiable: create(:comment), group: @group)
+          @member1       = create(:notification, target: test_instance, notifiable: create(:comment), group_owner: @notification1)
           @notification3 = create(:notification, target: test_instance, notifiable: create(:article), key: @key)
           @notification3.open!
         end
@@ -289,6 +290,27 @@ shared_examples_for :target do
           end
         end
 
+        context "with with_group_members" do
+          it "returns the index with group members" do
+            options = { with_group_members: true }
+            expect(test_instance.notification_index(options)[0]).to eq(@member1)
+            expect(test_instance.notification_index(options)[1]).to eq(@notification1)
+            expect(test_instance.notification_index(options)[2]).to eq(@notification2)
+            expect(test_instance.notification_index(options)[3]).to eq(@notification3)
+            expect(test_instance.notification_index(options).size).to eq(4)
+          end
+        end
+
+        context "with as_latest_group_member" do
+          it "returns the index as latest group member" do
+            options = { as_latest_group_member: true }
+            expect(test_instance.notification_index(options)[0]).to eq(@member1)
+            expect(test_instance.notification_index(options)[1]).to eq(@notification2)
+            expect(test_instance.notification_index(options)[2]).to eq(@notification3)
+            expect(test_instance.notification_index(options).size).to eq(3)
+          end
+        end
+
         context 'with filtered_by_type options' do
           it "returns filtered notifications only" do
             options = { filtered_by_type: 'Article' }
@@ -320,6 +342,18 @@ shared_examples_for :target do
         context 'with filtered_by_key options' do
           it "returns filtered notifications only" do
             options = { filtered_by_key: @key }
+            expect(test_instance.notification_index(options)[0]).to eq(@notification3)
+            expect(test_instance.notification_index(options).size).to eq(1)
+          end
+        end
+
+        context 'with custom_filter options' do
+          it "returns filtered notifications only" do
+            options = { custom_filter: ["key = ?", @key] }
+            expect(test_instance.notification_index(options)[0]).to eq(@notification3)
+            expect(test_instance.notification_index(options).size).to eq(1)
+
+            options = { custom_filter: { key: @key } }
             expect(test_instance.notification_index(options)[0]).to eq(@notification3)
             expect(test_instance.notification_index(options).size).to eq(1)
           end
@@ -610,8 +644,8 @@ shared_examples_for :target do
     end
 
     describe "#unopened_notification_index_with_attributes" do
-      it "calls unopened_notification_index" do
-        expect(test_instance).to receive(:unopened_notification_index)
+      it "calls _unopened_notification_index" do
+        expect(test_instance).to receive(:_unopened_notification_index)
         test_instance.unopened_notification_index_with_attributes
       end
 
@@ -668,8 +702,8 @@ shared_examples_for :target do
     end
 
     describe "#opened_notification_index_with_attributes" do
-      it "calls opened_notification_index" do
-        expect(test_instance).to receive(:opened_notification_index)
+      it "calls _opened_notification_index" do
+        expect(test_instance).to receive(:_opened_notification_index)
         test_instance.opened_notification_index_with_attributes
       end
 

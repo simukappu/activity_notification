@@ -5,23 +5,12 @@
     <div class="list_text_wrapper">
       <p class="list_text">
         <strong><%= notification.notifier.present? ? notification.notifier.printable_notifier_name : 'Someone' %></strong>
-        <% if notification.group_member_notifier_exists? %>
-          <%= " and #{notification.group_member_notifier_count} other" %>
-          <%= notification.notifier.present? ? notification.notifier.printable_type.pluralize.downcase : 'people' %>
-        <% end %>
         notified you of
         <% if notification.notifiable.present? %>
-          <% if notification.group_member_exists? %>
-            <%= " #{notification.group_notification_count} #{notification.notifiable_type.humanize.pluralize.downcase} including" %>
-          <% end %>
           <%= notification.notifiable.printable_notifiable_name(notification.target) %>
           <%= "in #{notification.group.printable_group_name}" if notification.group.present? %>
         <% else %>
-          <% if notification.group_member_exists? %>
-            <%= " #{notification.group_notification_count} #{notification.notifiable_type.humanize.pluralize.downcase}" %>
-          <% else %>
-            <%= " a #{notification.notifiable_type.humanize.singularize.downcase}" %>
-          <% end %>
+          <%= " a #{notification.notifiable_type.humanize.singularize.downcase}" %>
           <%= "in #{notification.group.printable_group_name}" if notification.group.present? %>
           but the notifiable is not found. It may have been deleted.
         <% end %>
@@ -34,7 +23,7 @@
 
 <div class="<%= "notification_#{notification.id}" %>">
   <% if notification.unopened? %>
-    <%= link_to open_notification_path_for(notification, reload: false), method: :post, remote: true, class: "unopned_wrapper" do %>
+    <%= link_to open_notification_path_for(notification, reload: false, without_grouping: parameters[:with_group_members]), method: :post, remote: true, class: "unopned_wrapper" do %>
       <div class="unopned_circle"></div>
       <div class="unopned_description_wrapper">
         <p class="unopned_description">Open</p>
@@ -55,10 +44,10 @@
     <%#= link_to "Open and move (GET)", move_notification_path_for(notification, open: true) %>
     <%#= link_to "Open and move (POST)", open_notification_path_for(notification, move: true), method: :post %>
     <%#= link_to "Open", open_notification_path_for(notification, index_options: @index_options), method: :post %>
-    <%#= link_to "Open (Ajax)", open_notification_path_for(notification, reload: false), method: :post, remote: true %>
+    <%#= link_to "Open (Ajax)", open_notification_path_for(notification, reload: false, with_group_members: parameters[:with_group_members]), method: :post, remote: true %>
   <%# end %>
   <%#= link_to "Destroy", notification_path_for(notification, index_options: @index_options), method: :delete %>
-  <%#= link_to "Destroy (Ajax)", notification_path_for(notification, reload: false), method: :delete, remote: true %>
+  <%#= link_to "Destroy (Ajax)", notification_path_for(notification, reload: false, with_group_members: parameters[:with_group_members]), method: :delete, remote: true %>
 
 </div>
 
