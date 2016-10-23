@@ -166,9 +166,12 @@ module ActivityNotification
       # @return [Hash] options to load notification index
       def set_index_options
         limit              = params[:limit].to_i > 0 ? params[:limit].to_i : nil
-        reverse            = params[:reverse].to_s.to_boolean(false)
-        with_group_members = params[:with_group_members].to_s.to_boolean(false) || params[:without_grouping].to_s.to_boolean(false)
-        @index_options = params.slice(:filter, :filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key )
+        reverse            = params[:reverse].present? ?
+                               params[:reverse].to_s.to_boolean(false) : nil
+        with_group_members = params[:with_group_members].present? || params[:without_grouping].present? ?
+                               params[:with_group_members].to_s.to_boolean(false) || params[:without_grouping].to_s.to_boolean(false) : nil
+        @index_options = params.permit(:filter, :filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key)
+                               .to_h.symbolize_keys
                                .merge(limit: limit, reverse: reverse, with_group_members: with_group_members)
       end
 
@@ -222,13 +225,13 @@ module ActivityNotification
             format.js
           # :skip-rails4:
           elsif Rails::VERSION::MAJOR >= 5
-            redirect_back fallback_location: { action: :index }, &@index_options.to_h and return
+            redirect_back fallback_location: { action: :index }, **@index_options and return
           # :skip-rails4:
           # :skip-rails5:
           elsif request.referer
-            redirect_to :back, &@index_options.to_h and return
+            redirect_to :back, **@index_options and return
           else
-            redirect_to action: :index, &@index_options.to_h and return
+            redirect_to action: :index, **@index_options and return
           end
           # :skip-rails5:
         end
