@@ -15,7 +15,7 @@
         <%= link_to "Open all", open_all_notifications_path_for(@target, parameters), method: :post, remote: true %>
       </p>
     </div>
-    <div class="notifications" id="notifications">
+    <div class="notifications">
       <%= yield :notification_index %>
     </div>
     <%= link_to notifications_path_for(@target) do %>

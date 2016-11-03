@@ -3,7 +3,7 @@
     <h1>Notifications to <%= @target.printable_target_name %> <%= link_to open_all_notifications_path_for(@target, @index_options), method: :post, remote: true do %><span class="notification_count"><span class="<%= 'unopened' if @target.has_unopened_notifications?(@index_options) %>"><%= @target.unopened_notification_count(@index_options) %></span></span><% end %></h1>
   </div>
   <ul>
-    <div class="notifications" id="notifications">
+    <div class="notifications">
       <% if @index_options[:with_group_members] %>
         <%= render_notification @notifications, fallback: :default_without_grouping, with_group_members: true %>
       <% else %>

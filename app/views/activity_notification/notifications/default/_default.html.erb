@@ -32,7 +32,7 @@
   </div>
 <% end %>
 
-<div id='<%= "notification_#{notification.id}" %>'>
+<div class='<%= "notification_#{notification.id}" %>'>
   <% if notification.unopened? %>
     <%= link_to open_notification_path_for(notification, reload: false), method: :post, remote: true, class: "unopned_wrapper" do %>
       <div class="unopned_circle"></div>
