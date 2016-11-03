@@ -30,6 +30,44 @@ shared_examples_for :target do
         expect(described_class._printable_notification_target_name).to eq(:printable_name)
       end
     end    
+
+    describe ".notification_index_map" do
+      it "returns notifications of this target type group by target" do
+        ActivityNotification::Notification.delete_all
+        target_1 = create(test_class_name)
+        target_2 = create(test_class_name)
+        notification_1 = create(:notification, target: target_1)
+        notification_2 = create(:notification, target: target_1)
+        notification_3 = create(:notification, target: target_1)
+        notification_4 = create(:notification, target: target_2)
+        notification_5 = create(:notification, target: target_2)
+        notification_6 = create(:notification, target: test_notifiable)
+
+        expect(described_class.notification_index_map.size).to eq(2)
+        expect(described_class.notification_index_map[target_1].size).to eq(3)
+        expect(described_class.notification_index_map[target_2].size).to eq(2)
+      end
+    end
+
+    describe ".unopened_notification_index_map" do
+      it "returns unopened notifications of this target type group by target" do
+        ActivityNotification::Notification.delete_all
+        target_1 = create(test_class_name)
+        target_2 = create(test_class_name)
+        notification_1 = create(:notification, target: target_1)
+        notification_2 = create(:notification, target: target_1)
+        notification_3 = create(:notification, target: target_1)
+        notification_3.open!
+        notification_4 = create(:notification, target: target_2)
+        notification_5 = create(:notification, target: target_2)
+        notification_5.open!
+        notification_6 = create(:notification, target: test_notifiable)
+
+        expect(described_class.unopened_notification_index_map.size).to eq(2)
+        expect(described_class.unopened_notification_index_map[target_1].size).to eq(2)
+        expect(described_class.unopened_notification_index_map[target_2].size).to eq(1)
+      end
+    end
   end
 
   describe "as public instance methods" do

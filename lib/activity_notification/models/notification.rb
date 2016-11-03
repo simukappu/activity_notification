@@ -57,6 +57,17 @@ module ActivityNotification
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :group_members_only,                -> { where.not(group_owner_id: nil) }
 
+    # Selects notification index.
+    # Defined same as `group_owners_only.latest_order`.
+    # @scope class
+    # @param [Boolean] reverse If notification index will be ordered as earliest first
+    # @param [Boolean] with_group_members If notification index will include group members
+    # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
+    scope :all_index!,                        ->(reverse = false, with_group_members = false) {
+      target_index = with_group_members ? self : group_owners_only
+      reverse ? target_index.earliest_order : target_index.latest_order
+    }
+
     # Selects unopened notifications only.
     # @scope class
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
@@ -118,6 +129,14 @@ module ActivityNotification
     # @param [Object] target Target instance for filter
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :filtered_by_target,                ->(target) { where(target: target) }
+
+    # Selects filtered notifications by target_type.
+    # @example Get filtered unopened notificatons of User as target type
+    #   @notifications = ActivityNotification.Notification.unopened_only.filtered_by_target_type('User')
+    # @scope class
+    # @param [String] target_type Target type for filter
+    # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
+    scope :filtered_by_target_type,           ->(target_type) { where(target_type: target_type) }
 
     # Selects filtered notifications by notifiable instance.
     # @example Get filtered unopened notificatons of the @user for @comment as notifiable
