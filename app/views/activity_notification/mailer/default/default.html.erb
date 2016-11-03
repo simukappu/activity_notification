@@ -60,7 +60,7 @@
     <p class="user_desc">
       <strong><%= @notification.notifier.present? ? @notification.notifier.printable_notifier_name : 'Someone' %></strong>
       notified you of
-      <%= @notification.notifiable.printable_notifiable_name(@notification.target) %><%= @notification.group.present? ? "in #{@notification.group.printable_group_name}." : "." %><br>
+      <%= @notification.notifiable.printable_notifiable_name(@notification.target) %><%= @notification.group.present? ? " in #{@notification.group.printable_group_name}." : "." %><br>
       <span><%= @notification.created_at.strftime("%b %d %H:%M") %></span>
     </p>
     <p class="user_desc">
