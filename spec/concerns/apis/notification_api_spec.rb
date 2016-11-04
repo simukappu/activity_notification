@@ -412,6 +412,36 @@ shared_examples_for :notification_api do
       end
     end
 
+    describe ".send_batch_notification_email" do
+      context "as default" do
+        it "sends batch notification email later" do
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
+          expect {
+            perform_enqueued_jobs do
+              described_class.send_batch_notification_email(test_instance.target, [test_instance])
+            end
+          }.to change { ActivityNotification::Mailer.deliveries.size }.by(1)
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
+          expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(test_instance.target.email)
+        end
+
+        it "sends batch notification email with active job queue" do
+          expect {
+            described_class.send_batch_notification_email(test_instance.target, [test_instance])
+          }.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(1)
+        end
+      end
+
+      context "with send_later false" do
+        it "sends notification email now" do
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
+          described_class.send_batch_notification_email(test_instance.target, [test_instance], send_later: false)
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
+          expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(test_instance.target.email)
+        end
+      end
+    end
+
     describe ".available_options" do
       it "returns list of available options in notify api" do
         expect(described_class.available_options)

@@ -54,6 +54,7 @@ shared_examples_for :target do
         ActivityNotification::Notification.delete_all
         target_1 = create(test_class_name)
         target_2 = create(test_class_name)
+        target_3 = create(test_class_name)
         notification_1 = create(:notification, target: target_1)
         notification_2 = create(:notification, target: target_1)
         notification_3 = create(:notification, target: target_1)
@@ -61,11 +62,41 @@ shared_examples_for :target do
         notification_4 = create(:notification, target: target_2)
         notification_5 = create(:notification, target: target_2)
         notification_5.open!
-        notification_6 = create(:notification, target: test_notifiable)
+        notification_6 = create(:notification, target: target_3)
+        notification_6.open!
+        notification_7 = create(:notification, target: test_notifiable)
 
-        expect(described_class.unopened_notification_index_map.size).to eq(2)
-        expect(described_class.unopened_notification_index_map[target_1].size).to eq(2)
-        expect(described_class.unopened_notification_index_map[target_2].size).to eq(1)
+        index_map = described_class.unopened_notification_index_map
+        expect(index_map.size).to eq(2)
+        expect(index_map[target_1].size).to eq(2)
+        expect(index_map[target_2].size).to eq(1)
+        expect(index_map.has_key?(target_3)).to be_falsey
+      end
+    end
+
+    describe ".send_batch_unopened_notification_email" do
+      it "sends batch notification email to this type targets with unopened notifications" do
+        ActivityNotification::Notification.delete_all
+        target_1 = create(test_class_name)
+        target_2 = create(test_class_name)
+        target_3 = create(test_class_name)
+        notification_1 = create(:notification, target: target_1)
+        notification_2 = create(:notification, target: target_1)
+        notification_3 = create(:notification, target: target_1)
+        notification_3.open!
+        notification_4 = create(:notification, target: target_2)
+        notification_5 = create(:notification, target: target_2)
+        notification_5.open!
+        notification_6 = create(:notification, target: target_3)
+        notification_6.open!
+        notification_7 = create(:notification, target: test_notifiable)
+
+        expect(ActivityNotification::Notification).to receive(:send_batch_notification_email).at_least(:once)
+        sent_email_map = described_class.send_batch_unopened_notification_email
+        expect(sent_email_map.size).to eq(2)
+        expect(sent_email_map.has_key?(target_1)).to be_truthy
+        expect(sent_email_map.has_key?(target_2)).to be_truthy
+        expect(sent_email_map.has_key?(target_3)).to be_falsey
       end
     end
   end
@@ -793,6 +824,62 @@ shared_examples_for :target do
 
         it "returns empty records" do
           expect(test_instance.opened_notification_index_with_attributes).to be_empty
+        end
+      end
+    end
+
+    describe "#send_notification_email" do
+      context "with right target of notification" do
+        before do
+          @notification = create(:notification, target: test_instance)
+        end
+
+        it "calls notification.send_notification_email" do
+          expect(@notification).to receive(:send_notification_email).at_least(:once)
+          test_instance.send_notification_email(@notification)
+        end
+      end
+
+      context "with wrong target of notification" do
+        before do
+          @notification = create(:notification, target: create(:user))
+        end
+
+        it "does not call notification.send_notification_email" do
+          expect(@notification).not_to receive(:send_notification_email)
+          test_instance.send_notification_email(@notification)
+        end
+
+        it "returns nil" do
+          expect(test_instance.send_notification_email(@notification)).to be_nil
+        end
+      end
+    end
+
+    describe "#send_batch_notification_email" do
+      context "with right target of notification" do
+        before do
+          @notifications = [create(:notification, target: test_instance), create(:notification, target: test_instance)]
+        end
+
+        it "calls ActivityNotification::Notification.send_batch_notification_email" do
+          expect(ActivityNotification::Notification).to receive(:send_batch_notification_email).at_least(:once)
+          test_instance.send_batch_notification_email(@notifications)
+        end
+      end
+
+      context "with wrong target of notification" do
+        before do
+          notifications = [create(:notification, target: test_instance), create(:notification, target: create(:user))]
+        end
+
+        it "does not call ActivityNotification::Notification.send_batch_notification_email" do
+          expect(ActivityNotification::Notification).not_to receive(:send_batch_notification_email)
+          test_instance.send_batch_notification_email(@notifications)
+        end
+
+        it "returns nil" do
+          expect(test_instance.send_batch_notification_email(@notifications)).to be_nil
         end
       end
     end

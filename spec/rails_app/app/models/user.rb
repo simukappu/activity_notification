@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
   has_many :articles, dependent: :destroy
   has_one :admin, dependent: :destroy
 
-  acts_as_target email: :email, email_allowed: :confirmed_at, printable_name: :name
+  acts_as_target email: :email, email_allowed: :confirmed_at, batch_email_allowed: :confirmed_at, printable_name: :name
   acts_as_notifier printable_name: :name
 
   def admin?

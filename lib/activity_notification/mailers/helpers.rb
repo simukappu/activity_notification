@@ -10,8 +10,10 @@ module ActivityNotification
 
         # Send notification email with configured options.
         #
-        # @param [Notification] notification Notification instance
-        # @param [Hash] options Options for email notification
+        # @param [Notification] notification Notification instance to send email
+        # @param [Hash]         options      Options for notification email
+        # @option options [String, Symbol] :fallback (:default) Fallback template to use when MissingTemplate is raised
+        # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
         def notification_mail(notification, options = {})
           initialize_from_notification(notification)
           headers = headers_for(notification.key, options)
@@ -25,28 +27,62 @@ module ActivityNotification
             end
           end
         end
-  
+
+        # Send batch notification email with configured options.
+        #
+        # @param [Object]              target        Target of batch notification email
+        # @param [Array<Notification>] notifications Target notifications to send batch notification email
+        # @param [Hash]                options       Options for notification email
+        # @option options [String, Symbol] :fallback    (:batch_default) Fallback template to use when MissingTemplate is raised
+        # @option options [String]         :batch_key   (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
+        # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
+        def batch_notification_mail(target, notifications, options = {})
+          initialize_from_notifications(target, notifications)
+          batch_key = options.delete(:batch_key)
+          batch_key ||= @notification.key
+          headers = headers_for(batch_key, options)
+          @notification = nil
+          begin
+            mail headers
+          rescue ActionView::MissingTemplate => e
+            if options[:fallback].present?
+              mail headers.merge(template_name: options[:fallback])
+            else
+              raise e
+            end
+          end
+        end
+
         # Initialize instance variables from notification.
         #
         # @param [Notification] notification Notification instance
         def initialize_from_notification(notification)
-          @notification, @target, @notifiable = notification, notification.target, notification.notifiable
+          @notification, @target, @batch_email = notification, notification.target, false
         end
-  
+
+        # Initialize instance variables from notifications.
+        #
+        # @param [Object]              target        Target of batch notification email
+        # @param [Array<Notification>] notifications Target notifications to send batch notification email
+        def initialize_from_notifications(target, notifications)
+          @target, @notifications, @notification, @batch_email = target, notifications, notifications.first, true
+        end
+
         # Prepare email header from notification key and options.
         #
         # @param [String] key Key of the notification
         # @param [Hash] options Options for email notification
         def headers_for(key, options)
-          if @notifiable.respond_to?(:overriding_notification_email_key) and 
-             @notifiable.overriding_notification_email_key(@target, key).present?
-            key = @notifiable.overriding_notification_email_key(@target, key)
+          if !@batch_email and
+             @notification.notifiable.respond_to?(:overriding_notification_email_key) and 
+             @notification.notifiable.overriding_notification_email_key(@target, key).present?
+            key = @notification.notifiable.overriding_notification_email_key(@target, key)
           end
           headers = {
             subject: subject_for(key),
             to: mailer_to(@target),
-            from: mailer_from(@notification),
-            reply_to: mailer_reply_to(@notification),
+            from: mailer_from(key),
+            reply_to: mailer_reply_to(key),
             template_path: template_paths,
             template_name: template_name(key)
           }.merge(options)
@@ -54,7 +90,7 @@ module ActivityNotification
           @email = headers[:to]
           headers
         end
-  
+
         # Returns target email address as 'to'.
         #
         # @param [Object] target Target instance to notify
@@ -62,38 +98,38 @@ module ActivityNotification
         def mailer_to(target)
           target.mailer_to
         end
-  
+
         # Returns sender email address as 'reply_to'.
         #
-        # @param [Notification] notification Notification instance
+        # @param [String] key Key of the notification or batch notification email
         # @return [String] Sender email address as 'reply_to'
-        def mailer_reply_to(notification)
-          mailer_sender(notification, :reply_to)
+        def mailer_reply_to(key)
+          mailer_sender(key, :reply_to)
         end
-  
+
         # Returns sender email address as 'from'.
         #
-        # @param [Notification] notification Notification instance
+        # @param [String] key Key of the notification or batch notification email
         # @return [String] Sender email address as 'from'
-        def mailer_from(notification)
-          mailer_sender(notification, :from)
+        def mailer_from(key)
+          mailer_sender(key, :from)
         end
-  
+
         # Returns sender email address configured in initializer or mailer class.
         #
-        # @param [Notification] notification Notification instance
+        # @param [String] key Key of the notification or batch notification email
         # @return [String] Sender email address configured in initializer or mailer class
-        def mailer_sender(notification, sender = :from)
+        def mailer_sender(key, sender = :from)
           default_sender = default_params[sender]
           if default_sender.present?
             default_sender.respond_to?(:to_proc) ? instance_eval(&default_sender) : default_sender
           elsif ActivityNotification.config.mailer_sender.is_a?(Proc)
-            ActivityNotification.config.mailer_sender.call(notification)
+            ActivityNotification.config.mailer_sender.call(key)
           else
             ActivityNotification.config.mailer_sender
           end
         end
-  
+
         # Returns template paths to find email view
         #
         # @return [Array<String>] Template paths to find email view
@@ -102,7 +138,7 @@ module ActivityNotification
           paths.unshift("activity_notification/mailer/#{@target.to_resources_name}") if @target.present?
           paths
         end
-  
+
         # Returns template name from notification key
         #
         # @param [String] key Key of the notification
@@ -110,8 +146,8 @@ module ActivityNotification
         def template_name(key)
           key.gsub('.', '/')
         end
-  
-  
+
+
         # Set up a subject doing an I18n lookup.
         # At first, it attempts to set a subject based on the current mapping:
         #   en:
@@ -131,7 +167,7 @@ module ActivityNotification
           k.insert(1, @target.to_resource_name)
           k = k.join('.')
           I18n.t(:mail_subject, scope: k,
-            default: ["Notification of #{@notifiable.printable_type.downcase}"])
+            default: ["Notification of #{@notification.notifiable.printable_type.downcase}"])
         end
 
     end

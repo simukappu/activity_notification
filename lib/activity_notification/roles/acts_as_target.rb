@@ -87,6 +87,7 @@ module ActivityNotification
       # @param [Hash] options Options for notifiable model configuration
       # @option options [Symbol, Proc, String]  :email           (nil) Email address to send notification email
       # @option options [Symbol, Proc, Boolean] :email_allowed   (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email to this target
+      # @option options [Symbol, Proc, Boolean] :email_allowed   (ActivityNotification.config.email_enabled) Whether activity_notification sends batch notification email to this target
       # @option options [Symbol, Proc, Object]  :devise_resource (nil) Integrated resource with devise authentication
       # @option options [Symbol, Proc, String]  :printable_name  (ActivityNotification::Common.printable_name) Printable notification target name
       # @return [Hash] Configured parameters as target model
@@ -94,15 +95,16 @@ module ActivityNotification
         include Target
 
         options[:printable_notification_target_name] ||= options.delete(:printable_name)
+        options[:batch_notification_email_allowed] ||= options.delete(:batch_email_allowed)
         set_acts_as_parameters([:email, :email_allowed, :devise_resource], options, "notification_")
-          .merge set_acts_as_parameters([:printable_notification_target_name], options)
+          .merge set_acts_as_parameters([:batch_notification_email_allowed, :printable_notification_target_name], options)
       end
       alias_method :acts_as_notification_target, :acts_as_target
 
       # Returns array of available target options in acts_as_target.
       # @return [Array<Symbol>] Array of available target options
       def available_target_options
-        [:email, :email_allowed, :devise_resource, :printable_notification_target_name, :printable_name].freeze
+        [:email, :email_allowed, :batch_email_allowed, :devise_resource, :printable_notification_target_name, :printable_name].freeze
       end
     end
   end

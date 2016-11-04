@@ -15,6 +15,7 @@ module ActivityNotification
 
       class_attribute :_notification_email,
                       :_notification_email_allowed,
+                      :_batch_notification_email_allowed,
                       :_notification_devise_resource,
                       :_printable_notification_target_name
       set_target_class_defaults
@@ -32,6 +33,7 @@ module ActivityNotification
       def set_target_class_defaults
         self._notification_email                 = nil
         self._notification_email_allowed         = ActivityNotification.config.email_enabled
+        self._batch_notification_email_allowed   = ActivityNotification.config.email_enabled
         self._notification_devise_resource       = ->(model) { model }
         self._printable_notification_target_name = :printable_name
         nil
@@ -61,7 +63,7 @@ module ActivityNotification
 
       # Gets all notifications for this target type grouped by targets.
       #
-      # @example Get all notifications for this target type grouped by user
+      # @example Get all notifications for for users grouped by user
       #   @notification_index_map = User.notification_index_map
       #   @notification_index_map.each do |user, notifications|
       #     # Do something for user and notifications
@@ -84,7 +86,7 @@ module ActivityNotification
 
       # Gets all unopened notifications for this target type grouped by targets.
       #
-      # @example Get all unopened notifications for this target type grouped by user
+      # @example Get all unopened notifications for users grouped by user
       #   @unopened_notification_index_map = User.unopened_notification_index_map
       #   @unopened_notification_index_map.each do |user, notifications|
       #     # Do something for user and notifications
@@ -104,6 +106,31 @@ module ActivityNotification
       def unopened_notification_index_map(options = {})
         all_notifications(options).unopened_only.group_by(&:target)
       end
+
+      # Send batch notification email to this type targets with unopened notifications.
+      #
+      # @example Send batch notification email to the users with nopened notifications of specified key
+      #   User.send_batch_unopened_notification_email(filtered_by_key: 'this.key')
+      # @example Send batch notification email to the users with nopened notifications of specified key in 1 hour
+      #   User.send_batch_unopened_notification_email(filtered_by_key: 'this.key', custom_filter: ["created_at >= ?", time.hour.ago])
+      #
+      # @option options [Integer]    :limit                  (nil)   Limit to query for notifications
+      # @option options [Boolean]    :reverse                (false) If notification index will be ordered as earliest first
+      # @option options [Boolean]    :with_group_members     (false) If notification index will include group members
+      # @option options [Boolean]    :as_latest_group_member (false) If grouped notification will be shown as the latest group member (default is shown as the earliest member)
+      # @option options [String]     :filtered_by_type       (nil)   Notifiable type for filter
+      # @option options [Object]     :filtered_by_group      (nil)   Group instance for filter
+      # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
+      # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
+      # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+      # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
+      # @return [Hash<Object, Mail::Message|ActionMailer::DeliveryJob>] Hash of target and sent email message or its delivery job
+      def send_batch_unopened_notification_email(options = {})
+        unopened_notification_index_map = unopened_notification_index_map(options)
+        unopened_notification_index_map.map { |target, notifications|
+          [target, Notification.send_batch_notification_email(target, notifications, options)]
+        }.to_h
+      end
     end
 
     # Returns target email address for email notification.
@@ -122,6 +149,16 @@ module ActivityNotification
     # @return [Boolean] If sending notification email is allowed for the target
     def notification_email_allowed?(notifiable, key)
       resolve_value(_notification_email_allowed, notifiable, key)
+    end
+
+    # Returns if sending batch notification email is allowed for the target from configured field or overriden method.
+    # This method is able to be overriden.
+    #
+    # @param [Object] notifiable_type Notifiable type of the notifications
+    # @param [String] key Key of the notifications
+    # @return [Boolean] If sending batch notification email is allowed for the target
+    def batch_notification_email_allowed?(notifiable_type, key)
+      resolve_value(_batch_notification_email_allowed, notifiable_type, key)
     end
 
     # Returns if current resource signed in with Devise is authenticated for the notification.
@@ -349,6 +386,34 @@ module ActivityNotification
     def opened_notification_index_with_attributes(options = {})
       include_attributes _opened_notification_index(options)
     end
+
+    # Sends notification email to the target.
+    #
+    # @param [Hash] options Options for notification email
+    # @option options [Boolean]        :send_later            If it sends notification email asynchronously
+    # @option options [String, Symbol] :fallback   (:default) Fallback template to use when MissingTemplate is raised
+    # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job, return NilClass for wrong target
+    def send_notification_email(notification, options = {})
+      if notification.target == self
+        notification.send_notification_email(options)
+      end
+    end
+
+    # Sends batch notification email to the target.
+    #
+    # @param [Array<Notification>] notifications Target notifications to send batch notification email
+    # @param [Hash]                options       Options for notification email
+    # @option options [Boolean]        :send_later  (false)          If it sends notification email asynchronously
+    # @option options [String, Symbol] :fallback    (:batch_default) Fallback template to use when MissingTemplate is raised
+    # @option options [String]         :batch_key   (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
+    # @return [Mail::Message|ActionMailer::DeliveryJob|NilClass] Email message or its delivery job, return NilClass for wrong target
+    def send_batch_notification_email(notifications, options = {})
+      return if notifications.blank?
+      if notifications.map{ |n| n.target }.uniq == [self]
+        Notification.send_batch_notification_email(self, notifications, options)
+      end
+    end
+
 
     private
 

@@ -109,6 +109,27 @@ module ActivityNotification
         notifications.present? and where(group_owner_id: notifications.map(&:id)).exists?
       end
 
+      # Sends batch notification email to the target.
+      #
+      # @param [Object]              target        Target of batch notification email
+      # @param [Array<Notification>] notifications Target notifications to send batch notification email
+      # @param [Hash]                options       Options for notification email
+      # @option options [Boolean]        :send_later  (false)          If it sends notification email asynchronously
+      # @option options [String, Symbol] :fallback    (:batch_default) Fallback template to use when MissingTemplate is raised
+      # @option options [String]         :batch_key   (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
+      # @return [Mail::Message|ActionMailer::DeliveryJob|NilClass] Email message or its delivery job, return NilClass for wrong target
+      def send_batch_notification_email(target, notifications, options = {})
+        return if notifications.blank?
+        if target.batch_notification_email_allowed?(notifications.first.notifiable_type, notifications.first.key)
+          send_later = options.has_key?(:send_later) ? options[:send_later] : true
+          if send_later
+            Mailer.send_batch_notification_email(target, notifications, options).deliver_later
+          else
+            Mailer.send_batch_notification_email(target, notifications, options).deliver_now
+          end
+        end
+      end
+
       # Returns available options for kinds of notify methods.
       #
       # @return [Array<Notificaion>] Available options for kinds of notify methods
@@ -143,15 +164,18 @@ module ActivityNotification
     # Sends notification email to the target.
     #
     # @param [Hash] options Options for notification email
-    # @option send_later [Boolean] :send_later If it sends notification email asynchronously
-    # @option options [String, Symbol] :fallback (:default) Fallback template to use when MissingTemplate is raised
-    # @return [Mail::Message, ActionMailer::DeliveryJob] Email message or its delivery job
+    # @option options [Boolean]        :send_later            If it sends notification email asynchronously
+    # @option options [String, Symbol] :fallback   (:default) Fallback template to use when MissingTemplate is raised
+    # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
     def send_notification_email(options = {})
-      send_later = options.has_key?(:send_later) ? options[:send_later] : true
-      if send_later
-        Mailer.send_notification_email(self, options).deliver_later
-      else
-        Mailer.send_notification_email(self, options).deliver_now
+      if target.notification_email_allowed?(notifiable, key) and 
+         notifiable.notification_email_allowed?(target, key)
+        send_later = options.has_key?(:send_later) ? options[:send_later] : true
+        if send_later
+          Mailer.send_notification_email(self, options).deliver_later
+        else
+          Mailer.send_notification_email(self, options).deliver_now
+        end
       end
     end
 

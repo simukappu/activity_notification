@@ -1,6 +1,8 @@
 describe ActivityNotification::Mailer do
   include ActiveJob::TestHelper
   let(:notification) { create(:notification) }
+  let(:test_target) { notification.target }
+  let(:notifications) { [create(:notification, target: test_target), create(:notification, target: test_target)] }
 
   before do
     ActivityNotification::Mailer.deliveries.clear
@@ -56,10 +58,18 @@ describe ActivityNotification::Mailer do
       context "with email proc as ActivityNotification.config.mailer_sender" do
         it "sends from configured email as ActivityNotification.config.mailer_sender" do
           ActivityNotification.config.mailer_sender =
-            ->(notification){ notification.target_type == 'User' ? "test03@example.com" : "test04@example.com" }
+            ->(key){ key == notification.key ? "test03@example.com" : "test04@example.com" }
           ActivityNotification::Mailer.send_notification_email(notification).deliver_now
           expect(ActivityNotification::Mailer.deliveries.last.from[0])
             .to eq("test03@example.com")
+        end
+
+        it "sends from configured email as ActivityNotification.config.mailer_sender" do
+          ActivityNotification.config.mailer_sender =
+            ->(key){ key == 'hogehoge' ? "test03@example.com" : "test04@example.com" }
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.from[0])
+            .to eq("test04@example.com")
         end
       end
 
@@ -98,6 +108,49 @@ describe ActivityNotification::Mailer do
       it "sends notification email with active job queue" do
         expect {
             ActivityNotification::Mailer.send_notification_email(notification).deliver_later
+        }.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(1)
+      end
+    end
+  end
+
+  describe ".send_batch_notification_email" do
+    context "with deliver_now" do
+      context "as default" do
+        before do
+          ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications).deliver_now
+        end
+  
+        it "sends batch notification email now" do
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
+        end
+  
+        it "sends to target email" do
+          expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(test_target.email)
+        end
+  
+      end
+
+      context "when fallback option is :none and the template is missing" do
+        it "raise ActionView::MissingTemplate" do
+          expect { ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, fallback: :none).deliver_now }
+            .to raise_error(ActionView::MissingTemplate)
+        end
+      end
+    end
+
+    context "with deliver_later" do
+      it "sends notification email later" do
+        expect {
+          perform_enqueued_jobs do
+            ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications).deliver_later
+          end
+        }.to change { ActivityNotification::Mailer.deliveries.size }.by(1)
+        expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
+      end
+
+      it "sends notification email with active job queue" do
+        expect {
+            ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications).deliver_later
         }.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(1)
       end
     end

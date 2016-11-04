@@ -54,22 +54,24 @@
 </head>
 <body>
 <p>Dear <%= @target.printable_target_name %></p>
-<div class="activity_wrapper">
-  <div class="user_image"></div>
-  <div class="user_desc_wrapper">
-    <p class="user_desc">
-      <strong><%= @notification.notifier.present? ? @notification.notifier.printable_notifier_name : 'Someone' %></strong>
-      notified you of
-      <%= @notification.notifiable.printable_notifiable_name(@notification.target) %><%= @notification.group.present? ? " in #{@notification.group.printable_group_name}." : "." %><br>
-      <span><%= @notification.created_at.strftime("%b %d %H:%M") %></span>
-    </p>
-    <p class="user_desc">
-      <span>
-        <%= link_to "Move to notified #{@notification.notifiable.printable_type.downcase}", move_notification_url_for(@notification, open: true) %>
-      </span>
-    </p>
+<% @notifications.each do |notification| %>
+  <div class="activity_wrapper">
+    <div class="user_image"></div>
+    <div class="user_desc_wrapper">
+      <p class="user_desc">
+        <strong><%= notification.notifier.present? ? notification.notifier.printable_notifier_name : 'Someone' %></strong>
+        notified you of
+        <%= notification.notifiable.printable_notifiable_name(notification.target) %><%= notification.group.present? ? " in #{notification.group.printable_group_name}." : "." %><br>
+        <span><%= notification.created_at.strftime("%b %d %H:%M") %></span>
+      </p>
+      <p class="user_desc">
+        <span>
+          <%= link_to "Move to notified #{notification.notifiable.printable_type.downcase}", move_notification_url_for(notification, open: true) %>
+        </span>
+      </p>
+    </div>
   </div>
-</div>
+<% end %>
 <p>Thank you!</p>
 </body>
 </html>
