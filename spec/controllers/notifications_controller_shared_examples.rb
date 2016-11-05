@@ -149,6 +149,83 @@ shared_examples_for :notification_controller do
         end
       end
     end
+
+    context "with reverse parameter" do
+      before do
+        @notifiable    = create(:article)
+        @group         = create(:article)
+        @key           = 'test.key.1'
+        create(:notification, target: test_target, notifiable: @notifiable)
+        create(:notification, target: test_target, notifiable: create(:comment), group: @group)
+        create(:notification, target: test_target, notifiable: create(:article), key: @key).open!
+        @notification1 = test_target.notification_index[0]
+        @notification2 = test_target.notification_index[1]
+        @notification3 = test_target.notification_index[2]
+      end
+
+      context "as default" do
+        before do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target }), valid_session
+        end
+
+        it "returns the latest order" do
+          expect(assigns(:notifications)[0]).to eq(@notification1)
+          expect(assigns(:notifications)[1]).to eq(@notification2)
+          expect(assigns(:notifications)[2]).to eq(@notification3)
+          expect(assigns(:notifications).size).to eq(3)
+        end
+      end
+
+      context "with true as reverse" do
+        before do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, reverse: true }), valid_session
+        end
+
+        it "returns the earliest order" do
+          expect(assigns(:notifications)[0]).to eq(@notification2)
+          expect(assigns(:notifications)[1]).to eq(@notification1)
+          expect(assigns(:notifications)[2]).to eq(@notification3)
+          expect(assigns(:notifications).size).to eq(3)
+        end
+      end
+    end
+
+    context "with options filter parameters" do
+      before do
+        @notifiable    = create(:article)
+        @group         = create(:article)
+        @key           = 'test.key.1'
+        @notification2 = create(:notification, target: test_target, notifiable: @notifiable)
+        @notification1 = create(:notification, target: test_target, notifiable: create(:comment), group: @group)
+        @notification3 = create(:notification, target: test_target, notifiable: create(:article), key: @key)
+        @notification3.open!
+      end
+
+      context 'with filtered_by_type parameter' do
+        it "returns filtered notifications only" do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filtered_by_type: 'Article' }), valid_session
+          expect(assigns(:notifications)[0]).to eq(@notification2)
+          expect(assigns(:notifications)[1]).to eq(@notification3)
+          expect(assigns(:notifications).size).to eq(2)
+        end
+      end
+
+      context 'with filtered_by_group_type and :filtered_by_group_id parameters' do
+        it "returns filtered notifications only" do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filtered_by_group_type: 'Article', filtered_by_group_id: @group.id.to_s }), valid_session
+          expect(assigns(:notifications)[0]).to eq(@notification1)
+          expect(assigns(:notifications).size).to eq(1)
+        end
+      end
+
+      context 'with filtered_by_key parameter' do
+        it "returns filtered notifications only" do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filtered_by_key: @key }), valid_session
+          expect(assigns(:notifications)[0]).to eq(@notification3)
+          expect(assigns(:notifications).size).to eq(1)
+        end
+      end
+    end
   end
 
   describe "POST #open_all" do

@@ -122,7 +122,7 @@ describe ActivityNotification::ViewHelpers, type: :helper do
         expect(render_notification_of target_user, fallback: :default)
           .to eq(
             render partial: 'activity_notification/notifications/default/index',
-                   locals: { target: target_user }
+                   locals: { target: target_user, parameters: { fallback: :default } }
           )
       end
     end
@@ -149,7 +149,7 @@ describe ActivityNotification::ViewHelpers, type: :helper do
         expect(self).to receive(:render).with({
           partial: 'activity_notification/notifications/users/index',
           layout:  'layouts/test',
-          locals:  { target: target_user }
+          locals:  { target: target_user, parameters: {} }
         })
         render_notification_of target_user, layout: 'test'
       end
@@ -174,10 +174,38 @@ describe ActivityNotification::ViewHelpers, type: :helper do
         end
       end
 
-      context "with :with_attributes or any other key" do
+      context "with :unopened_simple" do
+        it "uses target.unopened_notification_index" do
+          expect(target_user).to receive(:unopened_notification_index).at_least(:once)
+          render_notification_of target_user, index_content: :unopened_simple
+        end
+      end
+
+      context "with :opened_simple" do
+        it "uses target.opened_notification_index" do
+          expect(target_user).to receive(:opened_notification_index).at_least(:once)
+          render_notification_of target_user, index_content: :opened_simple
+        end
+      end
+
+      context "with :with_attributes" do
         it "uses target.notification_index_with_attributes" do
           expect(target_user).to receive(:notification_index_with_attributes)
           render_notification_of target_user, index_content: :with_attributes
+        end
+      end
+
+      context "with :unopened_with_attributes" do
+        it "uses target.unopened_notification_index_with_attributes" do
+          expect(target_user).to receive(:unopened_notification_index_with_attributes).at_least(:once)
+          render_notification_of target_user, index_content: :unopened_with_attributes
+        end
+      end
+
+      context "with :opened_with_attributes" do
+        it "uses target.opened_notification_index_with_attributes" do
+          expect(target_user).to receive(:opened_notification_index_with_attributes).at_least(:once)
+          render_notification_of target_user, index_content: :opened_with_attributes
         end
       end
 
@@ -188,6 +216,14 @@ describe ActivityNotification::ViewHelpers, type: :helper do
           render_notification_of target_user, index_content: :none
         end
       end
+
+      context "with any other key" do
+        it "uses target.notification_index_with_attributes" do
+          expect(target_user).to receive(:notification_index_with_attributes)
+          render_notification_of target_user, index_content: :hoge
+        end
+      end
+
     end
   end
 

@@ -265,6 +265,17 @@ describe ActivityNotification::Notification, type: :model do
             expect(notifications.first).to eq(@notification_2)
           end
         end
+
+        context 'with custom_filter options' do
+          it "works with filtered_by_options scope" do
+            notifications = ActivityNotification::Notification.filtered_by_options({ custom_filter: ["key = ?", @key_1] })
+            expect(notifications.size).to eq(1)
+            expect(notifications.first).to eq(@notification_1)
+            notifications = ActivityNotification::Notification.filtered_by_options({ custom_filter: { key: @key_2 } })
+            expect(notifications.size).to eq(1)
+            expect(notifications.first).to eq(@notification_2)
+          end
+        end
   
         context 'with no options' do
           it "works with filtered_by_options scope" do
