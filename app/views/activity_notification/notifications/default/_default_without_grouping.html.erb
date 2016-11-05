@@ -1,5 +1,5 @@
 <% content_for :notification_content, flush: true do %>
-  <li class="notification_list <%= notification.opened? ? "opened" : "unopened" %>">
+  <div class='notification_list <%= notification.opened? ? "opened" : "unopened" %>'>
     <div class="notification_list_cover"></div>
     <div class="list_image"></div>
     <div class="list_text_wrapper">
@@ -18,10 +18,10 @@
         <span><%= notification.created_at.strftime("%b %d %H:%M") %></span>
       </p>
     </div>
-  </li>
+  </div>
 <% end %>
 
-<div class="<%= "notification_#{notification.id}" %>">
+<div class='<%= "notification_#{notification.id}" %>'>
   <% if notification.unopened? %>
     <%= link_to open_notification_path_for(notification, reload: false, without_grouping: parameters[:with_group_members]), method: :post, remote: true, class: "unopned_wrapper" do %>
       <div class="unopned_circle"></div>

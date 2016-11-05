@@ -1,6 +1,10 @@
 <div class="notification_wrapper">
   <a class="dropdown_notification">
-    <p><span class="notification_count"><span class="<%= 'unopened' if @target.has_unopened_notifications?(parameters) %>"><%= @target.unopened_notification_count(parameters) %></span></span></p>
+    <p class="notification_count" id="notification_count">
+      <span class="<%= 'unopened' if @target.has_unopened_notifications?(parameters) %>">
+        <%= @target.unopened_notification_count(parameters) %>
+      </span>
+    </p>
   </a>
   <div class="notification_list_wrapper">
     <div class="notification_header_wrapper">
@@ -34,14 +38,14 @@
   .notification_wrapper .dropdown_notification{
     cursor: pointer;
   }
-  .notification_wrapper .dropdown_notification p span span{
+  .notification_wrapper .dropdown_notification .notification_count span{
     color: #fff;
     background-color: #e5e5e5;
     border-radius: 4px;
     font-size: 12px;
     padding: 4px 8px;
   }
-  .notification_wrapper .dropdown_notification p span span.unopened{
+  .notification_wrapper .dropdown_notification .notification_count span.unopened{
     background-color: #f87880;
   }
   .notification_wrapper.open .notification_list_wrapper {
