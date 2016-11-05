@@ -57,8 +57,10 @@ module ActivityNotification
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
     scope :group_members_only,                -> { where.not(group_owner_id: nil) }
 
-    # Selects notification index.
-    # Defined same as group_owners_only.latest_order.
+    # Selects all notification index.
+    #   ActivityNotification::Notification.all_index!
+    # is defined same as
+    #   ActivityNotification::Notification.group_owners_only.latest_order
     # @scope class
     # @param [Boolean] reverse If notification index will be ordered as earliest first
     # @param [Boolean] with_group_members If notification index will include group members
@@ -74,9 +76,11 @@ module ActivityNotification
     scope :unopened_only,                     -> { where(opened_at: nil) }
 
     # Selects unopened notification index.
-    # Defined same as unopened_only.group_owners_only.latest_order.
+    #   ActivityNotification::Notification.unopened_index
+    # is defined same as
+    #   ActivityNotification::Notification.unopened_only.group_owners_only.latest_order
     # @example Get unopened notificaton index of the @user
-    #   @notifications = @user.unopened_index
+    #   @notifications = @user.notifications.unopened_index
     # @scope class
     # @param [Boolean] reverse If notification index will be ordered as earliest first
     # @param [Boolean] with_group_members If notification index will include group members
@@ -99,7 +103,9 @@ module ActivityNotification
     scope :opened_only,                       ->(limit) { opened_only!.limit(limit) }
 
     # Selects unopened notification index.
-    # Defined same as opened_only(limit).group_owners_only.latest_order.
+    #   ActivityNotification::Notification.opened_index(limit)
+    # is defined same as
+    #   ActivityNotification::Notification.opened_only(limit).group_owners_only.latest_order
     # @scope class
     # @param [Integer] limit Limit to query for opened notifications
     # @param [Boolean] reverse If notification index will be ordered as earliest first
