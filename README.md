@@ -312,7 +312,7 @@ If you want to set notification index in the common layout, such as common heade
 <%= render_notifications_of current_user, index_content: :with_attributes %>
 ```
 
-Then, content named :notification_index will be prepared and you can use it in your partial template.
+Then, content named `:notification_index` will be prepared and you can use it in your partial template.
 
 ```activity_notifications/notifications/users/_index.html.erb
 ...
@@ -334,29 +334,29 @@ For example, if you have an notification with `:key` set to `"notification.comme
 
 *Hint*: the `"notification."` prefix in `:key` is completely optional, you can skip it in your projects or use this prefix only to make namespace.
 
-If you would like to fallback to a partial, you can utilize the `fallback` parameter to specify the path of a partial to use when one is missing:
+If you would like to fallback to a partial, you can utilize the `:fallback` parameter to specify the path of a partial to use when one is missing:
 
 ```erb
-<%= render_notification(@notification, target: :users, fallback: 'default') %>
+<%= render_notification(@notification, target: :users, fallback: :default) %>
 ```
 
-When used in this manner, if a partial with the specified `:key` cannot be located it will use the partial defined in the `fallback` instead. In the example above this would resolve to `activity_notification/notifications/users/_default.html.(|erb|haml|slim|something_else)`.
+When used in this manner, if a partial with the specified `:key` cannot be located it will use the partial defined in the `:fallback` instead. In the example above this would resolve to `activity_notification/notifications/users/_default.html.(|erb|haml|slim|something_else)`.
 
 If you do not specify `:target` option like this,
 
 ```erb
-<%= render_notification(@notification, fallback: 'default') %>
+<%= render_notification(@notification, fallback: :default) %>
 ```
 
 the gem will look for a partial in `default` as the target type which means `activity_notification/notifications/default/_default.html.(|erb|haml|slim|something_else)`.
 
-If a view file does not exist then ActionView::MisingTemplate will be raised. If you wish to fallback to the old behaviour and use an i18n based translation in this situation you can specify a `:fallback` parameter of `text` to fallback to this mechanism like such:
+If a view file does not exist then ActionView::MisingTemplate will be raised. If you wish to fallback to the old behaviour and use an i18n based translation in this situation you can specify a `:fallback` parameter of `:text` to fallback to this mechanism like such:
 
 ```erb
 <%= render_notification(@notification, fallback: :text) %>
 ```
 
-Default views of `activity_notification` depends on jQuery and you have to add requirements to `application.js` in your apps:
+Finally, default views of `activity_notification` depends on jQuery and you have to add requirements to `application.js` in your apps:
 
 ```app/assets/javascripts/application.js
 //= require jquery
