@@ -13,19 +13,10 @@ module ActivityNotification
         # @param [Notification] notification Notification instance to send email
         # @param [Hash]         options      Options for notification email
         # @option options [String, Symbol] :fallback (:default) Fallback template to use when MissingTemplate is raised
-        # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
         def notification_mail(notification, options = {})
           initialize_from_notification(notification)
           headers = headers_for(notification.key, options)
-          begin
-            mail headers
-          rescue ActionView::MissingTemplate => e
-            if options[:fallback].present?
-              mail headers.merge(template_name: options[:fallback])
-            else
-              raise e
-            end
-          end
+          send_mail(headers, options[:fallback])
         end
 
         # Send batch notification email with configured options.
@@ -35,22 +26,13 @@ module ActivityNotification
         # @param [Hash]                options       Options for notification email
         # @option options [String, Symbol] :fallback    (:batch_default) Fallback template to use when MissingTemplate is raised
         # @option options [String]         :batch_key   (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
-        # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
         def batch_notification_mail(target, notifications, options = {})
           initialize_from_notifications(target, notifications)
           batch_key = options.delete(:batch_key)
           batch_key ||= @notification.key
           headers = headers_for(batch_key, options)
           @notification = nil
-          begin
-            mail headers
-          rescue ActionView::MissingTemplate => e
-            if options[:fallback].present?
-              mail headers.merge(template_name: options[:fallback])
-            else
-              raise e
-            end
-          end
+          send_mail(headers, options[:fallback])
         end
 
         # Initialize instance variables from notification.
@@ -168,6 +150,25 @@ module ActivityNotification
           k = k.join('.')
           I18n.t(:mail_subject, scope: k,
             default: ["Notification of #{@notification.notifiable.printable_type.downcase}"])
+        end
+
+
+      private
+
+        # Send email with fallback option.
+        #
+        # @param [Hash]           headers  Prepared email header
+        # @param [String, Symbol] fallback Fallback option
+        def send_mail(headers, fallback = nil)
+          begin
+            mail headers
+          rescue ActionView::MissingTemplate => e
+            if fallback.present?
+              mail headers.merge(template_name: fallback)
+            else
+              raise e
+            end
+          end
         end
 
     end
