@@ -21,6 +21,7 @@
 * Notification views (presentation of notifications)
 * Grouping notifications (grouping like `"Kevin and 7 other users posted comments to this article"`)
 * Email notification
+* Batch email notification
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
 
 ### Notification index
@@ -55,8 +56,11 @@
     1. [Setup mailer](#setup-mailer)
     2. [Email templates](#email-templates)
     3. [i18n for email](#i18n-for-email)
-  2. [Grouping notifications](#grouping-notifications)
-  3. [Integration with Devise](#integration-with-devise)
+  2. [Batch email notification](#batch-email-notification)
+    1. [Batch email templates](#batch-email-templates)
+    2. [i18n for batch email](#i18n-for-batch-email)
+  3. [Grouping notifications](#grouping-notifications)
+  4. [Integration with Devise](#integration-with-devise)
 4. [Testing](#testing)
 5. [Documentation](#documentation)
 6. **[Common examples](#common-examples)**
@@ -454,6 +458,42 @@ notification:
       post:
         text: "<p>Someone posted comments to your article</p>"
         mail_subject: 'New comment to your article'
+```
+
+### Batch email notification
+
+`activity_notification` provides batch email notification to the notification targets. You can send notification daily or hourly with scheduler like `whenever`.
+
+You can automatically send batch notification email for unopened notifications only to the all specified targets with `batch_key`.
+
+```ruby
+# Send batch notification email to the users with unopened notifications
+User.send_batch_unopened_notification_email(batch_key: 'batch.comment.post')
+```
+
+You can also add conditions to filter notifications, like this:
+
+```ruby
+# Send batch notification email to the users with unopened notifications of specified key in 1 hour
+User.send_batch_unopened_notification_email(batch_key: 'batch.comment.post', filtered_by_key: 'comment.post', custom_filter: ["created_at >= ?", time.hour.ago])
+```
+
+#### Batch email templates
+
+`activity_notification` will look for batch email template in the same way as email notification using `batch_key`.
+`batch_key` is specified by `:batch_key` option. If the option is not specified, The key of the first notification will be used as `batch_key`.
+
+#### i18n for batch email
+
+The subject of batch notification email also can be put in your locale `.yml` files as `mail_subject` field for `batch_key`.
+
+```yaml
+notification:
+  user:
+    batch:
+      comment:
+        post:
+          mail_subject: 'New comments to your article'
 ```
 
 ### Grouping notifications
