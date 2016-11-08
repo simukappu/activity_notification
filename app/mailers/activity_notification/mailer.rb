@@ -8,7 +8,7 @@ if defined?(ActionMailer)
     # @param [Notification] notification Notification instance to send email
     # @param [Hash]         options      Options for notification email
     # @option options [String, Symbol] :fallback (:default) Fallback template to use when MissingTemplate is raised
-    # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job, return NilClass for wrong target
+    # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
     def send_notification_email(notification, options = {})
       options[:fallback] ||= :default
       if options[:fallback] == :none
@@ -22,9 +22,9 @@ if defined?(ActionMailer)
     # @param [Object]              target        Target of batch notification email
     # @param [Array<Notification>] notifications Target notifications to send batch notification email
     # @param [Hash]                options       Options for notification email
-    # @option options [String, Symbol] :fallback    (:batch_default) Fallback template to use when MissingTemplate is raised
-    # @option options [String]         :batch_key   (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
-    # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job, return NilClass for wrong target
+    # @option options [String, Symbol] :fallback  (:batch_default) Fallback template to use when MissingTemplate is raised
+    # @option options [String]         :batch_key (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
+    # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
     def send_batch_notification_email(target, notifications, options = {})
       options[:fallback] ||= :batch_default
       if options[:fallback] == :none

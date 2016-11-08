@@ -57,8 +57,9 @@
     2. [Email templates](#email-templates)
     3. [i18n for email](#i18n-for-email)
   2. [Batch email notification](#batch-email-notification)
-    1. [Batch email templates](#batch-email-templates)
-    2. [i18n for batch email](#i18n-for-batch-email)
+    1. [Setup mailer](#setup-mailer)
+    2. [Batch email templates](#batch-email-templates)
+    3. [i18n for batch email](#i18n-for-batch-email)
   3. [Grouping notifications](#grouping-notifications)
   4. [Integration with Devise](#integration-with-devise)
 4. [Testing](#testing)
@@ -462,9 +463,30 @@ notification:
 
 ### Batch email notification
 
-`activity_notification` provides batch email notification to the notification targets. You can send notification daily or hourly with scheduler like `whenever`.
+`activity_notification` provides batch email notification to the notification targets. You can send notification email daily, hourly or weekly and so on with a scheduler like `whenever`.
 
-You can automatically send batch notification email for unopened notifications only to the all specified targets with `batch_key`.
+#### Setup mailer
+
+First, you need to set up the default URL options for the `activity_notification` mailer in each environment.
+
+Batch email notification is disabled as default. You can configure to enable email notification in initializer `activity_notification.rb` like single email notification.
+
+```ruby
+config.email_enabled = true
+config.mailer_sender = 'your_notification_sender@example.com'
+```
+
+You can also configure them for each target model by `acts_as_notification_target` role like this.
+
+```ruby
+class User < ActiveRecord::Base
+  # Example using confirmed_at of devise field
+  # to decide whether activity_notification sends batch notification email to this user
+  acts_as_notification_target email: :email, batch_email_allowed: :confirmed_at
+end
+```
+
+Then, you can automatically send batch notification email for unopened notifications only to the all specified targets with `batch_key`.
 
 ```ruby
 # Send batch notification email to the users with unopened notifications
