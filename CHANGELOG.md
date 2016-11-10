@@ -3,7 +3,7 @@
 
 Enhancements:
 
-* Add function of batch email notification
+* Add function to send batch email notification
   * Batch mailer API
   * Default batch notification email templates
   * Target role configuration for batch email notification
