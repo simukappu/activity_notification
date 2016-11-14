@@ -10,7 +10,7 @@ Bug Fixes:
 
 Enhancements:
 
-* Add function of batch email notification
+* Add function to send batch email notification
   * Batch mailer API
   * Default batch notification email templates
   * Target role configuration for batch email notification
@@ -37,7 +37,7 @@ Enhancements:
 * Arrange bundled test application
 * Make default rails version 5.0 and update gem dependency
 
-Breaking change:
+Breaking Changes:
 * Rename `opened_limit` configuration parameter to `opened_index_limit`
   * http://github.com/simukappu/activity_notification/commit/591e53cd8977220f819c11cd702503fc72dd1fd1
 
