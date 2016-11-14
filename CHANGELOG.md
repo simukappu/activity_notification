@@ -1,3 +1,10 @@
+## 1.0.2 / 2016-11-14
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.0.1...v1.0.2)
+
+Bug Fixes:
+
+* Fix migration and notification generator's path
+
 ## 1.0.1 / 2016-11-05
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.0.0...v1.0.1)
 
