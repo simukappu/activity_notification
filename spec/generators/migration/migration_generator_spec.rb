@@ -1,4 +1,4 @@
-require 'generators/activity_notification/active_record/migration_generator'
+require 'generators/activity_notification/migration/migration_generator'
 
 describe ActivityNotification::Generators::MigrationGenerator, type: :generator do
 

@@ -1,4 +1,4 @@
-require 'generators/activity_notification/models/notification_generator'
+require 'generators/activity_notification/notification/notification_generator'
 
 describe ActivityNotification::Generators::NotificationGenerator, type: :generator do
 
