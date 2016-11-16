@@ -57,7 +57,7 @@
     2. [Email templates](#email-templates)
     3. [i18n for email](#i18n-for-email)
   2. [Batch email notification](#batch-email-notification)
-    1. [Setup mailer](#setup-mailer)
+    1. [Setup batch mailer](#setup-batch-mailer)
     2. [Batch email templates](#batch-email-templates)
     3. [i18n for batch email](#i18n-for-batch-email)
   3. [Grouping notifications](#grouping-notifications)
@@ -465,7 +465,7 @@ notification:
 
 `activity_notification` provides batch email notification to the notification targets. You can send notification email daily, hourly or weekly and so on with a scheduler like `whenever`.
 
-#### Setup mailer
+#### Setup batch mailer
 
 First, you need to set up the default URL options for the `activity_notification` mailer in each environment.
 
@@ -486,7 +486,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-Then, you can automatically send batch notification email for unopened notifications only to the all specified targets with `batch_key`.
+Then, you can send batch notification email for unopened notifications only to the all specified targets with `batch_key`.
 
 ```ruby
 # Send batch notification email to the users with unopened notifications

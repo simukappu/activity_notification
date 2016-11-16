@@ -1,2 +1,24 @@
-<h1>Notification for <%= "#{@target.class.to_s.underscore} (#{@target.id})" %></h1>
-<%= render_notification(@notification, fallback: :default) %>
+<div class="notification_wrapper">
+  <div class="notification_header">
+    <h1>Notification to <%= @target.printable_target_name %></h1>
+  </div>
+  <ul>
+    <div class="notifications">
+      <%= render_notification(@notification, fallback: :default) %>
+      <%#= render_notification @notification, fallback: :text %>
+    </div>
+  </ul>
+</div>
+
+<style>
+  .notification_wrapper .notification_header h1 span span{
+    color: #fff;
+    background-color: #e5e5e5;
+    border-radius: 4px;
+    font-size: 12px;
+    padding: 4px 8px;
+  }
+  .notification_wrapper .notification_header h1 span span.unopened{
+    background-color: #f87880;
+  }
+</style>
