@@ -150,7 +150,7 @@ module ActivityNotification
           render plain: "400 Bad Request: Missing parameter", status: 400
         end
       end
-  
+
       # Sets @notification instance variable from request parameters.
       # @api protected
       # @return [Object] Notification instance (Returns HTTP 403 when the target of notification is different from specified target by request parameter)
@@ -203,7 +203,7 @@ module ActivityNotification
       def set_view_prefixes
         lookup_context.prefixes.prepend(target_view_path)
       end
-  
+
       # Returns JavaScript view for ajax request or redirects to back as default.
       # @api protected
       # @option params [String]  :filter                 (nil)   Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
