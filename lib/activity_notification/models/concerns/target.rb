@@ -104,22 +104,25 @@ module ActivityNotification
       # @example Send batch notification email to the users with unopened notifications of specified key in 1 hour
       #   User.send_batch_unopened_notification_email(filtered_by_key: 'this.key', custom_filter: ["created_at >= ?", time.hour.ago])
       #
-      # @option options [Integer]    :limit                  (nil)   Limit to query for notifications
-      # @option options [Boolean]    :reverse                (false) If notification index will be ordered as earliest first
-      # @option options [Boolean]    :with_group_members     (false) If notification index will include group members
-      # @option options [Boolean]    :as_latest_group_member (false) If grouped notification will be shown as the latest group member (default is shown as the earliest member)
-      # @option options [String]     :filtered_by_type       (nil)   Notifiable type for filter
-      # @option options [Object]     :filtered_by_group      (nil)   Group instance for filter
-      # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
-      # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
-      # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
-      # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
+      # @option options [Integer]        :limit                  (nil)            Limit to query for notifications
+      # @option options [Boolean]        :reverse                (false)          If notification index will be ordered as earliest first
+      # @option options [Boolean]        :with_group_members     (false)          If notification index will include group members
+      # @option options [Boolean]        :as_latest_group_member (false)          If grouped notification will be shown as the latest group member (default is shown as the earliest member)
+      # @option options [String]         :filtered_by_type       (nil)            Notifiable type for filter
+      # @option options [Object]         :filtered_by_group      (nil)            Group instance for filter
+      # @option options [String]         :filtered_by_group_type (nil)            Group type for filter, valid with :filtered_by_group_id
+      # @option options [String]         :filtered_by_group_id   (nil)            Group instance id for filter, valid with :filtered_by_group_type
+      # @option options [String]         :filtered_by_key        (nil)            Key of the notification for filter
+      # @option options [Array|Hash]     :custom_filter          (nil)            Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
+      # @option options [Boolean]        :send_later             (false)          If it sends notification email asynchronously
+      # @option options [String, Symbol] :fallback               (:batch_default) Fallback template to use when MissingTemplate is raised
+      # @option options [String]         :batch_key              (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
       # @return [Hash<Object, Mail::Message|ActionMailer::DeliveryJob>] Hash of target and sent email message or its delivery job
       def send_batch_unopened_notification_email(options = {})
-        options = options.merge(filtered_by_status: :unopened)
-        notification_index_map = notification_index_map(options)
-        notification_index_map.map { |target, notifications|
-          [target, Notification.send_batch_notification_email(target, notifications, options)]
+        unopened_notification_index_map = notification_index_map(options.merge(filtered_by_status: :unopened))
+        mailer_options = options.select { |k, _| [:send_later, :fallback, :batch_key].include?(k) }
+        unopened_notification_index_map.map { |target, notifications|
+          [target, Notification.send_batch_notification_email(target, notifications, mailer_options)]
         }.to_h
       end
     end
