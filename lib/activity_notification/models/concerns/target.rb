@@ -45,6 +45,7 @@ module ActivityNotification
       # @option options [Boolean]    :reverse                (false) If notification index will be ordered as earliest first
       # @option options [Boolean]    :with_group_members     (false) If notification index will include group members
       # @option options [Boolean]    :as_latest_group_member (false) If grouped notification will be shown as the latest group member (default is shown as the earliest member)
+      # @option options [String]     :filtered_by_status     (:all)  Status for filter, :all, :opened and :unopened are available
       # @option options [String]     :filtered_by_type       (nil)   Notifiable type for filter
       # @option options [Object]     :filtered_by_group      (nil)   Group instance for filter
       # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
@@ -53,12 +54,23 @@ module ActivityNotification
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
       # @return [Array<Notificaion>] All notifications for this target type
       def all_notifications(options = {})
-        reverse            = options[:reverse] || false
-        with_group_members = options[:with_group_members] || false
+        reverse                = options[:reverse] || false
+        with_group_members     = options[:with_group_members] || false
+        as_latest_group_member = options[:as_latest_group_member] || false
         target_notifications = Notification.filtered_by_target_type(self.name)
                                            .all_index!(reverse, with_group_members)
                                            .filtered_by_options(options)
-        options[:limit].present? ? target_notifications.limit(options[:limit]) : target_notifications
+                                           .with_target
+        case options[:filtered_by_status]
+        when :opened, 'opened'
+          target_notifications = target_notifications.opened_only!
+        when :unopened, 'unopened'
+          target_notifications = target_notifications.unopened_only
+        end
+        target_notifications = target_notifications.limit(options[:limit]) if options[:limit].present?
+        as_latest_group_member ?
+          target_notifications.map{ |n| n.latest_group_member } :
+          target_notifications.to_a
       end
 
       # Gets all notifications for this target type grouped by targets.
@@ -73,6 +85,7 @@ module ActivityNotification
       # @option options [Boolean]    :reverse                (false) If notification index will be ordered as earliest first
       # @option options [Boolean]    :with_group_members     (false) If notification index will include group members
       # @option options [Boolean]    :as_latest_group_member (false) If grouped notification will be shown as the latest group member (default is shown as the earliest member)
+      # @option options [String]     :filtered_by_status     (:all)  Status for filter, :all, :opened and :unopened are available
       # @option options [String]     :filtered_by_type       (nil)   Notifiable type for filter
       # @option options [Object]     :filtered_by_group      (nil)   Group instance for filter
       # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
@@ -84,29 +97,6 @@ module ActivityNotification
         all_notifications(options).group_by(&:target)
       end
 
-      # Gets all unopened notifications for this target type grouped by targets.
-      #
-      # @example Get all unopened notifications for users grouped by user
-      #   @unopened_notification_index_map = User.unopened_notification_index_map
-      #   @unopened_notification_index_map.each do |user, notifications|
-      #     # Do something for user and notifications
-      #   end
-      #
-      # @option options [Integer]    :limit                  (nil)   Limit to query for notifications
-      # @option options [Boolean]    :reverse                (false) If notification index will be ordered as earliest first
-      # @option options [Boolean]    :with_group_members     (false) If notification index will include group members
-      # @option options [Boolean]    :as_latest_group_member (false) If grouped notification will be shown as the latest group member (default is shown as the earliest member)
-      # @option options [String]     :filtered_by_type       (nil)   Notifiable type for filter
-      # @option options [Object]     :filtered_by_group      (nil)   Group instance for filter
-      # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
-      # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
-      # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
-      # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [Array<Notificaion>] All unopened notifications for this target type grouped by targets
-      def unopened_notification_index_map(options = {})
-        all_notifications(options).unopened_only.group_by(&:target)
-      end
-
       # Send batch notification email to this type targets with unopened notifications.
       #
       # @example Send batch notification email to the users with unopened notifications of specified key
@@ -114,21 +104,25 @@ module ActivityNotification
       # @example Send batch notification email to the users with unopened notifications of specified key in 1 hour
       #   User.send_batch_unopened_notification_email(filtered_by_key: 'this.key', custom_filter: ["created_at >= ?", time.hour.ago])
       #
-      # @option options [Integer]    :limit                  (nil)   Limit to query for notifications
-      # @option options [Boolean]    :reverse                (false) If notification index will be ordered as earliest first
-      # @option options [Boolean]    :with_group_members     (false) If notification index will include group members
-      # @option options [Boolean]    :as_latest_group_member (false) If grouped notification will be shown as the latest group member (default is shown as the earliest member)
-      # @option options [String]     :filtered_by_type       (nil)   Notifiable type for filter
-      # @option options [Object]     :filtered_by_group      (nil)   Group instance for filter
-      # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
-      # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
-      # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
-      # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
+      # @option options [Integer]        :limit                  (nil)            Limit to query for notifications
+      # @option options [Boolean]        :reverse                (false)          If notification index will be ordered as earliest first
+      # @option options [Boolean]        :with_group_members     (false)          If notification index will include group members
+      # @option options [Boolean]        :as_latest_group_member (false)          If grouped notification will be shown as the latest group member (default is shown as the earliest member)
+      # @option options [String]         :filtered_by_type       (nil)            Notifiable type for filter
+      # @option options [Object]         :filtered_by_group      (nil)            Group instance for filter
+      # @option options [String]         :filtered_by_group_type (nil)            Group type for filter, valid with :filtered_by_group_id
+      # @option options [String]         :filtered_by_group_id   (nil)            Group instance id for filter, valid with :filtered_by_group_type
+      # @option options [String]         :filtered_by_key        (nil)            Key of the notification for filter
+      # @option options [Array|Hash]     :custom_filter          (nil)            Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
+      # @option options [Boolean]        :send_later             (false)          If it sends notification email asynchronously
+      # @option options [String, Symbol] :fallback               (:batch_default) Fallback template to use when MissingTemplate is raised
+      # @option options [String]         :batch_key              (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
       # @return [Hash<Object, Mail::Message|ActionMailer::DeliveryJob>] Hash of target and sent email message or its delivery job
       def send_batch_unopened_notification_email(options = {})
-        unopened_notification_index_map = unopened_notification_index_map(options)
+        unopened_notification_index_map = notification_index_map(options.merge(filtered_by_status: :unopened))
+        mailer_options = options.select { |k, _| [:send_later, :fallback, :batch_key].include?(k) }
         unopened_notification_index_map.map { |target, notifications|
-          [target, Notification.send_batch_notification_email(target, notifications, options)]
+          [target, Notification.send_batch_notification_email(target, notifications, mailer_options)]
         }.to_h
       end
     end

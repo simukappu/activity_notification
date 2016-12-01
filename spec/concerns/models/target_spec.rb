@@ -43,34 +43,103 @@ shared_examples_for :target do
         notification_5 = create(:notification, target: target_2)
         notification_6 = create(:notification, target: test_notifiable)
 
-        expect(described_class.notification_index_map.size).to eq(2)
-        expect(described_class.notification_index_map[target_1].size).to eq(3)
+        index_map = described_class.notification_index_map
+        expect(index_map.size).to eq(2)
+        expect(index_map[target_1].size).to eq(3)
         expect(described_class.notification_index_map[target_2].size).to eq(2)
       end
-    end
 
-    describe ".unopened_notification_index_map" do
-      it "returns unopened notifications of this target type group by target" do
-        ActivityNotification::Notification.delete_all
-        target_1 = create(test_class_name)
-        target_2 = create(test_class_name)
-        target_3 = create(test_class_name)
-        notification_1 = create(:notification, target: target_1)
-        notification_2 = create(:notification, target: target_1)
-        notification_3 = create(:notification, target: target_1)
-        notification_3.open!
-        notification_4 = create(:notification, target: target_2)
-        notification_5 = create(:notification, target: target_2)
-        notification_5.open!
-        notification_6 = create(:notification, target: target_3)
-        notification_6.open!
-        notification_7 = create(:notification, target: test_notifiable)
+      context "with :filtered_by_status" do
+        context "as :opened" do
+          it "returns opened notifications of this target type group by target" do
+            ActivityNotification::Notification.delete_all
+            target_1 = create(test_class_name)
+            target_2 = create(test_class_name)
+            target_3 = create(test_class_name)
+            notification_1 = create(:notification, target: target_1)
+            notification_2 = create(:notification, target: target_1)
+            notification_2.open!
+            notification_3 = create(:notification, target: target_1)
+            notification_3.open!
+            notification_4 = create(:notification, target: target_2)
+            notification_5 = create(:notification, target: target_2)
+            notification_5.open!
+            notification_6 = create(:notification, target: target_3)
+            notification_7 = create(:notification, target: test_notifiable)
+    
+            index_map = described_class.notification_index_map(filtered_by_status: :opened)
+            expect(index_map.size).to eq(2)
+            expect(index_map[target_1].size).to eq(2)
+            expect(index_map[target_2].size).to eq(1)
+            expect(index_map.has_key?(target_3)).to be_falsey
+          end
+        end
 
-        index_map = described_class.unopened_notification_index_map
-        expect(index_map.size).to eq(2)
-        expect(index_map[target_1].size).to eq(2)
-        expect(index_map[target_2].size).to eq(1)
-        expect(index_map.has_key?(target_3)).to be_falsey
+        context "as :unopened" do
+          it "returns unopened notifications of this target type group by target" do
+            ActivityNotification::Notification.delete_all
+            target_1 = create(test_class_name)
+            target_2 = create(test_class_name)
+            target_3 = create(test_class_name)
+            notification_1 = create(:notification, target: target_1)
+            notification_2 = create(:notification, target: target_1)
+            notification_3 = create(:notification, target: target_1)
+            notification_3.open!
+            notification_4 = create(:notification, target: target_2)
+            notification_5 = create(:notification, target: target_2)
+            notification_5.open!
+            notification_6 = create(:notification, target: target_3)
+            notification_6.open!
+            notification_7 = create(:notification, target: test_notifiable)
+    
+            index_map = described_class.notification_index_map(filtered_by_status: :unopened)
+            expect(index_map.size).to eq(2)
+            expect(index_map[target_1].size).to eq(2)
+            expect(index_map[target_2].size).to eq(1)
+            expect(index_map.has_key?(target_3)).to be_falsey
+          end
+        end
+      end
+
+      context "with :as_latest_group_member" do
+        before do
+          ActivityNotification::Notification.delete_all
+          @target_1 = create(test_class_name)
+          @target_2 = create(test_class_name)
+          @target_3 = create(test_class_name)
+          notification_1  = create(:notification, target: @target_1)
+          @notification_2 = create(:notification, target: @target_1)
+          notification_3  = create(:notification, target: @target_1, group_owner: @notification_2)
+          @notification_4 = create(:notification, target: @target_1, group_owner: @notification_2)
+          notification_5  = create(:notification, target: @target_2)
+          notification_6  = create(:notification, target: @target_2)
+          notification_6.open!
+          notification_7  = create(:notification, target: @target_3)
+          notification_7.open!
+          notification_8  = create(:notification, target: test_notifiable)
+        end
+
+        context "as default" do
+          it "returns earliest group members" do
+            index_map = described_class.notification_index_map(filtered_by_status: :unopened)
+            expect(index_map.size).to eq(2)
+            expect(index_map[@target_1].size).to eq(2)
+            expect(index_map[@target_1].first).to eq(@notification_2)
+            expect(index_map[@target_2].size).to eq(1)
+            expect(index_map.has_key?(@target_3)).to be_falsey
+          end
+        end
+
+        context "as true" do
+          it "returns latest group members" do
+            index_map = described_class.notification_index_map(filtered_by_status: :unopened, as_latest_group_member: true)
+            expect(index_map.size).to eq(2)
+            expect(index_map[@target_1].size).to eq(2)
+            expect(index_map[@target_1].first).to eq(@notification_4)
+            expect(index_map[@target_2].size).to eq(1)
+            expect(index_map.has_key?(@target_3)).to be_falsey
+          end
+        end
       end
     end
 

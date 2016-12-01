@@ -124,7 +124,7 @@ end
 
 Configure your notifiable model (e.g. app/models/comment.rb).
 Add `acts_as_notifiable` configuration to your notifiable model representing activity to notify.
-You have to define notification targets for all notifications from this notifiable model by `:targets` option. Other configurations are options. `:notifiable_path` option is a path to move when the notification will be opened by the target user.
+You have to define notification targets for all notifications from this notifiable model by `:targets` option. Other configurations are options. `:notifiable_path` option is a path to move when the notification is opened by the target user.
 
 ```ruby
 class Article < ActiveRecord::Base
@@ -145,8 +145,8 @@ class Comment < ActiveRecord::Base
     targets: ->(comment, key) {
       ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
     },
-    # Path to move when the notification will be opened by the target user
-    # This is a optional since activity_notification uses polymorphic_path as default
+    # Path to move when the notification is opened by the target user
+    # This is an optional configuration since activity_notification uses polymorphic_path as default
     notifiable_path: :article_notifiable_path
 
   def article_notifiable_path
@@ -341,7 +341,7 @@ If you would like to fallback to a partial, you can utilize the `:fallback` para
 <%= render_notification(@notification, target: :users, fallback: :default) %>
 ```
 
-When used in this manner, if a partial with the specified `:key` cannot be located it will use the partial defined in the `:fallback` instead. In the example above this would resolve to `activity_notification/notifications/users/_default.html.(|erb|haml|slim|something_else)`.
+When used in this manner, if a partial with the specified `:key` cannot be located, it will use the partial defined in the `:fallback` instead. In the example above this would resolve to `activity_notification/notifications/users/_default.html.(|erb|haml|slim|something_else)`.
 
 If you do not specify `:target` option like this,
 
@@ -503,7 +503,7 @@ User.send_batch_unopened_notification_email(batch_key: 'batch.comment.post', fil
 #### Batch email templates
 
 `activity_notification` will look for batch email template in the same way as email notification using `batch_key`.
-`batch_key` is specified by `:batch_key` option. If the option is not specified, The key of the first notification will be used as `batch_key`.
+`batch_key` is specified by `:batch_key` option. If this option is not specified, the key of the first notification will be used as `batch_key`.
 
 #### i18n for batch email
 
