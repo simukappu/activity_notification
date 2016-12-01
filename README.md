@@ -503,7 +503,7 @@ User.send_batch_unopened_notification_email(batch_key: 'batch.comment.post', fil
 #### Batch email templates
 
 `activity_notification` will look for batch email template in the same way as email notification using `batch_key`.
-`batch_key` is specified by `:batch_key` option. If the option is not specified, The key of the first notification will be used as `batch_key`.
+`batch_key` is specified by `:batch_key` option. If this option is not specified, the key of the first notification will be used as `batch_key`.
 
 #### i18n for batch email
 
