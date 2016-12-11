@@ -55,19 +55,19 @@ describe ActivityNotification::Notification, type: :model do
     it "is valid with target, notifiable and key" do
       expect(@notification).to be_valid
     end
-  
+
     it "is invalid with blank target" do
       @notification.target = nil
       expect(@notification).to be_invalid
       expect(@notification.errors[:target].size).to eq(1)
     end
-  
+
     it "is invalid with blank notifiable" do
       @notification.notifiable = nil
       expect(@notification).to be_invalid
       expect(@notification.errors[:notifiable].size).to eq(1)
     end
-  
+
     it "is invalid with blank key" do
       @notification.key = nil
       expect(@notification).to be_invalid
