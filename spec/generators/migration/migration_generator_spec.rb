@@ -19,15 +19,15 @@ describe ActivityNotification::Generators::MigrationGenerator, type: :generator 
       end
 
       describe 'CreateNotifications migration file' do
-        subject { file(Dir["tmp/db/migrate/*_create_notifications.rb"].first.gsub!('tmp/', '')) }
+        subject { file(Dir["tmp/db/migrate/*_create_activity_notification_tables.rb"].first.gsub!('tmp/', '')) }
         it { is_expected.to exist }
-        it { is_expected.to contain(/class CreateNotifications < ActiveRecord::Migration/) }
+        it { is_expected.to contain(/class CreateActivityNotificationTables < ActiveRecord::Migration/) }
       end
     end
 
     context 'with CreateCustomNotifications as name argument' do
       before do
-        run_generator %w(CreateCustomNotifications)
+        run_generator %w(CreateCustomNotifications --tables notifications)
       end
 
       describe 'CreateCustomNotifications migration file' do

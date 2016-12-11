@@ -10,7 +10,7 @@ shared_examples_for :target do
       expect(test_instance.notifications.count).to    eq(2)
       expect(test_instance.notifications.earliest).to eq(notification_1)
       expect(test_instance.notifications.latest).to   eq(notification_2)
-      expect(test_instance.notifications).to          eq (ActivityNotification::Notification.filtered_by_target(test_instance))
+      expect(test_instance.notifications).to          eq(ActivityNotification::Notification.filtered_by_target(test_instance))
     end
   end    
 
@@ -168,6 +168,29 @@ shared_examples_for :target do
         expect(sent_email_map.has_key?(target_3)).to be_falsey
       end
     end
+
+    describe "subscription_enabled?" do
+      context "with true as _notification_subscription_allowed" do
+        it "returns true" do
+          described_class._notification_subscription_allowed = true
+          expect(described_class.subscription_enabled?).to eq(true)
+        end
+      end
+
+      context "with false as _notification_subscription_allowed" do
+        it "returns false" do
+          described_class._notification_subscription_allowed = false
+          expect(described_class.subscription_enabled?).to eq(false)
+        end
+      end
+
+      context "with lambda configuration as _notification_subscription_allowed" do
+        it "returns true (even if configured lambda function returns false)" do
+          described_class._notification_subscription_allowed = ->(target, key){ false }
+          expect(described_class.subscription_enabled?).to eq(true)
+        end
+      end
+    end
   end
 
   describe "as public instance methods" do
@@ -312,6 +335,58 @@ shared_examples_for :target do
         it "returns specified lambda with target, notifiable and key arguments" do
           described_class._batch_notification_email_allowed = ->(target, notifiable, key){ true }
           expect(test_instance.batch_notification_email_allowed?(test_notifiable, 'dummy_key')).to eq(true)
+        end
+      end
+    end
+
+    describe "#subscription_allowed?" do
+      context "without any configuration" do
+        it "returns ActivityNotification.config.subscription_enabled" do
+          expect(test_instance.subscription_allowed?('dummy_key'))
+            .to eq(ActivityNotification.config.subscription_enabled)
+        end
+
+        it "returns false as default" do
+          expect(test_instance.subscription_allowed?('dummy_key')).to be_falsey
+        end
+      end
+
+      context "configured with a field" do
+        it "returns specified value" do
+          described_class._notification_subscription_allowed = true
+          expect(test_instance.subscription_allowed?('dummy_key')).to eq(true)
+        end
+
+        it "returns specified symbol without argument" do
+          module AdditionalMethods
+            def custom_subscription_allowed?
+              true
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._notification_subscription_allowed = :custom_subscription_allowed?
+          expect(test_instance.subscription_allowed?('dummy_key')).to eq(true)
+        end
+
+        it "returns specified symbol with key argument" do
+          module AdditionalMethods
+            def custom_subscription_allowed?(key)
+              true
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._notification_subscription_allowed = :custom_subscription_allowed?
+          expect(test_instance.subscription_allowed?('dummy_key')).to eq(true)
+        end
+
+        it "returns specified lambda with single target argument" do
+          described_class._notification_subscription_allowed = ->(target){ true }
+          expect(test_instance.subscription_allowed?('dummy_key')).to eq(true)
+        end
+
+        it "returns specified lambda with target and key arguments" do
+          described_class._notification_subscription_allowed = ->(target, key){ true }
+          expect(test_instance.subscription_allowed?('dummy_key')).to eq(true)
         end
       end
     end
@@ -1005,6 +1080,39 @@ shared_examples_for :target do
       end
     end
 
+    describe "#subscribes_to_notification?" do
+      context "when the subscription is not enabled for the target" do
+        it "returns true" do
+          described_class._notification_subscription_allowed = false
+          expect(test_instance.subscribes_to_notification?('test_key')).to be_truthy
+        end
+      end
+
+      context "when the subscription is enabled for the target" do
+        it "calls Subscriber#_subscribes_to_notification?" do
+          described_class._notification_subscription_allowed = true
+          expect(test_instance).to receive(:_subscribes_to_notification?)
+          test_instance.subscribes_to_notification?('test_key')
+        end
+      end
+    end
+
+    describe "#subscribes_to_notification_email?" do
+      context "when the subscription is not enabled for the target" do
+        it "returns true" do
+          described_class._notification_subscription_allowed = false
+          expect(test_instance.subscribes_to_notification_email?('test_key')).to be_truthy
+        end
+      end
+
+      context "when the subscription is enabled for the target" do
+        it "calls Subscriber#_subscribes_to_notification_email?" do
+          described_class._notification_subscription_allowed = true
+          expect(test_instance).to receive(:_subscribes_to_notification_email?)
+          test_instance.subscribes_to_notification_email?('test_key')
+        end
+      end
+    end
   end
 
 end

@@ -1,0 +1,8 @@
+<% if subscriptions.present? %>
+  <% subscriptions.each do |subscription| %>
+    <%= render 'subscription', subscription: subscription, option_params: option_params %>
+  <% end %>
+<% else %>
+  No subscriptions are available.
+<% end %>
+<br/><br/>

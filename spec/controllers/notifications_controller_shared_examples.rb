@@ -240,12 +240,8 @@ shared_examples_for :notification_controller do
         expect(response.status).to eq(302)
       end
 
-      it "assigns notification index as @notifications" do
-        expect(assigns(:notifications)).to eq([@notification])
-      end
-
       it "opens all notifications of the target" do
-        expect(assigns(:notifications).first.opened?).to be_truthy
+        expect(@notification.reload.opened?).to be_truthy
       end
 
       it "redirects to :index" do
@@ -266,7 +262,7 @@ shared_examples_for :notification_controller do
       end
 
       it "opens all notifications of the target" do
-        expect(assigns(:notifications).first.opened?).to be_truthy
+        expect(@notification.reload.opened?).to be_truthy
       end
 
       it "redirects to root_path as request.referer" do

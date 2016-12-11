@@ -38,11 +38,23 @@ describe ActivityNotification::Generators::ControllersGenerator, type: :generato
           it { is_expected.to exist }
           it { is_expected.to contain(/class Users::NotificationsWithDeviseController < ActivityNotification::NotificationsWithDeviseController/) }
         end
+
+        describe 'the subscriptions_controller' do
+          subject { file('app/controllers/users/subscriptions_controller.rb') }
+          it { is_expected.to exist }
+          it { is_expected.to contain(/class Users::SubscriptionsController < ActivityNotification::SubscriptionsController/) }
+        end
+
+        describe 'the subscriptions_with_devise_controller' do
+          subject { file('app/controllers/users/subscriptions_with_devise_controller.rb') }
+          it { is_expected.to exist }
+          it { is_expected.to contain(/class Users::SubscriptionsWithDeviseController < ActivityNotification::SubscriptionsWithDeviseController/) }
+        end
       end
 
-      context 'with a controllers option as notifications' do
+      context 'with a controllers option as notifications and subscriptions' do
         before do
-          run_generator %w(users --controllers notifications)
+          run_generator %w(users --controllers notifications subscriptions)
         end
 
         describe 'the notifications_controller' do
@@ -53,6 +65,17 @@ describe ActivityNotification::Generators::ControllersGenerator, type: :generato
 
         describe 'the notifications_with_devise_controller' do
           subject { file('app/controllers/users/notifications_with_devise_controller.rb') }
+          it { is_expected.not_to exist }
+        end
+
+        describe 'the subscriptions_controller' do
+          subject { file('app/controllers/users/subscriptions_controller.rb') }
+          it { is_expected.to exist }
+          it { is_expected.to contain(/class Users::SubscriptionsController < ActivityNotification::SubscriptionsController/) }
+        end
+
+        describe 'the subscriptions_with_devise_controller' do
+          subject { file('app/controllers/users/subscriptions_with_devise_controller.rb') }
           it { is_expected.not_to exist }
         end
       end

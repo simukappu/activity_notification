@@ -1,0 +1,17 @@
+<%= form_for(ActivityNotification::Subscription.new, as: :subscription, url: subscriptions_url_for(target, option_params), data: { remote: true }) do |f| %>
+  <div class="field">
+    <%= f.label :key, "Notification key" %>
+    <%= f.text_field :key %>
+  </div>
+  <div class="field">
+    <%= f.label :subscribing, "Subscribe to this notification?" %>
+    <%= f.check_box :subscribing, { checked: true }, 'true', 'false' %>
+  </div>
+  <div class="field">
+    <%= f.label :subscribing_to_email, "Subscribe to this notification email?" %>
+    <%= f.check_box :subscribing_to_email, { checked: true }, 'true', 'false' %>
+  </div>
+  <div class="actions">
+    <%= f.submit "Save" %>
+  </div>
+<% end %>

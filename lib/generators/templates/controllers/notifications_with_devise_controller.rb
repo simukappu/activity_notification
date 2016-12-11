@@ -1,38 +1,31 @@
 class <%= @target_prefix %>NotificationsWithDeviseController < ActivityNotification::NotificationsWithDeviseController
-  # GET /:target_type/:target_id/notifcations
+  # GET /:target_type/:target_id/notifications
   # def index
   #   super
   # end
 
-  # POST /:target_type/:target_id/notifcations/open_all
+  # POST /:target_type/:target_id/notifications/open_all
   # def open_all
   #   super
   # end
 
-  # GET /:target_type/:target_id/notifcations/:id
+  # GET /:target_type/:target_id/notifications/:id
   # def show
   #   super
   # end
 
-  # DELETE /:target_type/:target_id/notifcations/:id
+  # DELETE /:target_type/:target_id/notifications/:id
   # def destroy
   #   super
   # end
 
-  # POST /:target_type/:target_id/notifcations/:id/open
+  # POST /:target_type/:target_id/notifications/:id/open
   # def open
   #   super
   # end
 
-  # GET /:target_type/:target_id/notifcations/:id/move
+  # GET /:target_type/:target_id/notifications/:id/move
   # def move
-  #   super
-  # end
-
-  # No action routing
-  # This method is called from target_view_path method
-  # This method can be overriden
-  # def controller_path
   #   super
   # end
 
@@ -52,16 +45,24 @@ class <%= @target_prefix %>NotificationsWithDeviseController < ActivityNotificat
   #   super
   # end
 
-  # def load_notification_index(filter, limit)
-  #   super(filter, limit)
+  # def set_index_options
+  #   super
+  # end
+
+  # def load_notification_index(options = {})
+  #   super(options)
+  # end
+
+  # def controller_path
+  #   super
   # end
 
   # def set_view_prefixes
   #   super
   # end
 
-  # def return_back_or_ajax(filter, limit)
-  #   super(filter, limit)
+  # def return_back_or_ajax
+  #   super
   # end
 
   # def authenticate_devise_resource!

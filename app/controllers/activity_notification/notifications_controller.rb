@@ -13,7 +13,7 @@ module ActivityNotification
   
     # Shows notification index of the target.
     #
-    # GET /:target_type/:target_id/notifcations
+    # GET /:target_type/:target_id/notifications
     # @overload index(params)
     #   @param [Hash] params Request parameter options for notification index
     #   @option params [String] :filter                 (nil)     Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
@@ -38,7 +38,7 @@ module ActivityNotification
 
     # Opens all notifications of the target.
     #
-    # POST /:target_type/:target_id/notifcations/open_all
+    # POST /:target_type/:target_id/notifications/open_all
     # @overload open_all(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :filter  (nil)     Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
@@ -58,7 +58,7 @@ module ActivityNotification
   
     # Shows a notification.
     #
-    # GET /:target_type/:target_id/notifcations/:id
+    # GET /:target_type/:target_id/notifications/:id
     # @overload show(params)
     #   @param [Hash] params Request parameters
     #   @return [Responce] HTML view as default
@@ -67,7 +67,7 @@ module ActivityNotification
   
     # Deletes a notification.
     #
-    # DELETE /:target_type/:target_id/notifcations/:id
+    # DELETE /:target_type/:target_id/notifications/:id
     #
     # @overload destroy(params)
     #   @param [Hash] params Request parameters
@@ -84,7 +84,7 @@ module ActivityNotification
   
     # Opens a notification.
     #
-    # POST /:target_type/:target_id/notifcations/:id/open
+    # POST /:target_type/:target_id/notifications/:id/open
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :move               ('false') Whether redirects to notifiable_path after the notification is opened
@@ -104,7 +104,7 @@ module ActivityNotification
 
     # Moves to notifiable_path of the notification.
     #
-    # GET /:target_type/:target_id/notifcations/:id/move
+    # GET /:target_type/:target_id/notifications/:id/move
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :open    ('false') Whether the notification will be opened
@@ -117,14 +117,6 @@ module ActivityNotification
       redirect_to @notification.notifiable_path
     end
   
-    # Returns controller path.
-    # This method has no action routing and is called from target_view_path method.
-    # This method can be overriden.
-    # @return [String] "activity_notification/notifications" as controller path
-    def controller_path
-      "activity_notification/notifications"
-    end
-
     # Returns path of the target view templates.
     # This method has no action routing and needs to be public since it is called from view helper.
     def target_view_path
@@ -155,7 +147,7 @@ module ActivityNotification
       # @api protected
       # @return [Object] Notification instance (Returns HTTP 403 when the target of notification is different from specified target by request parameter)
       def set_notification
-        @notification = Notification.find_by_id!(params[:id])
+        @notification = Notification.includes(:target).find_by_id!(params[:id])
         if @target.present? and @notification.target != @target
           render plain: "403 Forbidden: Wrong target", status: 403
         end
@@ -170,9 +162,9 @@ module ActivityNotification
                                params[:reverse].to_s.to_boolean(false) : nil
         with_group_members = params[:with_group_members].present? || params[:without_grouping].present? ?
                                params[:with_group_members].to_s.to_boolean(false) || params[:without_grouping].to_s.to_boolean(false) : nil
-        @index_options = params.permit(:filter, :filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key)
-                               .to_h.symbolize_keys
-                               .merge(limit: limit, reverse: reverse, with_group_members: with_group_members)
+        @index_options     = params.permit(:filter, :filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key)
+                                   .to_h.symbolize_keys
+                                   .merge(limit: limit, reverse: reverse, with_group_members: with_group_members)
       end
 
       # Loads notification index with request parameters.
@@ -198,6 +190,14 @@ module ActivityNotification
         end
       end
 
+      # Returns controller path.
+      # This method is called from target_view_path method and can be overriden.
+      # @api protected
+      # @return [String] "activity_notification/notifications" as controller path
+      def controller_path
+        "activity_notification/notifications"
+      end
+
       # Sets view prefixes for target view path.
       # @api protected
       def set_view_prefixes
@@ -206,22 +206,12 @@ module ActivityNotification
 
       # Returns JavaScript view for ajax request or redirects to back as default.
       # @api protected
-      # @option params [String]  :filter                 (nil)   Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
-      # @option params [Integer] :limit                  (nil)   Limit to query for notifications
-      # @option params [Boolean] :reverse                (false) If notification index will be ordered as earliest first
-      # @option params [Boolean] :without_grouping       (false) If notification index will include group members
-      # @option params [String]  :filtered_by_type       (nil)   Notifiable type for filter
-      # @option params [String]  :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
-      # @option params [String]  :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
-      # @option params [String]  :filtered_by_key        (nil)   Key of the notification for filter
       # @return [Responce] JavaScript view for ajax request or redirects to back as default
       def return_back_or_ajax
         set_index_options
-        if params[:reload].to_s.to_boolean(true)
-          @notifications = load_notification_index(@index_options) 
-        end
         respond_to do |format|
           if request.xhr?
+            @notifications = load_notification_index(@index_options) if params[:reload].to_s.to_boolean(true)
             format.js
           # :skip-rails4:
           elsif Rails::VERSION::MAJOR >= 5

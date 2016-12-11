@@ -4,6 +4,8 @@ require "active_support/core_ext/hash/slice"
 module ActionDispatch::Routing
   # Extended ActionDispatch::Routing::Mapper implementation to add routing method of ActivityNotification.
   class Mapper
+    include ActivityNotification::PolymorphicHelpers
+
     # Includes notify_to method for routes, which is responsible to generate all necessary routes for activity_notification.
     #
     # When you have an User model configured as a target (e.g. defined acts_as_target),
@@ -70,6 +72,11 @@ module ActionDispatch::Routing
       else
         options[:controller] ||= "activity_notification/notifications"
       end
+      
+      if (with_subscription = options.delete(:with_subscription)).present?
+        subscription_option = with_subscription.is_a?(Hash) ? with_subscription : {}
+        subscription_option = subscription_option.merge(with_devise: with_devise)
+      end
       options[:except]       ||= []
       options[:except].concat( [:new, :create, :edit, :update] )
       notification_resources   = options[:model] || :notifications
@@ -90,10 +97,52 @@ module ActionDispatch::Routing
             end
           end
         end
+
+        if resource.to_s.to_model_class.subscription_enabled? and with_subscription.present?
+          subscribed_by resource, subscription_option
+        end
       end
 
       self
     end
+
+    def subscribed_by(*resources)
+      options = resources.extract_options!
+      
+      #TODO check resources if it includes target module
+
+      if (with_devise = options.delete(:with_devise)).present?
+        options[:controller] ||= "activity_notification/subscriptions_with_devise"
+        options[:as]         ||= "subscriptions"
+        #TODO check devise configuration in model
+        devise_defaults        = { devise_type: with_devise.to_s }
+      else
+        options[:controller] ||= "activity_notification/subscriptions"
+      end
+      options[:except]       ||= []
+      options[:except].concat( [:new, :edit, :update] )
+      subscription_resources   = options[:model] || :subscriptions
+
+      #TODO other options
+      # :as, :path_prefix, :path_names ...
+
+      resources.each do |resource|
+        self.resources resource, only: :none do
+          options[:defaults] = (devise_defaults || {}).merge({ target_type: resource.to_s })
+          self.resources subscription_resources, options do
+            member do
+              post :subscribe            unless ignore_path?(:subscribe, options)
+              post :unsubscribe          unless ignore_path?(:unsubscribe, options)
+              post :subscribe_to_email   unless ignore_path?(:subscribe_to_email, options)
+              post :unsubscribe_to_email unless ignore_path?(:unsubscribe_to_email, options)
+            end
+          end
+        end
+      end
+
+      self
+    end
+
 
     private
 

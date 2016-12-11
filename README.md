@@ -22,6 +22,7 @@
 * Grouping notifications (grouping like `"Kevin and 7 other users posted comments to this article"`)
 * Email notification
 * Batch email notification
+* Subscription management
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
 
 ### Notification index
@@ -61,7 +62,11 @@
     2. [Batch email templates](#batch-email-templates)
     3. [i18n for batch email](#i18n-for-batch-email)
   3. [Grouping notifications](#grouping-notifications)
-  4. [Integration with Devise](#integration-with-devise)
+  4. [Subscription management](#subscription-management)
+    1. [Setup subscriptions](#setup-subscriptions)
+    2. [Manage subscriptions](#manage-subscriptions)
+    3. [Customize Subscriptions](#customize-subscriptions)
+  5. [Integration with Devise](#integration-with-devise)
 4. [Testing](#testing)
 5. [Documentation](#documentation)
 6. **[Common examples](#common-examples)**
@@ -85,7 +90,7 @@ gem 'activity_notification'
 After you install `activity_notification` and add it to your Gemfile, you need to run the generator:
 
 ```console
-$ rails generate activity_notification:install
+$ bin/rails generate activity_notification:install
 ```
 
 The generator will install an initializer which describes all configuration options of `activity_notification`.
@@ -97,8 +102,8 @@ Currently `activity_notification` is only supported with ActiveRecord.
 Create migration for notifications and migrate the database in your Rails project:
 
 ```console
-$ rails generate activity_notification:migration
-$ rake db:migrate
+$ bin/rails generate activity_notification:migration
+$ bin/rake db:migrate
 ```
 
 ### Configuring models
@@ -160,20 +165,20 @@ end
 `activity_notification` provides view templates to customize your notification views. The view generator can generate default views for all targets.
 
 ```console
-$ rails generate activity_notification:views
+$ bin/rails generate activity_notification:views
 ```
 
 If you have multiple target models in your application, such as `User` and `Admin`, you will be able to have views based on the target like `notifications/users/index` and `notifications/admins/index`. If no view is found for the target, `activity_notification` will use the default view at `notifications/default/index`. You can also use the generator to generate views for the specified target:
 
 ```console
-$ rails generate activity_notification:views users
+$ bin/rails generate activity_notification:views users
 ```
 
 If you would like to generate only a few sets of views, like the ones for the `notifications` (for notification views) and `mailer` (for notification email views),
 you can pass a list of modules to the generator with the `-v` flag.
 
 ```console
-$ rails generate activity_notification:views -v notifications
+$ bin/rails generate activity_notification:views -v notifications
 ```
 
 ### Configuring controllers
@@ -183,7 +188,7 @@ If the customization at the views level is not enough, you can customize each co
 1. Create your custom controllers using the generator with a target:
 
     ```console
-    $ rails generate activity_notification:controllers users
+    $ bin/rails generate activity_notification:controllers users
     ```
 
     If you specify `users` as the target, controllers will be created in `app/controllers/users/`.
@@ -191,14 +196,14 @@ If the customization at the views level is not enough, you can customize each co
 
     ```ruby
     class Users::NotificationsController < ActivityNotification::NotificationsController
-      # GET /:target_type/:target_id/notifcations
+      # GET /:target_type/:target_id/notifications
       # def index
       #   super
       # end
 
       # ...
 
-      # POST /:target_type/:target_id/notifcations/:id/open
+      # POST /:target_type/:target_id/notifications/:id/open
       # def open
       #   super
       # end
@@ -210,19 +215,17 @@ If the customization at the views level is not enough, you can customize each co
 2. Tell the router to use this controller:
 
     ```ruby
-    notify_to :users, controllers: { notifcations: 'users/notifcations' }
+    notify_to :users, controller: 'users/notifications'
     ```
 
-3. Generate views from `activity_notification/notifcations/users` to `users/notifcations/users`. Since the controller was changed, it won't use the default views located in `activity_notification/notifcations/default`.
-
-4. Finally, change or extend the desired controller actions.
+3. Finally, change or extend the desired controller actions.
 
     You can completely override a controller action
     ```ruby
     class Users::NotificationsController < ActivityNotification::NotificationsController
       # ...
 
-      # POST /:target_type/:target_id/notifcations/:id/open
+      # POST /:target_type/:target_id/notifications/:id/open
       def open
         # Custom code to open notification here
 
@@ -419,7 +422,7 @@ You can also configure them for each model by acts_as roles like these.
 class User < ActiveRecord::Base
   # Example using confirmed_at of devise field
   # to decide whether activity_notification sends notification email to this user
-  acts_as_notification_target email: :email, email_allowed: :confirmed_at
+  acts_as_target email: :email, email_allowed: :confirmed_at
 end
 ```
 
@@ -476,13 +479,13 @@ config.email_enabled = true
 config.mailer_sender = 'your_notification_sender@example.com'
 ```
 
-You can also configure them for each target model by `acts_as_notification_target` role like this.
+You can also configure them for each target model by `acts_as_target` role like this.
 
 ```ruby
 class User < ActiveRecord::Base
   # Example using confirmed_at of devise field
   # to decide whether activity_notification sends batch notification email to this user
-  acts_as_notification_target email: :email, batch_email_allowed: :confirmed_at
+  acts_as_target email: :email, batch_email_allowed: :confirmed_at
 end
 ```
 
@@ -569,6 +572,127 @@ notification:
 ```
 
 Then, you will see `Kevin and 7 other users replied 10 comments to your article"`.
+
+
+### Subscription management
+
+`activity_notification` provides the function for subscription management of notifications and notification email.
+
+#### Setup subscriptions
+
+Subscription management is disabled as default. You can configure to enable subscription management in initializer `activity_notification.rb`.
+
+```ruby
+config.subscription_enabled = true
+```
+
+This makes all target model subscribers. You can also configure them for each target model by acts_as_target role like this.
+
+```ruby
+class User < ActiveRecord::Base
+  # Example using confirmed_at of devise field
+  # to decide whether activity_notification manages subscriptions of this user
+  acts_as_target email: :email, email_allowed: :confirmed_at, subscription_allowed: confirmed_at
+end
+```
+
+If you do not have subscriptions table in you database, create migration for subscriptions and migrate the database in your Rails project:
+
+```console
+$ bin/rails generate activity_notification:migration CreateSubscriptions -t subscriptions
+$ bin/rake db:migrate
+```
+
+
+#### Manage subscriptions
+
+Subscriptions are managed by `Subscription` model record which belongs to target and key of the notification.
+`Subscription#subscribing` manages subscription of notifications.
+`true` means the target will receive the notifications with this key.
+`false` means the target will not receive these notifications.
+`Subscription#subscribing_to_email` manages subscription of notification email.
+`true` means the target will receive the notification email with this key including batch notification email with this `batch_key`.
+`false` means the target will not receive these notification email.
+
+As default, all target subscribes to notification and notification email when subscription record does not exist in your database.
+You can change this `subscribe_as_default` parameter in initializer `activity_notification.rb`.
+
+```ruby
+config.subscribe_as_default = false
+```
+
+Then, all target does not subscribe to notification and notification email and will not receive any notifications as default.
+
+You can create subscription record from subscription API in your target model like this:
+
+```ruby
+# Subscribe 'comment.reply' notifications and notification email
+user.create_subscription(key: 'comment.reply')
+
+# Subscribe 'comment.reply' notifications but does not subscribe notification email
+user.create_subscription(key: 'comment.reply', subscribing_to_email: false)
+
+# Unsubscribe 'comment.reply' notifications and notification email
+user.create_subscription(key: 'comment.reply', subscribing: false)
+```
+
+You can also update subscriptions like this:
+
+```ruby
+# Subscribe 'comment.reply' notifications and notification email
+user.find_or_create_subscription('comment.reply').subscribe
+
+# Unsubscribe 'comment.reply' notifications and notification email
+user.find_or_create_subscription('comment.reply').unsubscribe
+
+# Unsubscribe 'comment.reply' notification email
+user.find_or_create_subscription('comment.reply').unsubscribe_to_email
+```
+
+#### Customize subscriptions
+
+`activity_notification` provides basic controllers and views to manage the subscriptions.
+
+Add subscription routing to `config/routes.rb` for the target (e.g. `:users`):
+
+```ruby
+Rails.application.routes.draw do
+  subscribed_by :users
+end
+```
+
+or, you can also configure it with notifications like this:
+
+```ruby
+Rails.application.routes.draw do
+  notify_to :users, with_subscription: true
+end
+```
+
+Then, you can access `users/1/subscriptions` and use `subscriptions_controller` or `subscriptions_with_devise_controller` to manage the subscriptions.
+
+If you would like to customize subscription controllers or views, you can use generators like notifications:
+
+* Customize subscription controllers
+
+    1. Create your custom controllers using controller generator with a target:
+
+        ```console
+        $ bin/rails generate activity_notification:controllers users -c subscriptions subscriptions_with_devise
+        ```
+
+    2. Tell the router to use this controller:
+
+        ```ruby
+        notify_to :users, with_subscription: { controller: 'users/subscriptions' }
+        ```
+
+* Customize subscription views
+
+    ```console
+    $ bin/rails generate activity_notification:views users -v subscriptions
+    ```
+
 
 ### Integration with Devise
 

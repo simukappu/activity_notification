@@ -6,7 +6,7 @@ module ActivityNotification
     # @example Run controller generator for users as target
     #   rails generate activity_notification:controllers users
     class ControllersGenerator < Rails::Generators::Base
-      CONTROLLERS = ['notifications', 'notifications_with_devise'].freeze
+      CONTROLLERS = ['notifications', 'notifications_with_devise', 'subscriptions', 'subscriptions_with_devise'].freeze
 
       desc <<-DESC.strip_heredoc
         Create inherited ActivityNotification controllers in your app/controllers folder.
@@ -15,7 +15,7 @@ module ActivityNotification
         If you do no specify a controller, all controllers will be created.
         For example:
 
-          rails generate activity_notification:controllers users -c=notifications
+          rails generate activity_notification:controllers users -c notifications
 
         This will create a controller class at app/controllers/users/notifications_controller.rb like this:
 

@@ -57,8 +57,85 @@ describe ActivityNotification::Generators::ViewsGenerator, type: :generator do
         end
 
         describe 'the mailer views' do
+          describe 'default/batch_default.html.erb' do
+            subject { file('app/views/activity_notification/mailer/default/batch_default.html.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/batch_default.text.erb' do
+            subject { file('app/views/activity_notification/mailer/default/batch_default.text.erb') }
+            it { is_expected.to exist }
+          end
+
           describe 'default/default.html.erb' do
             subject { file('app/views/activity_notification/mailer/default/default.html.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/default.text.erb' do
+            subject { file('app/views/activity_notification/mailer/default/default.text.erb') }
+            it { is_expected.to exist }
+          end
+        end
+
+        describe 'the subscription views' do
+          describe 'default/_form.html.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/_form.html.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/_notification_keys.html.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/_notification_keys.html.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/_subscription.html.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/_subscription.html.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/_subscriptions.html.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/_subscriptions.html.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/create.js.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/create.js.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/destroy.js.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/destroy.js.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/index.html.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/index.html.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/show.html.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/show.html.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/subscribe_to_email.js.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/subscribe_to_email.js.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/subscribe.js.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/subscribe.js.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/unsubscribe_to_email.js.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/unsubscribe_to_email.js.erb') }
+            it { is_expected.to exist }
+          end
+
+          describe 'default/unsubscribe.js.erb' do
+            subject { file('app/views/activity_notification/subscriptions/default/unsubscribe.js.erb') }
             it { is_expected.to exist }
           end
         end
@@ -101,6 +178,13 @@ describe ActivityNotification::Generators::ViewsGenerator, type: :generator do
         describe 'the mailer views' do
           describe 'users/default.html.erb' do
             subject { file('app/views/activity_notification/mailer/users/default.html.erb') }
+            it { is_expected.to exist }
+          end
+        end
+
+        describe 'the subscription views' do
+          describe 'users/index.html.erb' do
+            subject { file('app/views/activity_notification/subscriptions/users/index.html.erb') }
             it { is_expected.to exist }
           end
         end

@@ -75,12 +75,30 @@ module ActivityNotification
       def notify_to(target, notifiable, options = {})
         send_email = options.has_key?(:send_email) ? options[:send_email] : true
         send_later = options.has_key?(:send_later) ? options[:send_later] : true
-        # Store notification
-        notification = store_notification(target, notifiable, options)
+        # Generate notification
+        notification = generate_notification(target, notifiable, options)
         # Send notification email
-        notification.send_notification_email({ send_later: send_later }) if send_email
-        # Return created notification
+        if notification.present? and send_email
+          notification.send_notification_email({ send_later: send_later })
+        end
+        # Return generated notification
         notification
+      end
+
+      # Generates a notification
+      # @param [Object] target Target to send notification
+      # @param [Object] notifiable Notifiable instance
+      # @param [Hash] options Options for notification
+      # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
+      # @option options [Object]  :group      (nil)                                 Group unit of the notifications
+      # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
+      # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
+      def generate_notification(target, notifiable, options = {})
+        key = options[:key] || notifiable.default_notification_key
+        if target.subscribes_to_notification?(key)
+          # Store notification
+          store_notification(target, notifiable, key, options)
+        end
       end
 
       # Opens all notifications of the target.
@@ -120,12 +138,14 @@ module ActivityNotification
       # @return [Mail::Message|ActionMailer::DeliveryJob|NilClass] Email message or its delivery job, return NilClass for wrong target
       def send_batch_notification_email(target, notifications, options = {})
         return if notifications.blank?
-        if target.batch_notification_email_allowed?(notifications.first.notifiable_type, notifications.first.key)
+        batch_key = options[:batch_key] || notifications.first.key
+        if target.batch_notification_email_allowed?(notifications.first.notifiable_type, batch_key) and
+           target.subscribes_to_notification_email?(batch_key)
           send_later = options.has_key?(:send_later) ? options[:send_later] : true
           if send_later
-            Mailer.send_batch_notification_email(target, notifications, options).deliver_later
+            Mailer.send_batch_notification_email(target, notifications, batch_key, options).deliver_later
           else
-            Mailer.send_batch_notification_email(target, notifications, options).deliver_now
+            Mailer.send_batch_notification_email(target, notifications, batch_key, options).deliver_now
           end
         end
       end
@@ -139,9 +159,8 @@ module ActivityNotification
 
       # Stores notifications to datastore
       # @api private
-      def store_notification(target, notifiable, options = {})
+      def store_notification(target, notifiable, key, options = {})
         target_type = target.to_class_name
-        key         = options[:key]        || notifiable.default_notification_key
         group       = options[:group]      || notifiable.notification_group(target_type, key)
         notifier    = options[:notifier]   || notifiable.notifier(target_type, key)
         parameters  = options[:parameters] || {}
@@ -168,7 +187,8 @@ module ActivityNotification
     # @option options [String, Symbol] :fallback   (:default) Fallback template to use when MissingTemplate is raised
     # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
     def send_notification_email(options = {})
-      if target.notification_email_allowed?(notifiable, key) and 
+      if target.notification_email_allowed?(notifiable, key) and
+         email_subscribed?(key) and
          notifiable.notification_email_allowed?(target, key)
         send_later = options.has_key?(:send_later) ? options[:send_later] : true
         if send_later
@@ -295,6 +315,18 @@ module ActivityNotification
     def notifiable_path
       notifiable.present? or raise ActiveRecord::RecordNotFound.new("Couldn't find notifiable #{notifiable_type}")
       notifiable.notifiable_path(target_type, key)
+    end
+
+    # Returns if the target subscribes this notification.
+    # @return [Boolean] If the target subscribes the notification
+    def subscribed?
+      target.subscribes_to_notification?(key)
+    end
+
+    # Returns if the target subscribes this notification email.
+    # @return [Boolean] If the target subscribes the notification
+    def email_subscribed?(key)
+      target.subscribes_to_notification_email?(key)
     end
 
 

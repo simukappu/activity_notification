@@ -118,7 +118,7 @@ shared_examples_for :notification_api do
     end
 
     describe ".notify_to" do
-      it "returns reated notification" do
+      it "returns created notification" do
         notification = described_class.notify_to(@user_1, @comment_2)
         validate_expected_notification(notification, @user_1, @comment_2)
       end
@@ -1085,6 +1085,20 @@ shared_examples_for :notification_api do
       it "returns notifiable.notifiable_path" do
         expect(test_instance.notifiable_path)
           .to eq(test_instance.notifiable.notifiable_path(test_instance.target_type, test_instance.key))
+      end
+    end
+
+    describe "#subscribed?" do
+      it "returns target.subscribes_to_notification?" do
+        expect(test_instance.subscribed?)
+          .to eq(test_instance.target.subscribes_to_notification?(test_instance.key))
+      end
+    end
+
+    describe "#email_subscribed?" do
+      it "returns target.subscribes_to_notification_email?" do
+        expect(test_instance.subscribed?)
+          .to eq(test_instance.target.subscribes_to_notification_email?(test_instance.key))
       end
     end
   end

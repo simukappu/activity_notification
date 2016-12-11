@@ -4,6 +4,8 @@ module ActivityNotification
     extend ActiveSupport::Concern
     included do
       include Common
+      #TODO
+      include Subscriber
 
       # Has many notification instances of this target.
       # @scope instance
@@ -16,6 +18,7 @@ module ActivityNotification
       class_attribute :_notification_email,
                       :_notification_email_allowed,
                       :_batch_notification_email_allowed,
+                      :_notification_subscription_allowed,
                       :_notification_devise_resource,
                       :_printable_notification_target_name
       set_target_class_defaults
@@ -34,6 +37,7 @@ module ActivityNotification
         self._notification_email                 = nil
         self._notification_email_allowed         = ActivityNotification.config.email_enabled
         self._batch_notification_email_allowed   = ActivityNotification.config.email_enabled
+        self._notification_subscription_allowed  = ActivityNotification.config.subscription_enabled
         self._notification_devise_resource       = ->(model) { model }
         self._printable_notification_target_name = :printable_name
         nil
@@ -125,6 +129,13 @@ module ActivityNotification
           [target, Notification.send_batch_notification_email(target, notifications, mailer_options)]
         }.to_h
       end
+
+      # Returns if subscription management is allowed for this target type.
+      # @return [Boolean] If subscription management is allowed for this target type
+      def subscription_enabled?
+        _notification_subscription_allowed ? true : false
+      end
+      alias_method :notification_subscription_enabled?, :subscription_enabled?
     end
 
     # Returns target email address for email notification.
@@ -154,6 +165,16 @@ module ActivityNotification
     def batch_notification_email_allowed?(notifiable_type, key)
       resolve_value(_batch_notification_email_allowed, notifiable_type, key)
     end
+
+    # Returns if subscription management is allowed for the target from configured field or overriden method.
+    # This method is able to be overriden.
+    #
+    # @param [String] key Key of the notifications
+    # @return [Boolean] If subscription management is allowed for the target
+    def subscription_allowed?(key)
+      resolve_value(_notification_subscription_allowed, key)
+    end
+    alias_method :notification_subscription_allowed?, :subscription_allowed?
 
     # Returns if current resource signed in with Devise is authenticated for the notification.
     # This method is able to be overriden.
@@ -410,6 +431,27 @@ module ActivityNotification
         Notification.send_batch_notification_email(self, notifications, options)
       end
     end
+
+    # Returns if the target subscribes to the notification.
+    # It also returns true when the subscription management is not allowed for the target.
+    #
+    # @param [String] key                  Key of the notification
+    # @param [String] subscribe_as_default Default subscription value to use when the subscription record does not configured
+    # @return [Boolean] If the target subscribes the notification or the subscription management is not allowed for the target
+    def subscribes_to_notification?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
+      !subscription_allowed?(key) or _subscribes_to_notification?(key, subscribe_as_default)
+    end
+
+    # Returns if the target subscribes to the notification email.
+    # It also returns true when the subscription management is not allowed for the target.
+    #
+    # @param [String] key                  Key of the notification
+    # @param [String] subscribe_as_default Default subscription value to use when the subscription record does not configured
+    # @return [Boolean] If the target subscribes the notification email or the subscription management is not allowed for the target
+    def subscribes_to_notification_email?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
+      !subscription_allowed?(key) or _subscribes_to_notification_email?(key, subscribe_as_default)
+    end
+    alias_method :subscribes_to_email?, :subscribes_to_notification_email?
 
 
     private

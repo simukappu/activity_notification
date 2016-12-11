@@ -21,16 +21,16 @@ if defined?(ActionMailer)
     #
     # @param [Object]              target        Target of batch notification email
     # @param [Array<Notification>] notifications Target notifications to send batch notification email
+    # @param [String]              batch_key     Key of the batch notification email
     # @param [Hash]                options       Options for notification email
     # @option options [String, Symbol] :fallback  (:batch_default) Fallback template to use when MissingTemplate is raised
-    # @option options [String]         :batch_key (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
     # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
-    def send_batch_notification_email(target, notifications, options = {})
+    def send_batch_notification_email(target, notifications, batch_key, options = {})
       options[:fallback] ||= :batch_default
       if options[:fallback] == :none
         options.delete(:fallback)
       end
-      batch_notification_mail(target, notifications, options)
+      batch_notification_mail(target, notifications, batch_key, options)
     end
 
   end

@@ -23,13 +23,11 @@ module ActivityNotification
         #
         # @param [Object]              target        Target of batch notification email
         # @param [Array<Notification>] notifications Target notifications to send batch notification email
+        # @param [String]              batch_key     Key of the batch notification email
         # @param [Hash]                options       Options for notification email
-        # @option options [String, Symbol] :fallback    (:batch_default) Fallback template to use when MissingTemplate is raised
-        # @option options [String]         :batch_key   (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
-        def batch_notification_mail(target, notifications, options = {})
+        # @option options [String, Symbol] :fallback (:batch_default) Fallback template to use when MissingTemplate is raised
+        def batch_notification_mail(target, notifications, batch_key, options = {})
           initialize_from_notifications(target, notifications)
-          batch_key = options.delete(:batch_key)
-          batch_key ||= @notification.key
           headers = headers_for(batch_key, options)
           @notification = nil
           send_mail(headers, options[:fallback])

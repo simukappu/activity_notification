@@ -1,0 +1,24 @@
+<% if notification_keys.present? %>
+  <% notification_keys.each do |key| %>
+    Key: <%= key %>
+    <%= form_for(ActivityNotification::Subscription.new, as: :subscription, url: subscriptions_url_for(target, option_params), data: { remote: true }) do |f| %>
+      <%= f.hidden_field :key, value: key %>
+      <div class="field">
+        <%= f.label :subscribing, "Subscribe to this notification?" %>
+        <%= f.check_box :subscribing, { checked: true }, 'true', 'false' %>
+      </div>
+      <div class="field">
+        <%= f.label :subscribing_to_email, "Subscribe to this notification email?" %>
+        <%= f.check_box :subscribing_to_email, { checked: true }, 'true', 'false' %>
+      </div>
+      <div class="actions">
+        <%= f.submit "Save" %>
+      </div>
+    <% end %>
+    <%= link_to "See notifications", notifications_path_for(target, filtered_by_key: key) %>
+    <br/><br/>
+  <% end %>
+<% else %>
+  No notification keys are available.
+<% end %>
+<br/><br/>

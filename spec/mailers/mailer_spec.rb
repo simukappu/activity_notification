@@ -3,6 +3,7 @@ describe ActivityNotification::Mailer do
   let(:notification) { create(:notification) }
   let(:test_target) { notification.target }
   let(:notifications) { [create(:notification, target: test_target), create(:notification, target: test_target)] }
+  let(:batch_key) { 'test_batch_key' }
 
   before do
     ActivityNotification::Mailer.deliveries.clear
@@ -117,7 +118,7 @@ describe ActivityNotification::Mailer do
     context "with deliver_now" do
       context "as default" do
         before do
-          ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications).deliver_now
+          ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_now
         end
   
         it "sends batch notification email now" do
@@ -132,7 +133,7 @@ describe ActivityNotification::Mailer do
 
       context "when fallback option is :none and the template is missing" do
         it "raise ActionView::MissingTemplate" do
-          expect { ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, fallback: :none).deliver_now }
+          expect { ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key, fallback: :none).deliver_now }
             .to raise_error(ActionView::MissingTemplate)
         end
       end
@@ -142,7 +143,7 @@ describe ActivityNotification::Mailer do
       it "sends notification email later" do
         expect {
           perform_enqueued_jobs do
-            ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications).deliver_later
+            ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_later
           end
         }.to change { ActivityNotification::Mailer.deliveries.size }.by(1)
         expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
@@ -150,7 +151,7 @@ describe ActivityNotification::Mailer do
 
       it "sends notification email with active job queue" do
         expect {
-            ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications).deliver_later
+            ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_later
         }.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(1)
       end
     end

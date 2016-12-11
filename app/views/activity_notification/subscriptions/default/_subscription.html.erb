@@ -1,0 +1,23 @@
+Key: <%= subscription.key %><br/>
+
+Subscribe to this notification?: <%= subscription.subscribing %>
+<% if subscription.subscribing? %>
+  <%= link_to "Unsubscribe", unsubscribe_path_for(subscription, option_params), method: :post, remote: true %>
+<% else %>
+  <%= link_to "Subscribe", subscribe_path_for(subscription, option_params), method: :post, remote: true %>
+<% end %>
+<br/>
+
+<% if subscription.subscribing? %>
+  Subscribe to this notification email?: <%= subscription.subscribing_to_email %>
+  <% if subscription.subscribing_to_email %>
+    <%= link_to "Unsubscribe", unsubscribe_to_email_url_for(subscription, option_params), method: :post, remote: true %>
+  <% else %>
+    <%= link_to "Subscribe", subscribe_to_email_url_for(subscription, option_params), method: :post, remote: true %>
+  <% end %>
+  <br/>
+<% end %>
+<%= link_to "Destroy", subscription_path_for(subscription, option_params), method: :delete, remote: true %>
+<%= link_to "Show", subscription_path_for(subscription, option_params) %><br/>
+<%= link_to "See notifications", notifications_path_for(subscription.target, filtered_by_key: subscription.key) %>
+<br/><br/>

@@ -13,6 +13,9 @@
       </p>
       <p class="notification_header_menu">
         <%= link_to "Open all", open_all_notifications_path_for(@target, parameters), method: :post, remote: true %>
+        <% if @target.class.subscription_enabled? %>
+          <%= link_to "Subscriptions", subscriptions_path_for(@target) %>
+        <% end %>
       </p>
     </div>
     <div class="notifications">

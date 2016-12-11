@@ -5,12 +5,26 @@ ActivityNotification.configure do |config|
   config.enabled = true
 
   # Configure table name to store notification data
-  config.table_name = "notifications"
+  config.notification_table_name = "notifications"
 
-  # Configure if email notification is enabled as default
+  # Configure table name to store subscription data
+  config.subscription_table_name = "subscriptions"
+
+  # Configure if email notification is enabled as default.
   # Note that you can configure them for each model by acts_as roles.
-  # Set true when you want to turn on email notifications as default
+  # Set true when you want to turn on email notifications as default.
   config.email_enabled = false
+
+  # Configure if subscription is managed.
+  # Note that this parameter must be true when you want use subscription management.
+  # However, you can also configure them for each model by acts_as roles.
+  # Set true when you want to turn on subscription management as default.
+  config.subscription_enabled = false
+
+  # Configure default subscription value to use when the subscription record does not configured.
+  # Note that you can configure them for each method calling as default argument.
+  # Set false when you want to unsubscribe to any notifications as default.
+  config.subscribe_as_default = true
 
   # Configure the e-mail address which will be shown in ActivityNotification::Mailer,
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.

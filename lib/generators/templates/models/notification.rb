@@ -1,6 +1,4 @@
 # Notification model for customisation & custom methods
-class <%= @model_name %> < ActivityNotification::Notification
-
+class <%= @target_prefix %><%= @model_name %> < ActivityNotification::Notification
   # Write custom methods or override methods here
-
 end

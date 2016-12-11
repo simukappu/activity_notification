@@ -1,0 +1,18 @@
+<% unless @subscriptions.nil? %>
+  <h1>Configured subscriptions</h1>
+  <div id="subscriptions">
+    <%= render 'subscriptions', subscriptions: @subscriptions, option_params: @index_options %>
+  </div>
+<% end %>
+
+<% unless @notification_keys.nil? %>
+  <h1>Unconfigured notification keys</h1>
+  <div id="notification_keys">
+    <%= render 'notification_keys', target: @target, notification_keys: @notification_keys, option_params: @index_options %>
+  </div>
+<% end %>
+
+<h1>Create a new subscription</h1>
+<div id="subscription_form">
+  <%= render 'form', target: @target, option_params: @index_options %>
+</div>

@@ -6,9 +6,12 @@ module ActivityNotification
   extend ActiveSupport::Concern
   extend ActiveSupport::Autoload
 
-  autoload :NotificationApi,  'activity_notification/apis/notification_api'
   autoload :Notification,     'activity_notification/models/notification'
+  autoload :NotificationApi,  'activity_notification/apis/notification_api'
+  autoload :Subscription,     'activity_notification/models/subscription'
+  autoload :SubscriptionApi,  'activity_notification/apis/subscription_api'
   autoload :Target,           'activity_notification/models/concerns/target'
+  autoload :Subscriber,       'activity_notification/models/concerns/subscriber'
   autoload :Notifiable,       'activity_notification/models/concerns/notifiable'
   autoload :Notifier,         'activity_notification/models/concerns/notifier'
   autoload :Group,            'activity_notification/models/concerns/group'
@@ -16,7 +19,6 @@ module ActivityNotification
   autoload :Config
   autoload :Renderable
   autoload :VERSION
-
 
   module Mailers
     autoload :Helpers,        'activity_notification/mailers/helpers'
@@ -50,6 +52,7 @@ end
 require 'activity_notification/helpers/polymorphic_helpers'
 require 'activity_notification/helpers/view_helpers'
 require 'activity_notification/controllers/store_controller'
+require 'activity_notification/controllers/devise_authentication_controller'
 
 # Load role for models
 require 'activity_notification/models'
