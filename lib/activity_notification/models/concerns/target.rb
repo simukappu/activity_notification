@@ -321,12 +321,12 @@ module ActivityNotification
     # @see NotificationApi#open_all_of
     #
     # @param [Hash] options Options for opening notifications
-    # @option options [DateTime] :opened_at (DateTime.now) Time to set to opened_at of the notification record
-    # @option options [String]   :filtered_by_type       (nil) Notifiable type for filter
-    # @option options [Object]   :filtered_by_group      (nil) Group instance for filter
-    # @option options [String]   :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
-    # @option options [String]   :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
-    # @option options [String]   :filtered_by_key        (nil) Key of the notification for filter
+    # @option options [DateTime] :opened_at              (Time.current) Time to set to opened_at of the notification record
+    # @option options [String]   :filtered_by_type       (nil)          Notifiable type for filter
+    # @option options [Object]   :filtered_by_group      (nil)          Group instance for filter
+    # @option options [String]   :filtered_by_group_type (nil)          Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]   :filtered_by_group_id   (nil)          Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]   :filtered_by_key        (nil)          Key of the notification for filter
     # @return [Integer] Number of opened notification records
     def open_all_notifications(options = {})
       Notification.open_all_of(self, options)

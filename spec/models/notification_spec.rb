@@ -81,8 +81,8 @@ describe ActivityNotification::Notification, type: :model do
         ActivityNotification::Notification.delete_all
         @unopened_group_owner  = create(:notification, group_owner: nil)
         @unopened_group_member = create(:notification, group_owner: @unopened_group_owner)
-        @opened_group_owner    = create(:notification, group_owner: nil, opened_at: DateTime.now)
-        @opened_group_member   = create(:notification, group_owner: @opened_group_owner, opened_at: DateTime.now)
+        @opened_group_owner    = create(:notification, group_owner: nil, opened_at: Time.current)
+        @opened_group_member   = create(:notification, group_owner: @opened_group_owner, opened_at: Time.current)
       end
 
       it "works with group_owners_only scope" do
@@ -291,8 +291,8 @@ describe ActivityNotification::Notification, type: :model do
         ActivityNotification::Notification.delete_all
         unopened_group_owner   = create(:notification, group_owner: nil)
         unopened_group_member  = create(:notification, group_owner: unopened_group_owner)
-        opened_group_owner     = create(:notification, group_owner: nil, opened_at: DateTime.now)
-        opened_group_member    = create(:notification, group_owner: opened_group_owner, opened_at: DateTime.now)
+        opened_group_owner     = create(:notification, group_owner: nil, opened_at: Time.current)
+        opened_group_member    = create(:notification, group_owner: opened_group_owner, opened_at: Time.current)
         @earliest_notification = unopened_group_owner
         @latest_notification   = opened_group_member
       end

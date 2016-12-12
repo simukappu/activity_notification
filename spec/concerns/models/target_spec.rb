@@ -627,8 +627,8 @@ shared_examples_for :target do
 
       context "when the target has no unopened notifications" do
         before do
-          create(:notification, target: test_instance, opened_at: DateTime.now)
-          create(:notification, target: test_instance, opened_at: DateTime.now)
+          create(:notification, target: test_instance, opened_at: Time.current)
+          create(:notification, target: test_instance, opened_at: Time.current)
         end
 
         it "calls unopened_notification_index" do
@@ -681,7 +681,7 @@ shared_examples_for :target do
           end
 
           it "returns unopened notification index (unopened only)" do
-            notification_3 = create(:notification, target: test_instance, opened_at: DateTime.now)
+            notification_3 = create(:notification, target: test_instance, opened_at: Time.current)
             expect(test_instance.unopened_notification_index.size).to eq(2)
             expect(test_instance.unopened_notification_index.last).to  eq(@notification_1)
             expect(test_instance.unopened_notification_index.first).to eq(@notification_2)
@@ -699,8 +699,8 @@ shared_examples_for :target do
 
       context "when the target has no unopened notifications" do
         before do
-          create(:notification, target: test_instance, group_owner: nil, opened_at: DateTime.now)
-          create(:notification, target: test_instance, group_owner: nil, opened_at: DateTime.now)
+          create(:notification, target: test_instance, group_owner: nil, opened_at: Time.current)
+          create(:notification, target: test_instance, group_owner: nil, opened_at: Time.current)
         end
 
         it "returns empty records" do
@@ -718,8 +718,8 @@ shared_examples_for :target do
 
       context "when the target has opened notifications" do
         before do
-          @notification_1 = create(:notification, target: test_instance, opened_at: DateTime.now)
-          @notification_2 = create(:notification, target: test_instance, opened_at: DateTime.now)
+          @notification_1 = create(:notification, target: test_instance, opened_at: Time.current)
+          @notification_2 = create(:notification, target: test_instance, opened_at: Time.current)
         end
 
         context "without limit" do
@@ -738,7 +738,7 @@ shared_examples_for :target do
           end
 
           it "returns opened notification index (owner only)" do
-            group_member   = create(:notification, target: test_instance, group_owner: @notification_1, opened_at: DateTime.now)
+            group_member   = create(:notification, target: test_instance, group_owner: @notification_1, opened_at: Time.current)
             expect(test_instance.opened_notification_index.size).to eq(2)
             expect(test_instance.opened_notification_index.last).to  eq(@notification_1)
             expect(test_instance.opened_notification_index.first).to eq(@notification_2)
@@ -882,8 +882,8 @@ shared_examples_for :target do
 
       context "when the target has no unopened notifications" do
         before do
-          create(:notification, target: test_instance, opened_at: DateTime.now)
-          create(:notification, target: test_instance, opened_at: DateTime.now)
+          create(:notification, target: test_instance, opened_at: Time.current)
+          create(:notification, target: test_instance, opened_at: Time.current)
         end
 
         it "calls unopened_notification_index_with_attributes" do
@@ -956,8 +956,8 @@ shared_examples_for :target do
 
       context "when the target has no unopened notifications" do
         before do
-          create(:notification, target: test_instance, opened_at: DateTime.now)
-          create(:notification, target: test_instance, opened_at: DateTime.now)
+          create(:notification, target: test_instance, opened_at: Time.current)
+          create(:notification, target: test_instance, opened_at: Time.current)
         end
 
         it "returns empty records" do
@@ -975,8 +975,8 @@ shared_examples_for :target do
       context "when the target has opened notifications with no group members" do
         context "with no group members" do
           before do
-            create(:notification, target: test_instance, opened_at: DateTime.now)
-            create(:notification, target: test_instance, opened_at: DateTime.now)
+            create(:notification, target: test_instance, opened_at: Time.current)
+            create(:notification, target: test_instance, opened_at: Time.current)
           end
   
           it "calls with_target, with_notifiable and with_notifier" do
@@ -997,9 +997,9 @@ shared_examples_for :target do
   
         context "with group members" do
           before do
-            group_owner  = create(:notification, target: test_instance, group_owner: nil, opened_at: DateTime.now)
-                           create(:notification, target: test_instance, group_owner: nil, opened_at: DateTime.now)
-            group_member = create(:notification, target: test_instance, group_owner: group_owner, opened_at: DateTime.now)
+            group_owner  = create(:notification, target: test_instance, group_owner: nil, opened_at: Time.current)
+                           create(:notification, target: test_instance, group_owner: nil, opened_at: Time.current)
+            group_member = create(:notification, target: test_instance, group_owner: group_owner, opened_at: Time.current)
           end
   
           it "calls with_group" do

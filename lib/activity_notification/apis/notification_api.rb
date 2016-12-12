@@ -105,16 +105,16 @@ module ActivityNotification
       #
       # @param [Object] target Target of the notifications to open
       # @param [Hash] options Options for opening notifications
-      # @option options [DateTime] :opened_at (DateTime.now) Time to set to opened_at of the notification record
-      # @option options [String]   :filtered_by_type       (nil) Notifiable type for filter
-      # @option options [Object]   :filtered_by_group      (nil) Group instance for filter
-      # @option options [String]   :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
-      # @option options [String]   :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
-      # @option options [String]   :filtered_by_key        (nil) Key of the notification for filter
+      # @option options [DateTime] :opened_at              (Time.current) Time to set to opened_at of the notification record
+      # @option options [String]   :filtered_by_type       (nil)          Notifiable type for filter
+      # @option options [Object]   :filtered_by_group      (nil)          Group instance for filter
+      # @option options [String]   :filtered_by_group_type (nil)          Group type for filter, valid with :filtered_by_group_id
+      # @option options [String]   :filtered_by_group_id   (nil)          Group instance id for filter, valid with :filtered_by_group_type
+      # @option options [String]   :filtered_by_key        (nil)          Key of the notification for filter
       # @return [Integer] Number of opened notification records
       # @todo Add filter option
       def open_all_of(target, options = {})
-        opened_at = options[:opened_at] || DateTime.now
+        opened_at = options[:opened_at] || Time.current
         target.notifications.unopened_only.filtered_by_options(options).update_all(opened_at: opened_at)
       end
   
@@ -202,11 +202,11 @@ module ActivityNotification
     # Opens the notification.
     #
     # @param [Hash] options Options for opening notifications
-    # @option options [DateTime] :opened_at (DateTime.now) Time to set to opened_at of the notification record
-    # @option options [Boolean] :with_members (true) If it opens notifications including group members
+    # @option options [DateTime] :opened_at   (Time.current) Time to set to opened_at of the notification record
+    # @option options [Boolean] :with_members (true)         If it opens notifications including group members
     # @return [Integer] Number of opened notification records
     def open!(options = {})
-      opened_at = options[:opened_at] || DateTime.now
+      opened_at = options[:opened_at] || Time.current
       with_members = options.has_key?(:with_members) ? options[:with_members] : true
       update(opened_at: opened_at)
       with_members ? group_members.update_all(opened_at: opened_at) + 1 : 1

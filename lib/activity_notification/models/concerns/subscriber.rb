@@ -45,7 +45,7 @@ module ActivityNotification
     # @param [Hash] subscription_params Parameters to create subscription record
     # @return [Subscription] Created subscription instance
     def create_subscription(subscription_params = {})
-      created_at   = DateTime.now
+      created_at = Time.current
       if subscription_params[:subscribing] == false and subscription_params[:subscribing_to_email].nil?
         subscription_params[:subscribing_to_email] = false
       end

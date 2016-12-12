@@ -328,16 +328,16 @@ shared_examples_for :notification_api do
 
       it "opens all notification with current time" do
         expect(@user_1.notifications.first.opened_at).to be_nil
-        Timecop.freeze(DateTime.now)
+        Timecop.freeze(Time.current)
         described_class.open_all_of(@user_1)
-        expect(@user_1.notifications.first.opened_at.to_i).to eq(DateTime.now.to_i)
+        expect(@user_1.notifications.first.opened_at.to_i).to eq(Time.current.to_i)
         Timecop.return
       end
 
       context "with opened_at option" do
         it "opens all notification with specified time" do
           expect(@user_1.notifications.first.opened_at).to be_nil
-          opened_at = DateTime.now - 1.months
+          opened_at = Time.current - 1.months
           described_class.open_all_of(@user_1, opened_at: opened_at)
           expect(@user_1.notifications.first.opened_at.to_i).to eq(opened_at.to_i)
         end
@@ -507,21 +507,21 @@ shared_examples_for :notification_api do
       context "as default" do
         it "open notification with current time" do
           expect(test_instance.opened_at.blank?).to be_truthy
-          Timecop.freeze(DateTime.now)
+          Timecop.freeze(Time.current)
           test_instance.open!
           expect(test_instance.opened_at.blank?).to be_falsey
-          expect(test_instance.opened_at).to        eq(DateTime.now)
+          expect(test_instance.opened_at).to        eq(Time.current)
           Timecop.return
         end
 
         it "open group member notifications with current time" do
           group_member = create(test_class_name, group_owner: test_instance)
           expect(group_member.opened_at.blank?).to be_truthy
-          Timecop.freeze(DateTime.now)
+          Timecop.freeze(Time.current)
           test_instance.open!
           group_member = group_member.reload
           expect(group_member.opened_at.blank?).to be_falsey
-          expect(group_member.opened_at.to_i).to   eq(DateTime.now.to_i)
+          expect(group_member.opened_at.to_i).to   eq(Time.current.to_i)
           Timecop.return
         end
       end
@@ -529,7 +529,7 @@ shared_examples_for :notification_api do
       context "with opened_at option" do
         it "open notification with specified time" do
           expect(test_instance.opened_at.blank?).to be_truthy
-          opened_at = DateTime.now - 1.months
+          opened_at = Time.current - 1.months
           test_instance.open!(opened_at: opened_at)
           expect(test_instance.opened_at.blank?).to be_falsey
           expect(test_instance.opened_at).to        eq(opened_at)
@@ -538,7 +538,7 @@ shared_examples_for :notification_api do
         it "open group member notifications with specified time" do
           group_member = create(test_class_name, group_owner: test_instance)
           expect(group_member.opened_at.blank?).to be_truthy
-          opened_at = DateTime.now - 1.months
+          opened_at = Time.current - 1.months
           test_instance.open!(opened_at: opened_at)
           group_member = group_member.reload
           expect(group_member.opened_at.blank?).to be_falsey
@@ -550,7 +550,7 @@ shared_examples_for :notification_api do
         it "does not open group member notifications" do
           group_member = create(test_class_name, group_owner: test_instance)
           expect(group_member.opened_at.blank?).to be_truthy
-          opened_at = DateTime.now - 1.months
+          opened_at = Time.current - 1.months
           test_instance.open!(with_members: false)
           group_member = group_member.reload
           expect(group_member.opened_at.blank?).to be_truthy
