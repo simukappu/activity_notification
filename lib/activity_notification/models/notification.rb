@@ -216,7 +216,7 @@ module ActivityNotification
       if options.has_key?(:filtered_by_group)
         filtered_notifications = filtered_notifications.filtered_by_group(options[:filtered_by_group])
       end
-      if options.has_key?(:filtered_by_group_type) and options.has_key?(:filtered_by_group_id)
+      if options.has_key?(:filtered_by_group_type) && options.has_key?(:filtered_by_group_id)
         filtered_notifications = filtered_notifications
                                  .where(group_type: options[:filtered_by_group_type], group_id: options[:filtered_by_group_id])
       end

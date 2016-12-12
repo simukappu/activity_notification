@@ -189,7 +189,7 @@ module ActivityNotification
           "with devise resource #{devise_resource.class} has been passed to #{self.class}##{__method__}. "\
           "You have to override #{self.class}##{__method__} method or set devise_resource in acts_as_target."
       end
-      current_resource.present? and current_resource == devise_resource
+      current_resource.present? && current_resource == devise_resource
     end
 
     # Returns printable target model name to show in view or email.

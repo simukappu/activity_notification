@@ -172,7 +172,7 @@ module ActivityNotification
     def partial_path(path = nil, root = nil, target = nil)
       controller = ActivityNotification.get_controller         if ActivityNotification.respond_to?(:get_controller)
       root ||= "activity_notification/notifications/#{target}" if target.present?
-      root ||= controller.target_view_path                     if controller.present? and controller.respond_to?(:target_view_path)
+      root ||= controller.target_view_path                     if controller.present? && controller.respond_to?(:target_view_path)
       root ||= 'activity_notification/notifications/default'
       path ||= self.key.gsub('.', '/')
       select_path(path, root)

@@ -57,8 +57,8 @@ class <%= @target_prefix %>SubscriptionsController < ActivityNotification::Subsc
   #   super
   # end
 
-  # def load_subscription_index(options = {})
-  #   super(options)
+  # def load_index
+  #   super
   # end
 
   # def controller_path

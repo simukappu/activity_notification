@@ -98,7 +98,7 @@ module ActionDispatch::Routing
           end
         end
 
-        if resource.to_s.to_model_class.subscription_enabled? and with_subscription.present?
+        if resource.to_s.to_model_class.subscription_enabled? && with_subscription.present?
           subscribed_by resource, subscription_option
         end
       end
@@ -147,8 +147,8 @@ module ActionDispatch::Routing
     private
 
       def ignore_path?(action, options)
-        return true if options[:except].present? and     options[:except].include?(action)
-        return true if options[:only].present?   and not options[:only].include?(action)
+        options[:except].present? &&  options[:except].include?(action) and return true
+        options[:only].present?   && !options[:only].include?(action)   and return true
         false
       end
 

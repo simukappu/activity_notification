@@ -1,0 +1,100 @@
+module ActivityNotification
+  # Module included in controllers to select target
+  module CommonController
+    extend ActiveSupport::Concern
+
+    included do
+      # Include StoreController to allow ActivityNotification access to controller instance
+      include StoreController
+      # Include PolymorphicHelpers to resolve string extentions
+      include PolymorphicHelpers
+
+      prepend_before_action :set_target
+      before_action :set_view_prefixes
+    end
+
+    DEFAULT_VIEW_DIRECTORY = "default"
+  
+    protected
+
+      # Sets @target instance variable from request parameters.
+      # @api protected
+      # @return [Object] Target instance (Returns HTTP 400 when request parameters are not enough)
+      def set_target
+        if (target_type = params[:target_type]).present?
+          target_class = target_type.to_model_class
+          @target = params[:target_id].present? ?
+            target_class.find_by_id!(params[:target_id]) : 
+            target_class.find_by_id!(params["#{target_type.to_resource_name}_id"])
+        else
+          render plain: "400 Bad Request: Missing parameter", status: 400
+        end
+      end
+
+      # Sets options to load resource index from request parameters.
+      # This method is to be overriden.
+      # @api protected
+      # @return [Hash] options to load resource index
+      def set_index_options
+        raise NotImplementedError, "You have to implement #{self.class}##{__method__}"
+      end
+
+      # Loads resource index with request parameters.
+      # This method is to be overriden.
+      # @api protected
+      # @param [Hash] params Request parameter options for resource index
+      # @return [Array] Array of resource index
+      def load_index
+        raise NotImplementedError, "You have to implement #{self.class}##{__method__}"
+      end
+
+      # Returns controller path.
+      # This method is called from target_view_path method and can be overriden.
+      # @api protected
+      # @return [String] "activity_notification" as controller path
+      def controller_path
+        raise NotImplementedError, "You have to implement #{self.class}##{__method__}"
+      end
+
+      # Returns path of the target view templates.
+      # Do not make this method public unless Rendarable module calls controller's target_view_path method to render resources.
+      # @api protected
+      def target_view_path
+        target_type = @target.to_resources_name
+        view_path = [controller_path, target_type].join('/')
+        lookup_context.exists?(action_name, view_path) ?
+          view_path :
+          [controller_path, DEFAULT_VIEW_DIRECTORY].join('/')
+      end
+
+      # Sets view prefixes for target view path.
+      # @api protected
+      def set_view_prefixes
+        lookup_context.prefixes.prepend(target_view_path)
+      end
+
+      # Returns JavaScript view for ajax request or redirects to back as default.
+      # @api protected
+      # @return [Responce] JavaScript view for ajax request or redirects to back as default
+      def return_back_or_ajax
+        set_index_options
+        respond_to do |format|
+          if request.xhr?
+            load_index if params[:reload].to_s.to_boolean(true)
+            format.js
+          # :skip-rails4:
+          elsif Rails::VERSION::MAJOR >= 5
+            redirect_back fallback_location: { action: :index }, **@index_options and return
+          # :skip-rails4:
+          # :skip-rails5:
+          elsif request.referer
+            redirect_to :back, **@index_options and return
+          else
+            redirect_to action: :index, **@index_options and return
+          end
+          # :skip-rails5:
+        end
+      end
+
+  end
+end

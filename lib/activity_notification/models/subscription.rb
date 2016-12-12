@@ -81,7 +81,7 @@ module ActivityNotification
 #    private
       # Validates subscribing_to_email cannot be true when subscribing isfalse.
       def subscribing_to_email_cannot_be_true_when_subscribing_is_false
-        if !subscribing and subscribing_to_email
+        if !subscribing && subscribing_to_email
           errors.add(:subscribing_to_email, "cannot be true when subscribing is false")
         end
       end

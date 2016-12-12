@@ -53,8 +53,8 @@ module ActivityNotification
         # @param [String] key Key of the notification
         # @param [Hash] options Options for email notification
         def headers_for(key, options)
-          if !@batch_email and
-             @notification.notifiable.respond_to?(:overriding_notification_email_key) and 
+          if !@batch_email &&
+             @notification.notifiable.respond_to?(:overriding_notification_email_key) &&
              @notification.notifiable.overriding_notification_email_key(@target, key).present?
             key = @notification.notifiable.overriding_notification_email_key(@target, key)
           end

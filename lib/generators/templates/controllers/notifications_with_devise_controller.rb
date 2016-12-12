@@ -49,8 +49,8 @@ class <%= @target_prefix %>NotificationsWithDeviseController < ActivityNotificat
   #   super
   # end
 
-  # def load_notification_index(options = {})
-  #   super(options)
+  # def load_index
+  #   super
   # end
 
   # def controller_path

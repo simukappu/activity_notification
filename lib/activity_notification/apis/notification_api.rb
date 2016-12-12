@@ -78,7 +78,7 @@ module ActivityNotification
         # Generate notification
         notification = generate_notification(target, notifiable, options)
         # Send notification email
-        if notification.present? and send_email
+        if notification.present? && send_email
           notification.send_notification_email({ send_later: send_later })
         end
         # Return generated notification
@@ -124,7 +124,7 @@ module ActivityNotification
       # @param [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] notifications Array or database query of the notifications to test member exists
       # @return [Boolean] If group member of the notifications exists
       def group_member_exists?(notifications)
-        notifications.present? and where(group_owner_id: notifications.map(&:id)).exists?
+        notifications.present? && where(group_owner_id: notifications.map(&:id)).exists?
       end
 
       # Sends batch notification email to the target.
@@ -139,7 +139,7 @@ module ActivityNotification
       def send_batch_notification_email(target, notifications, options = {})
         return if notifications.blank?
         batch_key = options[:batch_key] || notifications.first.key
-        if target.batch_notification_email_allowed?(notifications.first.notifiable_type, batch_key) and
+        if target.batch_notification_email_allowed?(notifications.first.notifiable_type, batch_key) &&
            target.subscribes_to_notification_email?(batch_key)
           send_later = options.has_key?(:send_later) ? options[:send_later] : true
           if send_later
@@ -171,7 +171,7 @@ module ActivityNotification
         # Defferent notifiable.id can be made in a same group
         group_owner = where(target: target, notifiable_type: notifiable.to_class_name, key: key, group: group)
                      .where(group_owner_id: nil, opened_at: nil).earliest
-        if group.present? and group_owner.present?
+        if group.present? && group_owner.present?
           create(target: target, notifiable: notifiable, key: key, group: group, group_owner: group_owner, parameters: parameters, notifier: notifier)
         else
           create(target: target, notifiable: notifiable, key: key, group: group, parameters: parameters, notifier: notifier)
@@ -187,8 +187,8 @@ module ActivityNotification
     # @option options [String, Symbol] :fallback   (:default) Fallback template to use when MissingTemplate is raised
     # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
     def send_notification_email(options = {})
-      if target.notification_email_allowed?(notifiable, key) and
-         email_subscribed?(key) and
+      if target.notification_email_allowed?(notifiable, key) &&
+         email_subscribed?(key) &&
          notifiable.notification_email_allowed?(target, key)
         send_later = options.has_key?(:send_later) ? options[:send_later] : true
         if send_later

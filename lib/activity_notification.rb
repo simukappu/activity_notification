@@ -51,6 +51,7 @@ end
 # Load ActivityNotification helpers
 require 'activity_notification/helpers/polymorphic_helpers'
 require 'activity_notification/helpers/view_helpers'
+require 'activity_notification/controllers/common_controller'
 require 'activity_notification/controllers/store_controller'
 require 'activity_notification/controllers/devise_authentication_controller'
 

@@ -37,7 +37,7 @@ module ActivityNotification
     # @return [Subscription] Found or created subscription instance
     def find_or_create_subscription(key, subscription_params = {})
       subscription = find_subscription(key)
-      subscription ||= create_subscription(subscription_params.merge(key: key))
+      subscription || create_subscription(subscription_params.merge(key: key))
     end
 
     # Creates new subscription of the target.
@@ -46,8 +46,8 @@ module ActivityNotification
     # @return [Subscription] Created subscription instance
     def create_subscription(subscription_params = {})
       created_at = Time.current
-      if subscription_params[:subscribing] == false and subscription_params[:subscribing_to_email].nil?
-        subscription_params[:subscribing_to_email] = false
+      if subscription_params[:subscribing] == false && subscription_params[:subscribing_to_email].nil?
+        subscription_params[:subscribing_to_email] = subscription_params[:subscribing] 
       end
       subscription = subscriptions.new(subscription_params)
       subscription.subscribing ?
@@ -114,26 +114,36 @@ module ActivityNotification
       # This method can be overriden.
       # @api protected
       #
-      # @param [String] key                  Key of the notification
-      # @param [String] subscribe_as_default Default subscription value to use when the subscription record does not configured
-      # @return [Boolean] If the target subscribes the notification
+      # @param [String]  key                  Key of the notification
+      # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
+      # @return [Boolean] If the target subscribes to the notification
       def _subscribes_to_notification?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
-        subscription = subscriptions.find_by_key(key)
-        subscribe_as_default ? (subscription.blank? or subscription.subscribing) : (subscription.present? and subscription.subscribing)
+        evaluate_subscription(subscriptions.find_by_key(key), :subscribing, subscribe_as_default)
       end
 
       # Returns if the target subscribes to the notification email.
       # This method can be overriden.
       # @api protected
       #
-      # @param [String] key                  Key of the notification
-      # @param [String] subscribe_as_default Default subscription value to use when the subscription record does not configured
-      # @return [Boolean] If the target subscribes the notification
+      # @param [String]  key                  Key of the notification
+      # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
+      # @return [Boolean] If the target subscribes to the notification
       def _subscribes_to_notification_email?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
-        subscription = subscriptions.find_by_key(key)
-        subscribe_as_default ? (subscription.blank? or subscription.subscribing_to_email) : (subscription.present? and subscription.subscribing_to_email)
+        evaluate_subscription(subscriptions.find_by_key(key), :subscribing_to_email, subscribe_as_default)
       end
       alias_method :_subscribes_to_email?, :_subscribes_to_notification_email?
+
+    private
+
+      # Returns if the target subscribes.
+      # @api private
+      # @param [Boolean] record  Subscription record
+      # @param [Symbol]  field   Evaluating subscription field of the record
+      # @param [Boolean] default Default subscription value to use when the subscription record does not configured
+      # @return [Boolean] If the target subscribes
+      def evaluate_subscription(record, field, default)
+        default ? record.blank? || record.send(field) : record.present? && record.send(field)
+      end
 
   end
 end
