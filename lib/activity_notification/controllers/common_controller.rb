@@ -82,19 +82,28 @@ module ActivityNotification
           if request.xhr?
             load_index if params[:reload].to_s.to_boolean(true)
             format.js
-          # :skip-rails4:
-          elsif Rails::VERSION::MAJOR >= 5
-            redirect_back fallback_location: { action: :index }, **@index_options and return
-          # :skip-rails4:
-          # :skip-rails5:
-          elsif request.referer
-            redirect_to :back, **@index_options and return
           else
-            redirect_to action: :index, **@index_options and return
+            compatibly_redirect_back(@index_options) and return
           end
-          # :skip-rails5:
         end
       end
 
+      # Redirect to back.
+      # @api protected
+      # @return [Boolean] True
+      def compatibly_redirect_back(request_params = {})
+        # :skip-rails4:
+        if Rails::VERSION::MAJOR >= 5
+          redirect_back fallback_location: { action: :index }, **request_params
+        # :skip-rails4:
+        # :skip-rails5:
+        elsif request.referer
+          redirect_to :back, **request_params
+        else
+          redirect_to action: :index, **request_params
+        end
+        # :skip-rails5:
+        true
+      end
   end
 end
