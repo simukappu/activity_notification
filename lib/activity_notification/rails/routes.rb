@@ -6,7 +6,7 @@ module ActionDispatch::Routing
   class Mapper
     include ActivityNotification::PolymorphicHelpers
 
-    # Includes notify_to method for routes, which is responsible to generate all necessary routes for activity_notification.
+    # Includes notify_to method for routes, which is responsible to generate all necessary routes for notifications of activity_notification.
     #
     # When you have an User model configured as a target (e.g. defined acts_as_target),
     # you can create as follows in your routes:
@@ -21,7 +21,7 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/notifications", action:"destroy", target_type:"users" }
     #     open_all_user_notifications POST   /users/:user_id/notifications/open_all(.:format)
     #       { controller:"activity_notification/notifications", action:"open_all", target_type:"users" }
-    #     move_user_notification      POST   /users/:user_id/notifications/:id/move(.:format)
+    #     move_user_notification      GET    /users/:user_id/notifications/:id/move(.:format)
     #       { controller:"activity_notification/notifications", action:"move", target_type:"users" }
     #     open_user_notification      POST   /users/:user_id/notifications/:id/open(.:format)
     #       { controller:"activity_notification/notifications", action:"open", target_type:"users" }
@@ -39,10 +39,18 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/notifications_with_devise", action:"destroy", target_type:"users", devise_type:"users" }
     #     open_all_user_notifications POST   /users/:user_id/notifications/open_all(.:format)
     #       { controller:"activity_notification/notifications_with_devise", action:"open_all", target_type:"users", devise_type:"users" }
-    #     move_user_notification      POST   /users/:user_id/notifications/:id/move(.:format)
+    #     move_user_notification      GET    /users/:user_id/notifications/:id/move(.:format)
     #       { controller:"activity_notification/notifications_with_devise", action:"move", target_type:"users", devise_type:"users" }
     #     open_user_notification      POST   /users/:user_id/notifications/:id/open(.:format)
     #       { controller:"activity_notification/notifications_with_devise", action:"open", target_type:"users", devise_type:"users" }
+    #
+    # When you would like to define subscription management paths with notification paths,
+    # you can create as follows in your routes:
+    #   notify_to :users, with_subscription: true
+    # or you can also set options for subscription path:
+    #   notify_to :users, with_subscription: { except: [:index] }
+    # If you configure this :with_subscription option with :with_devise option, with_subscription paths are also automatically configured with devise authentication as the same as notifications
+    #   notify_to :users, with_devise: :users, with_subscription: true
     #
     # @example Define notify_to in config/routes.rb
     #   notify_to :users
@@ -50,14 +58,17 @@ module ActionDispatch::Routing
     #   notify_to :users, only: [:open, :open_all, :move]
     # @example Integrated with Devise authentication
     #   notify_to :users, with_devise: :users
+    # @example Define notification paths including subscription paths
+    #   notify_to :users, with_subscription: true
     #
     # @overload notify_to(*resources, *options)
-    #   @param          [Symbol] resources Resources to notify
-    #   @option options [Symbol] :with_devise Devise resources name for devise integration. Devise integration will be enabled by this option.
-    #   @option options [String] :controller  controller option as resources routing
-    #   @option options [Symbol] :as          as option as resources routing
-    #   @option options [Array]  :only        only option as resources routing
-    #   @option options [Array]  :except      except option as resources routing
+    #   @param          [Symbol]       resources Resources to notify
+    #   @option options [Symbol]       :with_devise       Devise resources name for devise integration. Devise integration will be enabled by this option.
+    #   @option options [Hash|Boolean] :with_subscription Subscription path options to define subscription management paths with notification paths. Calls subscribed_by routing when truthy value is passed as this option.
+    #   @option options [String]       :controller        :controller option as resources routing
+    #   @option options [Symbol]       :as                :as option as resources routing
+    #   @option options [Array]        :only              :only option as resources routing
+    #   @option options [Array]        :except            :except option as resources routing
     # @return [ActionDispatch::Routing::Mapper] Routing mapper instance
     def notify_to(*resources)
       options = resources.extract_options!
@@ -74,11 +85,9 @@ module ActionDispatch::Routing
       end
       
       if (with_subscription = options.delete(:with_subscription)).present?
-        subscription_option = with_subscription.is_a?(Hash) ? with_subscription : {}
-        subscription_option = subscription_option.merge(with_devise: with_devise)
+        subscription_option = (with_subscription.is_a?(Hash) ? with_subscription : {}).merge(with_devise: with_devise)
       end
-      options[:except]       ||= []
-      options[:except].concat( [:new, :create, :edit, :update] )
+      (options[:except] ||= []).concat( [:new, :create, :edit, :update] )
       notification_resources   = options[:model] || :notifications
 
       #TODO other options
@@ -106,6 +115,67 @@ module ActionDispatch::Routing
       self
     end
 
+    # Includes subscribed_by method for routes, which is responsible to generate all necessary routes for subscriptions of activity_notification.
+    #
+    # When you have an User model configured as a target (e.g. defined acts_as_target),
+    # you can create as follows in your routes:
+    #   subscribed_by :users
+    # This method creates the needed routes:
+    #   # Subscription routes
+    #     user_subscriptions          GET    /users/:user_id/subscriptions(.:format)
+    #       { controller:"activity_notification/subscriptions", action:"index", target_type:"users" }
+    #     user_subscription           GET    /users/:user_id/subscriptions/:id(.:format)
+    #       { controller:"activity_notification/subscriptions", action:"show", target_type:"users" }
+    #     open_all_user_subscriptions POST   /users/:user_id/subscriptions(.:format)
+    #       { controller:"activity_notification/subscriptions", action:"create", target_type:"users" }
+    #     user_subscription           DELETE /users/:user_id/subscriptions/:id(.:format)
+    #       { controller:"activity_notification/subscriptions", action:"destroy", target_type:"users" }
+    #     open_user_subscription      POST   /users/:user_id/subscriptions/:id/subscribe(.:format)
+    #       { controller:"activity_notification/subscriptions", action:"subscribe", target_type:"users" }
+    #     open_user_subscription      POST   /users/:user_id/subscriptions/:id/unsubscribe(.:format)
+    #       { controller:"activity_notification/subscriptions", action:"unsubscribe", target_type:"users" }
+    #     open_user_subscription      POST   /users/:user_id/subscriptions/:id/subscribe_to_email(.:format)
+    #       { controller:"activity_notification/subscriptions", action:"subscribe_to_email", target_type:"users" }
+    #     open_user_subscription      POST   /users/:user_id/subscriptions/:id/unsubscribe_to_email(.:format)
+    #       { controller:"activity_notification/subscriptions", action:"unsubscribe_to_email", target_type:"users" }
+    #
+    # When you use devise authentication and you want make subscription targets assciated with devise,
+    # you can create as follows in your routes:
+    #   notify_to :users, with_devise: :users
+    # This with_devise option creates the needed routes assciated with devise authentication:
+    #   # Subscription with devise routes
+    #     user_subscriptions          GET    /users/:user_id/subscriptions(.:format)
+    #       { controller:"activity_notification/subscriptions_with_devise", action:"index", target_type:"users", devise_type:"users" }
+    #     user_subscription           GET    /users/:user_id/subscriptions/:id(.:format)
+    #       { controller:"activity_notification/subscriptions_with_devise", action:"show", target_type:"users", devise_type:"users" }
+    #     open_all_user_subscriptions POST   /users/:user_id/subscriptions(.:format)
+    #       { controller:"activity_notification/subscriptions_with_devise", action:"create", target_type:"users", devise_type:"users" }
+    #     user_subscription           DELETE /users/:user_id/subscriptions/:id(.:format)
+    #       { controller:"activity_notification/subscriptions_with_devise", action:"destroy", target_type:"users", devise_type:"users" }
+    #     open_user_subscription      POST   /users/:user_id/subscriptions/:id/subscribe(.:format)
+    #       { controller:"activity_notification/subscriptions_with_devise", action:"subscribe", target_type:"users", devise_type:"users" }
+    #     open_user_subscription      POST   /users/:user_id/subscriptions/:id/unsubscribe(.:format)
+    #       { controller:"activity_notification/subscriptions_with_devise", action:"unsubscribe", target_type:"users", devise_type:"users" }
+    #     open_user_subscription      POST   /users/:user_id/subscriptions/:id/subscribe_to_email(.:format)
+    #       { controller:"activity_notification/subscriptions_with_devise", action:"subscribe_to_email", target_type:"users", devise_type:"users" }
+    #     open_user_subscription      POST   /users/:user_id/subscriptions/:id/unsubscribe_to_email(.:format)
+    #       { controller:"activity_notification/subscriptions_with_devise", action:"unsubscribe_to_email", target_type:"users", devise_type:"users" }
+    #
+    # @example Define subscribed_by in config/routes.rb
+    #   subscribed_by :users
+    # @example Define subscribed_by with options
+    #   subscribed_by :users, except: [:index, :show]
+    # @example Integrated with Devise authentication
+    #   subscribed_by :users, with_devise: :users
+    #
+    # @overload subscribed_by(*resources, *options)
+    #   @param          [Symbol]       resources Resources to notify
+    #   @option options [Symbol]       :with_devise Devise resources name for devise integration. Devise integration will be enabled by this option.
+    #   @option options [String]       :controller  :controller option as resources routing
+    #   @option options [Symbol]       :as          :as option as resources routing
+    #   @option options [Array]        :only        :only option as resources routing
+    #   @option options [Array]        :except      :except option as resources routing
+    # @return [ActionDispatch::Routing::Mapper] Routing mapper instance
     def subscribed_by(*resources)
       options = resources.extract_options!
       
@@ -119,9 +189,8 @@ module ActionDispatch::Routing
       else
         options[:controller] ||= "activity_notification/subscriptions"
       end
-      options[:except]       ||= []
-      options[:except].concat( [:new, :edit, :update] )
-      subscription_resources   = options[:model] || :subscriptions
+      (options[:except] ||= []).concat( [:new, :edit, :update] )
+      subscription_resources = options[:model] || :subscriptions
 
       #TODO other options
       # :as, :path_prefix, :path_names ...
@@ -146,6 +215,9 @@ module ActionDispatch::Routing
 
     private
 
+      # Check whether action path is ignored by :except or :only options
+      # @api private
+      # @return [Boolean] Whether action path is ignored
       def ignore_path?(action, options)
         options[:except].present? &&  options[:except].include?(action) and return true
         options[:only].present?   && !options[:only].include?(action)   and return true
