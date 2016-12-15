@@ -135,10 +135,7 @@ module ActivityNotification
       # @api protected
       # @return [Object] Subscription instance (Returns HTTP 403 when the target of subscription is different from specified target by request parameter)
       def set_subscription
-        @subscription = Subscription.includes(:target).find_by_id!(params[:id])
-        if @target.present? && @subscription.target != @target
-          render plain: "403 Forbidden: Wrong target", status: 403
-        end
+        validate_target(@subscription = Subscription.includes(:target).find_by_id!(params[:id]))
       end
 
       # Only allow a trusted parameter "white list" through.

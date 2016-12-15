@@ -137,16 +137,14 @@ module ActivityNotification
       # @option options [String]         :batch_key   (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
       # @return [Mail::Message|ActionMailer::DeliveryJob|NilClass] Email message or its delivery job, return NilClass for wrong target
       def send_batch_notification_email(target, notifications, options = {})
-        return if notifications.blank?
+        notifications.blank? and return
         batch_key = options[:batch_key] || notifications.first.key
         if target.batch_notification_email_allowed?(notifications.first.notifiable_type, batch_key) &&
            target.subscribes_to_notification_email?(batch_key)
           send_later = options.has_key?(:send_later) ? options[:send_later] : true
-          if send_later
-            Mailer.send_batch_notification_email(target, notifications, batch_key, options).deliver_later
-          else
+          send_later ?
+            Mailer.send_batch_notification_email(target, notifications, batch_key, options).deliver_later :
             Mailer.send_batch_notification_email(target, notifications, batch_key, options).deliver_now
-          end
         end
       end
 
@@ -191,11 +189,9 @@ module ActivityNotification
          email_subscribed?(key) &&
          notifiable.notification_email_allowed?(target, key)
         send_later = options.has_key?(:send_later) ? options[:send_later] : true
-        if send_later
-          Mailer.send_notification_email(self, options).deliver_later
-        else
+        send_later ?
+          Mailer.send_notification_email(self, options).deliver_later :
           Mailer.send_notification_email(self, options).deliver_now
-        end
       end
     end
 

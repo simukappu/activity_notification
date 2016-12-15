@@ -123,10 +123,7 @@ module ActivityNotification
       # @api protected
       # @return [Object] Notification instance (Returns HTTP 403 when the target of notification is different from specified target by request parameter)
       def set_notification
-        @notification = Notification.includes(:target).find_by_id!(params[:id])
-        if @target.present? && @notification.target != @target
-          render plain: "403 Forbidden: Wrong target", status: 403
-        end
+        validate_target(@notification = Notification.includes(:target).find_by_id!(params[:id]))
       end
 
       # Sets options to load notification index from request parameters.

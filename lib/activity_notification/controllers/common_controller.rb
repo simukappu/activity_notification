@@ -31,6 +31,14 @@ module ActivityNotification
         end
       end
 
+      # Validate target with belonging model (e.g. Notification and Subscription)
+      # @api protected
+      def validate_target(belonging_model)
+        if @target.present? && belonging_model.target != @target
+          render plain: "403 Forbidden: Wrong target", status: 403
+        end
+      end
+
       # Sets options to load resource index from request parameters.
       # This method is to be overriden.
       # @api protected

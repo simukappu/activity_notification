@@ -63,40 +63,22 @@ module ActionDispatch::Routing
     #
     # @overload notify_to(*resources, *options)
     #   @param          [Symbol]       resources Resources to notify
-    #   @option options [Symbol]       :with_devise       Devise resources name for devise integration. Devise integration will be enabled by this option.
-    #   @option options [Hash|Boolean] :with_subscription Subscription path options to define subscription management paths with notification paths. Calls subscribed_by routing when truthy value is passed as this option.
-    #   @option options [String]       :controller        :controller option as resources routing
-    #   @option options [Symbol]       :as                :as option as resources routing
-    #   @option options [Array]        :only              :only option as resources routing
-    #   @option options [Array]        :except            :except option as resources routing
+    #   @option options [Symbol]       :with_devise       (false)          Devise resources name for devise integration. Devise integration will be enabled by this option.
+    #   @option options [Hash|Boolean] :with_subscription (false)          Subscription path options to define subscription management paths with notification paths. Calls subscribed_by routing when truthy value is passed as this option.
+    #   @option options [String]       :model             (:notifications) Model name of notifications
+    #   @option options [String]       :controller        ("activity_notification/notifications" | activity_notification/notifications_with_devise") :controller option as resources routing
+    #   @option options [Symbol]       :as                (nil)            :as option as resources routing
+    #   @option options [Array]        :only              (nil)            :only option as resources routing
+    #   @option options [Array]        :except            (nil)            :except option as resources routing
     # @return [ActionDispatch::Routing::Mapper] Routing mapper instance
     def notify_to(*resources)
-      options = resources.extract_options!
-      
-      #TODO check resources if it includes target module
+      options = create_options(:notifications, resources.extract_options!, [:new, :create, :edit, :update])
 
-      if (with_devise = options.delete(:with_devise)).present?
-        options[:controller] ||= "activity_notification/notifications_with_devise"
-        options[:as]         ||= "notifications"
-        #TODO check devise configuration in model
-        devise_defaults        = { devise_type: with_devise.to_s }
-      else
-        options[:controller] ||= "activity_notification/notifications"
-      end
-      
-      if (with_subscription = options.delete(:with_subscription)).present?
-        subscription_option = (with_subscription.is_a?(Hash) ? with_subscription : {}).merge(with_devise: with_devise)
-      end
-      (options[:except] ||= []).concat( [:new, :create, :edit, :update] )
-      notification_resources   = options[:model] || :notifications
-
-      #TODO other options
-      # :as, :path_prefix, :path_names ...
-
-      resources.each do |resource|
-        self.resources resource, only: :none do
-          options[:defaults] = (devise_defaults || {}).merge({ target_type: resource.to_s })
-          self.resources notification_resources, options do
+      resources.each do |target|
+        self.resources target, only: :none do
+          options[:defaults] = { target_type: target.to_s }.merge(options[:devise_defaults])
+          resources_options = options.select { |key, _| [:with_devise, :with_subscription, :subscription_option, :model, :devise_defaults].exclude? key }
+          self.resources options[:model], resources_options do
             collection do
               post :open_all unless ignore_path?(:open_all, options)
             end
@@ -107,8 +89,8 @@ module ActionDispatch::Routing
           end
         end
 
-        if resource.to_s.to_model_class.subscription_enabled? && with_subscription.present?
-          subscribed_by resource, subscription_option
+        if options[:with_subscription].present? && target.to_s.to_model_class.subscription_enabled?
+          subscribed_by target, options[:subscription_option]
         end
       end
 
@@ -170,35 +152,21 @@ module ActionDispatch::Routing
     #
     # @overload subscribed_by(*resources, *options)
     #   @param          [Symbol]       resources Resources to notify
-    #   @option options [Symbol]       :with_devise Devise resources name for devise integration. Devise integration will be enabled by this option.
-    #   @option options [String]       :controller  :controller option as resources routing
-    #   @option options [Symbol]       :as          :as option as resources routing
-    #   @option options [Array]        :only        :only option as resources routing
-    #   @option options [Array]        :except      :except option as resources routing
+    #   @option options [Symbol]       :with_devise (false)          Devise resources name for devise integration. Devise integration will be enabled by this option.
+    #   @option options [String]       :model       (:subscriptions) Model name of subscriptions
+    #   @option options [String]       :controller  ("activity_notification/subscriptions" | activity_notification/subscriptions_with_devise") :controller option as resources routing
+    #   @option options [Symbol]       :as          (nil)            :as option as resources routing
+    #   @option options [Array]        :only        (nil)            :only option as resources routing
+    #   @option options [Array]        :except      (nil)            :except option as resources routing
     # @return [ActionDispatch::Routing::Mapper] Routing mapper instance
     def subscribed_by(*resources)
-      options = resources.extract_options!
-      
-      #TODO check resources if it includes target module
+      options = create_options(:subscriptions, resources.extract_options!, [:new, :edit, :update])
 
-      if (with_devise = options.delete(:with_devise)).present?
-        options[:controller] ||= "activity_notification/subscriptions_with_devise"
-        options[:as]         ||= "subscriptions"
-        #TODO check devise configuration in model
-        devise_defaults        = { devise_type: with_devise.to_s }
-      else
-        options[:controller] ||= "activity_notification/subscriptions"
-      end
-      (options[:except] ||= []).concat( [:new, :edit, :update] )
-      subscription_resources = options[:model] || :subscriptions
-
-      #TODO other options
-      # :as, :path_prefix, :path_names ...
-
-      resources.each do |resource|
-        self.resources resource, only: :none do
-          options[:defaults] = (devise_defaults || {}).merge({ target_type: resource.to_s })
-          self.resources subscription_resources, options do
+      resources.each do |target|
+        self.resources target, only: :none do
+          options[:defaults] = { target_type: target.to_s }.merge(options[:devise_defaults])
+          resources_options = options.select { |key, _| [:with_devise, :model, :devise_defaults].exclude? key }
+          self.resources options[:model], resources_options do
             member do
               post :subscribe            unless ignore_path?(:subscribe, options)
               post :unsubscribe          unless ignore_path?(:unsubscribe, options)
@@ -222,6 +190,32 @@ module ActionDispatch::Routing
         options[:except].present? &&  options[:except].include?(action) and return true
         options[:only].present?   && !options[:only].include?(action)   and return true
         false
+      end
+
+      # Create options fo routing
+      # @api private
+      # @param [Symbol] resource Name of the resource model
+      # @return [Boolean] Whether action path is ignored
+      def create_options(resource, options = {}, except_actions = [])
+        #TODO check resources if it includes target module
+        resources_name = resource.to_s.pluralize.underscore
+        options[:model] ||= resources_name.to_sym
+        if options[:with_devise].present?
+          options[:controller] ||= "activity_notification/#{resources_name}_with_devise"
+          options[:as]         ||= resources_name
+          #TODO check devise configuration in model
+          options[:devise_defaults] = { devise_type: options[:with_devise].to_s }
+        else
+          options[:controller] ||= "activity_notification/#{resources_name}"
+          options[:devise_defaults] = {}
+        end
+        (options[:except] ||= []).concat(except_actions)
+        if options[:with_subscription].present?
+          options[:subscription_option] = (options[:with_subscription].is_a?(Hash) ? options[:with_subscription] : {})
+                                            .merge(with_devise: options[:with_devise])
+        end
+        #TODO other options like :as, :path_prefix, :path_names ...
+        options
       end
 
   end
