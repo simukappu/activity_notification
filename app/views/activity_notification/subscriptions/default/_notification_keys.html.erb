@@ -15,14 +15,14 @@
           <div class="field_wrapper subscribing">
             <div class="field_label">
               <label>
-                Subscribe to this notification?
+                Notification
               </label>
             </div>
 
             <div class="field">
               <div class="ui checkbox">
                 <label>
-                  <%= f.check_box :subscribing, {checked: true}, 'true', 'false' %>
+                  <%= f.check_box :subscribing, { checked: ActivityNotification.config.subscribe_as_default }, 'true', 'false' %>
                   <div class="slider"></div>
                 </label>
               </div>
@@ -32,13 +32,13 @@
           <div class="field_wrapper subscribing_to_email">
             <div class="field_label">
               <label>
-                Subscribe to this notification email?
+                Email notification
               </label>
             </div>
             <div class="field">
               <div class="ui checkbox">
                 <label>
-                  <%= f.check_box :subscribing_to_email, {checked: true}, 'true', 'false' %>
+                  <%= f.check_box :subscribing_to_email, { checked: ActivityNotification.config.subscribe_as_default }, 'true', 'false' %>
                   <div class="slider"></div>
                 </label>
               </div>
@@ -46,7 +46,7 @@
           </div>
 
           <div class="ui button">
-            <button type="submit">Submit</button>
+            <button type="submit">Create subscription</button>
           </div>
         <% end %>
       </div>
