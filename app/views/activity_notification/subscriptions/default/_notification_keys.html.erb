@@ -1,24 +1,85 @@
 <% if notification_keys.present? %>
-  <% notification_keys.each do |key| %>
-    Key: <%= key %>
-    <%= form_for(ActivityNotification::Subscription.new, as: :subscription, url: subscriptions_url_for(target, option_params), data: { remote: true }) do |f| %>
-      <%= f.hidden_field :key, value: key %>
-      <div class="field">
-        <%= f.label :subscribing, "Subscribe to this notification?" %>
-        <%= f.check_box :subscribing, { checked: true }, 'true', 'false' %>
-      </div>
-      <div class="field">
-        <%= f.label :subscribing_to_email, "Subscribe to this notification email?" %>
-        <%= f.check_box :subscribing_to_email, { checked: true }, 'true', 'false' %>
-      </div>
-      <div class="actions">
-        <%= f.submit "Save" %>
+  <div class="fields_area">
+    <% notification_keys.each do |key| %>
+      <div class="fields_wrapper">
+        <%= form_for(ActivityNotification::Subscription.new, as: :subscription, url: subscriptions_url_for(target, option_params), data: {remote: true}) do |f| %>
+          <%= f.hidden_field :key, value: key %>
+          <div class="fields_title_wrapper">
+            <h3 class="fields_title">
+              <%= key %>
+            </h3>
+            <p>
+              <%= link_to "Notifications", notifications_path_for(target, filtered_by_key: key) %>
+            </p>
+          </div>
+          <div class="field_wrapper subscribing">
+            <div class="field_label">
+              <label>
+                Subscribe to this notification?
+              </label>
+            </div>
+
+            <div class="field">
+              <div class="ui checkbox">
+                <label>
+                  <%= f.check_box :subscribing, {checked: true}, 'true', 'false' %>
+                  <div class="slider"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="field_wrapper subscribing_to_email">
+            <div class="field_label">
+              <label>
+                Subscribe to this notification email?
+              </label>
+            </div>
+            <div class="field">
+              <div class="ui checkbox">
+                <label>
+                  <%= f.check_box :subscribing_to_email, {checked: true}, 'true', 'false' %>
+                  <div class="slider"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="ui button">
+            <button type="submit">Submit</button>
+          </div>
+        <% end %>
       </div>
     <% end %>
-    <%= link_to "See notifications", notifications_path_for(target, filtered_by_key: key) %>
-    <br/><br/>
-  <% end %>
+  </div>
 <% else %>
   No notification keys are available.
 <% end %>
+
+<!--
+<%# if notification_keys.present? %>
+<%# notification_keys.each do |key| %>
+    Key: <%#= key %>
+<%#= form_for(ActivityNotification::Subscription.new, as: :subscription, url: subscriptions_url_for(target, option_params), data: {remote: true}) do |f| %>
+<%#= f.hidden_field :key, value: key %>
+      <div class="field">
+        <%#= f.label :subscribing, "Subscribe to this notification?" %>
+<%#= f.check_box :subscribing, {checked: true}, 'true', 'false' %>
+      </div>
+      <div class="field">
+        <%#= f.label :subscribing_to_email, "Subscribe to this notification email?" %>
+<%#= f.check_box :subscribing_to_email, {checked: true}, 'true', 'false' %>
+      </div>
+      <div class="actions">
+        <%#= f.submit "Save" %>
+      </div>
+    <%# end %>
+<%#= link_to "See notifications", notifications_path_for(target, filtered_by_key: key) %>
+    <br/><br/>
+  <%# end %>
+<%# else %>
+  No notification keys are available.
+<%# end %>
 <br/><br/>
+-->
+
