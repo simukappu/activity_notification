@@ -4,8 +4,6 @@ module ActivityNotification
     extend ActiveSupport::Concern
     included do
       include Common
-      #TODO
-      include Subscriber
 
       # Has many notification instances of this target.
       # @scope instance

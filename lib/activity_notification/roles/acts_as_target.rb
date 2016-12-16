@@ -97,8 +97,10 @@ module ActivityNotification
 
         options[:printable_notification_target_name] ||= options.delete(:printable_name)
         options[:batch_notification_email_allowed] ||= options.delete(:batch_email_allowed)
-        set_acts_as_parameters([:email, :email_allowed, :subscription_allowed, :devise_resource], options, "notification_")
-          .merge set_acts_as_parameters([:batch_notification_email_allowed, :printable_notification_target_name], options)
+        acts_as_params = set_acts_as_parameters([:email, :email_allowed, :subscription_allowed, :devise_resource], options, "notification_")
+                           .merge set_acts_as_parameters([:batch_notification_email_allowed, :printable_notification_target_name], options)
+        include Subscriber if subscription_enabled?
+        acts_as_params
       end
       alias_method :acts_as_notification_target, :acts_as_target
 
