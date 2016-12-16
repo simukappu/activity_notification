@@ -52,7 +52,6 @@ module ActivityNotification
       # Loads resource index with request parameters.
       # This method is to be overriden.
       # @api protected
-      # @param [Hash] params Request parameter options for resource index
       # @return [Array] Array of resource index
       def load_index
         raise NotImplementedError, "You have to implement #{self.class}##{__method__}"

@@ -124,7 +124,7 @@ module ActivityNotification
       # Returns if group member of the notifications exists.
       # This method is designed to be called from controllers or views to avoid N+1.
       #
-      # @param [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] notifications Array or database query of the notifications to test member exists
+      # @param [Array<Notificaion>, ActiveRecord_AssociationRelation<Notificaion>] notifications Array or database query of the notifications to test member exists
       # @return [Boolean] If group member of the notifications exists
       def group_member_exists?(notifications)
         notifications.present? && where(group_owner_id: notifications.map(&:id)).exists?
@@ -138,7 +138,7 @@ module ActivityNotification
       # @option options [Boolean]        :send_later  (false)          If it sends notification email asynchronously
       # @option options [String, Symbol] :fallback    (:batch_default) Fallback template to use when MissingTemplate is raised
       # @option options [String]         :batch_key   (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
-      # @return [Mail::Message|ActionMailer::DeliveryJob|NilClass] Email message or its delivery job, return NilClass for wrong target
+      # @return [Mail::Message, ActionMailer::DeliveryJob|NilClass] Email message or its delivery job, return NilClass for wrong target
       def send_batch_notification_email(target, notifications, options = {})
         notifications.blank? and return
         batch_key = options[:batch_key] || notifications.first.key
@@ -189,7 +189,7 @@ module ActivityNotification
     # @param [Hash] options Options for notification email
     # @option options [Boolean]        :send_later            If it sends notification email asynchronously
     # @option options [String, Symbol] :fallback   (:default) Fallback template to use when MissingTemplate is raised
-    # @return [Mail::Message|ActionMailer::DeliveryJob] Email message or its delivery job
+    # @return [Mail::Message, ActionMailer::DeliveryJob] Email message or its delivery job
     def send_notification_email(options = {})
       if target.notification_email_allowed?(notifiable, key) &&
          email_subscribed?(key) &&

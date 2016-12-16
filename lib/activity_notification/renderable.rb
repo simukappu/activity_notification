@@ -120,7 +120,6 @@ module ActivityNotification
     # == Variables in templates
     #
     # From within a template there are three variables at your disposal:
-    #
     # * notification
     # * controller
     # * parameters [converted into a HashWithIndifferentAccess]

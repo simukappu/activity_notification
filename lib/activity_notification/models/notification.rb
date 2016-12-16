@@ -60,17 +60,13 @@ module ActivityNotification
     scope :group_members_only,                -> { where.not(group_owner_id: nil) }
 
     # Selects all notification index.
-    #
-    # Calling
     #   ActivityNotification::Notification.all_index!
     # is defined same as
     #   ActivityNotification::Notification.group_owners_only.latest_order
-    #
+    # @scope class
     # @example Get all notification index of the @user
     #   @notifications = @user.notifications.all_index!
     #   @notifications = @user.notifications.group_owners_only.latest_order
-    #
-    # @scope class
     # @param [Boolean] reverse If notification index will be ordered as earliest first
     # @param [Boolean] with_group_members If notification index will include group members
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
@@ -85,17 +81,13 @@ module ActivityNotification
     scope :unopened_only,                     -> { where(opened_at: nil) }
 
     # Selects unopened notification index.
-    #
-    # Calling
     #   ActivityNotification::Notification.unopened_index
     # is defined same as
     #   ActivityNotification::Notification.unopened_only.group_owners_only.latest_order
-    #
+    # @scope class
     # @example Get unopened notificaton index of the @user
     #   @notifications = @user.notifications.unopened_index
     #   @notifications = @user.notifications.unopened_only.group_owners_only.latest_order
-    #
-    # @scope class
     # @param [Boolean] reverse If notification index will be ordered as earliest first
     # @param [Boolean] with_group_members If notification index will include group members
     # @return [ActiveRecord_AssociationRelation<Notificaion>] Array or database query of filtered notifications
@@ -117,17 +109,13 @@ module ActivityNotification
     scope :opened_only,                       ->(limit) { opened_only!.limit(limit) }
 
     # Selects unopened notification index.
-    #
-    # Calling
     #   ActivityNotification::Notification.opened_index(limit)
     # is defined same as
     #   ActivityNotification::Notification.opened_only(limit).group_owners_only.latest_order
-    #
+    # @scope class
     # @example Get unopened notificaton index of the @user with limit 10
     #   @notifications = @user.notifications.opened_index(10)
     #   @notifications = @user.notifications.opened_only(10).group_owners_only.latest_order
-    #
-    # @scope class
     # @param [Integer] limit Limit to query for opened notifications
     # @param [Boolean] reverse If notification index will be ordered as earliest first
     # @param [Boolean] with_group_members If notification index will include group members

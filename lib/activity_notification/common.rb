@@ -42,7 +42,7 @@ module ActivityNotification
   end
 
   # Casts to indifferent hash
-  # @param [ActionController::Parameters, Hash] new_hash
+  # @param [ActionController::Parameters, Hash] hash
   # @return [HashWithIndifferentAccess] Converted indifferent hash
   def self.cast_to_indifferent_hash(hash = {})
     # This is the typical (not-ActionView::TestCase) code path.

@@ -5,7 +5,7 @@ module ActivityNotification
     # View helper for rendering an notification, calls {Notification#render} internally.
     # @see Notification#render
     #
-    # @param [Notification, Array<Notificaion>] Array or single instance of notifications to render
+    # @param [Notification, Array<Notificaion>] notifications Array or single instance of notifications to render
     # @param [Hash] options Options for rendering notifications
     # @option options [String, Symbol] :target       (nil)                     Target type name to find template or i18n text
     # @option options [String]         :partial      ("activity_notification/notifications/#{target}", controller.target_view_path, 'activity_notification/notifications/default') Partial template name
@@ -170,7 +170,7 @@ module ActivityNotification
 
     # Returns open_all_notifications_url for the target of specified notification
     #
-    # @param [Notification] notification Notification instance
+    # @param [Target] target Target instance
     # @param [Hash] params Request parameters
     # @return [String] open_all_notifications_url for the target
     # @todo Needs any other better implementation
@@ -315,7 +315,7 @@ module ActivityNotification
       #
       # @param [Object] target Notification target instance
       # @param [Symbol] index_content Method to load target notification index, [:simple, :unopened_simple, :opened_simple, :with_attributes, :unopened_with_attributes, :opened_with_attributes, :none] are available
-      # @param [Hash] params Option parameter to load notification index
+      # @param [Hash] options Option parameter to load notification index
       # @return [Array<Notification>] Array of notification index
       def load_notification_index(target, index_content, options = {})
         case index_content

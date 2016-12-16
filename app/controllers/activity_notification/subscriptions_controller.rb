@@ -156,7 +156,6 @@ module ActivityNotification
 
       # Loads subscription index with request parameters.
       # @api protected
-      # @param [Hash] params Request parameter options for subscription index
       # @return [Array] Array of subscription index
       def load_index
         case @index_options[:filter]
