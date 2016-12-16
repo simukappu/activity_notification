@@ -39,6 +39,17 @@ module ActivityNotification
       #     acts_as_notifiable :users, targets: User.all, group: :article
       #   end
       #
+      # * :group_expiry_delay
+      #   * Expiry period of a notification group.
+      #     Notifications will be bundled within the group expiry period.
+      #     This parameter is a optional.
+      # @example All *unopened* notifications to the same target within 1 day will be grouped by `article`
+      #   # app/models/comment.rb
+      #   class Comment < ActiveRecord::Base
+      #     belongs_to :article
+      #     acts_as_notifiable :users, targets: User.all, group: :article, :group_expiry_delay: 1.day
+      #   end
+      #
       # * :notifier
       #   * Notifier of the notification.
       #     This will be stored as notifier with notification record.
@@ -119,6 +130,7 @@ module ActivityNotification
       # @param [Hash] options Options for notifiable model configuration
       # @option options [Symbol, Proc, Array]   :targets                 (nil)                    Targets to send notifications
       # @option options [Symbol, Proc, Object]  :group                   (nil)                    Group unit of the notifications
+      # @option options [Symbol, Proc, Object]  :group_expiry_delay      (nil)                    Expiry period of a notification group
       # @option options [Symbol, Proc, Object]  :notifier                (nil)                    Notifier of the notifications
       # @option options [Symbol, Proc, Hash]    :parameters              ({})                     Additional parameters of the notifications
       # @option options [Symbol, Proc, Boolean] :email_allowed           (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email
@@ -137,7 +149,7 @@ module ActivityNotification
         end
 
         options[:printable_notifiable_name] ||= options.delete(:printable_name)
-        set_acts_as_parameters_for_target(target_type, [:targets, :group, :parameters, :email_allowed], options, "notification_")
+        set_acts_as_parameters_for_target(target_type, [:targets, :group, :group_expiry_delay, :parameters, :email_allowed], options, "notification_")
           .merge set_acts_as_parameters_for_target(target_type, [:notifier, :notifiable_path, :printable_notifiable_name], options)
       end
 
@@ -146,6 +158,7 @@ module ActivityNotification
       def available_notifiable_options
         [ :targets,
           :group,
+          :group_expiry_delay,
           :notifier,
           :parameters,
           :email_allowed,

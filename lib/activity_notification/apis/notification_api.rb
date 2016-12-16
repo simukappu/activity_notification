@@ -24,12 +24,13 @@ module ActivityNotification
       # @param [Symbol, String, Class] target_type Type of target
       # @param [Object] notifiable Notifiable instance
       # @param [Hash] options Options for notifications
-      # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
-      # @option options [Object]  :group      (nil)                                 Group unit of the notifications
-      # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
-      # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
-      # @option options [Boolean] :send_email (true)                                If it sends notification email
-      # @option options [Boolean] :send_later (true)                                If it sends notification email asynchronously
+      # @option options [String]  :key                (notifiable.default_notification_key) Key of the notification
+      # @option options [Object]  :group              (nil)                                 Group unit of the notifications
+      # @option options [Object]  :group_expiry_delay (nil)                                 Expiry period of a notification group
+      # @option options [Object]  :notifier           (nil)                                 Notifier of the notifications
+      # @option options [Hash]    :parameters         ({})                                  Additional parameters of the notifications
+      # @option options [Boolean] :send_email         (true)                                Whether it sends notification email
+      # @option options [Boolean] :send_later         (true)                                Whether it sends notification email asynchronously        
       # @return [Array<Notificaion>] Array of generated notifications
       def notify(target_type, notifiable, options = {})
         targets = notifiable.notification_targets(target_type, options[:key])
@@ -46,12 +47,13 @@ module ActivityNotification
       # @param [Array<Object>] targets Targets to send notifications
       # @param [Object] notifiable Notifiable instance
       # @param [Hash] options Options for notifications
-      # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
-      # @option options [Object]  :group      (nil)                                 Group unit of the notifications
-      # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
-      # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
-      # @option options [Boolean] :send_email (true)                                Whether it sends notification email
-      # @option options [Boolean] :send_later (true)                                Whether it sends notification email asynchronously
+      # @option options [String]  :key                (notifiable.default_notification_key) Key of the notification
+      # @option options [Object]  :group              (nil)                                 Group unit of the notifications
+      # @option options [Object]  :group_expiry_delay (nil)                                 Expiry period of a notification group
+      # @option options [Object]  :notifier           (nil)                                 Notifier of the notifications
+      # @option options [Hash]    :parameters         ({})                                  Additional parameters of the notifications
+      # @option options [Boolean] :send_email         (true)                                Whether it sends notification email
+      # @option options [Boolean] :send_later         (true)                                Whether it sends notification email asynchronously        
       # @return [Array<Notificaion>] Array of generated notifications
       def notify_all(targets, notifiable, options = {})
         targets.map { |target| target.notify_to(notifiable, options) }
@@ -65,12 +67,13 @@ module ActivityNotification
       # @param [Object] target Target to send notifications
       # @param [Object] notifiable Notifiable instance
       # @param [Hash] options Options for notifications
-      # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
-      # @option options [Object]  :group      (nil)                                 Group unit of the notifications
-      # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
-      # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
-      # @option options [Boolean] :send_email (true)                                Whether it sends notification email
-      # @option options [Boolean] :send_later (true)                                Whether it sends notification email asynchronously
+      # @option options [String]  :key                (notifiable.default_notification_key) Key of the notification
+      # @option options [Object]  :group              (nil)                                 Group unit of the notifications
+      # @option options [Object]  :group_expiry_delay (nil)                                 Expiry period of a notification group
+      # @option options [Object]  :notifier           (nil)                                 Notifier of the notifications
+      # @option options [Hash]    :parameters         ({})                                  Additional parameters of the notifications
+      # @option options [Boolean] :send_email         (true)                                Whether it sends notification email
+      # @option options [Boolean] :send_later         (true)                                Whether it sends notification email asynchronously        
       # @return [Notification] Generated notification instance
       def notify_to(target, notifiable, options = {})
         send_email = options.has_key?(:send_email) ? options[:send_email] : true
@@ -158,22 +161,25 @@ module ActivityNotification
       # Stores notifications to datastore
       # @api private
       def store_notification(target, notifiable, key, options = {})
-        target_type = target.to_class_name
-        group       = options[:group]      || notifiable.notification_group(target_type, key)
-        notifier    = options[:notifier]   || notifiable.notifier(target_type, key)
-        parameters  = options[:parameters] || {}
+        target_type        = target.to_class_name
+        group              = options[:group]              || notifiable.notification_group(target_type, key)
+        group_expiry_delay = options[:group_expiry_delay]
+        notifier           = options[:notifier]           || notifiable.notifier(target_type, key)
+        parameters         = options[:parameters]         || {}
         parameters.merge!(options.except(*available_options))
         parameters.merge!(notifiable.notification_parameters(target_type, key))
 
         # Bundle notification group by target, notifiable_type, group and key
         # Defferent notifiable.id can be made in a same group
-        group_owner = where(target: target, notifiable_type: notifiable.to_class_name, key: key, group: group)
-                     .where(group_owner_id: nil, opened_at: nil).earliest
-        if group.present? && group_owner.present?
-          create(target: target, notifiable: notifiable, key: key, group: group, group_owner: group_owner, parameters: parameters, notifier: notifier)
-        else
-          create(target: target, notifiable: notifiable, key: key, group: group, parameters: parameters, notifier: notifier)
-        end
+        group_owner_notifications = filtered_by_target(target).filtered_by_type(notifiable.to_class_name).filtered_by_key(key)
+                                   .filtered_by_group(group).group_owners_only.unopened_only
+        group_owner = group_expiry_delay.present? ?
+                        group_owner_notifications.where("created_at > ?", group_expiry_delay.ago).earliest :
+                        group_owner_notifications.earliest
+        notification_fields = { target: target, notifiable: notifiable, key: key, group: group, parameters: parameters, notifier: notifier }
+        group.present? && group_owner.present? ?
+          create(notification_fields.merge(group_owner: group_owner)) :
+          create(notification_fields)
       end
     end
 

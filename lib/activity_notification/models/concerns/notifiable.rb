@@ -20,6 +20,7 @@ module ActivityNotification
 
       class_attribute  :_notification_targets,
                        :_notification_group,
+                       :_notification_group_expiry_delay,
                        :_notifier,
                        :_notification_parameters,
                        :_notification_email_allowed,
@@ -44,13 +45,14 @@ module ActivityNotification
       # Sets default values to notifiable class fields.
       # @return [NilClass] nil
       def set_notifiable_class_defaults
-        self._notification_targets        = {}
-        self._notification_group          = {}
-        self._notifier                    = {}
-        self._notification_parameters     = {}
-        self._notification_email_allowed  = {}
-        self._notifiable_path             = {}
-        self._printable_notifiable_name   = {}
+        self._notification_targets            = {}
+        self._notification_group              = {}
+        self._notification_group_expiry_delay = {}
+        self._notifier                        = {}
+        self._notification_parameters         = {}
+        self._notification_email_allowed      = {}
+        self._notifiable_path                 = {}
+        self._printable_notifiable_name       = {}
         nil
       end
     end
@@ -74,16 +76,29 @@ module ActivityNotification
       resolved_parameter
     end
 
-    # Returns group owner of the notification from configured field or overriden method.
+    # Returns group unit of the notifications from configured field or overriden method.
     # This method is able to be overriden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
-    # @return [Object] Group owner of the notification
+    # @return [Object] Group unit of the notifications
     def notification_group(target_type, key = nil)
       resolve_parameter(
         "notification_group_for_#{cast_to_resources_name(target_type)}",
         _notification_group[cast_to_resources_sym(target_type)],
+        nil, key)
+    end
+
+    # Returns group expiry period of the notifications from configured field or overriden method.
+    # This method is able to be overriden.
+    #
+    # @param [String] target_type Target type to notify
+    # @param [String] key Key of the notification
+    # @return [Object] Group expiry period of the notifications
+    def notification_group_expiry_delay(target_type, key = nil)
+      resolve_parameter(
+        "notification_group_expiry_delay_for_#{cast_to_resources_name(target_type)}",
+        _notification_group_expiry_delay[cast_to_resources_sym(target_type)],
         nil, key)
     end
 
@@ -173,12 +188,13 @@ module ActivityNotification
     #
     # @param [Symbol, String, Class] target_type Type of target
     # @param [Hash] options Options for notifications
-    # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
-    # @option options [Object]  :group      (nil)                                 Group unit of the notifications
-    # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
-    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
-    # @option options [Boolean] :send_email (true)                                If it sends notification email
-    # @option options [Boolean] :send_later (true)                                If it sends notification email asynchronously
+    # @option options [String]  :key                (notifiable.default_notification_key) Key of the notification
+    # @option options [Object]  :group              (nil)                                 Group unit of the notifications
+    # @option options [Object]  :group_expiry_delay (nil)                                 Expiry period of a notification group
+    # @option options [Object]  :notifier           (nil)                                 Notifier of the notifications
+    # @option options [Hash]    :parameters         ({})                                  Additional parameters of the notifications
+    # @option options [Boolean] :send_email         (true)                                Whether it sends notification email
+    # @option options [Boolean] :send_later         (true)                                Whether it sends notification email asynchronously        
     # @return [Array<Notificaion>] Array of generated notifications
     def notify(target_type, options = {})
       Notification.notify(target_type, self, options)
@@ -190,12 +206,13 @@ module ActivityNotification
     #
     # @param [Array<Object>] targets Targets to send notifications
     # @param [Hash] options Options for notifications
-    # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
-    # @option options [Object]  :group      (nil)                                 Group unit of the notifications
-    # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
-    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
-    # @option options [Boolean] :send_email (true)                                Whether it sends notification email
-    # @option options [Boolean] :send_later (true)                                Whether it sends notification email asynchronously
+    # @option options [String]  :key                (notifiable.default_notification_key) Key of the notification
+    # @option options [Object]  :group              (nil)                                 Group unit of the notifications
+    # @option options [Object]  :group_expiry_delay (nil)                                 Expiry period of a notification group
+    # @option options [Object]  :notifier           (nil)                                 Notifier of the notifications
+    # @option options [Hash]    :parameters         ({})                                  Additional parameters of the notifications
+    # @option options [Boolean] :send_email         (true)                                Whether it sends notification email
+    # @option options [Boolean] :send_later         (true)                                Whether it sends notification email asynchronously        
     # @return [Array<Notificaion>] Array of generated notifications
     def notify_all(targets, options = {})
       Notification.notify_all(targets, self, options)
@@ -207,12 +224,13 @@ module ActivityNotification
     #
     # @param [Object] target Target to send notifications
     # @param [Hash] options Options for notifications
-    # @option options [String]  :key        (notifiable.default_notification_key) Key of the notification
-    # @option options [Object]  :group      (nil)                                 Group unit of the notifications
-    # @option options [Object]  :notifier   (nil)                                 Notifier of the notifications
-    # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
-    # @option options [Boolean] :send_email (true)                                Whether it sends notification email
-    # @option options [Boolean] :send_later (true)                                Whether it sends notification email asynchronously
+    # @option options [String]  :key                (notifiable.default_notification_key) Key of the notification
+    # @option options [Object]  :group              (nil)                                 Group unit of the notifications
+    # @option options [Object]  :group_expiry_delay (nil)                                 Expiry period of a notification group
+    # @option options [Object]  :notifier           (nil)                                 Notifier of the notifications
+    # @option options [Hash]    :parameters         ({})                                  Additional parameters of the notifications
+    # @option options [Boolean] :send_email         (true)                                Whether it sends notification email
+    # @option options [Boolean] :send_later         (true)                                Whether it sends notification email asynchronously        
     # @return [Notification] Generated notification instance
     def notify_to(target, options = {})
       Notification.notify_to(target, self, options)

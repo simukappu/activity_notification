@@ -25,7 +25,7 @@ describe ActivityNotification::ActsAsNotifiable do
     describe ".available_notifiable_options" do
       it "returns list of available options in acts_as_notifiable" do
         expect(dummy_model_class.available_notifiable_options)
-          .to eq([:targets, :group, :notifier, :parameters, :email_allowed, :notifiable_path, :printable_notifiable_name, :printable_name, :dependent_notifications])
+          .to eq([:targets, :group, :group_expiry_delay, :notifier, :parameters, :email_allowed, :notifiable_path, :printable_notifiable_name, :printable_name, :dependent_notifications])
       end
     end
   end

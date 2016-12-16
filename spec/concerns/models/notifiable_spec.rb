@@ -17,6 +17,7 @@ shared_examples_for :notifiable do
         described_class.set_notifiable_class_defaults
         expect(described_class._notification_targets).to       eq({})
         expect(described_class._notification_group).to         eq({})
+        expect(described_class._notification_group_expiry_delay).to         eq({})
         expect(described_class._notifier).to                   eq({})
         expect(described_class._notification_parameters).to    eq({})
         expect(described_class._notification_email_allowed).to eq({})
@@ -151,6 +152,65 @@ shared_examples_for :notifiable do
         it "returns specified lambda with notifiable and key arguments" do
           described_class._notification_group[:users] = ->(notifiable, key){ User.all.first }
           expect(test_instance.notification_group(User, 'dummy_key')).to eq(User.all.first)
+        end
+      end
+    end
+
+    describe "#notification_group_expiry_delay" do
+      context "without any configuration" do
+        it "returns nil" do
+          expect(test_instance.notification_group_expiry_delay(User, 'dummy_key')).to be_nil
+        end
+      end
+
+      context "configured with overriden method" do
+        it "returns specified value" do
+          module AdditionalMethods
+            def notification_group_expiry_delay_for_users(key)
+              User.all.first
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          expect(test_instance.notification_group_expiry_delay(User, 'dummy_key')).to eq(User.all.first)
+        end
+      end
+
+      context "configured with a field" do
+        it "returns specified value" do
+          described_class._notification_group_expiry_delay[:users] = User.all.first
+          expect(test_instance.notification_group_expiry_delay(User, 'dummy_key')).to eq(User.all.first)
+        end
+
+        it "returns specified symbol without argumentss" do
+          module AdditionalMethods
+            def custom_notification_group_expiry_delay
+              User.all.first
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._notification_group_expiry_delay[:users] = :custom_notification_group_expiry_delay
+          expect(test_instance.notification_group_expiry_delay(User, 'dummy_key')).to eq(User.all.first)
+        end
+
+        it "returns specified symbol with key argument" do
+          module AdditionalMethods
+            def custom_notification_group_expiry_delay(key)
+              User.all.first
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._notification_group_expiry_delay[:users] = :custom_notification_group_expiry_delay
+          expect(test_instance.notification_group_expiry_delay(User, 'dummy_key')).to eq(User.all.first)
+        end
+
+        it "returns specified lambda with single notifiable argument" do
+          described_class._notification_group_expiry_delay[:users] = ->(notifiable){ User.all.first }
+          expect(test_instance.notification_group_expiry_delay(User, 'dummy_key')).to eq(User.all.first)
+        end
+
+        it "returns specified lambda with notifiable and key arguments" do
+          described_class._notification_group_expiry_delay[:users] = ->(notifiable, key){ User.all.first }
+          expect(test_instance.notification_group_expiry_delay(User, 'dummy_key')).to eq(User.all.first)
         end
       end
     end
