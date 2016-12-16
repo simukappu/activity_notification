@@ -35,6 +35,7 @@ class <%= @migration_name %> < ActiveRecord::Migration
       t.datetime   :unsubscribed_at
       t.datetime   :subscribed_to_email_at
       t.datetime   :unsubscribed_to_email_at
+      t.text       :parameters
 
       t.timestamps
     end
@@ -47,6 +48,7 @@ class <%= @migration_name %> < ActiveRecord::Migration
     #   t.datetime   :unsubscribed_at
     #   t.datetime   :subscribed_to_email_at
     #   t.datetime   :unsubscribed_to_email_at
+    #   t.text       :parameters
     #
     #   t.timestamps
     # end

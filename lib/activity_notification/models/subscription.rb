@@ -9,6 +9,9 @@ module ActivityNotification
     # @return [Object] Target instance of this subscription
     belongs_to :target,               polymorphic: true
 
+    # Serialize parameters Hash
+    serialize  :parameters, Hash
+
     validates  :target,               presence: true
     validates  :key,                  presence: true
     validates_inclusion_of :subscribing,          in: [true, false]

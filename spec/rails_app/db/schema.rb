@@ -70,6 +70,7 @@ ActiveRecord::Schema.define(version: 20160715050433) do
     t.datetime "unsubscribed_at"
     t.datetime "subscribed_to_email_at"
     t.datetime "unsubscribed_to_email_at"
+    t.text     "parameters"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["key"], name: "index_subscriptions_on_key"
