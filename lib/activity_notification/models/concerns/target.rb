@@ -230,13 +230,13 @@ module ActivityNotification
       _unopened_notification_index(options).present?
     end
 
-    # Gets automatically arranged notification index of the target.
-    # This method is the typical way to get notifications index from controller of view.
-    # When the target have unopened notifications, it returns unopened notifications first.
+    # Returns automatically arranged notification index of the target.
+    # This method is the typical way to get notification index from controller and view.
+    # When the target has unopened notifications, it returns unopened notifications first.
     # Additionaly, it returns opened notifications unless unopened index size overs the limit.
-    # @todo Is this switching the best solution?
+    # @todo Is this conbimned array the best solution?
     #
-    # @example Get automatically arranged notification index of the @user
+    # @example Get automatically arranged notification index of @user
     #   @notifications = @user.notification_index
     #
     # @param [Hash] options Options for notification index
@@ -257,9 +257,9 @@ module ActivityNotification
                                  options)
     end
 
-    # Gets unopened notification index of the target.
+    # Returns unopened notification index of the target.
     #
-    # @example Get unopened notification index of the @user
+    # @example Get unopened notification index of @user
     #   @notifications = @user.unopened_notification_index
     #
     # @param [Hash] options Options for notification index
@@ -278,9 +278,9 @@ module ActivityNotification
       arrange_single_notification_index(method(:_unopened_notification_index), options)
     end
 
-    # Gets opened notification index of the target.
+    # Returns opened notification index of the target.
     #
-    # @example Get opened notification index of the @user
+    # @example Get opened notification index of @user
     #   @notifications = @user.opened_notification_index(10)
     #
     # @param [Hash] options Options for notification index
