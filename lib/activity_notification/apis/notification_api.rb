@@ -163,7 +163,7 @@ module ActivityNotification
       def store_notification(target, notifiable, key, options = {})
         target_type        = target.to_class_name
         group              = options[:group]              || notifiable.notification_group(target_type, key)
-        group_expiry_delay = options[:group_expiry_delay]
+        group_expiry_delay = options[:group_expiry_delay] || notifiable.notification_group_expiry_delay(target_type, key)
         notifier           = options[:notifier]           || notifiable.notifier(target_type, key)
         parameters         = options[:parameters]         || {}
         parameters.merge!(options.except(*available_options))
