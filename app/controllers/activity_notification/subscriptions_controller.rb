@@ -74,13 +74,14 @@ module ActivityNotification
     # POST /:target_type/:target_id/subscriptions/:id/subscribe
     # @overload open(params)
     #   @param [Hash] params Request parameters
-    #   @option params [String] :filter          (nil)     Filter option to load subscription index (Nothing as all, 'configured' or 'unconfigured')
-    #   @option params [String] :limit           (nil)     Limit to query for subscriptions
-    #   @option params [String] :reverse         ('false') If subscription index and unconfigured notification keys will be ordered as earliest first
-    #   @option params [String] :filtered_by_key (nil)     Key of the subscription for filter
+    #   @option params [String] :with_email_subscription ('true')  If the subscriber also subscribes notification email
+    #   @option params [String] :filter                  (nil)     Filter option to load subscription index (Nothing as all, 'configured' or 'unconfigured')
+    #   @option params [String] :limit                   (nil)     Limit to query for subscriptions
+    #   @option params [String] :reverse                 ('false') If subscription index and unconfigured notification keys will be ordered as earliest first
+    #   @option params [String] :filtered_by_key         (nil)     Key of the subscription for filter
     #   @return [Responce] JavaScript view for ajax request or redirects to back as default
     def subscribe
-      @subscription.subscribe
+      @subscription.subscribe(with_email_subscription: params[:with_email_subscription].to_s.to_boolean(true))
       return_back_or_ajax
     end
 

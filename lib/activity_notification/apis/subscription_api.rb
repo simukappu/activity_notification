@@ -7,7 +7,7 @@ module ActivityNotification
     #
     # @param [Hash] options Options for subscribing notification
     # @option options [DateTime] :subscribed_at           (Time.current) Time to set to subscribed_at and subscribed_to_email_at of the subscription record
-    # @option options [Boolean]  :with_email_subscription (true)         If it also subscribes notification email
+    # @option options [Boolean]  :with_email_subscription (true)         If the subscriber also subscribes notification email
     # @return [Boolean] If successfully updated subscription instance
     def subscribe(options = {})
       subscribed_at = options[:subscribed_at] || Time.current
