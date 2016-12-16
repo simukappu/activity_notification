@@ -60,6 +60,8 @@ module ActivityNotification
     scope :group_members_only,                -> { where.not(group_owner_id: nil) }
 
     # Selects all notification index.
+    #
+    # Calling
     #   ActivityNotification::Notification.all_index!
     # is defined same as
     #   ActivityNotification::Notification.group_owners_only.latest_order
@@ -83,6 +85,8 @@ module ActivityNotification
     scope :unopened_only,                     -> { where(opened_at: nil) }
 
     # Selects unopened notification index.
+    #
+    # Calling
     #   ActivityNotification::Notification.unopened_index
     # is defined same as
     #   ActivityNotification::Notification.unopened_only.group_owners_only.latest_order
@@ -113,6 +117,8 @@ module ActivityNotification
     scope :opened_only,                       ->(limit) { opened_only!.limit(limit) }
 
     # Selects unopened notification index.
+    #
+    # Calling
     #   ActivityNotification::Notification.opened_index(limit)
     # is defined same as
     #   ActivityNotification::Notification.opened_only(limit).group_owners_only.latest_order

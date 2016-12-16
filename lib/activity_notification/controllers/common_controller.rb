@@ -33,6 +33,8 @@ module ActivityNotification
 
       # Validate target with belonging model (e.g. Notification and Subscription)
       # @api protected
+      # @param [Object] belonging_model belonging model (e.g. Notification and Subscription)
+      # @return Nil or render HTTP 403 status
       def validate_target(belonging_model)
         if @target.present? && belonging_model.target != @target
           render plain: "403 Forbidden: Wrong target", status: 403
