@@ -139,7 +139,7 @@ module ActivityNotification
       def send_batch_notification_email(target, notifications, options = {})
         notifications.blank? and return
         batch_key = options[:batch_key] || notifications.first.key
-        if target.batch_notification_email_allowed?(notifications.first.notifiable_type, batch_key) &&
+        if target.batch_notification_email_allowed?(batch_key) &&
            target.subscribes_to_notification_email?(batch_key)
           send_later = options.has_key?(:send_later) ? options[:send_later] : true
           send_later ?

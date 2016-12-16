@@ -159,11 +159,10 @@ module ActivityNotification
     # Returns if sending batch notification email is allowed for the target from configured field or overriden method.
     # This method is able to be overriden.
     #
-    # @param [Object] notifiable_type Notifiable type of the notifications
     # @param [String] key Key of the notifications
     # @return [Boolean] If sending batch notification email is allowed for the target
-    def batch_notification_email_allowed?(notifiable_type, key)
-      resolve_value(_batch_notification_email_allowed, notifiable_type, key)
+    def batch_notification_email_allowed?(key)
+      resolve_value(_batch_notification_email_allowed, key)
     end
 
     # Returns if subscription management is allowed for the target from configured field or overriden method.

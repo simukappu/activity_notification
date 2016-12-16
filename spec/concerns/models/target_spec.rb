@@ -290,19 +290,19 @@ shared_examples_for :target do
     describe "#batch_notification_email_allowed?" do
       context "without any configuration" do
         it "returns ActivityNotification.config.email_enabled" do
-          expect(test_instance.batch_notification_email_allowed?(test_notifiable, 'dummy_key'))
+          expect(test_instance.batch_notification_email_allowed?('dummy_key'))
             .to eq(ActivityNotification.config.email_enabled)
         end
 
         it "returns false as default" do
-          expect(test_instance.batch_notification_email_allowed?(test_notifiable, 'dummy_key')).to be_falsey
+          expect(test_instance.batch_notification_email_allowed?('dummy_key')).to be_falsey
         end
       end
 
       context "configured with a field" do
         it "returns specified value" do
           described_class._batch_notification_email_allowed = true
-          expect(test_instance.batch_notification_email_allowed?(test_notifiable, 'dummy_key')).to eq(true)
+          expect(test_instance.batch_notification_email_allowed?('dummy_key')).to eq(true)
         end
 
         it "returns specified symbol without argument" do
@@ -313,28 +313,28 @@ shared_examples_for :target do
           end
           test_instance.extend(AdditionalMethods)
           described_class._batch_notification_email_allowed = :custom_batch_notification_email_allowed?
-          expect(test_instance.batch_notification_email_allowed?(test_notifiable, 'dummy_key')).to eq(true)
+          expect(test_instance.batch_notification_email_allowed?('dummy_key')).to eq(true)
         end
 
         it "returns specified symbol with target and key arguments" do
           module AdditionalMethods
-            def custom_batch_notification_email_allowed?(notifiable, key)
+            def custom_batch_notification_email_allowed?(key)
               true
             end
           end
           test_instance.extend(AdditionalMethods)
           described_class._batch_notification_email_allowed = :custom_batch_notification_email_allowed?
-          expect(test_instance.batch_notification_email_allowed?(test_notifiable, 'dummy_key')).to eq(true)
+          expect(test_instance.batch_notification_email_allowed?('dummy_key')).to eq(true)
         end
 
         it "returns specified lambda with single target argument" do
           described_class._batch_notification_email_allowed = ->(target){ true }
-          expect(test_instance.batch_notification_email_allowed?(test_notifiable, 'dummy_key')).to eq(true)
+          expect(test_instance.batch_notification_email_allowed?('dummy_key')).to eq(true)
         end
 
-        it "returns specified lambda with target, notifiable and key arguments" do
-          described_class._batch_notification_email_allowed = ->(target, notifiable, key){ true }
-          expect(test_instance.batch_notification_email_allowed?(test_notifiable, 'dummy_key')).to eq(true)
+        it "returns specified lambda with target and key arguments" do
+          described_class._batch_notification_email_allowed = ->(target, key){ true }
+          expect(test_instance.batch_notification_email_allowed?('dummy_key')).to eq(true)
         end
       end
     end
