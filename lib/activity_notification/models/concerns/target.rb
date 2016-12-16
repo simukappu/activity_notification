@@ -343,9 +343,9 @@ module ActivityNotification
     #   @notifications = @user.notification_index_with_attributes
     #
     # @param [Hash] options Options for notification index
-    # @option options [Boolean]        :send_later            (false)          If it sends notification email asynchronously
-    # @option options [String, Symbol] :fallback              (:batch_default) Fallback template to use when MissingTemplate is raised
-    # @option options [String]         :batch_key             (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
+    # @option options [Boolean]        :send_later             (false)          If it sends notification email asynchronously
+    # @option options [String, Symbol] :fallback               (:batch_default) Fallback template to use when MissingTemplate is raised
+    # @option options [String]         :batch_key              (nil)            Key of the batch notification email, a key of the first notification will be used if not specified
     # @option options [Integer]        :limit                  (nil)           Limit to query for notifications
     # @option options [Boolean]        :reverse                (false)         If notification index will be ordered as earliest first
     # @option options [Boolean]        :with_group_members     (false)         If notification index will include group members
