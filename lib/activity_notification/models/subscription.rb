@@ -81,7 +81,7 @@ module ActivityNotification
     # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by key name
     scope :key_order,                 -> { order(key: :asc) }
 
-#    private
+    private
       # Validates subscribing_to_email cannot be true when subscribing isfalse.
       def subscribing_to_email_cannot_be_true_when_subscribing_is_false
         if !subscribing && subscribing_to_email
