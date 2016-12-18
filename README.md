@@ -29,7 +29,10 @@
 <kbd>![notification-index](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_index.png)</kbd>
 
 ### Plugin notifications
-<kbd>![plugin-notifications](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus.png)</kbd>
+<kbd>![plugin-notifications](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus_with_subscription.png)</kbd>
+
+### Subscription management
+<kbd>![subscription-management](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_subscription_management.png)</kbd>
 
 `activity_notification` deeply uses [PublicActivity](https://github.com/pokonski/public_activity) as reference in presentation layer.
 
