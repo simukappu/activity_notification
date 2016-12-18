@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'sqlite3', '~> 1.3.12'
   s.add_development_dependency 'rspec-rails', '~> 3.5.1'
-  s.add_development_dependency 'factory_girl_rails', '~> 4.7.0'
+  s.add_development_dependency 'factory_girl_rails', '~> 4.8.0'
   s.add_development_dependency 'simplecov', '~> 0.12.0'
   s.add_development_dependency 'yard', '~> 0.9.5'
   s.add_development_dependency 'yard-activesupport-concern', '~> 0.0.1'
