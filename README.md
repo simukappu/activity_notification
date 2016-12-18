@@ -21,18 +21,18 @@
 * Notification views (presentation of notifications)
 * Grouping notifications (grouping like `"Kevin and 7 other users posted comments to this article"`)
 * Email notification
-* Batch email notification
-* Subscription management
+* Batch email notification (event driven or periodical email notification, daily or weekly etc)
+* Subscription management (opt-in or opt-out by each target and notification type)
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
 
 ### Notification index
-<kbd>![notification-index](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_index.png)</kbd>
+<kbd>![notification-index-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_index.png)</kbd>
 
 ### Plugin notifications
-<kbd>![plugin-notifications](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus_with_subscription.png)</kbd>
+<kbd>![plugin-notifications-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus_with_subscription.png)</kbd>
 
 ### Subscription management
-<kbd>![subscription-management](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_subscription_management.png)</kbd>
+<kbd>![subscription-management-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_subscription_management.png)</kbd>
 
 `activity_notification` deeply uses [PublicActivity](https://github.com/pokonski/public_activity) as reference in presentation layer.
 
