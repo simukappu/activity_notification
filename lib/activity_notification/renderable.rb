@@ -135,7 +135,7 @@ module ActivityNotification
     # @param [Hash] params Parameters for rendering notifications
     # @option params [String, Symbol] :target       (nil)                     Target type name to find template or i18n text
     # @option params [String]         :partial_root ("activity_notification/notifications/#{target}", controller.target_view_path, 'activity_notification/notifications/default') Partial template name
-    # @option params [String]         :partial      (self.key.gsub('.', '/')) Root path of partial template
+    # @option params [String]         :partial      (self.key.tr('.', '/'))   Root path of partial template
     # @option params [String]         :layout       (nil)                     Layout template name
     # @option params [String]         :layout_root  ('layouts')               Root path of layout template
     # @option params [String, Symbol] :fallback     (nil)                     Fallback template to use when MissingTemplate is raised. Set :text to use i18n text as fallback.
@@ -173,7 +173,7 @@ module ActivityNotification
       root ||= "activity_notification/notifications/#{target}" if target.present?
       root ||= controller.target_view_path                     if controller.present? && controller.respond_to?(:target_view_path)
       root ||= 'activity_notification/notifications/default'
-      path ||= self.key.gsub('.', '/')
+      path ||= self.key.tr('.', '/')
       select_path(path, root)
     end
 

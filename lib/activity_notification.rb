@@ -42,7 +42,7 @@ module ActivityNotification
   #     config.parent_controller  = 'ApplicationController'
   #     config.opened_index_limit = 10
   #   end
-  def self.configure(&block)
+  def self.configure
     yield(config) if block_given?
   end
 

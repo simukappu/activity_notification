@@ -37,15 +37,15 @@ module ActivityNotification
 
         # Copies view files to target directory
         # @api protected
-        # @param [String] name Set name of views (notifications or mailer)
-        # @param [String] _target_path Target path to create views
-        def view_directory(name, _target_path = nil)
-          directory "#{name.to_s}/default", _target_path || "#{target_path}/#{name}/#{plural_target || :default}"
+        # @param [String] name             Set name of views (notifications or mailer)
+        # @param [String] view_target_path Target path to create views
+        def view_directory(name, view_target_path = nil)
+          directory "#{name}/default", view_target_path || "#{target_path}/#{name}/#{plural_target || :default}"
         end
   
         # Gets target_path from an argument or default value
         # @api protected
-        # @return [String ] target_path from an argument or default value
+        # @return [String] target_path from an argument or default value
         def target_path
           @target_path ||= "app/views/activity_notification"
         end

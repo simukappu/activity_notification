@@ -124,7 +124,7 @@ module ActivityNotification
         # @param [String] key Key of the notification
         # @return [String] Template name
         def template_name(key)
-          key.gsub('.', '/')
+          key.tr('.', '/')
         end
 
 
