@@ -1,3 +1,23 @@
+## 1.1.0 / 2016-12-18
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.0.2...v1.1.0)
+
+Enhancements:
+
+* Add subscription management framework
+  * Subscription management model and API
+  * Default subscription management controllers, routing and views
+  * Add Subscriber role configuration to Target role
+* Add as_latest_group_member option to batch mailer API
+* Add group_expiry_delay option to notification API
+
+Bug Fixes:
+
+* Fix unserializable error in Target#send_batch_unopened_notification_email since unnecessary options are passed to mailer
+
+Breaking Changes:
+
+* Remove notifiable_type from the argument of overriden method or configured lambda function for Target#batch_notification_email_allowed?
+
 ## 1.0.2 / 2016-11-14
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.0.1...v1.0.2)
 
@@ -19,6 +39,10 @@ Enhancements:
   * Add methods to get notifications for specified target type grouped by targets like `notification_index_map`
 * Arrange default notification email view templates
 
+Breaking Changes:
+
+* Use instance variables @notification.target and @notification.notifiable instead of @target and @notifiable in notification email templates
+
 ## 1.0.0 / 2016-10-06
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v0.0.10...v1.0.0)
 
@@ -38,6 +62,7 @@ Enhancements:
 * Make default rails version 5.0 and update gem dependency
 
 Breaking Changes:
+
 * Rename `opened_limit` configuration parameter to `opened_index_limit`
   * http://github.com/simukappu/activity_notification/commit/591e53cd8977220f819c11cd702503fc72dd1fd1
 
