@@ -185,6 +185,7 @@
       $thisFieldWrapper = $(this).parent().parent().parent().parent();
       if ($(this).prop('checked')) {
         $thisFieldWrapper.next().slideDown();
+        $thisFieldWrapper.next().find("input[type='checkbox']").prop("checked", <%= ActivityNotification.config.subscribe_as_default %>);
       } else {
         $thisFieldWrapper.next().slideUp();
         setTimeout(function () {
