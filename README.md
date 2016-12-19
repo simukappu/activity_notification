@@ -574,7 +574,7 @@ notification:
         mail_subject: 'New comment to your article'
 ```
 
-Then, you will see `Kevin and 7 other users replied 10 comments to your article"`.
+Then, you will see `Kevin and 7 other users posted 10 comments to your article"`.
 
 
 ### Subscription management
