@@ -5,18 +5,18 @@ Enhancements:
 
 * Add subscription management framework
   * Subscription management model and API
-  * Default subscription management controllers, routing and views
-  * Add Subscriber role configuration to Target role
-* Add as_latest_group_member option to batch mailer API
-* Add group_expiry_delay option to notification API
+  * Default subscription controllers, routing and views
+  * Add `Subscriber` role configuration to `Target` role
+* Add `:as_latest_group_member` option to batch mailer API
+* Add `:group_expiry_delay` option to notification API
 
 Bug Fixes:
 
-* Fix unserializable error in Target#send_batch_unopened_notification_email since unnecessary options are passed to mailer
+* Fix unserializable error in `Target#send_batch_unopened_notification_email` since unnecessary options are passed to mailer
 
 Breaking Changes:
 
-* Remove notifiable_type from the argument of overriden method or configured lambda function for Target#batch_notification_email_allowed?
+* Remove `notifiable_type` from the argument of overriden method or configured lambda function with `:batch_email_allowed` option in `acts_as_target` role
 
 ## 1.0.2 / 2016-11-14
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.0.1...v1.0.2)
@@ -33,15 +33,15 @@ Enhancements:
 * Add function to send batch email notification
   * Batch mailer API
   * Default batch notification email templates
-  * Target role configuration for batch email notification
+  * `Target` role configuration for batch email notification
 * Improve target API
   * Add `:reverse`, `:with_group_members`, `:as_latest_group_member` and `:custom_filter` options to API loading notification index
-  * Add methods to get notifications for specified target type grouped by targets like `notification_index_map`
+  * Add methods to get notifications for specified target type grouped by targets like `Target#notification_index_map`
 * Arrange default notification email view templates
 
 Breaking Changes:
 
-* Use instance variables @notification.target and @notification.notifiable instead of @target and @notifiable in notification email templates
+* Use instance variables `@notification.target` and `@notification.notifiable` instead of `@target` and `@notifiable` in notification email templates
 
 ## 1.0.0 / 2016-10-06
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v0.0.10...v1.0.0)
@@ -63,7 +63,7 @@ Enhancements:
 
 Breaking Changes:
 
-* Rename `opened_limit` configuration parameter to `opened_index_limit`
+* Rename `config.opened_limit` configuration parameter to `config.opened_index_limit`
   * http://github.com/simukappu/activity_notification/commit/591e53cd8977220f819c11cd702503fc72dd1fd1
 
 ## 0.0.10 / 2016-09-11
@@ -72,7 +72,7 @@ Breaking Changes:
 Enhancements:
 
 * Improve controller action and notification API
-  * Add filter options to `open_all` action and `open_all_of` method
+  * Add filter options to `NotificationsController#open_all` action and `Target#open_all_of` method
 * Add source documentation with YARD
 * Support rails 5.0 and update gem dependency
 
