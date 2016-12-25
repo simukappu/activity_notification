@@ -118,8 +118,9 @@ module ActivityNotification
       # * :dependent_notifications
       #   * Dependency for notifications to delete generated notifications with this notifiable.
       #     This option is used to configure generated_notifications_as_notifiable association.
-      #     You can use :delete_all, :destroy, or :nullify for this option.
-      #     This parameter is a optional since no dependent option is used as default.
+      #     You can use :delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all or :update_group_and_destroy for this option.
+      #     When you use :update_group_and_delete_all or :update_group_and_destroy to this parameter, the oldest group member notification becomes a new group owner as `before_destroy` of this Notifiable.
+      #     This parameter is effective for all target and is a optional since no dependent option is used as default.
       # @example Define :delete_all dependency to generated notifications
       #   # app/models/comment.rb
       #   class Comment < ActiveRecord::Base
