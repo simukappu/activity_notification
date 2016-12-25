@@ -265,6 +265,13 @@ module ActivityNotification
         end
       end
 
+      # Remove generated notifications from notification group to new group owner.
+      # This method is intended to be called before destroy this notifiable as dependent configuration.
+      # @api private
+      def remove_generated_notifications_from_group
+        generated_notifications_as_notifiable.group_owners_only.each { |n| n.remove_from_group }
+      end
+
       # Casts to resources name.
       # @api private
       def cast_to_resources_name(target_type)

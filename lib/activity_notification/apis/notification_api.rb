@@ -311,6 +311,18 @@ module ActivityNotification
       notification.group_member_exists? ? notification.group_members.latest : self
     end
 
+    # Remove from notification group and make a new group owner.
+    #
+    # @return [Notificaion] New group owner instance of the notification group
+    def remove_from_group
+      new_group_owner = group_members.earliest
+      if new_group_owner.present?
+        new_group_owner.update(group_owner_id: nil)
+        group_members.update_all(group_owner_id: new_group_owner)
+      end
+      new_group_owner
+    end
+
     # Returns notifiable_path to move after opening notification with notifiable.notifiable_path.
     #
     # @return [String] Notifiable path URL to move after opening notification

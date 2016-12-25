@@ -136,20 +136,29 @@ module ActivityNotification
       # @option options [Symbol, Proc, Boolean] :email_allowed           (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email
       # @option options [Symbol, Proc, String]  :notifiable_path         (polymorphic_path(self)) Path to redirect from open or move action of notification controller
       # @option options [Symbol, Proc, String]  :printable_name          (ActivityNotification::Common.printable_name) Printable notifiable name
-      # @option options [Symbol, Proc]          :dependent_notifications (nil)                    Dependency for notifications to delete generated notifications with this notifiable
+      # @option options [Symbol, Proc]          :dependent_notifications (nil)                    Dependency for notifications to delete generated notifications with this notifiable, [:delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all, :update_group_and_destroy] are available
       # @return [Hash] Configured parameters as notifiable model
       def acts_as_notifiable(target_type, options = {})
         include Notifiable
+        configured_params = {}
 
-        if [:delete_all, :destroy, :nullify].include? options[:dependent_notifications] 
-          has_many :generated_notifications_as_notifiable,
-            class_name: "::ActivityNotification::Notification",
-            as: :notifiable,
-            dependent: options[:dependent_notifications]
+        if [:delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all, :update_group_and_destroy].include? options[:dependent_notifications]
+          case options[:dependent_notifications]
+          when :delete_all, :destroy, :restrict_with_error, :restrict_with_exception
+            has_many_generated_notifications options[:dependent_notifications]
+          when :update_group_and_delete_all
+            before_destroy :remove_generated_notifications_from_group
+            has_many_generated_notifications :delete_all
+          when :update_group_and_destroy
+            before_destroy :remove_generated_notifications_from_group
+            has_many_generated_notifications :destroy
+          end
+          configured_params = { dependent_notifications: options[:dependent_notifications] }
         end
 
         options[:printable_notifiable_name] ||= options.delete(:printable_name)
-        set_acts_as_parameters_for_target(target_type, [:targets, :group, :group_expiry_delay, :parameters, :email_allowed], options, "notification_")
+        configured_params
+          .merge set_acts_as_parameters_for_target(target_type, [:targets, :group, :group_expiry_delay, :parameters, :email_allowed], options, "notification_")
           .merge set_acts_as_parameters_for_target(target_type, [:notifier, :notifiable_path, :printable_notifiable_name], options)
       end
 
@@ -167,6 +176,18 @@ module ActivityNotification
           :dependent_notifications
         ].freeze
       end
+
+      private
+
+        # Define to have many notification instances for this notifiable with dependent option.
+        # @api private
+        def has_many_generated_notifications(dependent_option)
+          has_many :generated_notifications_as_notifiable,
+            class_name: "::ActivityNotification::Notification",
+            as: :notifiable,
+            dependent: dependent_option
+        end
+
     end
   end
 end

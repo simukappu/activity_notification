@@ -1104,6 +1104,30 @@ shared_examples_for :notification_api do
       end
     end
 
+    describe "#remove_from_group" do
+      before do
+        @member1 = create(test_class_name, target: test_instance.target, group_owner: test_instance)
+        @member2 = create(test_class_name, target: test_instance.target, group_owner: test_instance)
+        expect(test_instance.group_member_count).to eq(2)
+        expect(@member1.group_owner?).to            be_falsey
+      end
+
+      it "removes from notification group" do
+        test_instance.remove_from_group
+        expect(test_instance.group_member_count).to eq(0)
+      end
+
+      it "makes a new group owner" do
+        test_instance.remove_from_group
+        expect(@member1.reload.group_owner?).to     be_truthy
+        expect(@member1.group_members).to           eq([@member2])
+      end
+
+      it "returns new group owner instance" do
+        expect(test_instance.remove_from_group).to eq(@member1)
+      end
+    end
+
     describe "#notifiable_path" do
       it "returns notifiable.notifiable_path" do
         expect(test_instance.notifiable_path)

@@ -14,7 +14,7 @@ class Comment < ActiveRecord::Base
     parameters: { test_default_param: '1' },
     notifiable_path: :article_notifiable_path,
     printable_name: ->(comment) { "comment \"#{comment.body}\"" },
-    dependent_notifications: :delete_all
+    dependent_notifications: :update_group_and_delete_all
 
   def article_notifiable_path
     article_path(article)
