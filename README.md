@@ -406,7 +406,7 @@ This structure is valid for notifications with keys `"notification.comment.reply
 
 #### Setup mailer
 
-First, you need to set up the default URL options for the `activity_notification` mailer in each environment. Here is a possible configuration for `config/environments/development.rb`:
+Set up SMTP server configuration for `ActionMailer`. Then, you need to set up the default URL options for the `activity_notification` mailer in each environment. Here is a possible configuration for `config/environments/development.rb`:
 
 ```ruby
 config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
@@ -473,7 +473,7 @@ notification:
 
 #### Setup batch mailer
 
-First, you need to set up the default URL options for the `activity_notification` mailer in each environment.
+Set up SMTP server configuration for `ActionMailer` and the default URL options for the `activity_notification` mailer in each environment.
 
 Batch email notification is disabled as default. You can configure to enable email notification in initializer `activity_notification.rb` like single email notification.
 
