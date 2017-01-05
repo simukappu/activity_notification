@@ -1,3 +1,15 @@
+## 1.2.0 / 2017-01-06
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.1.0...v1.2.0)
+
+Enhancements:
+
+* Add optional target function
+  * Optional target development framework
+  * Subscription management for optional targets
+  * Amazon SNS client as default optional target implementation
+  * Slack client as default optional target implementation
+* Add `:restrict_with_*` and `:update_group_and_*` options to `:dependent_notifications` of `acts_as_notifiable`
+
 ## 1.1.0 / 2016-12-18
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.0.2...v1.1.0)
 
@@ -41,7 +53,7 @@ Enhancements:
 
 Breaking Changes:
 
-* Use instance variables `@notification.target` and `@notification.notifiable` instead of `@target` and `@notifiable` in notification email templates
+* Use instance variable `@notification.notifiable` instead of `@notifiable` in notification email templates
 
 ## 1.0.0 / 2016-10-06
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v0.0.10...v1.0.0)
