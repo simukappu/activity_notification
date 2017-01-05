@@ -24,17 +24,21 @@
 * Batch email notification (event driven or periodical email notification, daily or weekly etc)
 * Subscription management (opt-in or opt-out by each target and notification type)
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
+* Optional notification targets (Configurable optional notification targets like Amazon SNS, Slack, SMS and so on)
 
-### Notification index
-<kbd>![notification-index-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_index.png)</kbd>
-
-### Plugin notifications
+### Notification index and plugin notifications
 <kbd>![plugin-notifications-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus_with_subscription.png)</kbd>
 
 ### Subscription management of notifications
-<kbd>![subscription-management-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_subscription_management.png)</kbd>
+<kbd>![subscription-management-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_subscription_management_with_optional_targets.png)</kbd>
 
 `activity_notification` deeply uses [PublicActivity](https://github.com/pokonski/public_activity) as reference in presentation layer.
+
+### Amazon SNS as optional notification target
+<kbd>![optional-target-amazon-sns-email-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_optional_target_amazon_sns_email.png)</kbd>
+
+### Slack as optional notification target
+<kbd>![optional-target-slack-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_optional_target_slack.png)</kbd>
 
 
 ## Table of contents
@@ -70,6 +74,12 @@
     2. [Manage subscriptions](#manage-subscriptions)
     3. [Customize Subscriptions](#customize-subscriptions)
   5. [Integration with Devise](#integration-with-devise)
+  6. [Optional notification targets](#optional-notification-targets)
+    1. [Setup optional targets](#setup-optional-targets)
+    2. [Customizing message format](#Customizing-message-format)
+    3. [Amazon SNS as optional target](#amazon-sns-as-optional-target)
+    4. [Slack as optional target](#slack-as-optional-target)
+    5. [Developing custom optional targets](#developing-custom-optional-targets)
 4. [Testing](#testing)
 5. [Documentation](#documentation)
 6. **[Common examples](#common-examples)**
@@ -337,7 +347,7 @@ Sometimes, it's desirable to pass additional local variables to partials. It can
 
 `activity_notification` looks for views in `app/views/activity_notification/notifications/:target`.
 
-For example, if you have an notification with `:key` set to `"notification.comment.reply"` and rendered it with `:target` set to `:users`, the gem will look for a partial in `app/views/activity_notification/notifications/users/comment/_reply.html.(|erb|haml|slim|something_else)`.
+For example, if you have a notification with `:key` set to `"notification.comment.reply"` and rendered it with `:target` set to `:users`, the gem will look for a partial in `app/views/activity_notification/notifications/users/comment/_reply.html.(|erb|haml|slim|something_else)`.
 
 *Hint*: the `"notification."` prefix in `:key` is completely optional, you can skip it in your projects or use this prefix only to make namespace.
 
@@ -450,7 +460,7 @@ end
 
 #### Email templates
 
-`activity_notification` will look for email template in the same way as notification views. For example, if you have an notification with `:key` set to `"notification.comment.reply"` and target_type `users`, the gem will look for a partial in `app/views/activity_notification/mailer/users/comment/_reply.html.(|erb|haml|slim|something_else)`.
+`activity_notification` will look for email template in the same way as notification views. For example, if you have a notification with `:key` set to `"notification.comment.reply"` and target_type `users`, the gem will look for a partial in `app/views/activity_notification/mailer/users/comment/_reply.html.(|erb|haml|slim|something_else)`.
 
 If this template is missing, the gem will look for a partial in `default` as the target type which means `activity_notification/mailer/default/_default.html.(|erb|haml|slim|something_else)`.
 
@@ -736,6 +746,159 @@ end
 
 `activity_notification` will authenticate `:admins` notifications with devise authentication for `:users`.
 In this example `activity_notification` will confirm the `user` who `admin` belongs to with authenticated user by devise.
+
+
+### Optional notification targets
+
+`activity_notification` supports configurable optional notification targets like Amazon SNS, Slack, SMS and so on.
+
+#### Setup optional targets
+
+`activity_notification` provides default optional target implementation for Amazon SNS and Slack.
+You can develop any optional target classes which extends `ActivityNotification::OptionalTarget::Base`, and configure them to notifiable model by `acts_as_notifiable` like this.
+
+```ruby
+class Comment < ActiveRecord::Base
+  belongs_to :article
+  belongs_to :user
+
+  require 'activity_notification/optional_targets/amazon_sns'
+  require 'activity_notification/optional_targets/slack'
+  require 'custom_optional_targets/console_output'
+  acts_as_notifiable :admins, targets: Admin.all,
+    notifiable_path: :article_notifiable_path,
+    # Set optional target implementation class and initializing parameters
+    optional_targets: {
+      ActivityNotification::OptionalTarget::AmazonSNS => { topic_arn: 'arn:aws:sns:XXXXX:XXXXXXXXXXXX:XXXXX' },
+      ActivityNotification::OptionalTarget::Slack  => {
+        webhook_url: 'https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX',
+        slack_name: :slack_name, channel: 'activity_notification', username: 'ActivityNotification', icon_emoji: ":ghost:"
+      },
+      CustomOptionalTarget::ConsoleOutput => {}
+    }
+
+  def article_notifiable_path
+    article_path(article)
+  end
+end
+```
+
+Write `require` statement for optional target implementation classes and set them with initializing parameters to `acts_as_notifiable`.
+`activity_notification` will publish all notifications of those targets and notifiables to optional targets.
+
+#### Customizing message format
+
+Optional targets prepare publishing messages from notification instance using view template like rendering notifications.
+As default, all optional targets use `app/views/activity_notification/optional_targets/default/base/_default.text.erb`.
+You can customize this template by creating `app/views/activity_notification/optional_targets/<target_class_name>/<optional_target_class_name>/<notification_key>.text.(|erb|haml|slim|something_else)`.
+For example, if you have a notification for `:users` target with `:key` set to `"notification.comment.reply"` and `ActivityNotification::OptionalTarget::AmazonSNS` optional target is configured, the gem will look for a partial in `app/views/activity_notification/optional_targets/users/amazon_sns/comment/_reply.text.erb`.
+The gem will also look for templates whose `<target_class_name>` is `default`, `<optional_target_class_name>` is `base` or `<notification_key>` is `default`, which means `app/views/activity_notification/optional_targets/users/amazon_sns/_default.text.erb`, `app/views/activity_notification/optional_targets/users/base/_default.text.erb`, `app/views/activity_notification/optional_targets/default/amazon_sns/_default.text.erb` and `app/views/activity_notification/optional_targets/default/base/_default.text.erb`.
+
+#### Amazon SNS as optional target
+
+`activity_notification` provides `ActivityNotification::OptionalTarget::AmazonSNS` as default optional target implementation for Amazon SNS.
+
+First, add `aws-sdk` gem to your Gemfile and set AWS Credentials for SDK (See [Configuring the AWS SDK for Ruby](https://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/setup-config.html)).
+
+```ruby
+gem 'aws-sdk', '~> 2'
+```
+
+```ruby
+require 'aws-sdk'
+Aws.config.update(
+  region: 'your_region',
+  credentials: Aws::Credentials.new('your_access_key_id', 'your_secret_access_key')
+)
+```
+
+Then, write `require 'activity_notification/optional_targets/amazon_sns'` statement in your notifiable model and set `ActivityNotification::OptionalTarget::AmazonSNS` to `acts_as_notifiable` with `:topic_arn`, `:target_arn` or `:phone_number` initializing parameters.
+Any other options for `Aws::SNS::Client.new` are available as initializing parameters. See [API Reference of Class: Aws::SNS::Client](http://docs.aws.amazon.com/sdkforruby/api/Aws/SNS/Client.html) for more details.
+
+```ruby
+class Comment < ActiveRecord::Base
+  require 'activity_notification/optional_targets/amazon_sns'
+  acts_as_notifiable :admins, targets: Admin.all,
+    optional_targets: {
+      ActivityNotification::OptionalTarget::AmazonSNS => { topic_arn: 'arn:aws:sns:XXXXX:XXXXXXXXXXXX:XXXXX' }
+    }
+end
+```
+
+#### Slack as optional target
+
+`activity_notification` provides `ActivityNotification::OptionalTarget::Slack` as default optional target implementation for Slack.
+
+First, add `slack-notifier` gem to your Gemfile and create Incoming WebHooks in Slack (See [Incoming WebHooks](https://wemakejp.slack.com/apps/A0F7XDUAZ-incoming-webhooks)).
+
+```ruby
+gem 'slack-notifier'
+```
+
+Then, write `require 'activity_notification/optional_targets/slack'` statement in your notifiable model and set `ActivityNotification::OptionalTarget::Slack` to `acts_as_notifiable` with `:webhook_url` and `:slack_name` initializing parameters. `:webhook_url` is created WebHook URL and required, `:slack_name` is target's slack user name as String value, symbol method name or lambda function and it is an optional.
+Any other options for `Slack::Notifier.new` are available as initializing parameters. See [Github slack-notifier](https://github.com/stevenosloan/slack-notifier) and [API Reference of Class: Slack::Notifier](http://www.rubydoc.info/gems/slack-notifier/1.5.1/Slack/Notifier) for more details.
+
+```ruby
+class Comment < ActiveRecord::Base
+  require 'activity_notification/optional_targets/slack'
+  acts_as_notifiable :admins, targets: Admin.all,
+    optional_targets: {
+      ActivityNotification::OptionalTarget::Slack  => {
+        webhook_url: 'https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX',
+        slack_name: :slack_name, channel: 'activity_notification', username: 'ActivityNotification', icon_emoji: ":ghost:"
+      }
+    }
+end
+```
+
+#### Developing custom optional targets
+
+You can develop any custom optional targets.
+Custom optional target class must extend `ActivityNotification::OptionalTarget::Base` and override `initialize_target` and `notify` method.
+You can use `render_notification_message` method to prepare message from notification instance using view template.
+
+For example, create `lib/custom_optional_targets/amazon_sns.rb` as follows:
+
+```ruby
+module CustomOptionalTarget
+  # Custom optional target implementation for mobile push notification or SMS using Amazon SNS.
+  class AmazonSNS < ActivityNotification::OptionalTarget::Base
+    require 'aws-sdk'
+
+    # Initialize method to prepare Aws::SNS::Client
+    def initialize_target(options = {})
+      @topic_arn    = options.delete(:topic_arn)
+      @target_arn   = options.delete(:target_arn)
+      @phone_number = options.delete(:phone_number)
+      @sns_client = Aws::SNS::Client.new(options)
+    end
+
+    # Publishes notification message to Amazon SNS
+    def notify(notification, options = {})
+      @sns_client.publish(
+        topic_arn:    notification.target.resolve_value(options.delete(:topic_arn) || @topic_arn),
+        target_arn:   notification.target.resolve_value(options.delete(:target_arn) || @target_arn),
+        phone_number: notification.target.resolve_value(options.delete(:phone_number) || @phone_number),
+        message: render_notification_message(notification, options)
+      )
+    end
+  end
+end
+```
+
+Then, you can configure them to notifiable model by `acts_as_notifiable` like this.
+
+```ruby
+class Comment < ActiveRecord::Base
+  require 'custom_optional_targets/amazon_sns'
+  acts_as_notifiable :admins, targets: Admin.all,
+    optional_targets: {
+      CustomOptionalTarget::AmazonSNS => { topic_arn: 'arn:aws:sns:XXXXX:XXXXXXXXXXXX:XXXXX' }
+    }
+end
+```
+
+`acts_as_notifiable` creates optional target instances and calls `initialize_target` method with initializing parameters.
 
 
 ## Testing
