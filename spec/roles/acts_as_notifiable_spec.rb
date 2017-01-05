@@ -5,6 +5,11 @@ describe ActivityNotification::ActsAsNotifiable do
 
   describe "as public class methods" do
     describe ".acts_as_notifiable" do
+      before do
+        dummy_notifiable_class.set_notifiable_class_defaults
+        @notifiable = dummy_notifiable_class.create
+      end
+
       it "have not included Notifiable before calling" do
         expect(dummy_model_class.respond_to?(:available_as_notifiable?)).to be_falsey
       end
@@ -94,13 +99,55 @@ describe ActivityNotification::ActsAsNotifiable do
         end
       end
 
+      context "with :optional_targets option" do
+        require 'custom_optional_targets/console_output'
+        require 'custom_optional_targets/wrong_target'
+
+        it "returns hash of :optional_targets option" do
+          result_hash = dummy_notifiable_class.acts_as_notifiable :users, optional_targets: { CustomOptionalTarget::ConsoleOutput => {} }
+          expect(result_hash).to be_a(Hash)
+          expect(result_hash[:optional_targets]).to       be_a(Array)
+          expect(result_hash[:optional_targets].first).to be_a(CustomOptionalTarget::ConsoleOutput)
+        end
+
+        context "without option" do
+          it "does not configure optional_targets and notifiable#optional_targets returns empty array" do
+            dummy_notifiable_class.acts_as_notifiable :users
+            expect(@notifiable.optional_targets(:users)).to eq([])
+          end
+        end
+
+        context "with hash configuration" do
+          it "configure optional_targets and notifiable#optional_targets returns optional_target array" do
+            dummy_notifiable_class.acts_as_notifiable :users, optional_targets: { CustomOptionalTarget::ConsoleOutput => {} }
+            expect(@notifiable.optional_targets(:users)).to       be_a(Array)
+            expect(@notifiable.optional_targets(:users).first).to be_a(CustomOptionalTarget::ConsoleOutput)
+          end
+        end
+
+        context "with hash configuration but specified class does not extends ActivityNotification::OptionalTarget::Base" do
+          it "raise TypeError" do
+            expect { dummy_notifiable_class.acts_as_notifiable :users, optional_targets: { CustomOptionalTarget::WrongTarget => {} } }
+              .to raise_error(TypeError, /.+ is not a kind of ActivityNotification::OptionalTarget::Base/)
+          end
+        end
+
+        context "with lambda function configuration" do
+          it "configure optional_targets and notifiable#optional_targets returns optional_target array" do
+            dummy_notifiable_class.acts_as_notifiable :users, optional_targets: ->(notifiable, key){ key == 'dummy_key' ? [ActivityNotification::OptionalTarget::Base.new] : [] }
+            expect(@notifiable.optional_targets(:users)).to eq([])
+            expect(@notifiable.optional_targets(:users, 'dummy_key').first).to be_a(ActivityNotification::OptionalTarget::Base)
+          end
+        end
+      end
+
       #TODO test other options
     end
 
     describe ".available_notifiable_options" do
       it "returns list of available options in acts_as_notifiable" do
         expect(dummy_model_class.available_notifiable_options)
-          .to eq([:targets, :group, :group_expiry_delay, :notifier, :parameters, :email_allowed, :notifiable_path, :printable_notifiable_name, :printable_name, :dependent_notifications])
+          .to eq([:targets, :group, :group_expiry_delay, :notifier, :parameters, :email_allowed, :notifiable_path, :printable_notifiable_name, :printable_name, :dependent_notifications, :optional_targets])
       end
     end
   end

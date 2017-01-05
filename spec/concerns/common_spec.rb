@@ -48,12 +48,17 @@ shared_examples_for :common do
       end
 
       context "with Proc" do
-        it "returns specified lambda with context(model)  arguments" do
+        it "returns specified lambda without argument" do
+          test_proc = ->{ 1 }
+          expect(ActivityNotification.resolve_value(test_instance, test_proc)).to eq(1)
+        end
+
+        it "returns specified lambda with context(model) arguments" do
           test_proc = ->(model){ model == test_instance ? 1 : 0 }
           expect(ActivityNotification.resolve_value(test_instance, test_proc)).to eq(1)
         end
 
-        it "returns specified lambda with controller and context(model)  arguments" do
+        it "returns specified lambda with controller and context(model) arguments" do
           test_proc = ->(controller, model){ controller == 'StubController' and model == test_instance ? 1 : 0 }
           expect(ActivityNotification.resolve_value(test_instance, test_proc)).to eq(1)
         end

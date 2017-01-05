@@ -2,6 +2,7 @@ shared_examples_for :notification_api do
   include ActiveJob::TestHelper
   let(:test_class_name) { described_class.to_s.underscore.split('/').last.to_sym }
   let(:test_instance) { create(test_class_name) }
+  let(:notifiable_class) { test_instance.notifiable.class }
   before do
     ActiveJob::Base.queue_adapter = :test
     ActivityNotification::Mailer.deliveries.clear
@@ -509,6 +510,47 @@ shared_examples_for :notification_api do
           test_instance.send_notification_email send_later: false
           expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
           expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(test_instance.target.email)
+        end
+      end
+    end
+
+    describe "#publish_to_optional_targets" do
+      before do
+        require 'custom_optional_targets/console_output'
+        @optional_target = CustomOptionalTarget::ConsoleOutput.new
+        notifiable_class.acts_as_notifiable test_instance.target.to_resources_name.to_sym, optional_targets: ->{ [@optional_target] }
+        expect(test_instance.notifiable.optional_targets(test_instance.target.to_resources_name, test_instance.key)).to eq([@optional_target])
+      end
+
+      context "subscribed by target" do
+        before do
+          test_instance.target.create_subscription(key: test_instance.key, optional_targets: { subscribing_to_console_output: true })
+          expect(test_instance.optional_target_subscribed?(:console_output)).to be_truthy
+        end
+
+        it "calls OptionalTarget#notify" do
+          expect(@optional_target).to receive(:notify)
+          test_instance.publish_to_optional_targets
+        end
+
+        it "returns truthy result hash" do
+          expect(test_instance.publish_to_optional_targets).to eq({ console_output: true })
+        end
+      end
+
+      context "unsubscribed by target" do
+        before do
+          test_instance.target.create_subscription(key: test_instance.key, optional_targets: { subscribing_to_console_output: false })
+          expect(test_instance.optional_target_subscribed?(:console_output)).to be_falsey
+        end
+
+        it "does not call OptionalTarget#notify" do
+          expect(@optional_target).not_to receive(:notify)
+          test_instance.publish_to_optional_targets
+        end
+
+        it "returns truthy result hash" do
+          expect(test_instance.publish_to_optional_targets).to eq({ console_output: false })
         end
       end
     end
@@ -1146,6 +1188,37 @@ shared_examples_for :notification_api do
       it "returns target.subscribes_to_notification_email?" do
         expect(test_instance.subscribed?)
           .to eq(test_instance.target.subscribes_to_notification_email?(test_instance.key))
+      end
+    end
+
+    describe "#optional_target_subscribed?" do
+      it "returns target.subscribes_to_optional_target?" do
+        test_instance.target.create_subscription(key: test_instance.key, optional_targets: { subscribing_to_console_output: false })
+        expect(test_instance.optional_target_subscribed?(:console_output)).to be_falsey
+        expect(test_instance.optional_target_subscribed?(:console_output))
+          .to eq(test_instance.target.subscribes_to_optional_target?(test_instance.key, :console_output))
+      end
+    end
+
+    describe "#optional_targets" do
+      it "returns notifiable.optional_targets" do
+        require 'custom_optional_targets/console_output'
+        @optional_target = CustomOptionalTarget::ConsoleOutput.new
+        notifiable_class.acts_as_notifiable test_instance.target.to_resources_name.to_sym, optional_targets: ->{ [@optional_target] }
+        expect(test_instance.optional_targets).to eq([@optional_target])
+        expect(test_instance.optional_targets)
+          .to eq(test_instance.notifiable.optional_targets(test_instance.target.to_resources_name, test_instance.key))
+      end
+    end
+
+    describe "#optional_target_names" do
+      it "returns notifiable.optional_target_names" do
+        require 'custom_optional_targets/console_output'
+        @optional_target = CustomOptionalTarget::ConsoleOutput.new
+        notifiable_class.acts_as_notifiable test_instance.target.to_resources_name.to_sym, optional_targets: ->{ [@optional_target] }
+        expect(test_instance.optional_target_names).to eq([:console_output])
+        expect(test_instance.optional_target_names)
+          .to eq(test_instance.notifiable.optional_target_names(test_instance.target.to_resources_name, test_instance.key))
       end
     end
   end

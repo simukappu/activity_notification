@@ -243,6 +243,28 @@ module ActivityNotification
     end
     alias_method :unsubscribe_to_email_path_for, :unsubscribe_to_email_subscription_path_for
 
+    # Returns subscribe_to_optional_target_subscription_path for the target of specified subscription
+    #
+    # @param [Subscription] subscription Subscription instance
+    # @param [Hash] params Request parameters
+    # @return [String] subscription_path for the subscription
+    # @todo Needs any other better implementation
+    def subscribe_to_optional_target_subscription_path_for(subscription, params = {})
+      send("subscribe_to_optional_target_#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, params)
+    end
+    alias_method :subscribe_to_optional_target_path_for, :subscribe_to_optional_target_subscription_path_for
+
+    # Returns unsubscribe_to_optional_target_subscription_path for the target of specified subscription
+    #
+    # @param [Subscription] subscription Subscription instance
+    # @param [Hash] params Request parameters
+    # @return [String] subscription_path for the subscription
+    # @todo Needs any other better implementation
+    def unsubscribe_to_optional_target_subscription_path_for(subscription, params = {})
+      send("unsubscribe_to_optional_target_#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, params)
+    end
+    alias_method :unsubscribe_to_optional_target_path_for, :unsubscribe_to_optional_target_subscription_path_for
+
     # Returns subscriptions_url for the target
     #
     # @param [Object] target Target instance
@@ -307,6 +329,27 @@ module ActivityNotification
     end
     alias_method :unsubscribe_to_email_url_for, :unsubscribe_to_email_subscription_url_for
 
+    # Returns subscribe_to_optional_target_subscription_url for the target of specified subscription
+    #
+    # @param [Subscription] subscription Subscription instance
+    # @param [Hash] params Request parameters
+    # @return [String] subscription_url for the subscription
+    # @todo Needs any other better implementation
+    def subscribe_to_optional_target_subscription_url_for(subscription, params = {})
+      send("subscribe_to_optional_target_#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, params)
+    end
+    alias_method :subscribe_to_optional_target_url_for, :subscribe_to_optional_target_subscription_url_for
+
+    # Returns unsubscribe_to_optional_target_subscription_url for the target of specified subscription
+    #
+    # @param [Subscription] subscription Subscription instance
+    # @param [Hash] params Request parameters
+    # @return [String] subscription_url for the subscription
+    # @todo Needs any other better implementation
+    def unsubscribe_to_optional_target_subscription_url_for(subscription, params = {})
+      send("unsubscribe_to_optional_target_#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, params)
+    end
+    alias_method :unsubscribe_to_optional_target_url_for, :unsubscribe_to_optional_target_subscription_url_for
 
     private
 

@@ -1113,6 +1113,23 @@ shared_examples_for :target do
         end
       end
     end
+
+    describe "#subscribes_to_optional_target?" do
+      context "when the subscription is not enabled for the target" do
+        it "returns true" do
+          described_class._notification_subscription_allowed = false
+          expect(test_instance.subscribes_to_optional_target?('test_key', :slack)).to be_truthy
+        end
+      end
+
+      context "when the subscription is enabled for the target" do
+        it "calls Subscriber#_subscribes_to_optional_target?" do
+          described_class._notification_subscription_allowed = true
+          expect(test_instance).to receive(:_subscribes_to_optional_target?)
+          test_instance.subscribes_to_optional_target?('test_key', :slack)
+        end
+      end
+    end
   end
 
 end

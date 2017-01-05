@@ -493,9 +493,95 @@ shared_examples_for :notifiable do
           expect(test_instance.printable_notifiable_name(test_target, 'dummy_key')).to eq('test_printable_name')
         end
 
-        it "returns specified lambda with single target argument" do
-          described_class._printable_notifiable_name[:users] = ->(target){ 'test_printable_name' }
+        it "returns specified lambda with notifiable, target and key argument" do
+          described_class._printable_notifiable_name[:users] = ->(notifiable, target, key){ 'test_printable_name' }
           expect(test_instance.printable_notifiable_name(test_target, 'dummy_key')).to eq('test_printable_name')
+        end
+      end
+    end
+
+    describe "#optional_targets" do
+      require 'custom_optional_targets/console_output'
+
+      context "without any configuration" do
+        it "returns blank array" do
+          expect(test_instance.optional_targets(test_target, 'dummy_key')).to eq([])
+        end
+      end
+
+      context "configured with a field" do
+        before do
+          @optional_target_instance = CustomOptionalTarget::ConsoleOutput.new
+        end
+
+        it "returns specified value" do
+          described_class._optional_targets[:users] = [@optional_target_instance]
+          expect(test_instance.optional_targets(User, 'dummy_key')).to eq([@optional_target_instance])
+        end
+
+        it "returns specified symbol of method" do
+          module AdditionalMethods
+            def custom_optional_targets
+              [ActivityNotification::OptionalTarget::Base.new]
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._optional_targets[:users] = :custom_optional_targets
+          expect(test_instance.optional_targets(User, 'dummy_key').size).to  eq(1)
+          expect(test_instance.optional_targets(User, 'dummy_key').first).to be_a(ActivityNotification::OptionalTarget::Base)
+        end
+
+        it "returns specified lambda with no arguments" do
+          described_class._optional_targets[:users] = ->{ [ActivityNotification::OptionalTarget::Base.new] }
+          expect(test_instance.optional_targets(User, 'dummy_key').first).to be_a(ActivityNotification::OptionalTarget::Base)
+        end
+
+        it "returns specified lambda with notifiable and key argument" do
+          described_class._optional_targets[:users] = ->(notifiable, key){ key == 'dummy_key' ? [ActivityNotification::OptionalTarget::Base.new] : [] }
+          expect(test_instance.optional_targets(User)).to eq([])
+          expect(test_instance.optional_targets(User, 'dummy_key').first).to be_a(ActivityNotification::OptionalTarget::Base)
+        end
+      end
+    end
+
+    describe "#optional_target_names" do
+      require 'custom_optional_targets/console_output'
+
+      context "without any configuration" do
+        it "returns blank array" do
+          expect(test_instance.optional_target_names(test_target, 'dummy_key')).to eq([])
+        end
+      end
+
+      context "configured with a field" do
+        before do
+          @optional_target_instance = CustomOptionalTarget::ConsoleOutput.new
+        end
+
+        it "returns specified value" do
+          described_class._optional_targets[:users] = [@optional_target_instance]
+          expect(test_instance.optional_target_names(User, 'dummy_key')).to eq([:console_output])
+        end
+
+        it "returns specified symbol of method" do
+          module AdditionalMethods
+            def custom_optional_targets
+              [ActivityNotification::OptionalTarget::Base.new]
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._optional_targets[:users] = :custom_optional_targets
+          expect(test_instance.optional_target_names(User, 'dummy_key')).to eq([:base])
+        end
+
+        it "returns specified lambda with no arguments" do
+          described_class._optional_targets[:users] = ->{ [@optional_target_instance] }
+          expect(test_instance.optional_target_names(User, 'dummy_key')).to eq([:console_output])
+        end
+
+        it "returns specified lambda with notifiable and key argument" do
+          described_class._optional_targets[:users] = ->(notifiable, key){ key == 'dummy_key' ? [@optional_target_instance] : [] }
+          expect(test_instance.optional_target_names(User, 'dummy_key')).to eq([:console_output])
         end
       end
     end

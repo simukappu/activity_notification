@@ -14,7 +14,7 @@ module ActivityNotification
     # @example Run view generator to create only notification email views
     #   rails generate activity_notification:views -v mailer
     class ViewsGenerator < Rails::Generators::Base
-      VIEWS = [:notifications, :mailer, :subscriptions].freeze
+      VIEWS = [:notifications, :mailer, :subscriptions, :optional_targets].freeze
 
       source_root File.expand_path("../../../../app/views/activity_notification", __FILE__)
       desc "Copies default ActivityNotification views to your application."
@@ -22,7 +22,7 @@ module ActivityNotification
       argument :target, required: false, default: nil,
         desc: "The target to copy views to"
       class_option :views, aliases: "-v", type: :array,
-        desc: "Select specific view directories to generate (notifications, mailer, subscriptions)"
+        desc: "Select specific view directories to generate (notifications, mailer, subscriptions, optional_targets)"
       public_task :copy_views
 
       # Copies view files in application directory

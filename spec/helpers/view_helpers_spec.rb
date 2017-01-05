@@ -377,6 +377,34 @@ describe ActivityNotification::ViewHelpers, type: :helper do
     end
   end
 
+  describe '#subscribe_to_optional_target_subscription_path_for' do
+    it "returns path for the subscription target" do
+      expect(subscribe_to_optional_target_subscription_path_for(subscription))
+        .to eq(subscribe_to_optional_target_user_subscription_path(target_user, subscription))
+    end
+  end
+
+  describe '#subscribe_to_optional_target_path_for' do
+    it "returns path for the subscription target" do
+      expect(subscribe_to_optional_target_path_for(subscription))
+        .to eq(subscribe_to_optional_target_user_subscription_path(target_user, subscription))
+    end
+  end
+
+  describe '#unsubscribe_to_optional_target_subscription_path_for' do
+    it "returns path for the subscription target" do
+      expect(unsubscribe_to_optional_target_subscription_path_for(subscription))
+        .to eq(unsubscribe_to_optional_target_user_subscription_path(target_user, subscription))
+    end
+  end
+
+  describe '#unsubscribe_to_optional_target_path_for' do
+    it "returns path for the subscription target" do
+      expect(unsubscribe_to_optional_target_path_for(subscription))
+        .to eq(unsubscribe_to_optional_target_user_subscription_path(target_user, subscription))
+    end
+  end
+
   describe '#subscriptions_url_for' do
     it "returns url for the subscription target" do
       expect(subscriptions_url_for(target_user))
@@ -444,6 +472,34 @@ describe ActivityNotification::ViewHelpers, type: :helper do
     it "returns url for the subscription target" do
       expect(unsubscribe_to_email_url_for(subscription))
         .to eq(unsubscribe_to_email_user_subscription_url(target_user, subscription))
+    end
+  end
+
+  describe '#subscribe_to_optional_target_subscription_url_for' do
+    it "returns url for the subscription target" do
+      expect(subscribe_to_optional_target_subscription_url_for(subscription))
+        .to eq(subscribe_to_optional_target_user_subscription_url(target_user, subscription))
+    end
+  end
+
+  describe '#subscribe_to_optional_target_url_for' do
+    it "returns url for the subscription target" do
+      expect(subscribe_to_optional_target_url_for(subscription))
+        .to eq(subscribe_to_optional_target_user_subscription_url(target_user, subscription))
+    end
+  end
+
+  describe '#unsubscribe_to_optional_target_subscription_url_for' do
+    it "returns url for the subscription target" do
+      expect(unsubscribe_to_optional_target_subscription_url_for(subscription))
+        .to eq(unsubscribe_to_optional_target_user_subscription_url(target_user, subscription))
+    end
+  end
+
+  describe '#unsubscribe_to_optional_target_url_for' do
+    it "returns url for the subscription target" do
+      expect(unsubscribe_to_optional_target_url_for(subscription))
+        .to eq(unsubscribe_to_optional_target_user_subscription_url(target_user, subscription))
     end
   end
 

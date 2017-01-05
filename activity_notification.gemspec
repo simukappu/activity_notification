@@ -31,5 +31,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'simplecov', '~> 0.12.0'
   s.add_development_dependency 'yard', '~> 0.9.5'
   s.add_development_dependency 'yard-activesupport-concern', '~> 0.0.1'
-  s.add_development_dependency "devise", '~> 4.2.0'
+  s.add_development_dependency 'devise', '~> 4.2.0'
+  s.add_development_dependency 'aws-sdk', '~> 2'
+  s.add_development_dependency 'slack-notifier', '~> 1.5.1'
 end

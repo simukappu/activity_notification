@@ -127,6 +127,30 @@ module ActivityNotification
       #     acts_as_notifiable :users, targets: User.all, dependent_notifications: :delete_all
       #   end
       #
+      # * :optional_targets
+      #   * Optional targets to integrate external notification serveces like Amazon SNS or Slack.
+      #     You can use hash of optional target implementation class as key and initializing parameters as value for this parameter.
+      #     When the hash parameter is passed, acts_as_notifiable will create new instance of optional target class and call initialize_target method with initializing parameters, then configure them as optional_targets for this notifiable and target.
+      #     You can also use symbol of method name or lambda function which returns array of initialized optional target intstances.
+      #     All optional target class must extends ActivityNotification::OptionalTarget::Base.
+      #     This parameter is completely optional.
+      # @example Define to integrate with Amazon SNS, Slack and your custom ConsoleOutput targets
+      #   # app/models/comment.rb
+      #   class Comment < ActiveRecord::Base
+      #     require 'activity_notification/optional_targets/amazon_sns'
+      #     require 'activity_notification/optional_targets/slack'
+      #     require 'custom_optional_targets/console_output'
+      #     acts_as_notifiable :admins, targets: Admin.all,
+      #       optional_targets: {
+      #         ActivityNotification::OptionalTarget::AmazonSNS => { topic_arn: '<Topin ARN of yours>' },
+      #         ActivityNotification::OptionalTarget::Slack  => {
+      #           webhook_url: '<Slack Webhook URL>',
+      #           slack_name: :slack_name, channel: 'activity_notification', username: 'ActivityNotification', icon_emoji: ":ghost:"
+      #         },
+      #         CustomOptionalTarget::ConsoleOutput => {}
+      #       }
+      #   end
+      #
       # @param [Symbol] target_type Type of notification target as symbol
       # @param [Hash] options Options for notifiable model configuration
       # @option options [Symbol, Proc, Array]   :targets                 (nil)                    Targets to send notifications
@@ -138,6 +162,7 @@ module ActivityNotification
       # @option options [Symbol, Proc, String]  :notifiable_path         (polymorphic_path(self)) Path to redirect from open or move action of notification controller
       # @option options [Symbol, Proc, String]  :printable_name          (ActivityNotification::Common.printable_name) Printable notifiable name
       # @option options [Symbol, Proc]          :dependent_notifications (nil)                    Dependency for notifications to delete generated notifications with this notifiable, [:delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all, :update_group_and_destroy] are available
+      # @option options [Hash<Class, Hash>]     :optional_targets        (nil)                    Optional target configurations with hash of `OptionalTarget` implementation class as key and initializing option parameter as value
       # @return [Hash] Configured parameters as notifiable model
       def acts_as_notifiable(target_type, options = {})
         include Notifiable
@@ -157,10 +182,21 @@ module ActivityNotification
           configured_params = { dependent_notifications: options[:dependent_notifications] }
         end
 
+        if options[:optional_targets].is_a?(Hash)
+          options[:optional_targets] = options[:optional_targets].map { |target_class, target_options|
+            optional_target = target_class.new
+            unless optional_target.kind_of?(ActivityNotification::OptionalTarget::Base)
+              raise TypeError, "#{optional_target.class.name} for an optional target is not a kind of ActivityNotification::OptionalTarget::Base"
+            end
+            optional_target.initialize_target(target_options)
+            optional_target
+          }
+        end
+
         options[:printable_notifiable_name] ||= options.delete(:printable_name)
         configured_params
           .merge set_acts_as_parameters_for_target(target_type, [:targets, :group, :group_expiry_delay, :parameters, :email_allowed], options, "notification_")
-          .merge set_acts_as_parameters_for_target(target_type, [:notifier, :notifiable_path, :printable_notifiable_name], options)
+          .merge set_acts_as_parameters_for_target(target_type, [:notifier, :notifiable_path, :printable_notifiable_name, :optional_targets], options)
       end
 
       # Returns array of available notifiable options in acts_as_notifiable.
@@ -174,7 +210,8 @@ module ActivityNotification
           :email_allowed,
           :notifiable_path,
           :printable_notifiable_name, :printable_name,
-          :dependent_notifications
+          :dependent_notifications,
+          :optional_targets
         ].freeze
       end
 

@@ -10,7 +10,7 @@ module ActivityNotification
     belongs_to :target,               polymorphic: true
 
     # Serialize parameters Hash
-    serialize  :parameters, Hash
+    serialize  :optional_targets, Hash
 
     validates  :target,               presence: true
     validates  :key,                  presence: true
@@ -21,6 +21,7 @@ module ActivityNotification
     validates  :unsubscribed_at,          presence: true, unless: :subscribing
     validates  :subscribed_to_email_at,   presence: true, if:     :subscribing_to_email
     validates  :unsubscribed_to_email_at, presence: true, unless: :subscribing_to_email
+    validate   :subscribing_to_optional_target_cannot_be_true_when_subscribing_is_false
 
     # Selects filtered subscriptions by target instance.
     #   ActivityNotification::Subscription.filtered_by_target(@user)
@@ -82,10 +83,20 @@ module ActivityNotification
     scope :key_order,                 -> { order(key: :asc) }
 
     private
+
       # Validates subscribing_to_email cannot be true when subscribing isfalse.
       def subscribing_to_email_cannot_be_true_when_subscribing_is_false
-        if !subscribing && subscribing_to_email
+        if !subscribing && subscribing_to_email?
           errors.add(:subscribing_to_email, "cannot be true when subscribing is false")
+        end
+      end
+
+      # Validates subscribing_to_optional_target cannot be true when subscribing isfalse.
+      def subscribing_to_optional_target_cannot_be_true_when_subscribing_is_false
+        optional_target_names.each do |optional_target_name|
+          if !subscribing && subscribing_to_optional_target?(optional_target_name)
+            errors.add(:optional_targets, "#Subscription.to_optional_target_key(optional_target_name) cannot be true when subscribing is false")
+          end
         end
       end
 

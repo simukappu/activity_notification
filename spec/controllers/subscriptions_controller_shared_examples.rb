@@ -220,7 +220,7 @@ shared_examples_for :subscription_controller do
       expect(test_target.subscriptions.size).to      eq(0)
     end
 
-    context "http direct POST request" do
+    context "http direct POST request without optional targets" do
       before do
         post_with_compatibility :create, target_params.merge({
             typed_target_param => test_target,
@@ -238,6 +238,34 @@ shared_examples_for :subscription_controller do
       it "creates new subscription of the target" do
         expect(test_target.subscriptions.reload.size).to      eq(1)
         expect(test_target.subscriptions.reload.first.key).to eq("new_subscription_key")
+      end
+
+      it "redirects to :index" do
+        expect(response).to redirect_to action: :index
+      end
+    end
+
+    context "http direct POST request with optional targets" do
+      before do
+        post_with_compatibility :create, target_params.merge({
+            typed_target_param => test_target,
+            "subscription"     => { "key"        => "new_subscription_key",
+                                    "subscribing"=> "true",
+                                    "subscribing_to_email"=>"true",
+                                    "optional_targets" => { "subscribing_to_base1" => "true", "subscribing_to_base2" => "false" }
+                                  }
+          }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "creates new subscription of the target" do
+        expect(test_target.subscriptions.reload.size).to      eq(1)
+        expect(test_target.subscriptions.reload.first.key).to eq("new_subscription_key")
+        expect(test_target.subscriptions.reload.first.subscribing_to_optional_target?("base1")).to be_truthy
+        expect(test_target.subscriptions.reload.first.subscribing_to_optional_target?("base2")).to be_falsey
       end
 
       it "redirects to :index" do
@@ -403,7 +431,7 @@ shared_examples_for :subscription_controller do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe
-        expect(@subscription.subscribing).to be_falsey
+        expect(@subscription.subscribing?).to be_falsey
         post_with_compatibility :subscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
@@ -412,7 +440,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing to true" do
-        expect(@subscription.reload.subscribing).to be_truthy
+        expect(@subscription.reload.subscribing?).to be_truthy
       end
 
       it "redirects to :index" do
@@ -424,7 +452,7 @@ shared_examples_for :subscription_controller do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe
-        expect(@subscription.subscribing).to be_falsey
+        expect(@subscription.subscribing?).to be_falsey
         request.env["HTTP_REFERER"] = root_path
         post_with_compatibility :subscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
@@ -434,7 +462,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing to true" do
-        expect(@subscription.reload.subscribing).to be_truthy
+        expect(@subscription.reload.subscribing?).to be_truthy
       end
 
       it "redirects to root_path as request.referer" do
@@ -446,7 +474,7 @@ shared_examples_for :subscription_controller do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe
-        expect(@subscription.subscribing).to be_falsey
+        expect(@subscription.subscribing?).to be_falsey
         request.env["HTTP_REFERER"] = root_path
         xhr_with_compatibility :post, :subscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
@@ -460,7 +488,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing to true" do
-        expect(@subscription.reload.subscribing).to be_truthy
+        expect(@subscription.reload.subscribing?).to be_truthy
       end
 
       it "renders the :open template as format js" do
@@ -473,7 +501,7 @@ shared_examples_for :subscription_controller do
     context "http direct POST request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
-        expect(@subscription.subscribing).to be_truthy
+        expect(@subscription.subscribing?).to be_truthy
         post_with_compatibility :unsubscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
@@ -482,7 +510,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing to false" do
-        expect(@subscription.reload.subscribing).to be_falsey
+        expect(@subscription.reload.subscribing?).to be_falsey
       end
 
       it "redirects to :index" do
@@ -493,7 +521,7 @@ shared_examples_for :subscription_controller do
     context "http POST request from root_path" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
-        expect(@subscription.subscribing).to be_truthy
+        expect(@subscription.subscribing?).to be_truthy
         request.env["HTTP_REFERER"] = root_path
         post_with_compatibility :unsubscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
@@ -503,7 +531,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing to false" do
-        expect(@subscription.reload.subscribing).to be_falsey
+        expect(@subscription.reload.subscribing?).to be_falsey
       end
 
       it "redirects to root_path as request.referer" do
@@ -514,7 +542,7 @@ shared_examples_for :subscription_controller do
     context "Ajax POST request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
-        expect(@subscription.subscribing).to be_truthy
+        expect(@subscription.subscribing?).to be_truthy
         request.env["HTTP_REFERER"] = root_path
         xhr_with_compatibility :post, :unsubscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
@@ -528,7 +556,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing to false" do
-        expect(@subscription.reload.subscribing).to be_falsey
+        expect(@subscription.reload.subscribing?).to be_falsey
       end
 
       it "renders the :open template as format js" do
@@ -542,7 +570,7 @@ shared_examples_for :subscription_controller do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe_to_email
-        expect(@subscription.subscribing_to_email).to be_falsey
+        expect(@subscription.subscribing_to_email?).to be_falsey
         post_with_compatibility :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
@@ -551,7 +579,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing_to_email to true" do
-        expect(@subscription.reload.subscribing_to_email).to be_truthy
+        expect(@subscription.reload.subscribing_to_email?).to be_truthy
       end
 
       it "redirects to :index" do
@@ -563,7 +591,7 @@ shared_examples_for :subscription_controller do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe_to_email
-        expect(@subscription.subscribing_to_email).to be_falsey
+        expect(@subscription.subscribing_to_email?).to be_falsey
         request.env["HTTP_REFERER"] = root_path
         post_with_compatibility :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
@@ -573,7 +601,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing_to_email to true" do
-        expect(@subscription.reload.subscribing_to_email).to be_truthy
+        expect(@subscription.reload.subscribing_to_email?).to be_truthy
       end
 
       it "redirects to root_path as request.referer" do
@@ -585,7 +613,7 @@ shared_examples_for :subscription_controller do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe_to_email
-        expect(@subscription.subscribing_to_email).to be_falsey
+        expect(@subscription.subscribing_to_email?).to be_falsey
         request.env["HTTP_REFERER"] = root_path
         xhr_with_compatibility :post, :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
@@ -599,7 +627,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing_to_email to true" do
-        expect(@subscription.reload.subscribing_to_email).to be_truthy
+        expect(@subscription.reload.subscribing_to_email?).to be_truthy
       end
 
       it "renders the :open template as format js" do
@@ -611,8 +639,8 @@ shared_examples_for :subscription_controller do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe
-        expect(@subscription.subscribing).to be_falsey
-        expect(@subscription.subscribing_to_email).to be_falsey
+        expect(@subscription.subscribing?).to be_falsey
+        expect(@subscription.subscribing_to_email?).to be_falsey
         post_with_compatibility :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
@@ -621,7 +649,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "cannot update subscribing_to_email to true" do
-        expect(@subscription.reload.subscribing_to_email).to be_falsey
+        expect(@subscription.reload.subscribing_to_email?).to be_falsey
       end
 
       it "redirects to :index" do
@@ -634,7 +662,7 @@ shared_examples_for :subscription_controller do
     context "http direct POST request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
-        expect(@subscription.subscribing_to_email).to be_truthy
+        expect(@subscription.subscribing_to_email?).to be_truthy
         post_with_compatibility :unsubscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
@@ -643,7 +671,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing_to_email to false" do
-        expect(@subscription.reload.subscribing_to_email).to be_falsey
+        expect(@subscription.reload.subscribing_to_email?).to be_falsey
       end
 
       it "redirects to :index" do
@@ -654,7 +682,7 @@ shared_examples_for :subscription_controller do
     context "http POST request from root_path" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
-        expect(@subscription.subscribing_to_email).to be_truthy
+        expect(@subscription.subscribing_to_email?).to be_truthy
         request.env["HTTP_REFERER"] = root_path
         post_with_compatibility :unsubscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
@@ -664,7 +692,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing_to_email to false" do
-        expect(@subscription.reload.subscribing_to_email).to be_falsey
+        expect(@subscription.reload.subscribing_to_email?).to be_falsey
       end
 
       it "redirects to root_path as request.referer" do
@@ -675,7 +703,7 @@ shared_examples_for :subscription_controller do
     context "Ajax POST request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
-        expect(@subscription.subscribing_to_email).to be_truthy
+        expect(@subscription.subscribing_to_email?).to be_truthy
         request.env["HTTP_REFERER"] = root_path
         xhr_with_compatibility :post, :unsubscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
@@ -689,11 +717,206 @@ shared_examples_for :subscription_controller do
       end
 
       it "updates subscribing_to_email to false" do
-        expect(@subscription.reload.subscribing_to_email).to be_falsey
+        expect(@subscription.reload.subscribing_to_email?).to be_falsey
       end
 
       it "renders the :open template as format js" do
         expect(response).to render_template :unsubscribe_to_email, format: :js
+      end
+    end
+  end
+
+  describe "POST #subscribe_to_optional_target" do
+    context "without optional_target_name param" do
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        @subscription.unsubscribe_to_optional_target(:base)
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
+        post_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 400 as http status code" do
+        expect(response.status).to eq(400)
+      end
+
+      it "does not update subscribing_to_optional_target?" do
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
+      end
+    end
+
+    context "http direct POST request" do
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        @subscription.unsubscribe_to_optional_target(:base)
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
+        post_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "updates subscribing_to_optional_target to true" do
+        expect(@subscription.reload.subscribing_to_optional_target?(:base)).to be_truthy
+      end
+
+      it "redirects to :index" do
+        expect(response).to redirect_to action: :index
+      end
+    end
+
+    context "http POST request from root_path" do
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        @subscription.unsubscribe_to_optional_target(:base)
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
+        request.env["HTTP_REFERER"] = root_path
+        post_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "updates subscribing_to_optional_target to true" do
+        expect(@subscription.reload.subscribing_to_optional_target?(:base)).to be_truthy
+      end
+
+      it "redirects to root_path as request.referer" do
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context "Ajax POST request" do
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        @subscription.unsubscribe_to_optional_target(:base)
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
+        request.env["HTTP_REFERER"] = root_path
+        xhr_with_compatibility :post, :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+      end
+  
+      it "returns 200 as http status code" do
+        expect(response.status).to eq(200)
+      end
+  
+      it "assigns subscription index as @subscriptions" do
+        expect(assigns(:subscriptions)).to eq([@subscription])
+      end
+
+      it "updates subscribing_to_optional_target to true" do
+        expect(@subscription.reload.subscribing_to_optional_target?(:base)).to be_truthy
+      end
+
+      it "renders the :open template as format js" do
+        expect(response).to render_template :subscribe_to_optional_target, format: :js
+      end
+    end
+
+    context "with unsubscribed target" do
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        @subscription.unsubscribe_to_optional_target(:base)
+        @subscription.unsubscribe
+        expect(@subscription.subscribing?).to be_falsey
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
+        post_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "cannot update subscribing_to_optional_target to true" do
+        expect(@subscription.reload.subscribing_to_optional_target?(:base)).to be_falsey
+      end
+
+      it "redirects to :index" do
+        expect(response).to redirect_to action: :index
+      end
+    end
+  end
+
+  describe "POST #unsubscribe_to_email" do
+    context "without optional_target_name param" do
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_truthy
+        post_with_compatibility :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 400 as http status code" do
+        expect(response.status).to eq(400)
+      end
+
+      it "does not update subscribing_to_optional_target?" do
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_truthy
+      end
+    end
+
+    context "http direct POST request" do
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_truthy
+        post_with_compatibility :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "updates subscribing_to_optional_target to false" do
+        expect(@subscription.reload.subscribing_to_optional_target?(:base)).to be_falsey
+      end
+
+      it "redirects to :index" do
+        expect(response).to redirect_to action: :index
+      end
+    end
+
+    context "http POST request from root_path" do
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_truthy
+        request.env["HTTP_REFERER"] = root_path
+        post_with_compatibility :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "updates subscribing_to_optional_target to false" do
+        expect(@subscription.reload.subscribing_to_optional_target?(:base)).to be_falsey
+      end
+
+      it "redirects to root_path as request.referer" do
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context "Ajax POST request" do
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        expect(@subscription.subscribing_to_optional_target?(:base)).to be_truthy
+        request.env["HTTP_REFERER"] = root_path
+        xhr_with_compatibility :post, :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+      end
+  
+      it "returns 200 as http status code" do
+        expect(response.status).to eq(200)
+      end
+  
+      it "assigns subscription index as @subscriptions" do
+        expect(assigns(:subscriptions)).to eq([@subscription])
+      end
+
+      it "updates subscribing_to_optional_target to false" do
+        expect(@subscription.reload.subscribing_to_optional_target?(:base)).to be_falsey
+      end
+
+      it "renders the :open template as format js" do
+        expect(response).to render_template :unsubscribe_to_optional_target, format: :js
       end
     end
   end

@@ -17,6 +17,8 @@ class CreateTestTables < ActiveRecord::Migration
 
     create_table :admins do |t|
       t.references :user, index: true
+      t.string     :phone_number
+      t.string     :slack_name
 
       t.timestamps
     end

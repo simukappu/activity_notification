@@ -75,13 +75,15 @@ module ActivityNotification
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :with_email_subscription ('true')  If the subscriber also subscribes notification email
+    #   @option params [String] :with_optional_targets   ('true')  If the subscriber also subscribes optional targets
     #   @option params [String] :filter                  (nil)     Filter option to load subscription index (Nothing as all, 'configured' or 'unconfigured')
     #   @option params [String] :limit                   (nil)     Limit to query for subscriptions
     #   @option params [String] :reverse                 ('false') If subscription index and unconfigured notification keys will be ordered as earliest first
     #   @option params [String] :filtered_by_key         (nil)     Key of the subscription for filter
     #   @return [Responce] JavaScript view for ajax request or redirects to back as default
     def subscribe
-      @subscription.subscribe(with_email_subscription: params[:with_email_subscription].to_s.to_boolean(true))
+      @subscription.subscribe(with_email_subscription: params[:with_email_subscription].to_s.to_boolean(true),
+                              with_optional_targets:   params[:with_optional_targets].to_s.to_boolean(true))
       return_back_or_ajax
     end
 
@@ -130,6 +132,46 @@ module ActivityNotification
       return_back_or_ajax
     end
 
+    # Subscribes to the specified optional target.
+    #
+    # POST /:target_type/:target_id/subscriptions/:id/subscribe_to_optional_target
+    # @overload open(params)
+    #   @param [Hash] params Request parameters
+    #   @option params [String] :optional_target_name (requierd, nil) Class name of the optional target implementation (e.g. 'amazon_sns', 'slack')
+    #   @option params [String] :filter               (nil)           Filter option to load subscription index (Nothing as all, 'configured' or 'unconfigured')
+    #   @option params [String] :limit                (nil)           Limit to query for subscriptions
+    #   @option params [String] :reverse              ('false')       If subscription index and unconfigured notification keys will be ordered as earliest first
+    #   @option params [String] :filtered_by_key      (nil)           Key of the subscription for filter
+    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    def subscribe_to_optional_target
+      if params[:optional_target_name].present?
+        @subscription.subscribe_to_optional_target(params[:optional_target_name])
+        return_back_or_ajax
+      else
+        render plain: "400 Bad Request: Missing parameter", status: 400
+      end
+    end
+
+    # Unsubscribes to the specified optional target.
+    #
+    # POST /:target_type/:target_id/subscriptions/:id/unsubscribe_to_optional_target
+    # @overload open(params)
+    #   @param [Hash] params Request parameters
+    #   @option params [String] :optional_target_name (requierd, nil) Class name of the optional target implementation (e.g. 'amazon_sns', 'slack')
+    #   @option params [String] :filter               (nil)           Filter option to load subscription index (Nothing as all, 'configured' or 'unconfigured')
+    #   @option params [String] :limit                (nil)           Limit to query for subscriptions
+    #   @option params [String] :reverse              ('false')       If subscription index and unconfigured notification keys will be ordered as earliest first
+    #   @option params [String] :filtered_by_key      (nil)           Key of the subscription for filter
+    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    def unsubscribe_to_optional_target
+      if params[:optional_target_name].present?
+        @subscription.unsubscribe_to_optional_target(params[:optional_target_name])
+        return_back_or_ajax
+      else
+        render plain: "400 Bad Request: Missing parameter", status: 400
+      end
+    end
+
     protected
 
       # Sets @subscription instance variable from request parameters.
@@ -141,7 +183,11 @@ module ActivityNotification
 
       # Only allow a trusted parameter "white list" through.
       def subscription_params
-        params.require(:subscription).permit(:key, :subscribing, :subscribing_to_email)
+        optional_targets = (params[:subscription][:optional_targets] || {}).keys.select { |key| key.to_s.start_with?("subscribing_to_") }
+        optional_targets.each do |optional_target_key|
+          params[:subscription][:optional_targets][optional_target_key] = params[:subscription][:optional_targets][optional_target_key].to_boolean
+        end
+        params.require(:subscription).permit(:key, :subscribing, :subscribing_to_email, optional_targets: optional_targets)
       end
 
       # Sets options to load subscription index from request parameters.

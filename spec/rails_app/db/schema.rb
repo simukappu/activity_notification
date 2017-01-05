@@ -14,6 +14,8 @@ ActiveRecord::Schema.define(version: 20160715050433) do
 
   create_table "admins", force: :cascade do |t|
     t.integer  "user_id"
+    t.string   "phone_number"
+    t.string   "slack_name"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["user_id"], name: "index_admins_on_user_id"
@@ -70,7 +72,7 @@ ActiveRecord::Schema.define(version: 20160715050433) do
     t.datetime "unsubscribed_at"
     t.datetime "subscribed_to_email_at"
     t.datetime "unsubscribed_to_email_at"
-    t.text     "parameters"
+    t.text     "optional_targets"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["key"], name: "index_subscriptions_on_key"

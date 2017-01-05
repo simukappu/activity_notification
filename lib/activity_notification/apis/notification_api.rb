@@ -67,22 +67,28 @@ module ActivityNotification
       # @param [Object] target Target to send notifications
       # @param [Object] notifiable Notifiable instance
       # @param [Hash] options Options for notifications
-      # @option options [String]                  :key                (notifiable.default_notification_key) Key of the notification
-      # @option options [Object]                  :group              (nil)                                 Group unit of the notifications
-      # @option options [ActiveSupport::Duration] :group_expiry_delay (nil)                                 Expiry period of a notification group
-      # @option options [Object]                  :notifier           (nil)                                 Notifier of the notifications
-      # @option options [Hash]                    :parameters         ({})                                  Additional parameters of the notifications
-      # @option options [Boolean]                 :send_email         (true)                                Whether it sends notification email
-      # @option options [Boolean]                 :send_later         (true)                                Whether it sends notification email asynchronously        
+      # @option options [String]                  :key                   (notifiable.default_notification_key) Key of the notification
+      # @option options [Object]                  :group                 (nil)                                 Group unit of the notifications
+      # @option options [ActiveSupport::Duration] :group_expiry_delay    (nil)                                 Expiry period of a notification group
+      # @option options [Object]                  :notifier              (nil)                                 Notifier of the notifications
+      # @option options [Hash]                    :parameters            ({})                                  Additional parameters of the notifications
+      # @option options [Boolean]                 :send_email            (true)                                Whether it sends notification email
+      # @option options [Boolean]                 :send_later            (true)                                Whether it sends notification email asynchronously
+      # @option options [Boolean]                 :send_optional_targets (true)                                Whether it sends notification to optional targets
       # @return [Notification] Generated notification instance
       def notify_to(target, notifiable, options = {})
-        send_email = options.has_key?(:send_email) ? options[:send_email] : true
-        send_later = options.has_key?(:send_later) ? options[:send_later] : true
+        send_email            = options.has_key?(:send_email)            ? options[:send_email]            : true
+        send_later            = options.has_key?(:send_later)            ? options[:send_later]            : true
+        send_optional_targets = options.has_key?(:send_optional_targets) ? options[:send_optional_targets] : true
         # Generate notification
         notification = generate_notification(target, notifiable, options)
         # Send notification email
         if notification.present? && send_email
           notification.send_notification_email({ send_later: send_later })
+        end
+        # Call optional targets
+        if notification.present? && send_optional_targets
+          notification.publish_to_optional_targets(options[:optional_targets] || {})
         end
         # Return generated notification
         notification
@@ -192,13 +198,29 @@ module ActivityNotification
     # @return [Mail::Message, ActionMailer::DeliveryJob] Email message or its delivery job
     def send_notification_email(options = {})
       if target.notification_email_allowed?(notifiable, key) &&
-         email_subscribed?(key) &&
-         notifiable.notification_email_allowed?(target, key)
+         notifiable.notification_email_allowed?(target, key) &&
+         email_subscribed?
         send_later = options.has_key?(:send_later) ? options[:send_later] : true
         send_later ?
           Mailer.send_notification_email(self, options).deliver_later :
           Mailer.send_notification_email(self, options).deliver_now
       end
+    end
+
+    # Publishes notification to the optional targets.
+    #
+    # @param [Hash] options Options for optional targets
+    # @return [Hash] Result of publishing to optional target
+    def publish_to_optional_targets(options = {})
+      results = notifiable.optional_targets(target.to_resources_name, key).map { |optional_target|
+        optional_target_name = optional_target.to_optional_target_name
+        if optional_target_subscribed?(optional_target_name)
+          optional_target.notify(self, options[optional_target_name] || {})
+          [optional_target_name, true]
+        else
+          [optional_target_name, false]
+        end
+      }.to_h
     end
 
     # Opens the notification.
@@ -339,10 +361,28 @@ module ActivityNotification
 
     # Returns if the target subscribes this notification email.
     # @return [Boolean] If the target subscribes the notification
-    def email_subscribed?(key)
+    def email_subscribed?
       target.subscribes_to_notification_email?(key)
     end
 
+    # Returns if the target subscribes this notification email.
+    # @param [String, Symbol] optional_target_name Class name of the optional target implementation (e.g. :amazon_sns, :slack)
+    # @return [Boolean] If the target subscribes the specified optional target of the notification
+    def optional_target_subscribed?(optional_target_name)
+      target.subscribes_to_optional_target?(key, optional_target_name)
+    end
+
+    # Returns optional_targets of the notification from configured field or overriden method.
+    # @return [Array<ActivityNotification::OptionalTarget::Base>] Array of optional target instances
+    def optional_targets
+      notifiable.optional_targets(target.to_resources_name, key)
+    end
+
+    # Returns optional_target names of the notification from configured field or overriden method.
+    # @return [Array<Symbol>] Array of optional target names
+    def optional_target_names
+      notifiable.optional_target_names(target.to_resources_name, key)
+    end
 
     protected
 

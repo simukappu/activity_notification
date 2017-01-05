@@ -25,7 +25,8 @@ module ActivityNotification
                        :_notification_parameters,
                        :_notification_email_allowed,
                        :_notifiable_path,
-                       :_printable_notifiable_name
+                       :_printable_notifiable_name,
+                       :_optional_targets
       set_notifiable_class_defaults
     end
 
@@ -53,6 +54,7 @@ module ActivityNotification
         self._notification_email_allowed      = {}
         self._notifiable_path                 = {}
         self._printable_notifiable_name       = {}
+        self._optional_targets                = {}
         nil
       end
     end
@@ -68,7 +70,8 @@ module ActivityNotification
       resolved_parameter = resolve_parameter(
         target_typed_method_name,
         _notification_targets[cast_to_resources_sym(target_type)],
-        nil, key)
+        nil,
+        key)
       unless resolved_parameter
         raise NotImplementedError, "You have to implement #{self.class}##{target_typed_method_name} "\
                                    "or set :targets in acts_as_notifiable"
@@ -86,7 +89,8 @@ module ActivityNotification
       resolve_parameter(
         "notification_group_for_#{cast_to_resources_name(target_type)}",
         _notification_group[cast_to_resources_sym(target_type)],
-        nil, key)
+        nil,
+        key)
     end
 
     # Returns group expiry period of the notifications from configured field or overriden method.
@@ -99,7 +103,8 @@ module ActivityNotification
       resolve_parameter(
         "notification_group_expiry_delay_for_#{cast_to_resources_name(target_type)}",
         _notification_group_expiry_delay[cast_to_resources_sym(target_type)],
-        nil, key)
+        nil,
+        key)
     end
 
     # Returns additional notification parameters from configured field or overriden method.
@@ -112,7 +117,8 @@ module ActivityNotification
       resolve_parameter(
         "notification_parameters_for_#{cast_to_resources_name(target_type)}",
         _notification_parameters[cast_to_resources_sym(target_type)],
-        {}, key)
+        {},
+        key)
     end
 
     # Returns notifier of the notification from configured field or overriden method.
@@ -125,7 +131,8 @@ module ActivityNotification
       resolve_parameter(
         "notifier_for_#{cast_to_resources_name(target_type)}",
         _notifier[cast_to_resources_sym(target_type)],
-        nil, key)
+        nil,
+        key)
     end
 
     # Returns if sending notification email is allowed for the notifiable from configured field or overriden method.
@@ -152,7 +159,8 @@ module ActivityNotification
       resolved_parameter = resolve_parameter(
         "notifiable_path_for_#{cast_to_resources_name(target_type)}",
         _notifiable_path[cast_to_resources_sym(target_type)],
-        nil, key)
+        nil,
+        key)
       unless resolved_parameter
         begin
           resolved_parameter = polymorphic_path(self)
@@ -173,6 +181,30 @@ module ActivityNotification
         _printable_notifiable_name[cast_to_resources_sym(target.class)],
         printable_name,
         target, key)
+    end
+
+    # Returns optional_targets of the notification from configured field or overriden method.
+    # This method is able to be overriden.
+    #
+    # @param [String] target_type Target type to notify
+    # @param [String] key Key of the notification
+    # @return [Array<ActivityNotification::OptionalTarget::Base>] Array of optional target instances
+    def optional_targets(target_type, key = nil)
+      resolve_parameter(
+        "optional_targets_for_#{cast_to_resources_name(target_type)}",
+        _optional_targets[cast_to_resources_sym(target_type)],
+        [],
+        key)
+    end
+
+    # Returns optional_target names of the notification from configured field or overriden method.
+    # This method is able to be overriden.
+    #
+    # @param [String] target_type Target type to notify
+    # @param [String] key Key of the notification
+    # @return [Array<Symbol>] Array of optional target names
+    def optional_target_names(target_type, key = nil)
+      optional_targets(target_type, key).map { |optional_target| optional_target.to_optional_target_name }
     end
 
     # overriding_notification_email_key is the method to override key definition for Mailer

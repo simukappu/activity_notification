@@ -21,7 +21,7 @@ end
 
 ['Ichiro'].each do |name|
   user = User.find_by_name(name)
-  Admin.create(user: user)
+  Admin.create(user: user, slack_name: name.downcase)
 end
 
 User.all.each do |user|

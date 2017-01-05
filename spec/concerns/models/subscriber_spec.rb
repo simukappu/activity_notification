@@ -89,8 +89,8 @@ shared_examples_for :subscriber do
         it "creates a new subscription" do
           params = { key: 'key_1' }
           new_subscription = test_instance.create_subscription(params)
-          expect(new_subscription.subscribing).to            be_truthy
-          expect(new_subscription.subscribing_to_email).to   be_truthy
+          expect(new_subscription.subscribing?).to            be_truthy
+          expect(new_subscription.subscribing_to_email?).to   be_truthy
           expect(test_instance.subscriptions.reload.size).to eq(1)
         end
       end
@@ -99,8 +99,8 @@ shared_examples_for :subscriber do
         it "creates a new subscription" do
           params = { key: 'key_1', subscribing: false }
           new_subscription = test_instance.create_subscription(params)
-          expect(new_subscription.subscribing).to            be_falsey
-          expect(new_subscription.subscribing_to_email).to   be_falsey
+          expect(new_subscription.subscribing?).to            be_falsey
+          expect(new_subscription.subscribing_to_email?).to   be_falsey
           expect(test_instance.subscriptions.reload.size).to eq(1)
         end
       end
@@ -109,8 +109,8 @@ shared_examples_for :subscriber do
         it "creates a new subscription" do
           params = { key: 'key_1', subscribing_to_email: false }
           new_subscription = test_instance.create_subscription(params)
-          expect(new_subscription.subscribing).to            be_truthy
-          expect(new_subscription.subscribing_to_email).to   be_falsey
+          expect(new_subscription.subscribing?).to            be_truthy
+          expect(new_subscription.subscribing_to_email?).to   be_falsey
           expect(test_instance.subscriptions.reload.size).to eq(1)
         end
       end
@@ -119,8 +119,8 @@ shared_examples_for :subscriber do
         it "creates a new subscription" do
           params = { key: 'key_1', subscribing: true, subscribing_to_email: false }
           new_subscription = test_instance.create_subscription(params)
-          expect(new_subscription.subscribing).to            be_truthy
-          expect(new_subscription.subscribing_to_email).to   be_falsey
+          expect(new_subscription.subscribing?).to            be_truthy
+          expect(new_subscription.subscribing_to_email?).to   be_falsey
           expect(test_instance.subscriptions.reload.size).to eq(1)
         end
       end
@@ -128,6 +128,47 @@ shared_examples_for :subscriber do
       context "with false as subscribing and true as subscribing_to_email params" do
         it "does not create a new subscription since it is invalid" do
           params = { key: 'key_1', subscribing: false, subscribing_to_email: true }
+          new_subscription = test_instance.create_subscription(params)
+          expect(new_subscription).to                        be_nil
+          expect(test_instance.subscriptions.reload).to      be_empty
+        end
+      end
+
+
+
+      context "with true as optional_targets params" do
+        it "creates a new subscription" do
+          params = { key: 'key_1', optional_targets: { subscribing_to_console_output: true } }
+          new_subscription = test_instance.create_subscription(params)
+          expect(new_subscription.subscribing?).to                                     be_truthy
+          expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_truthy
+          expect(test_instance.subscriptions.reload.size).to eq(1)
+        end
+      end
+
+      context "with false as optional_targets params" do
+        it "creates a new subscription" do
+          params = { key: 'key_1', optional_targets: { subscribing_to_console_output: false } }
+          new_subscription = test_instance.create_subscription(params)
+          expect(new_subscription.subscribing?).to                                     be_truthy
+          expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_falsey
+          expect(test_instance.subscriptions.reload.size).to eq(1)
+        end
+      end
+
+      context "with true as subscribing and false as optional_targets params" do
+        it "creates a new subscription" do
+          params = { key: 'key_1', subscribing: true, optional_targets: { subscribing_to_console_output: false } }
+          new_subscription = test_instance.create_subscription(params)
+          expect(new_subscription.subscribing?).to                                     be_truthy
+          expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_falsey
+          expect(test_instance.subscriptions.reload.size).to eq(1)
+        end
+      end
+
+      context "with false as subscribing and true as optional_targets params" do
+        it "does not create a new subscription since it is invalid" do
+          params = { key: 'key_1', subscribing: false, optional_targets: { subscribing_to_console_output: true } }
           new_subscription = test_instance.create_subscription(params)
           expect(new_subscription).to                        be_nil
           expect(test_instance.subscriptions.reload).to      be_empty
@@ -446,7 +487,7 @@ shared_examples_for :subscriber do
           context "subscribing to notification" do
             it "returns true" do
               subscription = test_instance.create_subscription(key: @test_key)
-              expect(subscription.subscribing).to be_truthy
+              expect(subscription.subscribing?).to be_truthy
               expect(test_instance.subscribes_to_notification?(@test_key)).to be_truthy
             end
           end
@@ -454,7 +495,7 @@ shared_examples_for :subscriber do
           context "unsubscribed to notification" do
             it "returns false" do
               subscription = test_instance.create_subscription(key: @test_key, subscribing: false)
-              expect(subscription.subscribing).to be_falsey
+              expect(subscription.subscribing?).to be_falsey
               expect(test_instance.subscribes_to_notification?(@test_key)).to be_falsey
             end
           end
@@ -505,16 +546,76 @@ shared_examples_for :subscriber do
           context "subscribing to notification email" do
             it "returns true" do
               subscription = test_instance.create_subscription(key: @test_key)
-              expect(subscription.subscribing_to_email).to be_truthy
+              expect(subscription.subscribing_to_email?).to be_truthy
               expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_truthy
             end
           end
 
-          context "unsubscribed to notification" do
+          context "unsubscribed to notification email" do
             it "returns false" do
               subscription = test_instance.create_subscription(key: @test_key, subscribing: true, subscribing_to_email: false)
-              expect(subscription.subscribing_to_email).to be_falsey
+              expect(subscription.subscribing_to_email?).to be_falsey
               expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_falsey
+            end
+          end
+        end
+      end
+    end
+
+    describe "#subscribes_to_optional_target?" do
+      before do
+        @test_key             = 'test_key'
+        @optional_target_name = :console_output
+      end
+
+      context "when the subscription is not enabled for the target" do
+        it "returns true" do
+          described_class._notification_subscription_allowed = false
+          expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_truthy
+        end
+      end
+
+      context "when the subscription is enabled for the target" do
+        before do
+          described_class._notification_subscription_allowed = true
+        end
+
+        context "without configured subscpriotion" do
+          context "without subscribe_as_default argument" do
+            context "with true as ActivityNotification.config.subscribe_as_default" do
+              it "returns true" do
+                subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                ActivityNotification.config.subscribe_as_default = true
+                expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_truthy
+                ActivityNotification.config.subscribe_as_default = subscribe_as_default
+              end
+            end
+
+            context "with false as ActivityNotification.config.subscribe_as_default" do
+              it "returns false" do
+                subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                ActivityNotification.config.subscribe_as_default = false
+                expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_falsey
+                ActivityNotification.config.subscribe_as_default = subscribe_as_default
+              end
+            end
+          end
+        end
+
+        context "with configured subscpriotion" do
+          context "subscribing to the specified optional target" do
+            it "returns true" do
+              subscription = test_instance.create_subscription(key: @test_key, optional_targets: { ActivityNotification::Subscription.to_optional_target_key(@optional_target_name) => true })
+              expect(subscription.subscribing_to_optional_target?(@optional_target_name)).to be_truthy
+              expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_truthy
+            end
+          end
+
+          context "unsubscribed to the specified optional target" do
+            it "returns false" do
+              subscription = test_instance.create_subscription(key: @test_key, subscribing: true, optional_targets: { ActivityNotification::Subscription.to_optional_target_key(@optional_target_name) => false })
+              expect(subscription.subscribing_to_optional_target?(@optional_target_name)).to be_falsey
+              expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_falsey
             end
           end
         end

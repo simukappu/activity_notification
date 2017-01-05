@@ -27,8 +27,10 @@ module ActivityNotification
         thing.call(ActivityNotification.get_controller, context, *args)
       elsif thing.arity > 1
         thing.call(ActivityNotification.get_controller, context)
-      else
+      elsif thing.arity > 0
         thing.call(context)
+      else
+        thing.call
       end
     when Hash
       thing.dup.tap do |hash|
@@ -79,8 +81,10 @@ module ActivityNotification
       when Proc
         if thing.arity > 1
           thing.call(self, *args)
-        else
+        elsif thing.arity > 0
           thing.call(self)
+        else
+          thing.call
         end
       when Hash
         thing.dup.tap do |hash|

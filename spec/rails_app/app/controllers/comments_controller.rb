@@ -8,6 +8,7 @@ class CommentsController < ApplicationController
 
     if @comment.save
       @comment.notify :users
+      @comment.notify :admins
       redirect_to @comment.article, notice: 'Comment was successfully created.'
     else
       redirect_to @comment.article

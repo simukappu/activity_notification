@@ -50,12 +50,25 @@ module ActivityNotification
         subscription_params[:subscribing_to_email] = subscription_params[:subscribing] 
       end
       subscription = subscriptions.new(subscription_params)
-      subscription.subscribing ?
+      subscription.subscribing? ?
         subscription.assign_attributes(subscribing: true, subscribed_at: created_at) :
         subscription.assign_attributes(subscribing: false, unsubscribed_at: created_at)
-      subscription.subscribing_to_email ?
+      subscription.subscribing_to_email? ?
         subscription.assign_attributes(subscribing_to_email: true, subscribed_to_email_at: created_at) :
         subscription.assign_attributes(subscribing_to_email: false, unsubscribed_to_email_at: created_at)
+      optional_targets = subscription.optional_targets
+      subscription.optional_target_names.each do |optional_target_name|
+        optional_targets = subscription.subscribing_to_optional_target?(optional_target_name) ?
+          optional_targets.merge(
+            Subscription.to_optional_target_key(optional_target_name) => true,
+            Subscription.to_optional_target_subscribed_at_key(optional_target_name) => created_at
+          ) :
+          optional_targets.merge(
+            Subscription.to_optional_target_key(optional_target_name) => false,
+            Subscription.to_optional_target_unsubscribed_at_key(optional_target_name) => created_at
+          )
+      end
+      subscription.assign_attributes(optional_targets: optional_targets)
       subscription.save ? subscription : nil
     end
 
@@ -118,7 +131,7 @@ module ActivityNotification
       # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
       # @return [Boolean] If the target subscribes to the notification
       def _subscribes_to_notification?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
-        evaluate_subscription(subscriptions.find_by_key(key), :subscribing, subscribe_as_default)
+        evaluate_subscription(subscriptions.find_by_key(key), :subscribing?, subscribe_as_default)
       end
 
       # Returns if the target subscribes to the notification email.
@@ -129,20 +142,34 @@ module ActivityNotification
       # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
       # @return [Boolean] If the target subscribes to the notification
       def _subscribes_to_notification_email?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
-        evaluate_subscription(subscriptions.find_by_key(key), :subscribing_to_email, subscribe_as_default)
+        evaluate_subscription(subscriptions.find_by_key(key), :subscribing_to_email?, subscribe_as_default)
       end
       alias_method :_subscribes_to_email?, :_subscribes_to_notification_email?
+
+      # Returns if the target subscribes to the specified optional target.
+      # This method can be overriden.
+      # @api protected
+      #
+      # @param [String]         key                  Key of the notification
+      # @param [String, Symbol] optional_target_name Class name of the optional target implementation (e.g. :amazon_sns, :slack)
+      # @param [Boolean]        subscribe_as_default Default subscription value to use when the subscription record does not configured
+      # @return [Boolean] If the target subscribes to the specified optional target
+      def _subscribes_to_optional_target?(key, optional_target_name, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
+        _subscribes_to_notification?(key, subscribe_as_default) &&
+          evaluate_subscription(subscriptions.find_by_key(key), :subscribing_to_optional_target?, subscribe_as_default, optional_target_name, subscribe_as_default)
+      end
 
     private
 
       # Returns if the target subscribes.
       # @api private
       # @param [Boolean] record  Subscription record
-      # @param [Symbol]  field   Evaluating subscription field of the record
+      # @param [Symbol]  field   Evaluating subscription field or method of the record
       # @param [Boolean] default Default subscription value to use when the subscription record does not configured
+      # @param [Array]   args    Arguments of evaluating subscription method
       # @return [Boolean] If the target subscribes
-      def evaluate_subscription(record, field, default)
-        default ? record.blank? || record.send(field) : record.present? && record.send(field)
+      def evaluate_subscription(record, field, default, *args)
+        default ? record.blank? || record.send(field, *args) : record.present? && record.send(field)
       end
 
   end
