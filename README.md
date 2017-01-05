@@ -29,10 +29,10 @@
 ### Notification index and plugin notifications
 <kbd>![plugin-notifications-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus_with_subscription.png)</kbd>
 
+`activity_notification` deeply uses [PublicActivity](https://github.com/pokonski/public_activity) as reference in presentation layer.
+
 ### Subscription management of notifications
 <kbd>![subscription-management-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_subscription_management_with_optional_targets.png)</kbd>
-
-`activity_notification` deeply uses [PublicActivity](https://github.com/pokonski/public_activity) as reference in presentation layer.
 
 ### Amazon SNS as optional notification target
 <kbd>![optional-target-amazon-sns-email-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_optional_target_amazon_sns_email.png)</kbd>
