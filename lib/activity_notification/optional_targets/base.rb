@@ -25,15 +25,15 @@ module ActivityNotification
       end
 
       # Initialize method to be overriden in user implementation class
-      # @param [Hash] options Options for initializing
-      def initialize_target(options = {})
+      # @param [Hash] _options Options for initializing
+      def initialize_target(_options = {})
         raise NotImplementedError, "You have to implement #{self.class}##{__method__}"
       end
 
       # Publishing notification method to be overriden in user implementation class
-      # @param [Notification] notification Notification instance
-      # @param [Hash] options Options for publishing
-      def notify(notification, options = {})
+      # @param [Notification] _notification Notification instance
+      # @param [Hash] _options Options for publishing
+      def notify(_notification, _options = {})
         raise NotImplementedError, "You have to implement #{self.class}##{__method__}"
       end
 
