@@ -3,6 +3,8 @@ module ActivityNotification
   module OptionalTarget
     # Abstract optional target class to develop optional notification target class.
     class Base
+      # View context to render notification message
+      # @return View context to render notification message
       attr_accessor :view_context
 
       # Initialize method to create view context in this OptionalTarget instance
