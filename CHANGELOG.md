@@ -1,3 +1,13 @@
+## 1.2.1 / 2017-01-06
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.2.0...v1.2.1)
+
+Enhancements:
+* Support default Slack optional target with slack-notifier 2.0.0
+
+Breaking Changes:
+
+* Rename :slack_name initializing parameter and template parameter of default Slack optional target to :target_username
+
 ## 1.2.0 / 2017-01-06
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.1.0...v1.2.0)
 
