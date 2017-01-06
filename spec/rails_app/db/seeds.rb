@@ -2,6 +2,7 @@
 # This file is seed file for test data on development environment.
 
 ActivityNotification::Notification.delete_all
+ActivityNotification::Subscription.delete_all
 Comment.delete_all
 Article.delete_all
 Admin.delete_all
@@ -21,7 +22,11 @@ end
 
 ['Ichiro'].each do |name|
   user = User.find_by_name(name)
-  Admin.create(user: user, slack_name: name.downcase)
+  Admin.create(
+    user: user,
+    phone_number: ENV['OPTIONAL_TARGET_AMAZON_SNS_PHONE_NUMBER'],
+    slack_username: ENV['OPTIONAL_TARGET_SLACK_USERNAME']
+  )
 end
 
 User.all.each do |user|

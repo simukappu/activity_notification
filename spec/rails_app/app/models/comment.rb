@@ -12,21 +12,34 @@ class Comment < ActiveRecord::Base
     printable_name: ->(comment) { "comment \"#{comment.body}\"" },
     dependent_notifications: :update_group_and_delete_all
 
-  # require 'activity_notification/optional_targets/amazon_sns'
-  # require 'activity_notification/optional_targets/slack'
   require 'custom_optional_targets/console_output'
+  optional_targets = { CustomOptionalTarget::ConsoleOutput => {} }
+  if ENV['OPTIONAL_TARGET_AMAZON_SNS']
+    require 'activity_notification/optional_targets/amazon_sns'
+    if ENV['OPTIONAL_TARGET_AMAZON_SNS_TOPIC_ARN']
+      optional_targets = optional_targets.merge(
+        ActivityNotification::OptionalTarget::AmazonSNS => { topic_arn: ENV['OPTIONAL_TARGET_AMAZON_SNS_TOPIC_ARN'] }
+      )
+    elsif ENV['OPTIONAL_TARGET_AMAZON_SNS_PHONE_NUMBER']
+      optional_targets = optional_targets.merge(
+        ActivityNotification::OptionalTarget::AmazonSNS => { phone_number: :phone_number }
+      )
+    end
+  end
+  if ENV['OPTIONAL_TARGET_SLACK']
+    require 'activity_notification/optional_targets/slack'
+    optional_targets = optional_targets.merge(
+      ActivityNotification::OptionalTarget::Slack  => {
+        webhook_url: ENV['OPTIONAL_TARGET_SLACK_WEBHOOK_URL'], target_username: :slack_username,
+        channel:  ENV['OPTIONAL_TARGET_SLACK_CHANNEL']  || 'activity_notification',
+        username: 'ActivityNotification', icon_emoji: ":ghost:"
+      }
+    )
+  end
   acts_as_notifiable :admins, targets: Admin.all,
     group: :article, notifier: :user, notifiable_path: :article_notifiable_path,
     printable_name: ->(comment) { "comment \"#{comment.body}\"" }, dependent_notifications: :delete_all,
-    optional_targets: {
-      # ActivityNotification::OptionalTarget::AmazonSNS => { topic_arn: 'arn:aws:sns:XXXXX:XXXXXXXXXXXX:XXXXX' },
-      # # ActivityNotification::OptionalTarget::AmazonSNS => { phone_number: :phone_number },
-      # ActivityNotification::OptionalTarget::Slack  => {
-        # webhook_url: 'https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX',
-        # slack_name: :slack_name, channel: 'activity_notification', username: 'ActivityNotification', icon_emoji: ":ghost:"
-      # },
-      CustomOptionalTarget::ConsoleOutput => {}
-    }
+    optional_targets: optional_targets
 
   def article_notifiable_path
     article_path(article)
