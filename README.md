@@ -72,11 +72,11 @@
   4. [Subscription management](#subscription-management)
     1. [Setup subscriptions](#setup-subscriptions)
     2. [Manage subscriptions](#manage-subscriptions)
-    3. [Customize Subscriptions](#customize-subscriptions)
+    3. [Customizing Subscriptions](#customizing-subscriptions)
   5. [Integration with Devise](#integration-with-devise)
   6. [Optional notification targets](#optional-notification-targets)
     1. [Setup optional targets](#setup-optional-targets)
-    2. [Customizing message format](#Customizing-message-format)
+    2. [Customizing message format](#customizing-message-format)
     3. [Amazon SNS as optional target](#amazon-sns-as-optional-target)
     4. [Slack as optional target](#slack-as-optional-target)
     5. [Developing custom optional targets](#developing-custom-optional-targets)
@@ -662,7 +662,7 @@ user.find_or_create_subscription('comment.reply').unsubscribe
 user.find_or_create_subscription('comment.reply').unsubscribe_to_email
 ```
 
-#### Customize subscriptions
+#### Customizing subscriptions
 
 `activity_notification` provides basic controllers and views to manage the subscriptions.
 
