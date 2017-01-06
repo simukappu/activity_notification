@@ -61,21 +61,21 @@
     4. [i18n for notifications](#i18n-for-notifications)
 3. [Functions](#functions)
   1. [Email notification](#email-notification)
-    1. [Setup mailer](#setup-mailer)
+    1. [Mailer setup](#mailer-setup)
     2. [Email templates](#email-templates)
     3. [i18n for email](#i18n-for-email)
   2. [Batch email notification](#batch-email-notification)
-    1. [Setup batch mailer](#setup-batch-mailer)
+    1. [Batch mailer setup](#batch-mailer-setup)
     2. [Batch email templates](#batch-email-templates)
     3. [i18n for batch email](#i18n-for-batch-email)
   3. [Grouping notifications](#grouping-notifications)
   4. [Subscription management](#subscription-management)
-    1. [Setup subscriptions](#setup-subscriptions)
-    2. [Manage subscriptions](#manage-subscriptions)
-    3. [Customizing Subscriptions](#customizing-subscriptions)
+    1. [Configuring subscriptions](#configuring-subscriptions)
+    2. [Managing subscriptions](#managing-subscriptions)
+    3. [Customizing subscriptions](#customizing-subscriptions)
   5. [Integration with Devise](#integration-with-devise)
   6. [Optional notification targets](#optional-notification-targets)
-    1. [Setup optional targets](#setup-optional-targets)
+    1. [Configuring optional targets](#configuring-optional-targets)
     2. [Customizing message format](#customizing-message-format)
     3. [Amazon SNS as optional target](#amazon-sns-as-optional-target)
     4. [Slack as optional target](#slack-as-optional-target)
@@ -414,7 +414,7 @@ This structure is valid for notifications with keys `"notification.comment.reply
 
 `activity_notification` provides email notification to the notification targets.
 
-#### Setup mailer
+#### Mailer setup
 
 Set up SMTP server configuration for `ActionMailer`. Then, you need to set up the default URL options for the `activity_notification` mailer in each environment. Here is a possible configuration for `config/environments/development.rb`:
 
@@ -481,7 +481,7 @@ notification:
 
 `activity_notification` provides batch email notification to the notification targets. You can send notification email daily, hourly or weekly and so on with a scheduler like `whenever`.
 
-#### Setup batch mailer
+#### Batch mailer setup
 
 Set up SMTP server configuration for `ActionMailer` and the default URL options for the `activity_notification` mailer in each environment.
 
@@ -591,7 +591,7 @@ Then, you will see `Kevin and 7 other users posted 10 comments to your article"`
 
 `activity_notification` provides the function for subscription management of notifications and notification email.
 
-#### Setup subscriptions
+#### Configuring subscriptions
 
 Subscription management is disabled as default. You can configure to enable subscription management in initializer `activity_notification.rb`.
 
@@ -617,7 +617,7 @@ $ bin/rake db:migrate
 ```
 
 
-#### Manage subscriptions
+#### Managing subscriptions
 
 Subscriptions are managed by `Subscription` model record which belongs to target and key of the notification.
 `Subscription#subscribing` manages subscription of notifications.
@@ -752,7 +752,7 @@ In this example `activity_notification` will confirm the `user` who `admin` belo
 
 `activity_notification` supports configurable optional notification targets like Amazon SNS, Slack, SMS and so on.
 
-#### Setup optional targets
+#### Configuring optional targets
 
 `activity_notification` provides default optional target implementation for Amazon SNS and Slack.
 You can develop any optional target classes which extends `ActivityNotification::OptionalTarget::Base`, and configure them to notifiable model by `acts_as_notifiable` like this.
