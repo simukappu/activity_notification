@@ -35,7 +35,7 @@
 <kbd>![subscription-management-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_subscription_management_with_optional_targets.png)</kbd>
 
 ### Amazon SNS as optional notification target
-<kbd>![optional-target-amazon-sns-email-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_optional_target_amazon_sns_email.png)</kbd>
+<kbd>![optional-target-amazon-sns-email-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_optional_target_amazon_sns.png)</kbd>
 
 ### Slack as optional notification target
 <kbd>![optional-target-slack-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_optional_target_slack.png)</kbd>
@@ -835,7 +835,7 @@ First, add `slack-notifier` gem to your Gemfile and create Incoming WebHooks in 
 gem 'slack-notifier'
 ```
 
-Then, write `require 'activity_notification/optional_targets/slack'` statement in your notifiable model and set `ActivityNotification::OptionalTarget::Slack` to `acts_as_notifiable` with `:webhook_url` and `:slack_name` initializing parameters. `:webhook_url` is created WebHook URL and required, `:slack_name` is target's slack user name as String value, symbol method name or lambda function and is optional.
+Then, write `require 'activity_notification/optional_targets/slack'` statement in your notifiable model and set `ActivityNotification::OptionalTarget::Slack` to `acts_as_notifiable` with `:webhook_url` and `:target_username` initializing parameters. `:webhook_url` is created WebHook URL and required, `:target_username` is target's slack user name as String value, symbol method name or lambda function and is optional.
 Any other options for `Slack::Notifier.new` are available as initializing parameters. See [Github slack-notifier](https://github.com/stevenosloan/slack-notifier) and [API Reference of Class: Slack::Notifier](http://www.rubydoc.info/gems/slack-notifier/1.5.1/Slack/Notifier) for more details.
 
 ```ruby
@@ -845,7 +845,7 @@ class Comment < ActiveRecord::Base
     optional_targets: {
       ActivityNotification::OptionalTarget::Slack  => {
         webhook_url: 'https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX',
-        slack_name: :slack_name, channel: 'activity_notification', username: 'ActivityNotification', icon_emoji: ":ghost:"
+        target_username: :slack_username, channel: 'activity_notification', username: 'ActivityNotification', icon_emoji: ":ghost:"
       }
     }
 end

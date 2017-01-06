@@ -1,4 +1,4 @@
-<%= @slack_name.present? ? "Hi <@#{@slack_name}>," : "<!channel>,"  %>
+<%= @target_username.present? ? "Hi <@#{@target_username}>," : "<!channel>,"  %>
 
 <%= @notification.notifier.present? ? @notification.notifier.printable_notifier_name : 'Someone' %> notified you of <%= @notification.notifiable.printable_notifiable_name(@notification.target) %><%= " in #{@notification.group.printable_group_name}" if @notification.group.present? %>.
 

@@ -15,7 +15,7 @@ ActiveRecord::Schema.define(version: 20160715050433) do
   create_table "admins", force: :cascade do |t|
     t.integer  "user_id"
     t.string   "phone_number"
-    t.string   "slack_name"
+    t.string   "slack_username"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.index ["user_id"], name: "index_admins_on_user_id"
