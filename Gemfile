@@ -14,3 +14,5 @@ group :test do
   gem 'timecop'
   gem 'coveralls', require: false
 end
+
+gem 'dotenv-rails', groups: [:development, :test]
