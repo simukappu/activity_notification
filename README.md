@@ -832,7 +832,7 @@ end
 First, add `slack-notifier` gem to your Gemfile and create Incoming WebHooks in Slack (See [Incoming WebHooks](https://wemakejp.slack.com/apps/A0F7XDUAZ-incoming-webhooks)).
 
 ```ruby
-gem 'slack-notifier', '~> 1'
+gem 'slack-notifier'
 ```
 
 Then, write `require 'activity_notification/optional_targets/slack'` statement in your notifiable model and set `ActivityNotification::OptionalTarget::Slack` to `acts_as_notifiable` with `:webhook_url` and `:target_username` initializing parameters. `:webhook_url` is created WebHook URL and required, `:target_username` is target's slack user name as String value, symbol method name or lambda function and is optional.
