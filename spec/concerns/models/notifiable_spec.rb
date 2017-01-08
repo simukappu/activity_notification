@@ -521,25 +521,26 @@ shared_examples_for :notifiable do
 
         it "returns specified symbol of method" do
           module AdditionalMethods
+            require 'custom_optional_targets/console_output'
             def custom_optional_targets
-              [ActivityNotification::OptionalTarget::Base.new]
+              [CustomOptionalTarget::ConsoleOutput.new]
             end
           end
           test_instance.extend(AdditionalMethods)
           described_class._optional_targets[:users] = :custom_optional_targets
           expect(test_instance.optional_targets(User, 'dummy_key').size).to  eq(1)
-          expect(test_instance.optional_targets(User, 'dummy_key').first).to be_a(ActivityNotification::OptionalTarget::Base)
+          expect(test_instance.optional_targets(User, 'dummy_key').first).to be_a(CustomOptionalTarget::ConsoleOutput)
         end
 
         it "returns specified lambda with no arguments" do
-          described_class._optional_targets[:users] = ->{ [ActivityNotification::OptionalTarget::Base.new] }
-          expect(test_instance.optional_targets(User, 'dummy_key').first).to be_a(ActivityNotification::OptionalTarget::Base)
+          described_class._optional_targets[:users] = ->{ [CustomOptionalTarget::ConsoleOutput.new] }
+          expect(test_instance.optional_targets(User, 'dummy_key').first).to be_a(CustomOptionalTarget::ConsoleOutput)
         end
 
         it "returns specified lambda with notifiable and key argument" do
-          described_class._optional_targets[:users] = ->(notifiable, key){ key == 'dummy_key' ? [ActivityNotification::OptionalTarget::Base.new] : [] }
+          described_class._optional_targets[:users] = ->(notifiable, key){ key == 'dummy_key' ? [CustomOptionalTarget::ConsoleOutput.new] : [] }
           expect(test_instance.optional_targets(User)).to eq([])
-          expect(test_instance.optional_targets(User, 'dummy_key').first).to be_a(ActivityNotification::OptionalTarget::Base)
+          expect(test_instance.optional_targets(User, 'dummy_key').first).to be_a(CustomOptionalTarget::ConsoleOutput)
         end
       end
     end
@@ -565,13 +566,14 @@ shared_examples_for :notifiable do
 
         it "returns specified symbol of method" do
           module AdditionalMethods
+            require 'custom_optional_targets/console_output'
             def custom_optional_targets
-              [ActivityNotification::OptionalTarget::Base.new]
+              [CustomOptionalTarget::ConsoleOutput.new]
             end
           end
           test_instance.extend(AdditionalMethods)
           described_class._optional_targets[:users] = :custom_optional_targets
-          expect(test_instance.optional_target_names(User, 'dummy_key')).to eq([:base])
+          expect(test_instance.optional_target_names(User, 'dummy_key')).to eq([:console_output])
         end
 
         it "returns specified lambda with no arguments" do

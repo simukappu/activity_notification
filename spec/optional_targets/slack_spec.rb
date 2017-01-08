@@ -1,6 +1,6 @@
 require 'activity_notification/optional_targets/slack'
 describe ActivityNotification::OptionalTarget::Slack do
-  let(:test_instance) { ActivityNotification::OptionalTarget::Slack.new }
+  let(:test_instance) { ActivityNotification::OptionalTarget::Slack.new(skip_initializing_target: true) }
 
   describe "as public instance methods" do
     describe "#to_optional_target_name" do

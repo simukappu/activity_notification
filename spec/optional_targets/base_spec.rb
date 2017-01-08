@@ -1,5 +1,7 @@
 describe ActivityNotification::OptionalTarget::Base do
-  let(:test_instance) { ActivityNotification::OptionalTarget::Base.new }
+  let(:test_instance) {
+    ActivityNotification::OptionalTarget::Base.new(skip_initializing_target: true)
+  }
 
   describe "as public instance methods" do
     describe "#to_optional_target_name" do

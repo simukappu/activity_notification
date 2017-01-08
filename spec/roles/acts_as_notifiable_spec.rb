@@ -134,9 +134,13 @@ describe ActivityNotification::ActsAsNotifiable do
 
         context "with lambda function configuration" do
           it "configure optional_targets and notifiable#optional_targets returns optional_target array" do
-            dummy_notifiable_class.acts_as_notifiable :users, optional_targets: ->(notifiable, key){ key == 'dummy_key' ? [ActivityNotification::OptionalTarget::Base.new] : [] }
+            module AdditionalMethods
+              require 'custom_optional_targets/console_output'
+            end
+            dummy_notifiable_class.extend(AdditionalMethods)
+            dummy_notifiable_class.acts_as_notifiable :users, optional_targets: ->(notifiable, key){ key == 'dummy_key' ? [CustomOptionalTarget::ConsoleOutput.new] : [] }
             expect(@notifiable.optional_targets(:users)).to eq([])
-            expect(@notifiable.optional_targets(:users, 'dummy_key').first).to be_a(ActivityNotification::OptionalTarget::Base)
+            expect(@notifiable.optional_targets(:users, 'dummy_key').first).to be_a(CustomOptionalTarget::ConsoleOutput)
           end
         end
       end

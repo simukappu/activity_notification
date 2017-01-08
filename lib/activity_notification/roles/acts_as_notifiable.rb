@@ -184,11 +184,10 @@ module ActivityNotification
 
         if options[:optional_targets].is_a?(Hash)
           options[:optional_targets] = options[:optional_targets].map { |target_class, target_options|
-            optional_target = target_class.new
+            optional_target = target_class.new(target_options)
             unless optional_target.kind_of?(ActivityNotification::OptionalTarget::Base)
               raise TypeError, "#{optional_target.class.name} for an optional target is not a kind of ActivityNotification::OptionalTarget::Base"
             end
-            optional_target.initialize_target(target_options)
             optional_target
           }
         end

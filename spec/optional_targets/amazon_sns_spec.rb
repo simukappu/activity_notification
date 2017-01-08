@@ -1,6 +1,6 @@
 require 'activity_notification/optional_targets/amazon_sns'
 describe ActivityNotification::OptionalTarget::AmazonSNS do
-  let(:test_instance) { ActivityNotification::OptionalTarget::AmazonSNS.new }
+  let(:test_instance) { ActivityNotification::OptionalTarget::AmazonSNS.new(skip_initializing_target: true) }
 
   describe "as public instance methods" do
     describe "#to_optional_target_name" do

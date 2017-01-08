@@ -8,7 +8,10 @@ module ActivityNotification
       attr_accessor :view_context
 
       # Initialize method to create view context in this OptionalTarget instance
-      def initialize
+      # @param [Hash] options Options for initializing target
+      # @option options [Boolean] :skip_initializing_target (false) Whether skip calling initialize_target method
+      # @option options [Hash]    others                            Options for initializing target
+      def initialize(options = {})
         @view_context = ActionView::Base.new(ActionController::Base.view_paths, {})
         @view_context.class_eval do 
           include Rails.application.routes.url_helpers
@@ -16,6 +19,7 @@ module ActivityNotification
             ActionMailer::Base.default_url_options
           end
         end
+        initialize_target(options) unless options.delete(:skip_initializing_target)
       end
 
       # Returns demodulized symbol class name as optional target name
