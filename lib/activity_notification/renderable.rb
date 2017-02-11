@@ -173,7 +173,11 @@ module ActivityNotification
       root ||= "activity_notification/notifications/#{target}" if target.present?
       root ||= controller.target_view_path                     if controller.present? && controller.respond_to?(:target_view_path)
       root ||= 'activity_notification/notifications/default'
-      path ||= self.key.tr('.', '/')
+      template_key = notifiable.respond_to?(:overriding_notification_template_key) &&
+                     notifiable.overriding_notification_template_key(@target, key).present? ?
+                       notifiable.overriding_notification_template_key(@target, key) :
+                       key
+      path ||= template_key.tr('.', '/')
       select_path(path, root)
     end
 

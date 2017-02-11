@@ -74,7 +74,7 @@ describe ActivityNotification::ViewHelpers, type: :helper do
         expect(render_notification notification)
           .to eq("Custom template root for default target: #{notification.id}")
       end
-  
+
       it "renders custom notification view for specified target" do
         notification.key = 'custom.test'
         # render activity_notification/notifications/users/custom/test
@@ -97,6 +97,21 @@ describe ActivityNotification::ViewHelpers, type: :helper do
           locals:  notification.prepare_locals({ layout: 'test' })
         })
         render_notification notification, layout: 'test'
+      end
+
+      context "with defined overriding_notification_template_key in notifiable model" do
+        it "renders overriden custom notification view" do
+          notification.key = 'custom.test'
+          module AdditionalMethods
+            def overriding_notification_template_key(target, key)
+              'overriden.custom.test'
+            end
+          end
+          notification.notifiable.extend(AdditionalMethods)
+          # render activity_notification/notifications/users/overriden/custom/test
+          expect(render_notification notification, target: :users)
+            .to eq("Overriden custom template root for user target: #{notification.id}")
+        end
       end
     end
   end

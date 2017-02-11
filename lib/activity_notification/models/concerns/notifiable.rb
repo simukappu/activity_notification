@@ -207,8 +207,14 @@ module ActivityNotification
       optional_targets(target_type, key).map { |optional_target| optional_target.to_optional_target_name }
     end
 
+    # overriding_notification_template_key is the method to override key definition for Renderable
+    # When respond_to?(:overriding_notification_template_key) returns true,
+    # Renderable uses overriding_notification_template_key instead of original key.
+    #
+    # overriding_notification_template_key(target, key)
+
     # overriding_notification_email_key is the method to override key definition for Mailer
-    # When respond_to?(overriding_notification_email_key) returns true,
+    # When respond_to?(:overriding_notification_email_key) returns true,
     # Mailer uses overriding_notification_email_key instead of original key.
     #
     # overriding_notification_email_key(target, key)
