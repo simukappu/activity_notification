@@ -171,13 +171,11 @@ module ActivityNotification
         if [:delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all, :update_group_and_destroy].include? options[:dependent_notifications]
           case options[:dependent_notifications]
           when :delete_all, :destroy, :restrict_with_error, :restrict_with_exception
-            has_many_generated_notifications options[:dependent_notifications]
+            before_destroy -> { destroy_generated_notifications_with_dependency(options[:dependent_notifications], target_type) }
           when :update_group_and_delete_all
-            before_destroy :remove_generated_notifications_from_group
-            has_many_generated_notifications :delete_all
+            before_destroy -> { destroy_generated_notifications_with_dependency(:delete_all, target_type, true) }
           when :update_group_and_destroy
-            before_destroy :remove_generated_notifications_from_group
-            has_many_generated_notifications :destroy
+            before_destroy -> { destroy_generated_notifications_with_dependency(:destroy, target_type, true) }
           end
           configured_params = { dependent_notifications: options[:dependent_notifications] }
         end
@@ -213,17 +211,6 @@ module ActivityNotification
           :optional_targets
         ].freeze
       end
-
-      private
-
-        # Define to have many notification instances for this notifiable with dependent option.
-        # @api private
-        def has_many_generated_notifications(dependent_option)
-          has_many :generated_notifications_as_notifiable,
-            class_name: "::ActivityNotification::Notification",
-            as: :notifiable,
-            dependent: dependent_option
-        end
 
     end
   end

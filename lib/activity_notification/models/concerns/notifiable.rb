@@ -303,11 +303,46 @@ module ActivityNotification
         end
       end
 
-      # Remove generated notifications from notification group to new group owner.
+      # Gets generated notifications for specified target type.
+      # @api private
+      # @param [String] target_type Target type of generated notifications
+      def generated_notifications_as_notifiable_for(target_type = nil)
+        target_type.nil? ?
+          generated_notifications_as_notifiable.all :
+          generated_notifications_as_notifiable.filtered_by_target_type(target_type.to_s.to_model_name)
+      end
+
+      # Destroies generated notifications for specified target type with dependency.
       # This method is intended to be called before destroy this notifiable as dependent configuration.
       # @api private
-      def remove_generated_notifications_from_group
-        generated_notifications_as_notifiable.group_owners_only.each { |n| n.remove_from_group }
+      # @param [Symbol]  dependent         Has_many dependency, [:delete_all, :destroy, :restrict_with_error, :restrict_with_exception] are available
+      # @param [String]  target_type       Target type of generated notifications
+      # @param [Boolean] remove_from_group Whether it removes generated notifications from notification group before destroy
+      def destroy_generated_notifications_with_dependency(dependent = :delete_all, target_type = nil, remove_from_group = false)
+        remove_generated_notifications_from_group(target_type) if remove_from_group
+        generated_notifications = generated_notifications_as_notifiable_for(target_type)
+        case dependent
+        when :restrict_with_exception
+          raise ActiveRecord::DeleteRestrictionError.new("generated_notifications_as_notifiable_for_#{target_type.to_s.pluralize.underscore}") unless generated_notifications.empty?
+        when :restrict_with_error
+          unless generated_notifications.empty?
+            record = self.class.human_attribute_name("generated_notifications_as_notifiable_for_#{target_type.to_s.pluralize.underscore}").downcase
+            self.errors.add(:base, :'restrict_dependent_destroy.has_many', record: record)
+            throw(:abort)
+          end
+        when :destroy
+          generated_notifications.each { |n| n.destroy }
+        when :delete_all
+          generated_notifications.delete_all
+        end
+      end
+
+      # Removes generated notifications from notification group to new group owner.
+      # This method is intended to be called before destroy this notifiable as dependent configuration.
+      # @api private
+      # @param [String]  target_type       Target type of generated notifications
+      def remove_generated_notifications_from_group(target_type = nil)
+        generated_notifications_as_notifiable_for(target_type).group_owners_only.each { |n| n.remove_from_group }
       end
 
       # Casts to resources name.
