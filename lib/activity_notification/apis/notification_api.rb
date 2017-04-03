@@ -181,7 +181,7 @@ module ActivityNotification
         parameters.merge!(notifiable.notification_parameters(target_type, key))
 
         # Bundle notification group by target, notifiable_type, group and key
-        # Defferent notifiable.id can be made in a same group
+        # Different notifiable.id can be made in a same group
         group_owner_notifications = filtered_by_target(target).filtered_by_type(notifiable.to_class_name).filtered_by_key(key)
                                    .filtered_by_group(group).group_owners_only.unopened_only
         group_owner = group_expiry_delay.present? ?
