@@ -11,7 +11,6 @@ shared_examples_for :notification_api do
 
   describe "as public class methods" do
     before do
-      described_class.delete_all
       @author_user = create(:confirmed_user)
       @user_1      = create(:confirmed_user)
       @user_2      = create(:confirmed_user)
@@ -217,7 +216,7 @@ shared_examples_for :notification_api do
           end
 
           it "has parameters of parameters in acts_as_notifiable" do
-            expect(created_notification.parameters).to eq({test_default_param: '1'})
+            expect(created_notification.parameters).to eq({'test_default_param' => '1'})
           end
         end
 
@@ -517,7 +516,7 @@ shared_examples_for :notification_api do
     describe "#publish_to_optional_targets" do
       before do
         require 'custom_optional_targets/console_output'
-        @optional_target = CustomOptionalTarget::ConsoleOutput.new
+        @optional_target = CustomOptionalTarget::ConsoleOutput.new(console_out: false)
         notifiable_class.acts_as_notifiable test_instance.target.to_resources_name.to_sym, optional_targets: ->{ [@optional_target] }
         expect(test_instance.notifiable.optional_targets(test_instance.target.to_resources_name, test_instance.key)).to eq([@optional_target])
       end
@@ -556,16 +555,13 @@ shared_examples_for :notification_api do
     end
 
     describe "#open!" do
-      before do
-        described_class.delete_all
-      end
-
       it "returns the number of opened notification records" do
         expect(test_instance.open!).to eq(1)
       end
 
       it "returns the number of opened notification records including group members" do
-        create(test_class_name, group_owner: test_instance, opened_at: nil)
+        group_member = create(test_class_name, group_owner: test_instance)
+        expect(group_member.opened_at.blank?).to be_truthy
         expect(test_instance.open!).to eq(2)
       end
 
@@ -856,22 +852,38 @@ shared_examples_for :notification_api do
 
         context "with limit" do
           context "when the notification is group owner and has group members" do
-            it "returns member count by limit" do
+            it "returns member count by limit 0" do
               create(test_class_name, target: test_instance.target, group_owner: test_instance)
               create(test_class_name, target: test_instance.target, group_owner: test_instance)
               test_instance.open!
               expect(test_instance.group_member_count(0)).to eq(0)
               expect(test_instance.group_notification_count(0)).to eq(1)
             end
+
+            it "returns member count by limit 1" do
+              create(test_class_name, target: test_instance.target, group_owner: test_instance)
+              create(test_class_name, target: test_instance.target, group_owner: test_instance)
+              test_instance.open!
+              expect(test_instance.group_member_count(1)).to eq(1)
+              expect(test_instance.group_notification_count(1)).to eq(2)
+            end
           end
 
           context "when the notification belongs to group" do
-            it "returns member count by limit" do
+            it "returns member count by limit 0" do
               group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance)
                              create(test_class_name, target: test_instance.target, group_owner: test_instance)
               test_instance.open!
               expect(group_member.group_member_count(0)).to eq(0)
               expect(group_member.group_notification_count(0)).to eq(1)
+            end
+
+            it "returns member count by limit 1" do
+              group_member = create(test_class_name, target: test_instance.target, group_owner: test_instance)
+                             create(test_class_name, target: test_instance.target, group_owner: test_instance)
+              test_instance.open!
+              expect(group_member.group_member_count(1)).to eq(1)
+              expect(group_member.group_notification_count(1)).to eq(2)
             end
           end
         end
@@ -1135,7 +1147,7 @@ shared_examples_for :notification_api do
         it "returns latest group member" do
           member1 = create(test_class_name, target: test_instance.target, group_owner: test_instance)
           member2 = create(test_class_name, target: test_instance.target, group_owner: test_instance)
-          expect(test_instance.latest_group_member).to eq(member2)
+          expect(test_instance.latest_group_member.becomes(ActivityNotification::Notification)).to eq(member2)
         end
       end
 
@@ -1161,12 +1173,13 @@ shared_examples_for :notification_api do
 
       it "makes a new group owner" do
         test_instance.remove_from_group
-        expect(@member1.reload.group_owner?).to     be_truthy
-        expect(@member1.group_members).to           eq([@member2])
+        expect(@member1.reload.group_owner?).to                                             be_truthy
+        expect(@member1.group_members.size).to                                              eq(1)
+        expect(@member1.group_members.first.becomes(ActivityNotification::Notification)).to eq(@member2)
       end
 
       it "returns new group owner instance" do
-        expect(test_instance.remove_from_group).to eq(@member1)
+        expect(test_instance.remove_from_group.becomes(ActivityNotification::Notification)).to eq(@member1)
       end
     end
 

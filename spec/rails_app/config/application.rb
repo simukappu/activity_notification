@@ -1,6 +1,13 @@
 require File.expand_path('../boot', __FILE__)
 
 # Pick the frameworks you want:
+if ENV['AN_ORM'] == 'mongoid'
+  require 'mongoid'
+  require 'rails'
+  if Rails.env != 'test'
+    Mongoid.load!(File.expand_path("config/mongoid.yml"), :development)
+  end
+end
 require "active_record/railtie"
 require "action_controller/railtie"
 require "action_mailer/railtie"

@@ -2,11 +2,18 @@ module ActivityNotification
   # Notifier implementation included in notifier model to be notified, like users or administrators.
   module Notifier
     extend ActiveSupport::Concern
+
     included do
       include Common
-      has_many :sent_notifications,
+      include Association
+
+      # Has many sent notification instances from this notifier.
+      # @scope instance
+      # @return [Array<Notificaion>, Mongoid::Criteria<Notificaion>] Array or database query of sent notifications from this notifier
+      has_many_records :sent_notifications,
         class_name: "::ActivityNotification::Notification",
         as: :notifier
+
       class_attribute :_printable_notifier_name
       set_notifier_class_defaults
     end

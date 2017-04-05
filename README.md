@@ -10,13 +10,14 @@
 
 `activity_notification` provides integrated user activity notifications for Ruby on Rails. You can easily use it to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc.
 
-`activity_notification` supports Rails 5.0 and 4.2+. Currently, it is only supported with ActiveRecord ORM.
+`activity_notification` supports Rails 5.0 and 4.2+. Also, it is supported with ActiveRecord and [Mongoid](http://mongoid.org) ORM.
 
 
 ## About
 
 `activity_notification` provides following functions:
 * Notification API (creating notifications, query for notifications and managing notification parameters)
+* Notification models (stored with ActiveRecord or [Mongoid](http://mongoid.org) ORM)
 * Notification controllers (managing open/unopen of notifications, link to notifiable activity page)
 * Notification views (presentation of notifications)
 * Grouping notifications (grouping like `"Kevin and 7 other users posted comments to this article"`)
@@ -43,46 +44,48 @@
 
 ## Table of contents
 
-1. [About](#about)
-2. [Setup](#setup)
-  1. [Gem installation](#gem-installation)
-  2. [Database setup](#database-setup)
-  3. [Configuring models](#configuring-models)
-    1. [Configuring target model](#configuring-target-model)
-    2. [Configuring notifiable model](#configuring-notifiable-model)
-  4. [Configuring views](#configuring-views)
-  5. [Configuring controllers](#configuring-controllers)
-  6. [Configuring routes](#configuring-routes)
-  7. [Creating notifications](#creating-notifications)
-  8. [Displaying notifications](#displaying-notifications)
-    1. [Preparing target notifications](#preparing-target-notifications)
-    2. [Rendering notifications](#rendering-notifications)
-    3. [Notification views](#notification-views)
-    4. [i18n for notifications](#i18n-for-notifications)
-3. [Functions](#functions)
-  1. [Email notification](#email-notification)
-    1. [Mailer setup](#mailer-setup)
-    2. [Email templates](#email-templates)
-    3. [i18n for email](#i18n-for-email)
-  2. [Batch email notification](#batch-email-notification)
-    1. [Batch mailer setup](#batch-mailer-setup)
-    2. [Batch email templates](#batch-email-templates)
-    3. [i18n for batch email](#i18n-for-batch-email)
-  3. [Grouping notifications](#grouping-notifications)
-  4. [Subscription management](#subscription-management)
-    1. [Configuring subscriptions](#configuring-subscriptions)
-    2. [Managing subscriptions](#managing-subscriptions)
-    3. [Customizing subscriptions](#customizing-subscriptions)
-  5. [Integration with Devise](#integration-with-devise)
-  6. [Optional notification targets](#optional-notification-targets)
-    1. [Configuring optional targets](#configuring-optional-targets)
-    2. [Customizing message format](#customizing-message-format)
-    3. [Amazon SNS as optional target](#amazon-sns-as-optional-target)
-    4. [Slack as optional target](#slack-as-optional-target)
-    5. [Developing custom optional targets](#developing-custom-optional-targets)
-4. [Testing](#testing)
-5. [Documentation](#documentation)
-6. **[Common examples](#common-examples)**
+- [About](#about)
+- [Setup](#setup)
+  - [Gem installation](#gem-installation)
+  - [Database setup](#database-setup)
+    - [Using ActiveRecord ORM](#using_activerecord_orm)
+    - [Using Mongoid ORM](#using_mongoid_orm)
+  - [Configuring models](#configuring-models)
+    - [Configuring target model](#configuring-target-model)
+    - [Configuring notifiable model](#configuring-notifiable-model)
+  - [Configuring views](#configuring-views)
+  - [Configuring controllers](#configuring-controllers)
+  - [Configuring routes](#configuring-routes)
+  - [Creating notifications](#creating-notifications)
+  - [Displaying notifications](#displaying-notifications)
+    - [Preparing target notifications](#preparing-target-notifications)
+    - [Rendering notifications](#rendering-notifications)
+    - [Notification views](#notification-views)
+    - [i18n for notifications](#i18n-for-notifications)
+- [Functions](#functions)
+  - [Email notification](#email-notification)
+    - [Mailer setup](#mailer-setup)
+    - [Email templates](#email-templates)
+    - [i18n for email](#i18n-for-email)
+  - [Batch email notification](#batch-email-notification)
+    - [Batch mailer setup](#batch-mailer-setup)
+    - [Batch email templates](#batch-email-templates)
+    - [i18n for batch email](#i18n-for-batch-email)
+  - [Grouping notifications](#grouping-notifications)
+  - [Subscription management](#subscription-management)
+    - [Configuring subscriptions](#configuring-subscriptions)
+    - [Managing subscriptions](#managing-subscriptions)
+    - [Customizing subscriptions](#customizing-subscriptions)
+  - [Integration with Devise](#integration-with-devise)
+  - [Optional notification targets](#optional-notification-targets)
+    - [Configuring optional targets](#configuring-optional-targets)
+    - [Customizing message format](#customizing-message-format)
+    - [Amazon SNS as optional target](#amazon-sns-as-optional-target)
+    - [Slack as optional target](#slack-as-optional-target)
+    - [Developing custom optional targets](#developing-custom-optional-targets)
+- [Testing](#testing)
+- [Documentation](#documentation)
+- **[Common examples](#common-examples)**
 
 
 ## Setup
@@ -111,12 +114,28 @@ It also generates a i18n based translation file which we can configure the prese
 
 ### Database setup
 
-Currently `activity_notification` is only supported with ActiveRecord.
-Create migration for notifications and migrate the database in your Rails project:
+#### Using ActiveRecord ORM
+
+When you use `activity_notification` with ActiveRecord ORM as default configuration,
+create migration for notifications and migrate the database in your Rails project:
 
 ```console
 $ bin/rails generate activity_notification:migration
 $ bin/rake db:migrate
+```
+
+#### Using Mongoid ORM
+
+If you want use mongoid as ActivityNotification ORM, set `AN_ORM` environment variable to `mongoid`:
+
+```console
+$ export AN_ORM=mongoid
+```
+
+You can also configure ORM in initializer `activity_notification.rb`.
+
+```ruby
+config.orm = :mongoid
 ```
 
 ### Configuring models

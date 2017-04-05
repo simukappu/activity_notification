@@ -110,6 +110,11 @@ module ActivityNotification
     #   @return [Integer] Default limit to query for opened notifications.
     attr_accessor :opened_index_limit
 
+    # @overload :orm
+    #   Returns ORM name for ActivityNotification (:active_record or :mongoid)
+    #   @return [Boolean] ORM name for ActivityNotification (:active_record or :mongoid).
+    attr_reader :orm
+
     # Initialize configuration for ActivityNotification.
     # These configuration can be overriden in initializer.
     # @return [Config] A new instance of Config
@@ -125,7 +130,14 @@ module ActivityNotification
       @parent_mailer           = 'ActionMailer::Base'
       @parent_controller       = 'ApplicationController'
       @opened_index_limit      = 10
+      @orm                     = :active_record
     end
 
+    # Sets ORM name for ActivityNotification (:active_record or :mongoid)
+    # @param [Symbol, String] orm The new ORM name for ActivityNotification (:active_record or :mongoid)
+    # @return [Symbol] ORM name for ActivityNotification (:active_record or :mongoid).
+    def orm=(orm)
+      @orm = orm.to_sym
+    end
   end
 end

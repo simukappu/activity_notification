@@ -12,10 +12,10 @@ shared_examples_for :subscriber do
     it "has many subscriptions" do
       subscription_1 = create(:subscription, target: test_instance, key: 'subscription_key_1')
       subscription_2 = create(:subscription, target: test_instance, key: 'subscription_key_2')
-      expect(test_instance.subscriptions.count).to    eq(2)
+      expect(test_instance.subscriptions.count).to                eq(2)
       expect(test_instance.subscriptions.earliest_order.first).to eq(subscription_1)
       expect(test_instance.subscriptions.latest_order.first).to   eq(subscription_2)
-      expect(test_instance.subscriptions).to eq(ActivityNotification::Subscription.filtered_by_target(test_instance))
+      expect(test_instance.subscriptions).to                      eq(ActivityNotification::Subscription.filtered_by_target(test_instance))
     end
   end    
 
@@ -28,10 +28,6 @@ shared_examples_for :subscriber do
   end
 
   describe "as public instance methods" do
-    before do
-      ActivityNotification::Subscription.delete_all
-    end
-
     describe "#find_subscription" do
       before do
         expect(test_instance.subscriptions).to be_empty
@@ -224,9 +220,11 @@ shared_examples_for :subscriber do
 
         context 'with custom_filter options' do
           it "returns filtered notifications only" do
-            options = { custom_filter: ["key = ?", 'subscription_key_2'] }
-            expect(test_instance.subscription_index(options)[0]).to eq(@subscription2)
-            expect(test_instance.subscription_index(options).size).to eq(1)
+            if ActivityNotification.config.orm == :active_record
+              options = { custom_filter: ["key = ?", 'subscription_key_2'] }
+              expect(test_instance.subscription_index(options)[0]).to eq(@subscription2)
+              expect(test_instance.subscription_index(options).size).to eq(1)
+            end
 
             options = { custom_filter: { key: 'subscription_key_1' } }
             expect(test_instance.subscription_index(options)[0]).to eq(@subscription1)
@@ -324,9 +322,11 @@ shared_examples_for :subscriber do
 
         context 'with custom_filter options' do
           it "returns filtered notifications only" do
-            options = { custom_filter: ["key = ?", 'notification_key_2'] }
-            expect(test_instance.notification_keys(options)[0]).to eq('notification_key_2')
-            expect(test_instance.notification_keys(options).size).to eq(1)
+            if ActivityNotification.config.orm == :active_record
+              options = { custom_filter: ["key = ?", 'notification_key_2'] }
+              expect(test_instance.notification_keys(options)[0]).to eq('notification_key_2')
+              expect(test_instance.notification_keys(options).size).to eq(1)
+            end
 
             options = { custom_filter: { key: 'notification_key_1' } }
             expect(test_instance.notification_keys(options)[0]).to eq('notification_key_1')

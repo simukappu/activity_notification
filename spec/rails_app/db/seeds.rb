@@ -7,7 +7,7 @@ Comment.delete_all
 Article.delete_all
 Admin.delete_all
 User.delete_all
-ActivityNotification::Notification.connection.execute("UPDATE sqlite_sequence SET seq = 0;")
+User.connection.execute("UPDATE sqlite_sequence SET seq = 0;")
 
 ['Ichiro', 'Stephen', 'Klay', 'Kevin'].each do |name|
   user = User.new(

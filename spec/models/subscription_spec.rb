@@ -92,9 +92,12 @@ describe ActivityNotification::Subscription, type: :model do
 
         context 'with custom_filter options' do
           it "works with filtered_by_options scope" do
-            subscriptions = ActivityNotification::Subscription.filtered_by_options({ custom_filter: ["key = ?", @key_1] })
-            expect(subscriptions.size).to eq(1)
-            expect(subscriptions.first).to eq(@subscription_1)
+            if ActivityNotification.config.orm == :active_record
+              subscriptions = ActivityNotification::Subscription.filtered_by_options({ custom_filter: ["key = ?", @key_1] })
+              expect(subscriptions.size).to eq(1)
+              expect(subscriptions.first).to eq(@subscription_1)
+            end
+
             subscriptions = ActivityNotification::Subscription.filtered_by_options({ custom_filter: { key: @key_2 } })
             expect(subscriptions.size).to eq(1)
             expect(subscriptions.first).to eq(@subscription_2)

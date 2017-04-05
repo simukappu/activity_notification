@@ -7,14 +7,15 @@ module ActivityNotification
 
     included do
       include Common
+      include Association
       include ActionDispatch::Routing::PolymorphicRoutes
       include Rails.application.routes.url_helpers
 
       # Has many notification instances for this notifiable.
       # Dependency for these notifications can be overriden from acts_as_notifiable.
       # @scope instance
-      # @return [Array<Notificaion>] Array or database query of notifications for this notifiable
-      has_many :generated_notifications_as_notifiable,
+      # @return [Array<Notificaion>, Mongoid::Criteria<Notificaion>] Array or database query of notifications for this notifiable
+      has_many_records :generated_notifications_as_notifiable,
         class_name: "::ActivityNotification::Notification",
         as: :notifiable
 

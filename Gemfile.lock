@@ -61,6 +61,7 @@ GEM
       aws-sdk-core (= 2.9.1)
     aws-sigv4 (1.0.0)
     bcrypt (3.1.11)
+    bson (4.2.1)
     builder (3.2.3)
     bullet (5.5.1)
       activesupport (>= 3.0.0)
@@ -109,6 +110,11 @@ GEM
     mime-types-data (3.2016.0521)
     mini_portile2 (2.1.0)
     minitest (5.10.1)
+    mongo (2.4.1)
+      bson (>= 4.2.1, < 5.0.0)
+    mongoid (6.1.0)
+      activemodel (~> 5.0)
+      mongo (>= 2.4.1, < 3.0.0)
     nio4r (2.0.0)
     nokogiri (1.7.1)
       mini_portile2 (~> 2.1.0)
@@ -207,6 +213,7 @@ DEPENDENCIES
   devise (~> 4.2.1)
   dotenv-rails
   factory_girl_rails (~> 4.8.0)
+  mongoid (>= 4.0.0)
   rails (~> 5.0)
   rails-controller-testing
   rspec-rails (~> 3.5.1)

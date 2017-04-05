@@ -20,6 +20,11 @@ SimpleCov.start('rails') do
   elsif Rails::VERSION::MAJOR == 4
     nocov_token 'skip-rails4'
   end
+  if ENV['AN_ORM'] == 'mongoid'
+    add_filter '/lib/activity_notification/orm/active_record'
+  else
+    add_filter '/lib/activity_notification/orm/mongoid'
+  end
 end
 
 # Testing with Devise
@@ -39,6 +44,8 @@ RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.before(:all) do
     FactoryGirl.reload
+    ActivityNotification::Notification.delete_all
+    ActivityNotification::Subscription.delete_all
   end
   config.include Devise::Test::ControllerHelpers, type: :controller
 end

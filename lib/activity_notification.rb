@@ -7,9 +7,7 @@ module ActivityNotification
   extend ActiveSupport::Autoload
 
   autoload :Notification,     'activity_notification/models/notification'
-  autoload :NotificationApi,  'activity_notification/apis/notification_api'
   autoload :Subscription,     'activity_notification/models/subscription'
-  autoload :SubscriptionApi,  'activity_notification/apis/subscription_api'
   autoload :Target,           'activity_notification/models/concerns/target'
   autoload :Subscriber,       'activity_notification/models/concerns/subscriber'
   autoload :Notifiable,       'activity_notification/models/concerns/notifiable'
@@ -44,8 +42,17 @@ module ActivityNotification
   #   end
   def self.configure
     yield(config) if block_given?
+    autoload :Association, "activity_notification/orm/#{ActivityNotification.config.orm.to_s}"
   end
 
+  # Method used to choose which ORM to load
+  # when ActivityNotification::Notification class or ActivityNotification::Subscription class
+  # are being autoloaded
+  def self.inherit_orm(model)
+    orm = ActivityNotification.config.orm
+    require "activity_notification/orm/#{orm.to_s}"
+    "ActivityNotification::ORM::#{orm.to_s.classify}::#{model}".constantize
+  end
 end
 
 # Load ActivityNotification helpers

@@ -216,7 +216,6 @@ shared_examples_for :subscription_controller do
 
   describe "POST #create" do
     before do
-      test_target.subscriptions.delete_all
       expect(test_target.subscriptions.size).to      eq(0)
     end
 

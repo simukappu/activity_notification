@@ -2,13 +2,15 @@ module ActivityNotification
   # Target implementation included in target model to notify, like users or administrators.
   module Target
     extend ActiveSupport::Concern
+
     included do
       include Common
+      include Association
 
       # Has many notification instances of this target.
       # @scope instance
-      # @return [Array<Notificaion>] Array or database query of notifications of this target
-      has_many :notifications,
+      # @return [Array<Notificaion>, Mongoid::Criteria<Notificaion>] Array or database query of notifications of this target
+      has_many_records :notifications,
         class_name: "::ActivityNotification::Notification",
         as: :target,
         dependent: :delete_all
@@ -581,7 +583,7 @@ module ActivityNotification
           end
         else
           # Otherwise, return opened notifications
-          loading_opened_index_method.call(options)
+          loading_opened_index_method.call(options).to_a
         end
       end
 

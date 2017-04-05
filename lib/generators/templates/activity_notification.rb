@@ -1,13 +1,18 @@
 ActivityNotification.configure do |config|
 
-  # Configure if all activity notifications are enabled
-  # Set false when you want to turn off activity notifications
+  # Configure ORM name for ActivityNotification.
+  # Set :active_record or :mongoid.
+  ENV['AN_ORM'] = 'active_record' if ENV['AN_ORM'] != 'mongoid'
+  config.orm = ENV['AN_ORM']
+
+  # Configure if all activity notifications are enabled.
+  # Set false when you want to turn off activity notifications.
   config.enabled = true
 
-  # Configure table name to store notification data
+  # Configure table name to store notification data.
   config.notification_table_name = "notifications"
 
-  # Configure table name to store subscription data
+  # Configure table name to store subscription data.
   config.subscription_table_name = "subscriptions"
 
   # Configure if email notification is enabled as default.

@@ -129,16 +129,19 @@ module ActivityNotification
       # @todo Add filter option
       def open_all_of(target, options = {})
         opened_at = options[:opened_at] || Time.current
-        target.notifications.unopened_only.filtered_by_options(options).update_all(opened_at: opened_at)
+        target_unopened_notifications = target.notifications.unopened_only.filtered_by_options(options)
+        unopened_notification_count = target_unopened_notifications.count
+        target_unopened_notifications.update_all(opened_at: opened_at)
+        unopened_notification_count
       end
   
       # Returns if group member of the notifications exists.
       # This method is designed to be called from controllers or views to avoid N+1.
       #
-      # @param [Array<Notificaion>, ActiveRecord_AssociationRelation<Notificaion>] notifications Array or database query of the notifications to test member exists
+      # @param [Array<Notificaion>, ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] notifications Array or database query of the notifications to test member exists
       # @return [Boolean] If group member of the notifications exists
       def group_member_exists?(notifications)
-        notifications.present? && where(group_owner_id: notifications.map(&:id)).exists?
+        notifications.present? && group_members_of_owner_ids_only(notifications.map(&:id)).exists?
       end
 
       # Sends batch notification email to the target.
@@ -185,12 +188,11 @@ module ActivityNotification
         group_owner_notifications = filtered_by_target(target).filtered_by_type(notifiable.to_class_name).filtered_by_key(key)
                                    .filtered_by_group(group).group_owners_only.unopened_only
         group_owner = group_expiry_delay.present? ?
-                        group_owner_notifications.where("created_at > ?", group_expiry_delay.ago).earliest :
+                        group_owner_notifications.within_expiration_only(group_expiry_delay).earliest :
                         group_owner_notifications.earliest
         notification_fields = { target: target, notifiable: notifiable, key: key, group: group, parameters: parameters, notifier: notifier }
-        group.present? && group_owner.present? ?
-          create(notification_fields.merge(group_owner: group_owner)) :
-          create(notification_fields)
+        notification_fields = notification_fields.merge(group_owner: group_owner) if group.present? && group_owner.present?
+        create(notification_fields)
       end
     end
 
@@ -235,10 +237,13 @@ module ActivityNotification
     # @option options [Boolean] :with_members (true)         If it opens notifications including group members
     # @return [Integer] Number of opened notification records
     def open!(options = {})
-      opened_at = options[:opened_at] || Time.current
+      opened? and return 0
+      opened_at    = options[:opened_at] || Time.current
       with_members = options.has_key?(:with_members) ? options[:with_members] : true
+      unopened_member_count = with_members ? group_members.unopened_only.count : 0
+      group_members.update_all(opened_at: opened_at) if with_members
       update(opened_at: opened_at)
-      with_members ? group_members.update_all(opened_at: opened_at) + 1 : 1
+      unopened_member_count + 1
     end
 
     # Returns if the notification is unopened.
@@ -259,7 +264,7 @@ module ActivityNotification
     #
     # @return [Boolean] If the notification is group owner
     def group_owner?
-      group_owner_id.blank?
+      !group_member?
     end
 
     # Returns if the notification is group member belonging to owner.
@@ -345,7 +350,7 @@ module ActivityNotification
       new_group_owner = group_members.earliest
       if new_group_owner.present?
         new_group_owner.update(group_owner_id: nil)
-        group_members.update_all(group_owner_id: new_group_owner)
+        group_members.update_all(group_owner_id: new_group_owner.id)
       end
       new_group_owner
     end
@@ -390,70 +395,6 @@ module ActivityNotification
     end
 
     protected
-
-      # Returns count of group members of the unopened notification.
-      # This method is designed to cache group by query result to avoid N+1 call.
-      # @api protected
-      #
-      # @return [Integer] Count of group members of the unopened notification
-      def unopened_group_member_count
-        # Cache group by query result to avoid N+1 call
-        unopened_group_member_counts = target.notifications
-                                             .unopened_index_group_members_only
-                                             .group(:group_owner_id)
-                                             .count
-        unopened_group_member_counts[id] || 0
-      end
-
-      # Returns count of group members of the opened notification.
-      # This method is designed to cache group by query result to avoid N+1 call.
-      # @api protected
-      #
-      # @return [Integer] Count of group members of the opened notification
-      def opened_group_member_count(limit = ActivityNotification.config.opened_index_limit)
-        # Cache group by query result to avoid N+1 call
-        opened_group_member_counts   = target.notifications
-                                             .opened_index_group_members_only(limit)
-                                             .group(:group_owner_id)
-                                             .count
-        opened_group_member_counts[id] || 0
-      end
-
-      # Returns count of group member notifiers of the unopened notification not including group owner notifier.
-      # This method is designed to cache group by query result to avoid N+1 call.
-      # @api protected
-      #
-      # @return [Integer] Count of group member notifiers of the unopened notification
-      def unopened_group_member_notifier_count
-        # Cache group by query result to avoid N+1 call
-        unopened_group_member_notifier_counts = target.notifications
-                                                      .unopened_index_group_members_only
-                                                      .includes(:group_owner)
-                                                      .where('group_owners_notifications.notifier_type = notifications.notifier_type')
-                                                      .where.not('group_owners_notifications.notifier_id = notifications.notifier_id')
-                                                      .references(:group_owner)
-                                                      .group(:group_owner_id, :notifier_type)
-                                                      .count('distinct notifications.notifier_id')
-        unopened_group_member_notifier_counts[[id, notifier_type]] || 0
-      end
-
-      # Returns count of group member notifiers of the opened notification not including group owner notifier.
-      # This method is designed to cache group by query result to avoid N+1 call.
-      # @api protected
-      #
-      # @return [Integer] Count of group member notifiers of the opened notification
-      def opened_group_member_notifier_count(limit = ActivityNotification.config.opened_index_limit)
-        # Cache group by query result to avoid N+1 call
-        opened_group_member_notifier_counts   = target.notifications
-                                                      .opened_index_group_members_only(limit)
-                                                      .includes(:group_owner)
-                                                      .where('group_owners_notifications.notifier_type = notifications.notifier_type')
-                                                      .where.not('group_owners_notifications.notifier_id = notifications.notifier_id')
-                                                      .references(:group_owner)
-                                                      .group(:group_owner_id, :notifier_type)
-                                                      .count('distinct notifications.notifier_id')
-        opened_group_member_notifier_counts[[id, notifier_type]] || 0
-      end
 
       # Returns count of various members of the notification.
       # This method is designed to cache group by query result to avoid N+1 call.

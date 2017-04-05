@@ -15,15 +15,24 @@ gemfile:
   - gemfiles/Gemfile.rails-5.0
   - gemfiles/Gemfile.rails-4.2
 
+env:
+  - AN_ORM=active_record
+  - AN_ORM=mongoid
+
 matrix:
   exclude:
     - rvm: 2.1.9
       gemfile: gemfiles/Gemfile.rails-5.0
     - rvm: 2.1.9
       gemfile: Gemfile
+    - env: AN_ORM=mongoid
+      gemfile: Gemfile
   allow_failures:
     - rvm: ruby-head
   fast_finish: true
+
+services:
+  - mongodb
 
 sudo: false
 
