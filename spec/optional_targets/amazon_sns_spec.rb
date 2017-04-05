@@ -12,7 +12,11 @@ describe ActivityNotification::OptionalTarget::AmazonSNS do
     describe "#initialize_target" do
       #TODO
       it "does not raise NotImplementedError" do
-        test_instance.initialize_target
+        begin
+          test_instance.initialize_target
+        rescue Aws::Errors::MissingRegionError
+          # Rescue for CI without AWS client configuration
+        end
       end
     end
 
