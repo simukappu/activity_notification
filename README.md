@@ -126,7 +126,7 @@ $ bin/rake db:migrate
 
 #### Using Mongoid ORM
 
-If you want use mongoid as ActivityNotification ORM, set `AN_ORM` environment variable to `mongoid`:
+If you want use [Mongoid](http://mongoid.org) as ActivityNotification ORM, set `AN_ORM` environment variable to `mongoid`:
 
 ```console
 $ export AN_ORM=mongoid
@@ -137,6 +137,8 @@ You can also configure ORM in initializer `activity_notification.rb`.
 ```ruby
 config.orm = :mongoid
 ```
+
+You need to configure Mongoid for your environment. Your notifications and subscriptions will be stored in your MongoDB.
 
 ### Configuring models
 
