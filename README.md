@@ -132,7 +132,7 @@ If you want use [Mongoid](http://mongoid.org) as ActivityNotification ORM, set `
 $ export AN_ORM=mongoid
 ```
 
-You can also configure ORM in initializer `activity_notification.rb`.
+You can also configure ORM in initializer `activity_notification.rb`:
 
 ```ruby
 config.orm = :mongoid
