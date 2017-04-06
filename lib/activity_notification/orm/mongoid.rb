@@ -10,7 +10,6 @@ module ActivityNotification
       end
 
       # Defines polymorphic belongs_to association with models in other database.
-      # @todo
       def belongs_to_polymorphic_xdb_record(name, options = {})
         association_name     = name.to_s.singularize.underscore
         id_field, type_field = "#{association_name}_id", "#{association_name}_type"
@@ -39,7 +38,7 @@ module ActivityNotification
       end
 
       # Defines polymorphic has_many association with models in other database.
-      # @todo
+      # @todo Add dependent option
       def has_many_polymorphic_xdb_records(name, options = {})
         association_name     = options[:as] || name.to_s.underscore
         id_field, type_field = "#{association_name}_id", "#{association_name}_type"
