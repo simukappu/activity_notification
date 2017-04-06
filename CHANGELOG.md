@@ -1,12 +1,23 @@
+## 1.3.0 / 2017-04-07
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.2.1...v1.3.0)
+
+Enhancements:
+* Suport Mongoid ORM to store `Notification` and `Subscription` records
+  * Separate `Notification` and `Subscription` models into ORMs and make them load from ORM selector
+  * Update query logic in `Notification` and `Subscription` models for Mongoid
+* Make `:dependent_notifications` option in `acts_as_notifiable` separate into each target configuration
+* Add `overriding_notification_template_key` to `Notifiable` model for `Renderable`
+* Enable Devise integration to use models with single table inheritance
+
 ## 1.2.1 / 2017-01-06
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.2.0...v1.2.1)
 
 Enhancements:
-* Support default Slack optional target with slack-notifier 2.0.0
+* Support default Slack optional target with `slack-notifier` 2.0.0
 
 Breaking Changes:
 
-* Rename :slack_name initializing parameter and template parameter of default Slack optional target to :target_username
+* Rename `:slack_name` initializing parameter and template parameter of default Slack optional target to `:target_username`
 
 ## 1.2.0 / 2017-01-06
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.1.0...v1.2.0)
