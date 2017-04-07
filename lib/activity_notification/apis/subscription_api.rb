@@ -9,7 +9,7 @@ module ActivityNotification
       #   @subscriptions = @user.subscriptions.filtered_by_key('comment.reply')
       # @scope class
       # @param [String] key Key of the subscription for filter
-      # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of filtered subscriptions
+      # @return [ActiveRecord_AssociationRelation<Subscription>, Mongoid::Criteria<Notificaion>] Database query of filtered subscriptions
       scope :filtered_by_key,     ->(key) { where(key: key) }
 
       # Selects filtered subscriptions by key with filter options.
@@ -21,7 +21,7 @@ module ActivityNotification
       # @param [Hash] options Options for filter
       # @option options [String]     :filtered_by_key        (nil) Key of the subscription for filter 
       # @option options [Array|Hash] :custom_filter          (nil) Custom subscription filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [Mongoid::Criteria<Notificaion>] Database query of filtered subscriptions
+      # @return [ActiveRecord_AssociationRelation<Subscription>, Mongoid::Criteria<Notificaion>] Database query of filtered subscriptions
       scope :filtered_by_options, ->(options = {}) {
         options = ActivityNotification.cast_to_indifferent_hash(options)
         filtered_subscriptions = all
@@ -35,23 +35,23 @@ module ActivityNotification
       }
 
       # Orders by latest (newest) first as created_at: :desc.
-      # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by latest first
+      # @return [ActiveRecord_AssociationRelation<Subscription>, Mongoid::Criteria<Notificaion>] Database query of subscriptions ordered by latest first
       scope :latest_order,              -> { order(created_at: :desc) }
 
       # Orders by earliest (older) first as created_at: :asc.
-      # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by earliest first
+      # @return [ActiveRecord_AssociationRelation<Subscription>, Mongoid::Criteria<Notificaion>] Database query of subscriptions ordered by earliest first
       scope :earliest_order,            -> { order(created_at: :asc) }
 
       # Orders by latest (newest) first as subscribed_at: :desc.
-      # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by latest subscribed_at first
+      # @return [ActiveRecord_AssociationRelation<Subscription>, Mongoid::Criteria<Notificaion>] Database query of subscriptions ordered by latest subscribed_at first
       scope :latest_subscribed_order,   -> { order(subscribed_at: :desc) }
 
       # Orders by earliest (older) first as subscribed_at: :asc.
-      # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by earliest subscribed_at first
+      # @return [ActiveRecord_AssociationRelation<Subscription>, Mongoid::Criteria<Notificaion>] Database query of subscriptions ordered by earliest subscribed_at first
       scope :earliest_subscribed_order, -> { order(subscribed_at: :asc) }
 
       # Orders by key name as key: :asc.
-      # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by key name
+      # @return [ActiveRecord_AssociationRelation<Subscription>, Mongoid::Criteria<Notificaion>] Database query of subscriptions ordered by key name
       scope :key_order,                 -> { order(key: :asc) }
     end
 

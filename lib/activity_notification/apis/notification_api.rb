@@ -125,11 +125,11 @@ module ActivityNotification
       }
 
       # Orders by latest (newest) first as created_at: :desc.
-      # @return [Mongoid::Criteria<Notificaion>] Database query of notifications ordered by latest first
+      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of notifications ordered by latest first
       scope :latest_order,                      -> { order(created_at: :desc) }
 
       # Orders by earliest (older) first as created_at: :asc.
-      # @return [Mongoid::Criteria<Notificaion>] Database query of notifications ordered by earliest first
+      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of notifications ordered by earliest first
       scope :earliest_order,                    -> { order(created_at: :asc) }
     end
 
