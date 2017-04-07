@@ -22,9 +22,9 @@ env:
 
 matrix:
   exclude:
-    - rvm: 2.1.9
+    - rvm: 2.1.10
       gemfile: gemfiles/Gemfile.rails-5.0
-    - rvm: 2.1.9
+    - rvm: 2.1.10
       gemfile: Gemfile
     - env: AN_ORM=mongoid
       gemfile: Gemfile
