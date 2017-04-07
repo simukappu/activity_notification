@@ -10,7 +10,7 @@ module ActivityNotification
       end
 
       # Defines polymorphic belongs_to association with models in other database.
-      def belongs_to_polymorphic_xdb_record(name, options = {})
+      def belongs_to_polymorphic_xdb_record(name, _options = {})
         association_name     = name.to_s.singularize.underscore
         id_field, type_field = "#{association_name}_id", "#{association_name}_type"
         field id_field,   type: Integer
@@ -29,9 +29,9 @@ module ActivityNotification
           end
 
           define_method("#{name}=") do |new_instance|
-            if new_instance.nil? then _id, _type = nil, nil else _id, _type = new_instance.id, new_instance.class.name end
-            self.send("#{id_field}=", _id)
-            self.send("#{type_field}=", _type)
+            if new_instance.nil? then instance_id, instance_type = nil, nil else instance_id, instance_type = new_instance.id, new_instance.class.name end
+            self.send("#{id_field}=", instance_id)
+            self.send("#{type_field}=", instance_type)
             self.instance_variable_set("@#{name}", nil)
           end
         end

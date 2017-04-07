@@ -13,13 +13,11 @@ module ActivityNotification
 
       # Copies initializer file in application directory
       def copy_initializer
-        #TODO suport other orm e.g. mongoid
-        unless options[:orm] == :active_record
+        unless [:active_record, :mongoid].include?(options[:orm])
           raise TypeError, <<-ERROR.strip_heredoc
-          Currently ActivityNotification is only supported with Active Record ORM.
+          Currently ActivityNotification is only supported with ActiveRecord or Mongoid ORM.
 
-          Be sure to have an Active Record ORM loaded in your
-          app or configure your own at `config/application.rb`.
+          Be sure to have an ActiveRecord or MongoidORM loaded in your app or configure your own at `config/application.rb`.
 
             config.generators do |g|
               g.orm :active_record

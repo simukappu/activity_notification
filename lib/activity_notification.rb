@@ -42,7 +42,7 @@ module ActivityNotification
   #   end
   def self.configure
     yield(config) if block_given?
-    autoload :Association, "activity_notification/orm/#{ActivityNotification.config.orm.to_s}"
+    autoload :Association, "activity_notification/orm/#{ActivityNotification.config.orm}"
   end
 
   # Method used to choose which ORM to load
@@ -50,7 +50,7 @@ module ActivityNotification
   # are being autoloaded
   def self.inherit_orm(model)
     orm = ActivityNotification.config.orm
-    require "activity_notification/orm/#{orm.to_s}"
+    require "activity_notification/orm/#{orm}"
     "ActivityNotification::ORM::#{orm.to_s.classify}::#{model}".constantize
   end
 end

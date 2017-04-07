@@ -342,7 +342,7 @@ module ActivityNotification
           # @return [Integer] Count of group members of the opened notification
           def opened_group_member_count(limit = ActivityNotification.config.opened_index_limit)
             limit == 0 and return 0
-            group_members.opened_only(limit).to_a.length #TODO .count(true)
+            group_members.opened_only(limit).to_a.length #.count(true)
           end
 
           # Returns count of group member notifiers of the unopened notification not including group owner notifier.
@@ -371,7 +371,7 @@ module ActivityNotification
                          .where(notifier_type: notifier_type)
                          .where(:notifier_id.ne => notifier_id)
                          .distinct(:notifier_id)
-                         .to_a.length #TODO .count(true)
+                         .to_a.length #.count(true)
           end
 
       end

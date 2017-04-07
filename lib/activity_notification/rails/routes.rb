@@ -204,16 +204,20 @@ module ActionDispatch::Routing
 
       # Create options fo routing
       # @api private
+      # @todo Check resources if it includes target module
+      # @todo Check devise configuration in model
+      # @todo Support other options like :as, :path_prefix, :path_names ...
+      #
       # @param [Symbol] resource Name of the resource model
       # @return [Boolean] Whether action path is ignored
       def create_options(resource, options = {}, except_actions = [])
-        #TODO check resources if it includes target module
+        # Check resources if it includes target module
         resources_name = resource.to_s.pluralize.underscore
         options[:model] ||= resources_name.to_sym
         if options[:with_devise].present?
           options[:controller] ||= "activity_notification/#{resources_name}_with_devise"
           options[:as]         ||= resources_name
-          #TODO check devise configuration in model
+          # Check devise configuration in model
           options[:devise_defaults] = { devise_type: options[:with_devise].to_s }
         else
           options[:controller] ||= "activity_notification/#{resources_name}"
@@ -224,7 +228,7 @@ module ActionDispatch::Routing
           options[:subscription_option] = (options[:with_subscription].is_a?(Hash) ? options[:with_subscription] : {})
                                             .merge(with_devise: options[:with_devise])
         end
-        #TODO other options like :as, :path_prefix, :path_names ...
+        # Support other options like :as, :path_prefix, :path_names ...
         options
       end
 
