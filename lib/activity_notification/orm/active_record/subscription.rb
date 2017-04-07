@@ -36,81 +36,15 @@ module ActivityNotification
         # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of filtered subscriptions
         scope :filtered_by_target,  ->(target) { where(target: target) }
 
-        # Selects filtered subscriptions by key.
-        # @example Get filtered subscriptions of the @user with key 'comment.reply'
-        #   @subscriptions = @user.subscriptions.filtered_by_key('comment.reply')
-        # @scope class
-        # @param [String] key Key of the subscription for filter
-        # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of filtered subscriptions
-        scope :filtered_by_key,     ->(key) { where(key: key) }
-
-        # Selects filtered subscriptions by key with filter options.
-        # @example Get filtered subscriptions of the @user with key 'comment.reply'
-        #   @subscriptions = @user.subscriptions.filtered_by_key('comment.reply')
-        # @example Get custom filtered subscriptions of the @user
-        #   @subscriptions = @user.subscriptions.filtered_by_options({ custom_filter: ["created_at >= ?", time.hour.ago] })
-        # @scope class
-        # @param [Hash] options Options for filter
-        # @option options [String]     :filtered_by_key        (nil) Key of the subscription for filter 
-        # @option options [Array|Hash] :custom_filter          (nil) Custom subscription filter (e.g. ["created_at >= ?", time.hour.ago])
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered subscriptions
-        scope :filtered_by_options, ->(options = {}) {
-          options = ActivityNotification.cast_to_indifferent_hash(options)
-          filtered_subscriptions = all
-          if options.has_key?(:filtered_by_key)
-            filtered_subscriptions = filtered_subscriptions.filtered_by_key(options[:filtered_by_key])
-          end
-          if options.has_key?(:custom_filter)
-            filtered_subscriptions = filtered_subscriptions.where(options[:custom_filter])
-          end
-          filtered_subscriptions
-        }
-
-        # Orders by latest (newest) first as created_at: :desc.
-        # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by latest first
-        scope :latest_order,              -> { order(created_at: :desc) }
-
-        # Orders by earliest (older) first as created_at: :asc.
-        # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by earliest first
-        scope :earliest_order,            -> { order(created_at: :asc) }
-
-        # Orders by latest (newest) first as subscribed_at: :desc.
-        # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by latest subscribed_at first
-        scope :latest_subscribed_order,   -> { order(subscribed_at: :desc) }
-
-        # Orders by earliest (older) first as subscribed_at: :asc.
-        # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by earliest subscribed_at first
-        scope :earliest_subscribed_order, -> { order(subscribed_at: :asc) }
-
-        # Orders by key name as key: :asc.
-        # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions ordered by key name
-        scope :key_order,                 -> { order(key: :asc) }
-
         # Includes target instance with query for subscriptions.
         # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of subscriptions with target
         scope :with_target,               -> { includes(:target) }
 
         # Selects unique keys from query for subscriptions.
         # @return [Array<String>] Array of subscription unique keys
-        scope :uniq_keys,                 -> { select(:key).distinct.pluck(:key) }
-
-        private
-
-          # Validates subscribing_to_email cannot be true when subscribing isfalse.
-          def subscribing_to_email_cannot_be_true_when_subscribing_is_false
-            if !subscribing && subscribing_to_email?
-              errors.add(:subscribing_to_email, "cannot be true when subscribing is false")
-            end
-          end
-
-          # Validates subscribing_to_optional_target cannot be true when subscribing isfalse.
-          def subscribing_to_optional_target_cannot_be_true_when_subscribing_is_false
-            optional_target_names.each do |optional_target_name|
-              if !subscribing && subscribing_to_optional_target?(optional_target_name)
-                errors.add(:optional_targets, "#Subscription.to_optional_target_key(optional_target_name) cannot be true when subscribing is false")
-              end
-            end
-          end
+        def self.uniq_keys
+          select(:key).distinct.pluck(:key)
+        end
 
       end
     end
