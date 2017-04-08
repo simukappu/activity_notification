@@ -361,7 +361,7 @@ Then, content named `:notification_index` will be prepared and you can use it in
 Sometimes, it's desirable to pass additional local variables to partials. It can be done this way:
 
 ```erb
-<%= render_notification(@notification, locals: {friends: current_user.friends}) %>
+<%= render_notification(@notification, locals: { friends: current_user.friends }) %>
 ```
 
 #### Notification views
@@ -626,7 +626,7 @@ This makes all target model subscribers. You can also configure them for each ta
 class User < ActiveRecord::Base
   # Example using confirmed_at of devise field
   # to decide whether activity_notification manages subscriptions of this user
-  acts_as_target email: :email, email_allowed: :confirmed_at, subscription_allowed: confirmed_at
+  acts_as_target email: :email, email_allowed: :confirmed_at, subscription_allowed: :confirmed_at
 end
 ```
 
