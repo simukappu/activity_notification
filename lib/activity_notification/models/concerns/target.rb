@@ -585,7 +585,7 @@ module ActivityNotification
           end
         else
           # Otherwise, return opened notifications
-          loading_opened_index_method.call(options).to_a
+          arrange_single_notification_index(loading_opened_index_method, options)
         end
       end
 
