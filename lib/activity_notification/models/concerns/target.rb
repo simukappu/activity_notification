@@ -561,6 +561,7 @@ module ActivityNotification
       # @option options [Integer]    :limit                  (nil)   Limit to query for notifications
       # @option options [Boolean]    :reverse                (false) If notification index will be ordered as earliest first
       # @option options [Boolean]    :with_group_members     (false) If notification index will include group members
+      # @option options [Boolean]    :as_latest_group_member (false) If grouped notification will be shown as the latest group member (default is shown as the earliest member)
       # @option options [String]     :filtered_by_type       (nil)   Notifiable type for filter
       # @option options [Object]     :filtered_by_group      (nil)   Group instance for filter
       # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
@@ -572,12 +573,12 @@ module ActivityNotification
         # When the target have unopened notifications
         if has_unopened_notifications?(options)
           # Return unopened notifications first
-          target_unopened_index = loading_unopened_index_method.call(options).to_a
+          target_unopened_index = arrange_single_notification_index(loading_unopened_index_method, options)
           # Total limit if notification index
           total_limit = options[:limit] || ActivityNotification.config.opened_index_limit
           # Additionaly, return opened notifications unless unopened index size overs the limit
           if (opened_limit = total_limit - target_unopened_index.size) > 0
-            target_opened_index = loading_opened_index_method.call(options.merge(limit: opened_limit))
+            target_opened_index = arrange_single_notification_index(loading_opened_index_method, options.merge(limit: opened_limit))
             target_unopened_index.concat(target_opened_index.to_a)
           else
             target_unopened_index
