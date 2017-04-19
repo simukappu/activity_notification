@@ -534,6 +534,7 @@ module ActivityNotification
       # @option options [Integer]    :limit                  (nil)   Limit to query for notifications
       # @option options [Boolean]    :reverse                (false) If notification index will be ordered as earliest first
       # @option options [Boolean]    :with_group_members     (false) If notification index will include group members
+      # @option options [Boolean]    :as_latest_group_member (false) If grouped notification will be shown as the latest group member (default is shown as the earliest member)
       # @option options [String]     :filtered_by_type       (nil)   Notifiable type for filter
       # @option options [Object]     :filtered_by_group      (nil)   Group instance for filter
       # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id

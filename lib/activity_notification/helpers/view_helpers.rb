@@ -58,7 +58,7 @@ module ActivityNotification
       notification_options = options.merge( target: target.to_resources_name,
                                             partial: options[:notification_partial],
                                             layout: options[:notification_layout] )
-      index_options = options.slice( :limit, :reverse, :with_group_members,
+      index_options = options.slice( :limit, :reverse, :with_group_members, :as_latest_group_member,
                                      :filtered_by_group, :filtered_by_group_type, :filtered_by_group_id,
                                      :filtered_by_type, :filtered_by_key, :custom_filter )
       notification_index = load_notification_index(target, options[:index_content], index_options)
