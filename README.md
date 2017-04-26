@@ -296,6 +296,8 @@ Or, you can call public API as `ActivityNotification::Notification.notify`
 ActivityNotification::Notification.notify :users, @comment, key: "comment.reply"
 ```
 
+The first argument is the plural symbol name of your target model, which is configured in notifiable model by `acts_as_notifiable`.
+
 *Hint*: `:key` is a option. Default key `#{notifiable_type}.default` which means `comment.default` will be used without specified key.
 
 ### Displaying notifications
@@ -840,7 +842,7 @@ Any other options for `Aws::SNS::Client.new` are available as initializing param
 ```ruby
 class Comment < ActiveRecord::Base
   require 'activity_notification/optional_targets/amazon_sns'
-  acts_as_notifiable :admins, targets: Admin.all,
+  acts_as_notifiable :admins, targets: [Admin.first],
     optional_targets: {
       ActivityNotification::OptionalTarget::AmazonSNS => { topic_arn: 'arn:aws:sns:XXXXX:XXXXXXXXXXXX:XXXXX' }
     }
@@ -863,7 +865,7 @@ Any other options for `Slack::Notifier.new` are available as initializing parame
 ```ruby
 class Comment < ActiveRecord::Base
   require 'activity_notification/optional_targets/slack'
-  acts_as_notifiable :admins, targets: Admin.all,
+  acts_as_notifiable :admins, targets: [Admin.first],
     optional_targets: {
       ActivityNotification::OptionalTarget::Slack  => {
         webhook_url: 'https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX',
@@ -913,7 +915,7 @@ Then, you can configure them to notifiable model by `acts_as_notifiable` like th
 ```ruby
 class Comment < ActiveRecord::Base
   require 'custom_optional_targets/amazon_sns'
-  acts_as_notifiable :admins, targets: Admin.all,
+  acts_as_notifiable :admins, targets: [Admin.first],
     optional_targets: {
       CustomOptionalTarget::AmazonSNS => { topic_arn: 'arn:aws:sns:XXXXX:XXXXXXXXXXXX:XXXXX' }
     }
