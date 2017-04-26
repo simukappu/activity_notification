@@ -162,7 +162,7 @@ end
 #### Configuring notifiable model
 
 Configure your notifiable model (e.g. app/models/comment.rb).
-Add `acts_as_notifiable` configuration to your notifiable model representing activity to notify.
+Add `acts_as_notifiable` configuration to your notifiable model representing activity to notify for each of your target model.
 You have to define notification targets for all notifications from this notifiable model by `:targets` option. Other configurations are options. `:notifiable_path` option is a path to move when the notification is opened by the target user.
 
 ```ruby
@@ -177,7 +177,8 @@ class Comment < ActiveRecord::Base
   belongs_to :user
 
   # acts_as_notifiable configures your model as ActivityNotification::Notifiable
-  # with parameters as value or custom methods defined in your model as lambda or symbol
+  # with parameters as value or custom methods defined in your model as lambda or symbol.
+  # The first argument is the plural symbol name of your target model.
   acts_as_notifiable :users,
     # Notification targets as :targets is a necessary option
     # Set to notify to author and users commented to the article, except comment owner self
@@ -786,7 +787,7 @@ class Comment < ActiveRecord::Base
   require 'activity_notification/optional_targets/amazon_sns'
   require 'activity_notification/optional_targets/slack'
   require 'custom_optional_targets/console_output'
-  acts_as_notifiable :admins, targets: Admin.all,
+  acts_as_notifiable :admins, targets: [Admin.first],
     notifiable_path: :article_notifiable_path,
     # Set optional target implementation class and initializing parameters
     optional_targets: {
