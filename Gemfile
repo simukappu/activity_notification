@@ -2,7 +2,10 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'rails', '~> 5.0'
+gem 'rails', '~> 5.1'
+
+#TODO Remove it after devise supporting rails 5.1 is released
+gem 'devise', github: 'plataformatec/devise', ref: '83002017'
 
 group :development do
   gem 'bullet'
