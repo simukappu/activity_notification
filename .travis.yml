@@ -13,8 +13,9 @@ rvm:
 
 gemfile:
   - Gemfile
-  - gemfiles/Gemfile.rails-5.0
   - gemfiles/Gemfile.rails-4.2
+  - gemfiles/Gemfile.rails-5.0
+  - gemfiles/Gemfile.rails-5.1
 
 env:
   - AN_ORM=active_record
@@ -23,9 +24,11 @@ env:
 matrix:
   exclude:
     - rvm: 2.1.10
+      gemfile: Gemfile
+    - rvm: 2.1.10
       gemfile: gemfiles/Gemfile.rails-5.0
     - rvm: 2.1.10
-      gemfile: Gemfile
+      gemfile: gemfiles/Gemfile.rails-5.1
     - env: AN_ORM=mongoid
       gemfile: Gemfile
   allow_failures:

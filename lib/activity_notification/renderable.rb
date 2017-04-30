@@ -152,7 +152,7 @@ module ActivityNotification
         context.render params.merge(partial: partial, layout: layout, locals: locals)
       rescue ActionView::MissingTemplate => e
         if params[:fallback] == :text
-          context.render text: self.text(params)
+          context.render plain: self.text(params)
         elsif params[:fallback].present?
           partial = partial_path(*params.values_at(:fallback, :partial_root, :target))
           context.render params.merge(partial: partial, layout: layout, locals: locals)
