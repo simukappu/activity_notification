@@ -36,7 +36,7 @@ class Comment < ActiveRecord::Base
       }
     )
   end
-  acts_as_notifiable :admins, targets: [Admin.first],
+  acts_as_notifiable :admins, targets: [Admin.first].compact,
     group: :article, notifier: :user, notifiable_path: :article_notifiable_path,
     printable_name: ->(comment) { "comment \"#{comment.body}\"" }, dependent_notifications: :delete_all,
     optional_targets: optional_targets

@@ -789,7 +789,7 @@ class Comment < ActiveRecord::Base
   require 'activity_notification/optional_targets/amazon_sns'
   require 'activity_notification/optional_targets/slack'
   require 'custom_optional_targets/console_output'
-  acts_as_notifiable :admins, targets: [Admin.first],
+  acts_as_notifiable :admins, targets: [Admin.first].compact,
     notifiable_path: :article_notifiable_path,
     # Set optional target implementation class and initializing parameters
     optional_targets: {
@@ -842,7 +842,7 @@ Any other options for `Aws::SNS::Client.new` are available as initializing param
 ```ruby
 class Comment < ActiveRecord::Base
   require 'activity_notification/optional_targets/amazon_sns'
-  acts_as_notifiable :admins, targets: [Admin.first],
+  acts_as_notifiable :admins, targets: [Admin.first].compact,
     optional_targets: {
       ActivityNotification::OptionalTarget::AmazonSNS => { topic_arn: 'arn:aws:sns:XXXXX:XXXXXXXXXXXX:XXXXX' }
     }
@@ -865,7 +865,7 @@ Any other options for `Slack::Notifier.new` are available as initializing parame
 ```ruby
 class Comment < ActiveRecord::Base
   require 'activity_notification/optional_targets/slack'
-  acts_as_notifiable :admins, targets: [Admin.first],
+  acts_as_notifiable :admins, targets: [Admin.first].compact,
     optional_targets: {
       ActivityNotification::OptionalTarget::Slack  => {
         webhook_url: 'https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXX',
@@ -915,7 +915,7 @@ Then, you can configure them to notifiable model by `acts_as_notifiable` like th
 ```ruby
 class Comment < ActiveRecord::Base
   require 'custom_optional_targets/amazon_sns'
-  acts_as_notifiable :admins, targets: [Admin.first],
+  acts_as_notifiable :admins, targets: [Admin.first].compact,
     optional_targets: {
       CustomOptionalTarget::AmazonSNS => { topic_arn: 'arn:aws:sns:XXXXX:XXXXXXXXXXXX:XXXXX' }
     }
