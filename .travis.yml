@@ -18,7 +18,9 @@ gemfile:
   - gemfiles/Gemfile.rails-5.1
 
 env:
-  - AN_ORM=active_record
+  - AN_ORM=active_record AN_TEST_DB=sqlite
+  - AN_ORM=active_record AN_TEST_DB=mysql
+  - AN_ORM=active_record AN_TEST_DB=postgresql
   - AN_ORM=mongoid
 
 matrix:
@@ -29,6 +31,10 @@ matrix:
       gemfile: gemfiles/Gemfile.rails-5.0
     - rvm: 2.1.10
       gemfile: gemfiles/Gemfile.rails-5.1
+    - env: AN_ORM=active_record AN_TEST_DB=mysql
+      gemfile: Gemfile
+    - env: AN_ORM=active_record AN_TEST_DB=postgresql
+      gemfile: Gemfile
     - env: AN_ORM=mongoid
       gemfile: Gemfile
   allow_failures:
@@ -44,7 +50,10 @@ cache: bundler
 
 before_install: "rm ${BUNDLE_GEMFILE}.lock"
 
-before_script: "bundle update"
+before_script:
+  - bundle update
+  - mysql -e 'create database activity_notification_test'
+  - psql -c 'create database activity_notification_test' -U postgres
 
 script: bundle exec rspec
 
