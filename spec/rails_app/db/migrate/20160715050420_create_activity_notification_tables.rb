@@ -1,5 +1,5 @@
 # Migration responsible for creating a table with notifications
-class CreateActivityNotificationTables < ActiveRecord::Migration
+class CreateActivityNotificationTables < ActiveRecord::Migration[5.1]
   # Create tables
   def change
     create_table :notifications do |t|

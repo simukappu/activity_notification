@@ -1,4 +1,4 @@
-class CreateTestTables < ActiveRecord::Migration
+class CreateTestTables < ActiveRecord::Migration[5.1]
   def change
     create_table :users do |t|
       # Devise
