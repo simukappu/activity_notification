@@ -15,7 +15,7 @@ shared_examples_for :subscriber do
       expect(test_instance.subscriptions.count).to                eq(2)
       expect(test_instance.subscriptions.earliest_order.first).to eq(subscription_1)
       expect(test_instance.subscriptions.latest_order.first).to   eq(subscription_2)
-      expect(test_instance.subscriptions).to                      eq(ActivityNotification::Subscription.filtered_by_target(test_instance))
+      expect(test_instance.subscriptions.latest_order).to         eq(ActivityNotification::Subscription.filtered_by_target(test_instance).latest_order)
     end
   end    
 
