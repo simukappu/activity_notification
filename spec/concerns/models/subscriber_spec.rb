@@ -11,7 +11,7 @@ shared_examples_for :subscriber do
   describe "with association" do
     it "has many subscriptions" do
       subscription_1 = create(:subscription, target: test_instance, key: 'subscription_key_1')
-      subscription_2 = create(:subscription, target: test_instance, key: 'subscription_key_2')
+      subscription_2 = create(:subscription, target: test_instance, key: 'subscription_key_2', created_at: subscription_1.created_at + 1.second)
       expect(test_instance.subscriptions.count).to                eq(2)
       expect(test_instance.subscriptions.earliest_order.first).to eq(subscription_1)
       expect(test_instance.subscriptions.latest_order.first).to   eq(subscription_2)
@@ -182,7 +182,7 @@ shared_examples_for :subscriber do
       context "when the target has subscriptions" do
         before do
           @subscription2 = create(:subscription, target: test_instance, key: 'subscription_key_2')
-          @subscription1 = create(:subscription, target: test_instance, key: 'subscription_key_1')
+          @subscription1 = create(:subscription, target: test_instance, key: 'subscription_key_1', created_at: @subscription2.created_at + 1.second)
         end
 
         context "without any options" do
@@ -221,7 +221,7 @@ shared_examples_for :subscriber do
         context 'with custom_filter options' do
           it "returns filtered notifications only" do
             if ActivityNotification.config.orm == :active_record
-              options = { custom_filter: ["key = ?", 'subscription_key_2'] }
+              options = { custom_filter: ["subscriptions.key = ?", 'subscription_key_2'] }
               expect(test_instance.subscription_index(options)[0]).to eq(@subscription2)
               expect(test_instance.subscription_index(options).size).to eq(1)
             end
@@ -258,8 +258,8 @@ shared_examples_for :subscriber do
 
       context "when the target has notifications" do
         before do
-          create(:notification, target: test_instance, key: 'notification_key_2')
-          create(:notification, target: test_instance, key: 'notification_key_1')
+          notification = create(:notification, target: test_instance, key: 'notification_key_2')
+          create(:notification, target: test_instance, key: 'notification_key_1', created_at: notification.created_at + 1.second)
           create(:subscription, target: test_instance, key: 'notification_key_1')
         end
 
@@ -323,7 +323,7 @@ shared_examples_for :subscriber do
         context 'with custom_filter options' do
           it "returns filtered notifications only" do
             if ActivityNotification.config.orm == :active_record
-              options = { custom_filter: ["key = ?", 'notification_key_2'] }
+              options = { custom_filter: ["notifications.key = ?", 'notification_key_2'] }
               expect(test_instance.notification_keys(options)[0]).to eq('notification_key_2')
               expect(test_instance.notification_keys(options).size).to eq(1)
             end

@@ -5,7 +5,7 @@ shared_examples_for :notifier do
   describe "with association" do
     it "has many sent_notifications" do
       notification_1 = create(:notification, notifier: test_instance)
-      notification_2 = create(:notification, notifier: test_instance)
+      notification_2 = create(:notification, notifier: test_instance, created_at: notification_1.created_at + 1.second)
       expect(test_instance.sent_notifications.count).to    eq(2)
       expect(test_instance.sent_notifications.earliest).to eq(notification_1)
       expect(test_instance.sent_notifications.latest).to   eq(notification_2)

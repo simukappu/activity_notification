@@ -175,7 +175,9 @@ module ActivityNotification
         # Selects unique keys from query for notifications.
         # @return [Array<String>] Array of notification unique keys
         def self.uniq_keys
-          select(:key).distinct.pluck(:key)
+          # select method cannot be chained with order by other columns like created_at
+          # select(:key).distinct.pluck(:key)
+          pluck(:key).uniq
         end
 
         protected

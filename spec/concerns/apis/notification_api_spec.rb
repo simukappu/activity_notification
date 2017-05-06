@@ -568,7 +568,7 @@ shared_examples_for :notification_api do
       context "as default" do
         it "open notification with current time" do
           expect(test_instance.opened_at.blank?).to be_truthy
-          Timecop.freeze(Time.current)
+          Timecop.freeze(Time.at(Time.now.to_i))
           test_instance.open!
           expect(test_instance.opened_at.blank?).to be_falsey
           expect(test_instance.opened_at).to        eq(Time.current)
@@ -578,7 +578,7 @@ shared_examples_for :notification_api do
         it "open group member notifications with current time" do
           group_member = create(test_class_name, group_owner: test_instance)
           expect(group_member.opened_at.blank?).to be_truthy
-          Timecop.freeze(Time.current)
+          Timecop.freeze(Time.at(Time.now.to_i))
           test_instance.open!
           group_member = group_member.reload
           expect(group_member.opened_at.blank?).to be_falsey
@@ -593,7 +593,7 @@ shared_examples_for :notification_api do
           opened_at = Time.current - 1.months
           test_instance.open!(opened_at: opened_at)
           expect(test_instance.opened_at.blank?).to be_falsey
-          expect(test_instance.opened_at).to        eq(opened_at)
+          expect(test_instance.opened_at.to_i).to        eq(opened_at.to_i)
         end
 
         it "open group member notifications with specified time" do
@@ -1146,7 +1146,7 @@ shared_examples_for :notification_api do
       context "with group member" do
         it "returns latest group member" do
           member1 = create(test_class_name, target: test_instance.target, group_owner: test_instance)
-          member2 = create(test_class_name, target: test_instance.target, group_owner: test_instance)
+          member2 = create(test_class_name, target: test_instance.target, group_owner: test_instance, created_at: member1.created_at + 1.second)
           expect(test_instance.latest_group_member.becomes(ActivityNotification::Notification)).to eq(member2)
         end
       end

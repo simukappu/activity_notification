@@ -6,7 +6,7 @@ shared_examples_for :target do
   describe "with association" do
     it "has many notifications" do
       notification_1 = create(:notification, target: test_instance)
-      notification_2 = create(:notification, target: test_instance)
+      notification_2 = create(:notification, target: test_instance, created_at: notification_1.created_at + 1.second)
       expect(test_instance.notifications.count).to    eq(2)
       expect(test_instance.notifications.earliest).to eq(notification_1)
       expect(test_instance.notifications.latest).to   eq(notification_2)
@@ -108,15 +108,15 @@ shared_examples_for :target do
           @target_2 = create(test_class_name)
           @target_3 = create(test_class_name)
           notification_1  = create(:notification, target: @target_1)
-          @notification_2 = create(:notification, target: @target_1)
-          notification_3  = create(:notification, target: @target_1, group_owner: @notification_2)
-          @notification_4 = create(:notification, target: @target_1, group_owner: @notification_2)
-          notification_5  = create(:notification, target: @target_2)
-          notification_6  = create(:notification, target: @target_2)
+          @notification_2 = create(:notification, target: @target_1, created_at: notification_1.created_at + 1.second)
+          notification_3  = create(:notification, target: @target_1, group_owner: @notification_2, created_at: notification_1.created_at + 2.second)
+          @notification_4 = create(:notification, target: @target_1, group_owner: @notification_2, created_at: notification_1.created_at + 3.second)
+          notification_5  = create(:notification, target: @target_2, created_at: notification_1.created_at + 4.second)
+          notification_6  = create(:notification, target: @target_2, created_at: notification_1.created_at + 5.second)
           notification_6.open!
-          notification_7  = create(:notification, target: @target_3)
+          notification_7  = create(:notification, target: @target_3, created_at: notification_1.created_at + 6.second)
           notification_7.open!
-          notification_8  = create(:notification, target: test_notifiable)
+          notification_8  = create(:notification, target: test_notifiable, created_at: notification_1.created_at + 7.second)
         end
 
         context "as default" do
@@ -517,9 +517,9 @@ shared_examples_for :target do
           @group         = create(:article)
           @key           = 'test.key.1'
           @notification2 = create(:notification, target: test_instance, notifiable: @notifiable)
-          @notification1 = create(:notification, target: test_instance, notifiable: create(:comment), group: @group)
-          @member1       = create(:notification, target: test_instance, notifiable: create(:comment), group_owner: @notification1)
-          @notification3 = create(:notification, target: test_instance, notifiable: create(:article), key: @key)
+          @notification1 = create(:notification, target: test_instance, notifiable: create(:comment), group: @group, created_at: @notification2.created_at + 1.second)
+          @member1       = create(:notification, target: test_instance, notifiable: create(:comment), group_owner: @notification1, created_at: @notification2.created_at + 2.second)
+          @notification3 = create(:notification, target: test_instance, notifiable: create(:article), key: @key, created_at: @notification2.created_at + 3.second)
           @notification3.open!
         end
 
@@ -615,7 +615,7 @@ shared_examples_for :target do
         context 'with custom_filter options' do
           it "returns filtered notifications only" do
             if ActivityNotification.config.orm == :active_record
-              options = { custom_filter: ["key = ?", @key] }
+              options = { custom_filter: ["notifications.key = ?", @key] }
               expect(test_instance.notification_index(options)[0]).to eq(@notification3)
               expect(test_instance.notification_index(options).size).to eq(1)
             end
@@ -629,8 +629,8 @@ shared_examples_for :target do
 
       context "when the target has no unopened notifications" do
         before do
-          create(:notification, target: test_instance, opened_at: Time.current)
-          create(:notification, target: test_instance, opened_at: Time.current)
+          notification = create(:notification, target: test_instance, opened_at: Time.current)
+          create(:notification, target: test_instance, opened_at: Time.current, created_at: notification.created_at + 1.second)
         end
 
         it "calls unopened_notification_index" do
@@ -665,7 +665,7 @@ shared_examples_for :target do
       context "when the target has unopened notifications" do
         before do
           @notification_1 = create(:notification, target: test_instance)
-          @notification_2 = create(:notification, target: test_instance)
+          @notification_2 = create(:notification, target: test_instance, created_at: @notification_1.created_at + 1.second)
         end
 
         context "without limit" do
@@ -721,7 +721,7 @@ shared_examples_for :target do
       context "when the target has opened notifications" do
         before do
           @notification_1 = create(:notification, target: test_instance, opened_at: Time.current)
-          @notification_2 = create(:notification, target: test_instance, opened_at: Time.current)
+          @notification_2 = create(:notification, target: test_instance, opened_at: Time.current, created_at: @notification_1.created_at + 1.second)
         end
 
         context "without limit" do
@@ -808,8 +808,8 @@ shared_examples_for :target do
           @group         = create(:article)
           @key           = 'test.key.1'
           @notification2 = create(:notification, target: test_instance, notifiable: @notifiable)
-          @notification1 = create(:notification, target: test_instance, notifiable: create(:comment), group: @group)
-          @notification3 = create(:notification, target: test_instance, notifiable: create(:article), key: @key)
+          @notification1 = create(:notification, target: test_instance, notifiable: create(:comment), group: @group, created_at: @notification2.created_at + 1.second)
+          @notification3 = create(:notification, target: test_instance, notifiable: create(:article), key: @key, created_at: @notification2.created_at + 2.second)
           @notification3.open!
         end
 
@@ -884,8 +884,8 @@ shared_examples_for :target do
 
       context "when the target has no unopened notifications" do
         before do
-          create(:notification, target: test_instance, opened_at: Time.current)
-          create(:notification, target: test_instance, opened_at: Time.current)
+          notification = create(:notification, target: test_instance, opened_at: Time.current)
+          create(:notification, target: test_instance, opened_at: Time.current, created_at: notification.created_at + 1.second)
         end
 
         it "calls unopened_notification_index_with_attributes" do

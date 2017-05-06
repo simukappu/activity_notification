@@ -277,7 +277,7 @@ describe ActivityNotification::Notification, type: :model do
         context 'with custom_filter options' do
           it "works with filtered_by_options scope" do
             if ActivityNotification.config.orm == :active_record
-              notifications = ActivityNotification::Notification.filtered_by_options({ custom_filter: ["key = ?", @key_1] })
+              notifications = ActivityNotification::Notification.filtered_by_options({ custom_filter: ["notifications.key = ?", @key_1] })
               expect(notifications.to_a.size).to eq(1)
               expect(notifications.first).to eq(@notification_1)
             end
@@ -301,9 +301,9 @@ describe ActivityNotification::Notification, type: :model do
       before do
         ActivityNotification::Notification.delete_all
         unopened_group_owner   = create(:notification, group_owner: nil)
-        unopened_group_member  = create(:notification, group_owner: unopened_group_owner)
-        opened_group_owner     = create(:notification, group_owner: nil, opened_at: Time.current)
-        opened_group_member    = create(:notification, group_owner: opened_group_owner, opened_at: Time.current)
+        unopened_group_member  = create(:notification, group_owner: unopened_group_owner, created_at: unopened_group_owner.created_at + 1.second)
+        opened_group_owner     = create(:notification, group_owner: nil, opened_at: Time.current, created_at: unopened_group_owner.created_at + 2.second)
+        opened_group_member    = create(:notification, group_owner: opened_group_owner, opened_at: Time.current, created_at: unopened_group_owner.created_at + 3.second)
         @earliest_notification = unopened_group_owner
         @latest_notification   = opened_group_member
       end

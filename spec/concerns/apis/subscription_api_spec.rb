@@ -37,12 +37,12 @@ shared_examples_for :subscription_api do
         it "subscribe with current time" do
           expect(test_instance.subscribing?).to                   eq(false)
           expect(test_instance.subscribing_to_email?).to          eq(false)
-          Timecop.freeze(Time.current)
+          Timecop.freeze(Time.at(Time.now.to_i))
           test_instance.subscribe
           expect(test_instance.subscribing?).to                   eq(true)
           expect(test_instance.subscribing_to_email?).to          eq(true)
-          expect(test_instance.subscribed_at).to                 eq(Time.current)
-          expect(test_instance.subscribed_to_email_at).to        eq(Time.current)
+          expect(test_instance.subscribed_at).to                  eq(Time.current)
+          expect(test_instance.subscribed_to_email_at).to         eq(Time.current)
           Timecop.return
         end
       end
@@ -55,8 +55,8 @@ shared_examples_for :subscription_api do
           test_instance.subscribe(subscribed_at: subscribed_at)
           expect(test_instance.subscribing?).to                   eq(true)
           expect(test_instance.subscribing_to_email?).to          eq(true)
-          expect(test_instance.subscribed_at).to                 eq(subscribed_at)
-          expect(test_instance.subscribed_to_email_at).to        eq(subscribed_at)
+          expect(test_instance.subscribed_at.to_i).to             eq(subscribed_at.to_i)
+          expect(test_instance.subscribed_to_email_at.to_i).to    eq(subscribed_at.to_i)
         end
       end
 
@@ -102,12 +102,12 @@ shared_examples_for :subscription_api do
         it "unsubscribe with current time" do
           expect(test_instance.subscribing?).to                     eq(true)
           expect(test_instance.subscribing_to_email?).to            eq(true)
-          Timecop.freeze(Time.current)
+          Timecop.freeze(Time.at(Time.now.to_i))
           test_instance.unsubscribe
           expect(test_instance.subscribing?).to                     eq(false)
           expect(test_instance.subscribing_to_email?).to            eq(false)
-          expect(test_instance.unsubscribed_at).to                 eq(Time.current)
-          expect(test_instance.unsubscribed_to_email_at).to        eq(Time.current)
+          expect(test_instance.unsubscribed_at).to                  eq(Time.current)
+          expect(test_instance.unsubscribed_to_email_at).to         eq(Time.current)
           Timecop.return
         end
       end
@@ -120,8 +120,8 @@ shared_examples_for :subscription_api do
           test_instance.unsubscribe(unsubscribed_at: unsubscribed_at)
           expect(test_instance.subscribing?).to                     eq(false)
           expect(test_instance.subscribing_to_email?).to            eq(false)
-          expect(test_instance.unsubscribed_at).to                 eq(unsubscribed_at)
-          expect(test_instance.unsubscribed_to_email_at).to        eq(unsubscribed_at)
+          expect(test_instance.unsubscribed_at.to_i).to             eq(unsubscribed_at.to_i)
+          expect(test_instance.unsubscribed_to_email_at.to_i).to    eq(unsubscribed_at.to_i)
         end
       end
     end
@@ -152,11 +152,11 @@ shared_examples_for :subscription_api do
         it "subscribe_to_email with current time" do
           expect(test_instance.subscribing?).to                   eq(true)
           expect(test_instance.subscribing_to_email?).to          eq(false)
-          Timecop.freeze(Time.current)
+          Timecop.freeze(Time.at(Time.now.to_i))
           test_instance.subscribe_to_email
           expect(test_instance.subscribing?).to                   eq(true)
           expect(test_instance.subscribing_to_email?).to          eq(true)
-          expect(test_instance.subscribed_to_email_at).to        eq(Time.current)
+          expect(test_instance.subscribed_to_email_at).to         eq(Time.current)
           Timecop.return
         end
       end
@@ -169,7 +169,7 @@ shared_examples_for :subscription_api do
           test_instance.subscribe_to_email(subscribed_to_email_at: subscribed_to_email_at)
           expect(test_instance.subscribing?).to                   eq(true)
           expect(test_instance.subscribing_to_email?).to          eq(true)
-          expect(test_instance.subscribed_to_email_at).to        eq(subscribed_to_email_at)
+          expect(test_instance.subscribed_to_email_at.to_i).to    eq(subscribed_to_email_at.to_i)
         end
       end
     end
@@ -183,11 +183,11 @@ shared_examples_for :subscription_api do
         it "unsubscribe_to_email with current time" do
           expect(test_instance.subscribing?).to                     eq(true)
           expect(test_instance.subscribing_to_email?).to            eq(true)
-          Timecop.freeze(Time.current)
+          Timecop.freeze(Time.at(Time.now.to_i))
           test_instance.unsubscribe_to_email
           expect(test_instance.subscribing?).to                     eq(true)
           expect(test_instance.subscribing_to_email?).to            eq(false)
-          expect(test_instance.unsubscribed_to_email_at).to        eq(Time.current)
+          expect(test_instance.unsubscribed_to_email_at).to         eq(Time.current)
           Timecop.return
         end
       end
@@ -200,7 +200,7 @@ shared_examples_for :subscription_api do
           test_instance.unsubscribe_to_email(unsubscribed_to_email_at: unsubscribed_to_email_at)
           expect(test_instance.subscribing?).to                     eq(true)
           expect(test_instance.subscribing_to_email?).to            eq(false)
-          expect(test_instance.unsubscribed_to_email_at).to        eq(unsubscribed_to_email_at)
+          expect(test_instance.unsubscribed_to_email_at.to_i).to    eq(unsubscribed_to_email_at.to_i)
         end
       end
     end
@@ -275,7 +275,7 @@ shared_examples_for :subscription_api do
         it "subscribe_to_optional_target with current time" do
           expect(test_instance.subscribing?).to                                         eq(true)
           expect(test_instance.subscribing_to_optional_target?(:console_output)).to     eq(false)
-          Timecop.freeze(Time.current)
+          Timecop.freeze(Time.at(Time.now.to_i))
           test_instance.subscribe_to_optional_target(:console_output)
           expect(test_instance.subscribing?).to                                         eq(true)
           expect(test_instance.subscribing_to_optional_target?(:console_output)).to     eq(true)
@@ -286,13 +286,13 @@ shared_examples_for :subscription_api do
 
       context "with subscribed_at option" do
         it "subscribe with specified time" do
-          expect(test_instance.subscribing?).to                                         eq(true)
-          expect(test_instance.subscribing_to_optional_target?(:console_output)).to     eq(false)
+          expect(test_instance.subscribing?).to                                            eq(true)
+          expect(test_instance.subscribing_to_optional_target?(:console_output)).to        eq(false)
           subscribed_at = Time.current - 1.months
           test_instance.subscribe_to_optional_target(:console_output, subscribed_at: subscribed_at)
-          expect(test_instance.subscribing?).to                                         eq(true)
-          expect(test_instance.subscribing_to_optional_target?(:console_output)).to     eq(true)
-          expect(test_instance.optional_targets[:subscribed_to_console_output_at]).to   eq(subscribed_at)
+          expect(test_instance.subscribing?).to                                            eq(true)
+          expect(test_instance.subscribing_to_optional_target?(:console_output)).to        eq(true)
+          expect(test_instance.optional_targets[:subscribed_to_console_output_at].to_i).to eq(subscribed_at.to_i)
         end
       end
     end
@@ -306,7 +306,7 @@ shared_examples_for :subscription_api do
         it "unsubscribe_to_optional_target with current time" do
           expect(test_instance.subscribing?).to                                         eq(true)
           expect(test_instance.subscribing_to_optional_target?(:console_output)).to     eq(true)
-          Timecop.freeze(Time.current)
+          Timecop.freeze(Time.at(Time.now.to_i))
           test_instance.unsubscribe_to_optional_target(:console_output)
           expect(test_instance.subscribing?).to                                         eq(true)
           expect(test_instance.subscribing_to_optional_target?(:console_output)).to     eq(false)
@@ -317,13 +317,13 @@ shared_examples_for :subscription_api do
 
       context "with unsubscribed_at option" do
         it "unsubscribe with specified time" do
-          expect(test_instance.subscribing?).to                                         eq(true)
-          expect(test_instance.subscribing_to_optional_target?(:console_output)).to     eq(true)
+          expect(test_instance.subscribing?).to                                              eq(true)
+          expect(test_instance.subscribing_to_optional_target?(:console_output)).to          eq(true)
           unsubscribed_at = Time.current - 1.months
           test_instance.unsubscribe_to_optional_target(:console_output, unsubscribed_at: unsubscribed_at)
-          expect(test_instance.subscribing?).to                                         eq(true)
-          expect(test_instance.subscribing_to_optional_target?(:console_output)).to     eq(false)
-          expect(test_instance.optional_targets[:unsubscribed_to_console_output_at]).to eq(unsubscribed_at)
+          expect(test_instance.subscribing?).to                                              eq(true)
+          expect(test_instance.subscribing_to_optional_target?(:console_output)).to          eq(false)
+          expect(test_instance.optional_targets[:unsubscribed_to_console_output_at].to_i).to eq(unsubscribed_at.to_i)
         end
       end
     end

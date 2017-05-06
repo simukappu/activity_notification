@@ -44,8 +44,6 @@ RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.before(:all) do
     FactoryGirl.reload
-    ActivityNotification::Notification.delete_all
-    ActivityNotification::Subscription.delete_all
   end
   config.include Devise::Test::ControllerHelpers, type: :controller
 end
