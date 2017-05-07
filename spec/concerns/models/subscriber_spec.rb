@@ -11,7 +11,7 @@ shared_examples_for :subscriber do
   describe "with association" do
     it "has many subscriptions" do
       subscription_1 = create(:subscription, target: test_instance, key: 'subscription_key_1')
-      subscription_2 = create(:subscription, target: test_instance, key: 'subscription_key_2', created_at: subscription_1.created_at + 1.second)
+      subscription_2 = create(:subscription, target: test_instance, key: 'subscription_key_2', created_at: subscription_1.created_at + 10.second)
       expect(test_instance.subscriptions.count).to                eq(2)
       expect(test_instance.subscriptions.earliest_order.first).to eq(subscription_1)
       expect(test_instance.subscriptions.latest_order.first).to   eq(subscription_2)
@@ -182,7 +182,7 @@ shared_examples_for :subscriber do
       context "when the target has subscriptions" do
         before do
           @subscription2 = create(:subscription, target: test_instance, key: 'subscription_key_2')
-          @subscription1 = create(:subscription, target: test_instance, key: 'subscription_key_1', created_at: @subscription2.created_at + 1.second)
+          @subscription1 = create(:subscription, target: test_instance, key: 'subscription_key_1', created_at: @subscription2.created_at + 10.second)
         end
 
         context "without any options" do
@@ -259,7 +259,7 @@ shared_examples_for :subscriber do
       context "when the target has notifications" do
         before do
           notification = create(:notification, target: test_instance, key: 'notification_key_2')
-          create(:notification, target: test_instance, key: 'notification_key_1', created_at: notification.created_at + 1.second)
+          create(:notification, target: test_instance, key: 'notification_key_1', created_at: notification.created_at + 10.second)
           create(:subscription, target: test_instance, key: 'notification_key_1')
         end
 

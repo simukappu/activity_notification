@@ -117,9 +117,9 @@ describe ActivityNotification::Subscription, type: :model do
       before do
         ActivityNotification::Subscription.delete_all
         @subscription_1 = create(:subscription, key: 'key.1')
-        @subscription_2 = create(:subscription, key: 'key.2', created_at: @subscription_1.created_at + 1.second)
-        @subscription_3 = create(:subscription, key: 'key.3', created_at: @subscription_1.created_at + 2.second)
-        @subscription_4 = create(:subscription, key: 'key.4', created_at: @subscription_1.created_at + 3.second)
+        @subscription_2 = create(:subscription, key: 'key.2', created_at: @subscription_1.created_at + 10.second)
+        @subscription_3 = create(:subscription, key: 'key.3', created_at: @subscription_1.created_at + 20.second)
+        @subscription_4 = create(:subscription, key: 'key.4', created_at: @subscription_1.created_at + 30.second)
       end
 
       it "works with latest_order scope" do

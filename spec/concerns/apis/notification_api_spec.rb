@@ -1147,7 +1147,7 @@ shared_examples_for :notification_api do
       context "with group member" do
         it "returns latest group member" do
           member1 = create(test_class_name, target: test_instance.target, group_owner: test_instance)
-          member2 = create(test_class_name, target: test_instance.target, group_owner: test_instance, created_at: member1.created_at + 1.second)
+          member2 = create(test_class_name, target: test_instance.target, group_owner: test_instance, created_at: member1.created_at + 10.second)
           expect(test_instance.latest_group_member.becomes(ActivityNotification::Notification)).to eq(member2)
         end
       end

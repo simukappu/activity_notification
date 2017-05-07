@@ -156,8 +156,8 @@ shared_examples_for :notification_controller do
         @group         = create(:article)
         @key           = 'test.key.1'
         notification   = create(:notification, target: test_target, notifiable: @notifiable)
-        create(:notification, target: test_target, notifiable: create(:comment), group: @group, created_at: notification.created_at + 1.second)
-        create(:notification, target: test_target, notifiable: create(:article), key: @key, created_at: notification.created_at + 2.second).open!
+        create(:notification, target: test_target, notifiable: create(:comment), group: @group, created_at: notification.created_at + 10.second)
+        create(:notification, target: test_target, notifiable: create(:article), key: @key, created_at: notification.created_at + 20.second).open!
         @notification1 = test_target.notification_index[0]
         @notification2 = test_target.notification_index[1]
         @notification3 = test_target.notification_index[2]

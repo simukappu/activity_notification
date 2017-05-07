@@ -301,9 +301,9 @@ describe ActivityNotification::Notification, type: :model do
       before do
         ActivityNotification::Notification.delete_all
         unopened_group_owner   = create(:notification, group_owner: nil)
-        unopened_group_member  = create(:notification, group_owner: unopened_group_owner, created_at: unopened_group_owner.created_at + 1.second)
-        opened_group_owner     = create(:notification, group_owner: nil, opened_at: Time.current, created_at: unopened_group_owner.created_at + 2.second)
-        opened_group_member    = create(:notification, group_owner: opened_group_owner, opened_at: Time.current, created_at: unopened_group_owner.created_at + 3.second)
+        unopened_group_member  = create(:notification, group_owner: unopened_group_owner, created_at: unopened_group_owner.created_at + 10.second)
+        opened_group_owner     = create(:notification, group_owner: nil, opened_at: Time.current, created_at: unopened_group_owner.created_at + 20.second)
+        opened_group_member    = create(:notification, group_owner: opened_group_owner, opened_at: Time.current, created_at: unopened_group_owner.created_at + 30.second)
         @earliest_notification = unopened_group_owner
         @latest_notification   = opened_group_member
       end
