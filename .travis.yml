@@ -18,9 +18,7 @@ gemfile:
   - gemfiles/Gemfile.rails-5.1
 
 env:
-  - AN_ORM=active_record AN_TEST_DB=sqlite
-  - AN_ORM=active_record AN_TEST_DB=mysql
-  - AN_ORM=active_record AN_TEST_DB=postgresql
+  - AN_ORM=active_record
   - AN_ORM=mongoid
 
 matrix:
@@ -31,12 +29,29 @@ matrix:
       gemfile: gemfiles/Gemfile.rails-5.0
     - rvm: 2.1.10
       gemfile: gemfiles/Gemfile.rails-5.1
-    - env: AN_ORM=active_record AN_TEST_DB=mysql
-      gemfile: Gemfile
-    - env: AN_ORM=active_record AN_TEST_DB=postgresql
-      gemfile: Gemfile
-    - env: AN_ORM=mongoid
-      gemfile: Gemfile
+    - rvm: ruby-head
+      env: AN_ORM=mongoid
+    - gemfile: Gemfile
+      env: AN_ORM=mongoid
+  include:
+    - rvm: 2.4.1
+      gemfile: gemfiles/Gemfile.rails-4.2
+      env: AN_ORM=active_record AN_TEST_DB=mysql
+    - rvm: 2.4.1
+      gemfile: gemfiles/Gemfile.rails-4.2
+      env: AN_ORM=active_record AN_TEST_DB=postgresql
+    - rvm: 2.4.1
+      gemfile: gemfiles/Gemfile.rails-5.0
+      env: AN_ORM=active_record AN_TEST_DB=mysql
+    - rvm: 2.4.1
+      gemfile: gemfiles/Gemfile.rails-5.0
+      env: AN_ORM=active_record AN_TEST_DB=postgresql
+    - rvm: 2.4.1
+      gemfile: gemfiles/Gemfile.rails-5.1
+      env: AN_ORM=active_record AN_TEST_DB=mysql
+    - rvm: 2.4.1
+      gemfile: gemfiles/Gemfile.rails-5.1
+      env: AN_ORM=active_record AN_TEST_DB=postgresql
   allow_failures:
     - rvm: ruby-head
   fast_finish: true
