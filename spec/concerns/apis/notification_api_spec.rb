@@ -313,10 +313,11 @@ shared_examples_for :notification_api do
 
           context "out of the group expiry period" do
             it "does not belong to single group" do
-              owner_notification    = described_class.notify_to(@user_1, @comment_1, group: @article, group_expiry_delay: 1.second)
-              member_notification_1 = described_class.notify_to(@user_1, @comment_2, group: @article, group_expiry_delay: 1.second)
-              sleep(1)
-              member_notification_2 = described_class.notify_to(@user_1, @comment_2, group: @article, group_expiry_delay: 1.second)
+              Timecop.travel(90.seconds.ago)
+              owner_notification    = described_class.notify_to(@user_1, @comment_1, group: @article, group_expiry_delay: 1.minute)
+              member_notification_1 = described_class.notify_to(@user_1, @comment_2, group: @article, group_expiry_delay: 1.minute)
+              Timecop.return
+              member_notification_2 = described_class.notify_to(@user_1, @comment_2, group: @article, group_expiry_delay: 1.minute)
               expect(member_notification_1.group_owner).to eq(owner_notification)
               expect(member_notification_2.group_owner).to be_nil
             end
