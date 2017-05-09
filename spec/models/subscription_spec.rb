@@ -137,17 +137,21 @@ describe ActivityNotification::Subscription, type: :model do
       end
 
       it "works with latest_subscribed_order scope" do
-        @subscription_2.subscribe
-        subscriptions = ActivityNotification::Subscription.latest_subscribed_order
-        expect(subscriptions.size).to eq(4)
-        expect(subscriptions.first).to eq(@subscription_2)
+        Timecop.travel(1.minute.from_now) do
+          @subscription_2.subscribe
+          subscriptions = ActivityNotification::Subscription.latest_subscribed_order
+          expect(subscriptions.size).to eq(4)
+          expect(subscriptions.first).to eq(@subscription_2)
+        end
       end
 
       it "works with earliest_subscribed_order scope" do
-        @subscription_3.subscribe
-        subscriptions = ActivityNotification::Subscription.earliest_subscribed_order
-        expect(subscriptions.size).to eq(4)
-        expect(subscriptions.last).to eq(@subscription_3)
+        Timecop.travel(1.minute.from_now) do
+          @subscription_3.subscribe
+          subscriptions = ActivityNotification::Subscription.earliest_subscribed_order
+          expect(subscriptions.size).to eq(4)
+          expect(subscriptions.last).to eq(@subscription_3)
+        end
       end
 
       it "works with key_order scope" do
