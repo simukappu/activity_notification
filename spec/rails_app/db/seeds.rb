@@ -1,13 +1,36 @@
 # coding: utf-8
 # This file is seed file for test data on development environment.
 
-ActivityNotification::Notification.delete_all
-ActivityNotification::Subscription.delete_all
-Comment.delete_all
-Article.delete_all
-Admin.delete_all
-User.delete_all
-User.connection.execute("UPDATE sqlite_sequence SET seq = 0;")
+def clear_database
+  [ActivityNotification::Notification, ActivityNotification::Subscription, Comment, Article, Admin, User].each do |model|
+    model.delete_all
+  end
+end
+
+def reset_pk_sequence
+  models = [Comment, Article, Admin, User]
+  if ActivityNotification.config.orm == :active_record
+    models.concat([ActivityNotification::Notification, ActivityNotification::Subscription])
+  end
+  case ENV['AN_TEST_DB']
+  when nil, '', 'sqlite'
+    ActiveRecord::Base.connection.execute("UPDATE sqlite_sequence SET seq = 0")
+  when 'mysql'
+    models.each do |model|
+      ActiveRecord::Base.connection.execute("ALTER TABLE #{model.table_name} AUTO_INCREMENT = 1")
+    end
+  when 'postgresql'
+    models.each do |model|
+      ActiveRecord::Base.connection.reset_pk_sequence!(model.table_name)
+    end
+  when 'mongodb'
+  else
+    raise "#{ENV['AN_TEST_DB']} as AN_TEST_DB environment variable is not supported"
+  end
+end
+
+clear_database
+reset_pk_sequence
 
 ['Ichiro', 'Stephen', 'Klay', 'Kevin'].each do |name|
   user = User.new(
@@ -21,7 +44,7 @@ User.connection.execute("UPDATE sqlite_sequence SET seq = 0;")
 end
 
 ['Ichiro'].each do |name|
-  user = User.find_by_name(name)
+  user = User.find_by(name: name)
   Admin.create(
     user: user,
     phone_number: ENV['OPTIONAL_TARGET_AMAZON_SNS_PHONE_NUMBER'],

@@ -57,9 +57,15 @@ shared_examples_for :notification_controller do
       end
 
       it "raises ActiveRecord::RecordNotFound" do
-        expect {
-          get_with_compatibility :index, target_params.merge({ typed_target_param => 0 }), valid_session
-        }.to raise_error(ActiveRecord::RecordNotFound)
+        if ENV['AN_TEST_DB'] == 'mongodb'
+          expect {
+            get_with_compatibility :index, target_params.merge({ typed_target_param => 0 }), valid_session
+          }.to raise_error(Mongoid::Errors::DocumentNotFound)
+        else
+          expect {
+            get_with_compatibility :index, target_params.merge({ typed_target_param => 0 }), valid_session
+          }.to raise_error(ActiveRecord::RecordNotFound)
+        end
       end
     end
 
@@ -74,8 +80,13 @@ shared_examples_for :notification_controller do
       end
 
       it "returns json format" do
-        expect(JSON.parse(response.body).first)
-        .to include("target_id" => test_target.id, "target_type" => test_target.to_class_name)
+        if ActivityNotification.config.orm == :active_record
+          expect(JSON.parse(response.body).first)
+          .to include("target_id" => test_target.id, "target_type" => test_target.to_class_name)
+        else
+          expect(JSON.parse(response.body).first)
+          .to include("target_id" => test_target.id.to_s, "target_type" => test_target.to_class_name)
+        end
       end
     end
 

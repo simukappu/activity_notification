@@ -147,12 +147,28 @@ You need to configure Mongoid in your Rails application for your MongoDB environ
 Configure your target model (e.g. app/models/user.rb).
 Add `acts_as_target` configuration to your target model to get notifications.
 
+##### Target as ActiveRecord model
+
 ```ruby
 class User < ActiveRecord::Base
   # acts_as_target configures your model as ActivityNotification::Target
-  # with parameters as value or custom methods defined in your model as lambda or symbol
+  # with parameters as value or custom methods defined in your model as lambda or symbol.
+  # This is an example without any options (default configuration) as the target.
+  acts_as_target
+end
+```
 
-  # This is an example without any options (default configuration) as the target
+##### Target as  Mongoid model
+
+```ruby
+require 'mongoid'
+class User
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  include GlobalID::Identification
+
+  # You need include ActivityNotification::Models except ActiveRecord models
+  include ActivityNotification::Models
   acts_as_target
 end
 ```
@@ -164,6 +180,8 @@ end
 Configure your notifiable model (e.g. app/models/comment.rb).
 Add `acts_as_notifiable` configuration to your notifiable model representing activity to notify for each of your target model.
 You have to define notification targets for all notifications from this notifiable model by `:targets` option. Other configurations are options. `:notifiable_path` option is a path to move when the notification is opened by the target user.
+
+##### Notifiable as ActiveRecord model
 
 ```ruby
 class Article < ActiveRecord::Base
@@ -187,6 +205,42 @@ class Comment < ActiveRecord::Base
     },
     # Path to move when the notification is opened by the target user
     # This is an optional configuration since activity_notification uses polymorphic_path as default
+    notifiable_path: :article_notifiable_path
+
+  def article_notifiable_path
+    article_path(article)
+  end
+end
+```
+
+##### Notifiable as Mongoid model
+
+```ruby
+require 'mongoid'
+class Article
+  include Mongoid::Document
+  include Mongoid::Timestamps
+
+  belongs_to :user
+  has_many :comments, dependent: :destroy
+
+  def commented_users
+    User.where(:id.in => comments.pluck(:user_id))
+  end
+end
+
+require 'mongoid'
+class Comment
+  include Mongoid::Document
+  include Mongoid::Timestamps
+  include GlobalID::Identification
+
+  # You need include ActivityNotification::Models except ActiveRecord models
+  include ActivityNotification::Models
+  acts_as_notifiable :users,
+    targets: ->(comment, key) {
+      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+    },
     notifiable_path: :article_notifiable_path
 
   def article_notifiable_path
@@ -1004,6 +1058,36 @@ $ bin/rake db:seed
 $ bin/rails server
 ```
 Then, you can access <http://localhost:3000> for the dummy application.
+
+##### Run with your local database
+As default, dummy Rails application runs with local SQLite database in `spec/rails_app/db/development.sqlite3`.
+This application supports to run with your local MySQL, PostgreSQL and MongoDB.
+Set `AN_TEST_DB` environment variable like:
+```console
+$ export AN_TEST_DB=mysql
+```
+for MySQL,
+```console
+$ export AN_TEST_DB=postgresql
+```
+for PostgreSQL, and
+```console
+$ export AN_TEST_DB=mongodb
+```
+for MongoDB. When you set `mongodb` as `AN_TEST_DB`, you have to use `activity_notification` with MongoDB. Also set `AN_ORM` like:
+```console
+$ export AN_ORM=mongoid
+```
+
+Then, configure `spec/rails_app/config/database.yml` or `spec/rails_app/config/mongoid.yml` as your local database.
+Finally, run database migration, seed data script and the dummy appliation.
+```console
+$ cd spec/rails_app
+$ # You don't need migration when you use MongoDB only (AN_ORM=mongoid and AN_TEST_DB=mongodb)
+$ bin/rake db:migrate
+$ bin/rake db:seed
+$ bin/rails server
+```
 
 
 ## Documentation

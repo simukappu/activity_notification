@@ -41,17 +41,26 @@ matrix:
       gemfile: gemfiles/Gemfile.rails-4.2
       env: AN_ORM=active_record AN_TEST_DB=postgresql
     - rvm: 2.4.1
+      gemfile: gemfiles/Gemfile.rails-4.2
+      env: AN_ORM=mongoid AN_TEST_DB=mongodb
+    - rvm: 2.4.1
       gemfile: gemfiles/Gemfile.rails-5.0
       env: AN_ORM=active_record AN_TEST_DB=mysql
     - rvm: 2.4.1
       gemfile: gemfiles/Gemfile.rails-5.0
       env: AN_ORM=active_record AN_TEST_DB=postgresql
     - rvm: 2.4.1
+      gemfile: gemfiles/Gemfile.rails-5.0
+      env: AN_ORM=mongoid AN_TEST_DB=mongodb
+    - rvm: 2.4.1
       gemfile: gemfiles/Gemfile.rails-5.1
       env: AN_ORM=active_record AN_TEST_DB=mysql
     - rvm: 2.4.1
       gemfile: gemfiles/Gemfile.rails-5.1
       env: AN_ORM=active_record AN_TEST_DB=postgresql
+    - rvm: 2.4.1
+      gemfile: gemfiles/Gemfile.rails-5.1
+      env: AN_ORM=mongoid AN_TEST_DB=mongodb
   allow_failures:
     - rvm: ruby-head
   fast_finish: true

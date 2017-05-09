@@ -24,8 +24,8 @@ module ActivityNotification
         if (target_type = params[:target_type]).present?
           target_class = target_type.to_model_class
           @target = params[:target_id].present? ?
-            target_class.find_by_id!(params[:target_id]) : 
-            target_class.find_by_id!(params["#{target_type.to_resource_name}_id"])
+            target_class.find_by!(id: params[:target_id]) :
+            target_class.find_by!(id: params["#{target_type.to_resource_name}_id"])
         else
           render plain: "400 Bad Request: Missing parameter", status: 400
         end

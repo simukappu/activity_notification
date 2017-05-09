@@ -40,10 +40,17 @@ require 'activity_notification'
 # For active record ORM
 require 'active_record'
 
+def clear_database
+  [ActivityNotification::Notification, ActivityNotification::Subscription, Comment, Article, Admin, User].each do |model_class|
+    model_class.delete_all
+  end
+end
+
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.before(:all) do
     FactoryGirl.reload
+    clear_database
   end
   config.include Devise::Test::ControllerHelpers, type: :controller
 end

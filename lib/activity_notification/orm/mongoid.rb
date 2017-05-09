@@ -13,7 +13,7 @@ module ActivityNotification
       def belongs_to_polymorphic_xdb_record(name, _options = {})
         association_name     = name.to_s.singularize.underscore
         id_field, type_field = "#{association_name}_id", "#{association_name}_type"
-        field id_field,   type: Integer
+        field id_field,   type: String
         field type_field, type: String
 
         self.instance_eval do
@@ -22,7 +22,7 @@ module ActivityNotification
             if self.instance_variable_get("@#{name}").blank?
               if (class_name = self.send(type_field)).present?
                 object_class = class_name.classify.constantize
-                self.instance_variable_set("@#{name}", object_class.where(object_class.primary_key => self.send(id_field)).first)
+                self.instance_variable_set("@#{name}", object_class.where(id: self.send(id_field)).first)
               end
             end
             self.instance_variable_get("@#{name}")

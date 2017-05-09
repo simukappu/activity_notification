@@ -16,11 +16,15 @@ postgresql: &postgresql
   password:
   min_messages: ERROR
 
+mongodb: &mongodb
+  adapter: sqlite3
+  database: <%= Rails.env.test? ? '":memory:"' : "db/#{Rails.env}.sqlite3" %>
+
 default: &default
   pool: 5
   timeout: 5000
   host: localhost
-  <<: *<%= ENV['AN_TEST_DB'] || "sqlite" %>
+  <<: *<%= ENV['AN_TEST_DB'].blank? ? "sqlite" : ENV['AN_TEST_DB'] %>
 
 development:
   <<: *default
