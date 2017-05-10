@@ -85,7 +85,7 @@ describe ActivityNotification::ActsAsNotifiable do
           end
         end
 
-        context ":only option as :tracked (creation only)" do
+        context "with :only option (creation only)" do
           before do
             dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { only: [:create] }
             @created_notifiable = dummy_notifiable_class.create
@@ -115,7 +115,7 @@ describe ActivityNotification::ActsAsNotifiable do
           end
         end
 
-        context ":except option as :tracked (except update)" do
+        context "with :except option (except update)" do
           before do
             dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { except: [:update] }
             @created_notifiable = dummy_notifiable_class.create
@@ -141,6 +141,41 @@ describe ActivityNotification::ActsAsNotifiable do
 
             it "does not generate notifications when notifiable is updated" do
               expect(user_target.notifications.filtered_by_instance(@notifiable).count).to eq(0)
+            end
+          end
+        end
+
+        context "with :key option" do
+          before do
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { key: "test.key" }
+            @created_notifiable = dummy_notifiable_class.create
+          end
+
+          context "creation" do
+            it "generates notifications when notifiable is created" do
+              expect(user_target.notifications.filtered_by_instance(@created_notifiable).count).to eq(1)
+            end
+
+            it "generated notification has specified key" do
+              expect(user_target.notifications.filtered_by_instance(@created_notifiable).latest.key)
+                .to eq("test.key")
+            end
+          end
+
+          context "update" do
+            before do
+              user_target.notifications.delete_all
+              expect(user_target.notifications.count).to eq(0)
+              @notifiable.update(created_at: @notifiable.created_at + 10.second)
+            end
+
+            it "generates notifications when notifiable is updated" do
+              expect(user_target.notifications.filtered_by_instance(@notifiable).count).to eq(1)
+            end
+
+            it "generated notification has notification_key_for_tracked_update as key" do
+              expect(user_target.notifications.filtered_by_instance(@notifiable).first.key)
+                .to eq("test.key")
             end
           end
         end

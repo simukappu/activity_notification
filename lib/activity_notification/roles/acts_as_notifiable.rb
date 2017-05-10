@@ -192,7 +192,7 @@ module ActivityNotification
         configured_params = {}
 
         if options[:tracked].present?
-          configured_params.update(add_tracked_callbacks(target_type, options[:tracked]))
+          configured_params.update(add_tracked_callbacks(target_type, options[:tracked].is_a?(Hash) ? options[:tracked] : {}))
         end
 
         if available_dependent_notifications_options.include? options[:dependent_notifications]
@@ -238,20 +238,30 @@ module ActivityNotification
       end
 
       # Adds tracked callbacks.
-      # @param [Symbol]                 target_type    Type of notification target as symbol
-      # @param [Boolean, Array<Symbol>] tracked_option Specified :tracked option
+      # @param [Symbol] target_type    Type of notification target as symbol
+      # @param [Hash]   tracked_option Specified :tracked option
       # @return [Hash<Symbol, Symbol>] Configured tracked callbacks options
-      def add_tracked_callbacks(target_type, tracked_option)
+      def add_tracked_callbacks(target_type, tracked_option = {})
         tracked_callbacks = [:create, :update]
-        if tracked_option.is_a?(Hash)
-          if tracked_option[:except]
-            tracked_callbacks -= tracked_option[:except]
-          elsif tracked_option[:only]
-            tracked_callbacks &= tracked_option[:only]
+        if tracked_option[:except]
+          tracked_callbacks -= tracked_option.delete(:except)
+        elsif tracked_option[:only]
+          tracked_callbacks &= tracked_option.delete(:only)
+        end
+        if tracked_callbacks.include? :create
+          if tracked_option.has_key?(:key)
+            after_create -> { notify target_type, tracked_option }
+          else
+            after_create -> { notify target_type, *tracked_option, key: notification_key_for_tracked_creation }
           end
         end
-        after_create -> { notify target_type, key: notification_key_for_tracked_creation } if tracked_callbacks.include? :create
-        after_update -> { notify target_type, key: notification_key_for_tracked_update }   if tracked_callbacks.include? :update
+        if tracked_callbacks.include? :update
+          if tracked_option.has_key?(:key)
+            after_update -> { notify target_type, tracked_option }
+          else
+            after_update -> { notify target_type, *tracked_option, key: notification_key_for_tracked_update }
+          end
+        end
         { tracked: tracked_callbacks }
       end
 
