@@ -10,11 +10,11 @@ Enhancements:
 
 Bug Fixes:
 
-* Fix illegal ActiveRecord query for MySQL and PostgreSQL database
+* Fix illegal ActiveRecord query in `Notification#uniq_keys` and `Subscription#uniq_keys` for MySQL and PostgreSQL database
 
 Breaking Changes:
 
-* Update type of polymolohic id field in Notification and Subscription from Integer to String
+* Update type of polymorphic id field in Notification and Subscription from Integer to String
 
 ## 1.3.0 / 2017-04-07
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.2.1...v1.3.0)
