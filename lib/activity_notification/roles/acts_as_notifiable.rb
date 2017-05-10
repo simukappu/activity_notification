@@ -107,8 +107,9 @@ module ActivityNotification
       #
       # * :tracked
       #   * Adds required callbacks to generate notifications for creation and update of the notifiable model.
-      #     Default callbacks are enabled for [:create, :update].
-      #     You can use :only and :except options as hash for this option.
+      #     Tracked notifications are disabled as default.
+      #     When you set true as this :tracked option, default callbacks will be enabled for [:create, :update].
+      #     You can use :only, :except and other notify options as hash for this option.
       # @example Add all callbacks to generate notifications for creation and update
       #   # app/models/comment.rb
       #   class Comment < ActiveRecord::Base
@@ -125,7 +126,7 @@ module ActivityNotification
       #   # app/models/comment.rb
       #   class Comment < ActiveRecord::Base
       #     belongs_to :article
-      #     acts_as_notifiable :users, targets: User.all, tracked: { except: [:update] }
+      #     acts_as_notifiable :users, targets: User.all, tracked: { except: [:update], key: "comment.edited", send_later: false }
       #   end
       #
       # * :printable_name or :printable_notifiable_name
@@ -183,6 +184,7 @@ module ActivityNotification
       # @option options [Symbol, Proc, Hash]    :parameters              ({})                     Additional parameters of the notifications
       # @option options [Symbol, Proc, Boolean] :email_allowed           (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email
       # @option options [Symbol, Proc, String]  :notifiable_path         (polymorphic_path(self)) Path to redirect from open or move action of notification controller
+      # @option options [Boolean, Hash]         :tracked                 (nil)                    Flag or parameters for automatic tracked notifications
       # @option options [Symbol, Proc, String]  :printable_name          (ActivityNotification::Common.printable_name) Printable notifiable name
       # @option options [Symbol, Proc]          :dependent_notifications (nil)                    Dependency for notifications to delete generated notifications with this notifiable, [:delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all, :update_group_and_destroy] are available
       # @option options [Hash<Class, Hash>]     :optional_targets        (nil)                    Optional target configurations with hash of `OptionalTarget` implementation class as key and initializing option parameter as value
