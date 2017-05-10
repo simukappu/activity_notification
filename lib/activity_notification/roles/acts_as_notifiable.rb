@@ -105,6 +105,29 @@ module ActivityNotification
       #     end
       #   end
       #
+      # * :tracked
+      #   * Adds required callbacks to generate notifications for creation and update of the notifiable model.
+      #     Default callbacks are enabled for [:create, :update].
+      #     You can use :only and :except options as hash for this option.
+      # @example Add all callbacks to generate notifications for creation and update
+      #   # app/models/comment.rb
+      #   class Comment < ActiveRecord::Base
+      #     belongs_to :article
+      #     acts_as_notifiable :users, targets: User.all, tracked: true
+      #   end
+      # @example Add callbacks to generate notifications for creation only
+      #   # app/models/comment.rb
+      #   class Comment < ActiveRecord::Base
+      #     belongs_to :article
+      #     acts_as_notifiable :users, targets: User.all, tracked: { only: [:create] }
+      #   end
+      # @example Add callbacks to generate notifications for creation (except update) only
+      #   # app/models/comment.rb
+      #   class Comment < ActiveRecord::Base
+      #     belongs_to :article
+      #     acts_as_notifiable :users, targets: User.all, tracked: { except: [:update] }
+      #   end
+      #
       # * :printable_name or :printable_notifiable_name
       #   * Printable notifiable name.
       #     This parameter is a optional since `ActivityNotification::Common.printable_name` is used as default value.
@@ -168,26 +191,16 @@ module ActivityNotification
         include Notifiable
         configured_params = {}
 
-        if [:delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all, :update_group_and_destroy].include? options[:dependent_notifications]
-          case options[:dependent_notifications]
-          when :delete_all, :destroy, :restrict_with_error, :restrict_with_exception
-            before_destroy -> { destroy_generated_notifications_with_dependency(options[:dependent_notifications], target_type) }
-          when :update_group_and_delete_all
-            before_destroy -> { destroy_generated_notifications_with_dependency(:delete_all, target_type, true) }
-          when :update_group_and_destroy
-            before_destroy -> { destroy_generated_notifications_with_dependency(:destroy, target_type, true) }
-          end
-          configured_params = { dependent_notifications: options[:dependent_notifications] }
+        if options[:tracked].present?
+          configured_params.update(add_tracked_callbacks(target_type, options[:tracked]))
+        end
+
+        if available_dependent_notifications_options.include? options[:dependent_notifications]
+          configured_params.update(add_destroy_dependency(target_type, options[:dependent_notifications]))
         end
 
         if options[:optional_targets].is_a?(Hash)
-          options[:optional_targets] = options[:optional_targets].map { |target_class, target_options|
-            optional_target = target_class.new(target_options)
-            unless optional_target.kind_of?(ActivityNotification::OptionalTarget::Base)
-              raise TypeError, "#{optional_target.class.name} for an optional target is not a kind of ActivityNotification::OptionalTarget::Base"
-            end
-            optional_target
-          }
+          options[:optional_targets] = arrange_optional_targets_option(options[:optional_targets])
         end
 
         options[:printable_notifiable_name] ||= options.delete(:printable_name)
@@ -212,6 +225,64 @@ module ActivityNotification
         ].freeze
       end
 
+      # Returns array of available notifiable options in acts_as_notifiable.
+      # @return [Array<Symbol>] Array of available notifiable options
+      def available_dependent_notifications_options
+        [ :delete_all,
+          :destroy,
+          :restrict_with_error,
+          :restrict_with_exception,
+          :update_group_and_delete_all,
+          :update_group_and_destroy
+        ].freeze
+      end
+
+      # Adds tracked callbacks.
+      # @param [Symbol]                 target_type    Type of notification target as symbol
+      # @param [Boolean, Array<Symbol>] tracked_option Specified :tracked option
+      # @return [Hash<Symbol, Symbol>] Configured tracked callbacks options
+      def add_tracked_callbacks(target_type, tracked_option)
+        tracked_callbacks = [:create, :update]
+        if tracked_option.is_a?(Hash)
+          if tracked_option[:except]
+            tracked_callbacks -= tracked_option[:except]
+          elsif tracked_option[:only]
+            tracked_callbacks &= tracked_option[:only]
+          end
+        end
+        after_create -> { notify target_type, key: notification_key_for_tracked_creation } if tracked_callbacks.include? :create
+        after_update -> { notify target_type, key: notification_key_for_tracked_update }   if tracked_callbacks.include? :update
+        { tracked: tracked_callbacks }
+      end
+
+      # Adds destroy dependency.
+      # @param [Symbol] target_type                    Type of notification target as symbol
+      # @param [Symbol] dependent_notifications_option Specified :dependent_notifications option
+      # @return [Hash<Symbol, Symbol>] Configured dependency options
+      def add_destroy_dependency(target_type, dependent_notifications_option)
+        case dependent_notifications_option
+        when :delete_all, :destroy, :restrict_with_error, :restrict_with_exception
+          before_destroy -> { destroy_generated_notifications_with_dependency(dependent_notifications_option, target_type) }
+        when :update_group_and_delete_all
+          before_destroy -> { destroy_generated_notifications_with_dependency(:delete_all, target_type, true) }
+        when :update_group_and_destroy
+          before_destroy -> { destroy_generated_notifications_with_dependency(:destroy, target_type, true) }
+        end
+        { dependent_notifications: dependent_notifications_option }
+      end
+
+      # Arrange optional targets option.
+      # @param [Symbol] optional_targets_option Specified :optional_targets option
+      # @return [Hash<ActivityNotification::OptionalTarget::Base, Hash>] Arranged optional targets options
+      def arrange_optional_targets_option(optional_targets_option)
+        optional_targets_option.map { |target_class, target_options|
+          optional_target = target_class.new(target_options)
+          unless optional_target.kind_of?(ActivityNotification::OptionalTarget::Base)
+            raise TypeError, "#{optional_target.class.name} for an optional target is not a kind of ActivityNotification::OptionalTarget::Base"
+          end
+          optional_target
+        }
+      end
     end
   end
 end

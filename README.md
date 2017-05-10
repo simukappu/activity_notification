@@ -18,8 +18,9 @@
 `activity_notification` provides following functions:
 * Notification API (creating notifications, query for notifications and managing notification parameters)
 * Notification models (stored with ActiveRecord or [Mongoid](http://mongoid.org) ORM)
-* Notification controllers (managing open/unopen of notifications, link to notifiable activity page)
+* Notification controllers (managing open/unopen of notifications, providing link to notifiable activity page)
 * Notification views (presentation of notifications)
+* Automatic tracked notifications (generating notifications along with the lifecycle of notifiable models)
 * Grouping notifications (grouping like `"Kevin and 7 other users posted comments to this article"`)
 * Email notification
 * Batch email notification (event driven or periodical email notification, daily or weekly etc)
@@ -57,6 +58,8 @@
   - [Configuring controllers](#configuring-controllers)
   - [Configuring routes](#configuring-routes)
   - [Creating notifications](#creating-notifications)
+    - [Notification API](#notification-api)
+    - [Automatic tracked notifications](#automatic-tracked-notifications)
   - [Displaying notifications](#displaying-notifications)
     - [Preparing target notifications](#preparing-target-notifications)
     - [Rendering notifications](#rendering-notifications)
@@ -337,6 +340,8 @@ end
 
 ### Creating notifications
 
+#### Notification API
+
 You can trigger notifications by setting all your required parameters and triggering `notify`
 on the notifiable model, like this:
 
@@ -353,6 +358,54 @@ ActivityNotification::Notification.notify :users, @comment, key: "comment.reply"
 The first argument is the plural symbol name of your target model, which is configured in notifiable model by `acts_as_notifiable`.
 
 *Hint*: `:key` is a option. Default key `#{notifiable_type}.default` which means `comment.default` will be used without specified key.
+You can override it by `Notifiable#default_notification_key`.
+
+#### Automatic tracked notifications
+
+You can also generate automatic tracked notifications by `:tracked` option in `acts_as_notifiable`.
+`:tracked` option adds required callbacks to generate notifications for creation and update of the notifiable model.
+Set true to `:tracked` option to generate all tracked notifications, like this:
+
+```ruby
+class Comment < ActiveRecord::Base
+  acts_as_notifiable :users,
+    targets: ->(comment, key) {
+      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+    },
+    # Set true to :tracked option to generate automatic tracked notifications.
+    # It adds required callbacks to generate notifications for creation and update of the notifiable model.
+    tracked: true
+end
+```
+
+Or, set `:only` or `:except` option to generate specified tracked notifications, like this:
+
+```ruby
+class Comment < ActiveRecord::Base
+  acts_as_notifiable :users,
+    targets: ->(comment, key) {
+      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+    },
+    # Set { only: [:create] } to :tracked option to generate tracked notifications for creation only.
+    # It adds required callbacks to generate notifications for creation of the notifiable model.
+    tracked: { only: [:create] }
+end
+```
+
+```ruby
+class Comment < ActiveRecord::Base
+  acts_as_notifiable :users,
+    targets: ->(comment, key) {
+      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+    },
+    # Set { except: [:update] } to :tracked option to generate tracked notifications except update (creation only).
+    # It adds required callbacks to generate notifications for creation of the notifiable model.
+    tracked: { except: [:update] }
+end
+```
+
+*Hint*: `#{notifiable_type}.create` and `#{notifiable_type}.update` will be used as the key of tracked notifications.
+You can override them by `Notifiable#notification_key_for_tracked_creation` and `Notifiable#notification_key_for_tracked_update`.
 
 ### Displaying notifications
 

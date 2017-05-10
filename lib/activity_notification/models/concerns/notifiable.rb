@@ -285,9 +285,27 @@ module ActivityNotification
     # This method is able to be overriden.
     # "#{to_resource_name}.default" is defined as default key.
     #
-    # @return [String] Default Key of the notification
+    # @return [String] Default key of the notification
     def default_notification_key
       "#{to_resource_name}.default"
+    end
+
+    # Returns key of the notification for tracked notifiable creation.
+    # This method is able to be overriden.
+    # "#{to_resource_name}.create" is defined as default creation key.
+    #
+    # @return [String] Key of the notification for tracked notifiable creation
+    def notification_key_for_tracked_creation
+      "#{to_resource_name}.create"
+    end
+
+    # Returns key of the notification for tracked notifiable update.
+    # This method is able to be overriden.
+    # "#{to_resource_name}.update" is defined as default update key.
+    #
+    # @return [String] Key of the notification for tracked notifiable update
+    def notification_key_for_tracked_update
+      "#{to_resource_name}.update"
     end
 
     private

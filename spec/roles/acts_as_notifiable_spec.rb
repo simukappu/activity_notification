@@ -8,6 +8,9 @@ describe ActivityNotification::ActsAsNotifiable do
     describe ".acts_as_notifiable" do
       before do
         dummy_notifiable_class.set_notifiable_class_defaults
+        dummy_notifiable_class.reset_callbacks :create
+        dummy_notifiable_class.reset_callbacks :update
+        dummy_notifiable_class.reset_callbacks :destroy
         @notifiable = dummy_notifiable_class.create
       end
 
@@ -27,9 +30,124 @@ describe ActivityNotification::ActsAsNotifiable do
         end
       end
 
+      context "with :tracked option" do
+        before do
+          user_target.notifications.delete_all
+          expect(user_target.notifications.count).to eq(0)
+        end
+
+        it "returns hash of :tracked option" do
+          expect(dummy_notifiable_class.acts_as_notifiable :users, tracked: true)
+            .to eq({ tracked: [:create, :update] })
+        end
+
+        context "without option" do
+          it "does not generate notifications when notifiable is created and updated" do
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target]
+            notifiable = dummy_notifiable_class.create
+            notifiable.update(created_at: notifiable.created_at + 10.second)
+            expect(user_target.notifications.filtered_by_instance(notifiable).count).to eq(0)
+          end
+        end
+
+        context "true as :tracked" do
+          before do
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: true
+            @created_notifiable = dummy_notifiable_class.create
+          end
+
+          context "creation" do
+            it "generates notifications when notifiable is created" do
+              expect(user_target.notifications.filtered_by_instance(@created_notifiable).count).to eq(1)
+            end
+
+            it "generated notification has notification_key_for_tracked_creation as key" do
+              expect(user_target.notifications.filtered_by_instance(@created_notifiable).latest.key)
+                .to eq(@created_notifiable.notification_key_for_tracked_creation)
+            end
+          end
+
+          context "update" do
+            before do
+              user_target.notifications.delete_all
+              expect(user_target.notifications.count).to eq(0)
+              @notifiable.update(created_at: @notifiable.created_at + 10.second)
+            end
+
+            it "generates notifications when notifiable is updated" do
+              expect(user_target.notifications.filtered_by_instance(@notifiable).count).to eq(1)
+            end
+
+            it "generated notification has notification_key_for_tracked_update as key" do
+              expect(user_target.notifications.filtered_by_instance(@notifiable).first.key)
+                .to eq(@notifiable.notification_key_for_tracked_update)
+            end
+          end
+        end
+
+        context ":only option as :tracked (creation only)" do
+          before do
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { only: [:create] }
+            @created_notifiable = dummy_notifiable_class.create
+          end
+
+          context "creation" do
+            it "generates notifications when notifiable is created" do
+              expect(user_target.notifications.filtered_by_instance(@created_notifiable).count).to eq(1)
+            end
+
+            it "generated notification has notification_key_for_tracked_creation as key" do
+              expect(user_target.notifications.filtered_by_instance(@created_notifiable).latest.key)
+                .to eq(@created_notifiable.notification_key_for_tracked_creation)
+            end
+          end
+
+          context "update" do
+            before do
+              user_target.notifications.delete_all
+              expect(user_target.notifications.count).to eq(0)
+              @notifiable.update(created_at: @notifiable.created_at + 10.second)
+            end
+
+            it "does not generate notifications when notifiable is updated" do
+              expect(user_target.notifications.filtered_by_instance(@notifiable).count).to eq(0)
+            end
+          end
+        end
+
+        context ":except option as :tracked (except update)" do
+          before do
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { except: [:update] }
+            @created_notifiable = dummy_notifiable_class.create
+          end
+
+          context "creation" do
+            it "generates notifications when notifiable is created" do
+              expect(user_target.notifications.filtered_by_instance(@created_notifiable).count).to eq(1)
+            end
+
+            it "generated notification has notification_key_for_tracked_creation as key" do
+              expect(user_target.notifications.filtered_by_instance(@created_notifiable).latest.key)
+                .to eq(@created_notifiable.notification_key_for_tracked_creation)
+            end
+          end
+
+          context "update" do
+            before do
+              user_target.notifications.delete_all
+              expect(user_target.notifications.count).to eq(0)
+              @notifiable.update(created_at: @notifiable.created_at + 10.second)
+            end
+
+            it "does not generate notifications when notifiable is updated" do
+              expect(user_target.notifications.filtered_by_instance(@notifiable).count).to eq(0)
+            end
+          end
+        end
+      end
+
       context "with :dependent_notifications option" do
         before do
-          dummy_notifiable_class.reset_callbacks :destroy
           @notifiable_1, @notifiable_2, @notifiable_3 = dummy_notifiable_class.create, dummy_notifiable_class.create, dummy_notifiable_class.create
           @group_owner  = create(:notification, target: user_target, notifiable: @notifiable_1, group: @notifiable_1)
           @group_member = create(:notification, target: user_target, notifiable: @notifiable_2, group: @notifiable_1, group_owner: @group_owner)
