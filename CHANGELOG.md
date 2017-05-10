@@ -1,7 +1,26 @@
+## 1.4.0 / 2017-05-10
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.3.0...v1.4.0)
+
+Enhancements:
+
+* Allow use with Rails 5.1
+* Allow mongoid models as `Target` and `Notifiable` models
+* Add functions for automatic tracked notifications
+* Enable `render_notification_of` view helper method to use `:as_latest_group_member` option
+
+Bug Fixes:
+
+* Fix illegal ActiveRecord query for MySQL and PostgreSQL database
+
+Breaking Changes:
+
+* Update type of polymolohic id field in Notification and Subscription from Integer to String
+
 ## 1.3.0 / 2017-04-07
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.2.1...v1.3.0)
 
 Enhancements:
+
 * Suport Mongoid ORM to store `Notification` and `Subscription` records
   * Separate `Notification` and `Subscription` models into ORMs and make them load from ORM selector
   * Update query logic in `Notification` and `Subscription` models for Mongoid
@@ -13,6 +32,7 @@ Enhancements:
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.2.0...v1.2.1)
 
 Enhancements:
+
 * Support default Slack optional target with `slack-notifier` 2.0.0
 
 Breaking Changes:
