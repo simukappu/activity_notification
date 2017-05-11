@@ -87,6 +87,8 @@
     - [Slack as optional target](#slack-as-optional-target)
     - [Developing custom optional targets](#developing-custom-optional-targets)
 - [Testing](#testing)
+  - [Testing your application](#testing-your-application)
+  - [Testing gem alone](#testing-gem-alone)
 - [Documentation](#documentation)
 - **[Common examples](#common-examples)**
 
