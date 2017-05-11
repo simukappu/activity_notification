@@ -14,7 +14,7 @@ Bug Fixes:
 
 Breaking Changes:
 
-* Update type of polymorphic id field in Notification and Subscription from Integer to String
+* Update type of polymorphic id field in `Notification` and `Subscription` models from Integer to String
 
 ## 1.3.0 / 2017-04-07
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.2.1...v1.3.0)
