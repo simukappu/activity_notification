@@ -181,7 +181,7 @@ module ActivityNotification
         end
 
         # Raise DeleteRestrictionError for notifications.
-        def self.railse_delete_restriction_error(error_text)
+        def self.raise_delete_restriction_error(error_text)
           raise ::ActiveRecord::DeleteRestrictionError.new(error_text)
         end
 
