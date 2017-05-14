@@ -6,6 +6,7 @@ gem 'rails', '~> 5.1'
 
 #TODO Remove it after devise supporting rails 5.1 is released
 gem 'devise', github: 'plataformatec/devise', ref: '83002017'
+gem 'mail', '~>2.6.6.rc1'
 
 group :development do
   gem 'bullet'
