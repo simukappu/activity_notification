@@ -1,4 +1,4 @@
-if ENV['AN_TEST_DB'] != 'mongodb'
+unless ENV['AN_TEST_DB'] == 'mongodb'
   class User < ActiveRecord::Base
     devise :database_authenticatable, :registerable, :confirmable
     validates :email, presence: true

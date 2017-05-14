@@ -348,7 +348,7 @@ module ActivityNotification
         generated_notifications = generated_notifications_as_notifiable_for(target_type)
         case dependent
         when :restrict_with_exception
-          raise ActiveRecord::DeleteRestrictionError.new("generated_notifications_as_notifiable_for_#{target_type.to_s.pluralize.underscore}") unless generated_notifications.empty?
+          ActivityNotification::Notification.railse_delete_restriction_error("generated_notifications_as_notifiable_for_#{target_type.to_s.pluralize.underscore}") unless generated_notifications.empty?
         when :restrict_with_error
           unless generated_notifications.empty?
             record = self.class.human_attribute_name("generated_notifications_as_notifiable_for_#{target_type.to_s.pluralize.underscore}").downcase

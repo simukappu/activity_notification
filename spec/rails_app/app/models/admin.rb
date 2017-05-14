@@ -1,4 +1,4 @@
-if ENV['AN_TEST_DB'] != 'mongodb'
+unless ENV['AN_TEST_DB'] == 'mongodb'
   class Admin < ActiveRecord::Base
     belongs_to :user
     validates :user, presence: true

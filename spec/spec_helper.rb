@@ -37,9 +37,6 @@ require 'ammeter/init'
 require 'factory_girl_rails'
 require 'activity_notification'
 
-# For active record ORM
-require 'active_record'
-
 def clear_database
   [ActivityNotification::Notification, ActivityNotification::Subscription, Comment, Article, Admin, User].each do |model_class|
     model_class.delete_all

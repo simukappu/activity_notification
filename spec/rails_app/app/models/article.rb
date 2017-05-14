@@ -1,4 +1,4 @@
-if ENV['AN_TEST_DB'] != 'mongodb'
+unless ENV['AN_TEST_DB'] == 'mongodb'
   class Article < ActiveRecord::Base
     belongs_to :user
     has_many :comments, dependent: :destroy

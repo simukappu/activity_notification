@@ -45,7 +45,7 @@ describe ActivityNotification::ActsAsNotifiable do
           it "does not generate notifications when notifiable is created and updated" do
             dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target]
             notifiable = dummy_notifiable_class.create
-            notifiable.update(created_at: notifiable.created_at + 10.second)
+            notifiable.update(created_at: notifiable.updated_at)
             expect(user_target.notifications.filtered_by_instance(notifiable).count).to eq(0)
           end
         end
@@ -71,7 +71,7 @@ describe ActivityNotification::ActsAsNotifiable do
             before do
               user_target.notifications.delete_all
               expect(user_target.notifications.count).to eq(0)
-              @notifiable.update(created_at: @notifiable.created_at + 10.second)
+              @notifiable.update(created_at: @notifiable.updated_at)
             end
 
             it "generates notifications when notifiable is updated" do
@@ -106,7 +106,7 @@ describe ActivityNotification::ActsAsNotifiable do
             before do
               user_target.notifications.delete_all
               expect(user_target.notifications.count).to eq(0)
-              @notifiable.update(created_at: @notifiable.created_at + 10.second)
+              @notifiable.update(created_at: @notifiable.updated_at)
             end
 
             it "does not generate notifications when notifiable is updated" do
@@ -136,7 +136,7 @@ describe ActivityNotification::ActsAsNotifiable do
             before do
               user_target.notifications.delete_all
               expect(user_target.notifications.count).to eq(0)
-              @notifiable.update(created_at: @notifiable.created_at + 10.second)
+              @notifiable.update(created_at: @notifiable.updated_at)
             end
 
             it "does not generate notifications when notifiable is updated" do
@@ -166,7 +166,7 @@ describe ActivityNotification::ActsAsNotifiable do
             before do
               user_target.notifications.delete_all
               expect(user_target.notifications.count).to eq(0)
-              @notifiable.update(created_at: @notifiable.created_at + 10.second)
+              @notifiable.update(created_at: @notifiable.updated_at)
             end
 
             it "generates notifications when notifiable is updated" do
@@ -248,7 +248,11 @@ describe ActivityNotification::ActsAsNotifiable do
           it "can not be deleted when it has generated notifications" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :restrict_with_exception
             expect(user_target.notifications.reload.size).to eq(3)
-            expect { @notifiable_1.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
+            if ActivityNotification.config.orm == :active_record
+              expect { @notifiable_1.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
+            else
+              expect { @notifiable_1.destroy }.to raise_error(RuntimeError)
+            end
           end
         end
 

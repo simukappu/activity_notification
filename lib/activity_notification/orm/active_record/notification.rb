@@ -180,6 +180,11 @@ module ActivityNotification
           pluck(:key).uniq
         end
 
+        # Raise DeleteRestrictionError for notifications.
+        def self.railse_delete_restriction_error(error_text)
+          raise ::ActiveRecord::DeleteRestrictionError.new(error_text)
+        end
+
         protected
 
           # Returns count of group members of the unopened notification.
@@ -200,6 +205,7 @@ module ActivityNotification
           # This method is designed to cache group by query result to avoid N+1 call.
           # @api protected
           #
+          # @param [Integer] limit Limit to query for opened notifications
           # @return [Integer] Count of group members of the opened notification
           def opened_group_member_count(limit = ActivityNotification.config.opened_index_limit)
             # Cache group by query result to avoid N+1 call
@@ -233,6 +239,7 @@ module ActivityNotification
           # This method is designed to cache group by query result to avoid N+1 call.
           # @api protected
           #
+          # @param [Integer] limit Limit to query for opened notifications
           # @return [Integer] Count of group member notifiers of the opened notification
           def opened_group_member_notifier_count(limit = ActivityNotification.config.opened_index_limit)
             # Cache group by query result to avoid N+1 call

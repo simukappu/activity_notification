@@ -17,4 +17,4 @@ module ActivityNotification
   end
 end
 
-ActiveRecord::Base.class_eval { include ActivityNotification::Models }
+ActiveRecord::Base.class_eval { include ActivityNotification::Models } if defined?(ActiveRecord::Base)
