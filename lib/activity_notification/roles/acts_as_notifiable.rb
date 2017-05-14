@@ -3,6 +3,11 @@ module ActivityNotification
   module ActsAsNotifiable
     extend ActiveSupport::Concern
 
+    included do
+      # Defines private clas methods
+      private_class_method :add_tracked_callbacks, :add_tracked_callback, :add_destroy_dependency, :arrange_optional_targets_option
+    end
+
     class_methods do
       # Adds required configurations to notifiable models.
       #
@@ -250,21 +255,29 @@ module ActivityNotification
         elsif tracked_option[:only]
           tracked_callbacks &= tracked_option.delete(:only)
         end
-        if tracked_callbacks.include? :create
-          if tracked_option.has_key?(:key)
-            after_create -> { notify target_type, tracked_option }
-          else
-            after_create -> { notify target_type, *tracked_option, key: notification_key_for_tracked_creation }
-          end
-        end
-        if tracked_callbacks.include? :update
-          if tracked_option.has_key?(:key)
-            after_update -> { notify target_type, tracked_option }
-          else
-            after_update -> { notify target_type, *tracked_option, key: notification_key_for_tracked_update }
-          end
+        if tracked_option.has_key?(:key)
+          add_tracked_callback(tracked_callbacks, :create, ->{ notify target_type, tracked_option })
+          add_tracked_callback(tracked_callbacks, :update, ->{ notify target_type, tracked_option })
+        else
+          add_tracked_callback(tracked_callbacks, :create, ->{ notify target_type, *tracked_option, key: notification_key_for_tracked_creation })
+          add_tracked_callback(tracked_callbacks, :update, ->{ notify target_type, *tracked_option, key: notification_key_for_tracked_update })
         end
         { tracked: tracked_callbacks }
+      end
+
+      # Adds tracked callback.
+      # @param [Array<Symbol>] tracked_callbacks Array of tracked callbacks (Array of [:create or :update])
+      # @param [Symbol]        tracked_action    Tracked action (:create or :update)
+      # @param [Proc]          tracked_proc      Proc or lambda function to execute
+      def add_tracked_callback(tracked_callbacks, tracked_action, tracked_proc)
+        if tracked_callbacks.include? tracked_action
+          case tracked_action
+          when :create
+            after_create tracked_proc
+          when :update
+            after_update tracked_proc
+          end
+        end
       end
 
       # Adds destroy dependency.

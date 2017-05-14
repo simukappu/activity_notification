@@ -50,7 +50,7 @@ module ActivityNotification
         # @scope class
         # @param [Object] target Target instance for filter
         # @return [Mongoid::Criteria<Subscription>] Database query of filtered subscriptions
-        scope :filtered_by_target,  ->(target) { target.present? ? where(target_id: target.id, target_type: target.class.name) : none }
+        scope :filtered_by_target,  ->(target) { filtered_by_association("target", target) }
 
         # Includes target instance with query for subscriptions.
         # @return [Mongoid::Criteria<Subscription>] Database query of subscriptions with target

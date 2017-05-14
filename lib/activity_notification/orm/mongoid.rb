@@ -2,6 +2,15 @@ module ActivityNotification
   module Association
     extend ActiveSupport::Concern
 
+    included do
+      # Selects filtered notifications by associated instance.
+      # @scope class
+      # @param [String] name     Association name
+      # @param [Object] instance Associated instance
+      # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+      scope :filtered_by_association, ->(name, instance) { instance.present? ? where({ "#{name}_id" => instance.id, "#{name}_type" => instance.class.name }) : none }
+    end
+
     class_methods do
       # Defines has_many association with ActivityNotification models.
       # @return [Mongoid::Criteria<Object>] Database query of associated model instances
@@ -49,7 +58,8 @@ module ActivityNotification
           define_method(name) do |reload = false|
             reload and self.instance_variable_set("@#{name}", nil)
             if self.instance_variable_get("@#{name}").blank?
-              self.instance_variable_set("@#{name}", object_class.where(id_field => self.id, type_field => self.class.name))
+              new_value = object_class.where(id_field => self.id, type_field => self.class.name)
+              self.instance_variable_set("@#{name}", new_value)
             end
             self.instance_variable_get("@#{name}")
           end

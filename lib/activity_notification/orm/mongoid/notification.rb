@@ -121,7 +121,7 @@ module ActivityNotification
         # @scope class
         # @param [Object] target Target instance for filter
         # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
-        scope :filtered_by_target,                ->(target) { target.present? ? where(target_id: target.id, target_type: target.class.name) : none }
+        scope :filtered_by_target,                ->(target) { filtered_by_association("target", target) }
 
         # Selects filtered notifications by notifiable instance.
         # @example Get filtered unopened notificatons of the @user for @comment as notifiable
@@ -129,7 +129,7 @@ module ActivityNotification
         # @scope class
         # @param [Object] notifiable Notifiable instance for filter
         # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
-        scope :filtered_by_instance,              ->(notifiable) { notifiable.present? ? where(notifiable_id: notifiable.id, notifiable_type: notifiable.class.name) : none }
+        scope :filtered_by_instance,              ->(notifiable) { filtered_by_association("notifiable", notifiable) }
 
         # Selects filtered notifications by group instance.
         # @example Get filtered unopened notificatons of the @user for @article as group
