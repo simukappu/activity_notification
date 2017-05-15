@@ -10,7 +10,7 @@
 
 `activity_notification` provides integrated user activity notifications for Ruby on Rails. You can easily use it to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc.
 
-`activity_notification` supports Rails 4.2+ with ActiveRecord and [Mongoid](http://mongoid.org) ORM. It is tested for MySQL, PostgreSQL, SQLite with ActiveRecord ORM and MongoDB with Mongoid ORM.
+`activity_notification` supports Rails 4.2+ with ActiveRecord and [Mongoid](http://mongoid.org) ORM. It is tested for MySQL, PostgreSQL, SQLite with ActiveRecord and MongoDB with Mongoid.
 
 
 ## About
@@ -172,7 +172,7 @@ class User
   include Mongoid::Timestamps
   include GlobalID::Identification
 
-  # You need include ActivityNotification::Models except ActiveRecord models
+  # You need include ActivityNotification::Models except models which extends ActiveRecord::Base
   include ActivityNotification::Models
   acts_as_target
 end
@@ -240,7 +240,7 @@ class Comment
   include Mongoid::Timestamps
   include GlobalID::Identification
 
-  # You need include ActivityNotification::Models except ActiveRecord models
+  # You need include ActivityNotification::Models except models which extends ActiveRecord::Base
   include ActivityNotification::Models
   acts_as_notifiable :users,
     targets: ->(comment, key) {
@@ -402,12 +402,13 @@ class Comment < ActiveRecord::Base
     },
     # Set { except: [:update] } to :tracked option to generate tracked notifications except update (creation only).
     # It adds required callbacks to generate notifications for creation of the notifiable model.
-    tracked: { except: [:update] }
+    tracked: { except: [:update], key: 'comment.edit', send_later: false }
 end
 ```
 
 *Hint*: `#{notifiable_type}.create` and `#{notifiable_type}.update` will be used as the key of tracked notifications.
 You can override them by `Notifiable#notification_key_for_tracked_creation` and `Notifiable#notification_key_for_tracked_update`.
+You can also specify key option in the `:tracked` statement.
 
 ### Displaying notifications
 
