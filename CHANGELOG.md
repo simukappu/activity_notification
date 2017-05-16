@@ -4,28 +4,28 @@
 Enhancements:
 
 * Allow use with Rails 5.1
-* Allow mongoid models as `Target` and `Notifiable` models
+* Allow mongoid models as *Target* and *Notifiable* models
 * Add functions for automatic tracked notifications
-* Enable `render_notification_of` view helper method to use `:as_latest_group_member` option
+* Enable *render_notification_of* view helper method to use *:as_latest_group_member* option
 
 Bug Fixes:
 
-* Fix illegal ActiveRecord query in `Notification#uniq_keys` and `Subscription#uniq_keys` for MySQL and PostgreSQL database
+* Fix illegal ActiveRecord query in *Notification#uniq_keys* and *Subscription#uniq_keys* for MySQL and PostgreSQL database
 
 Breaking Changes:
 
-* Update type of polymorphic id field in `Notification` and `Subscription` models from Integer to String
+* Update type of polymorphic id field in *Notification* and *Subscription* models from Integer to String
 
 ## 1.3.0 / 2017-04-07
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.2.1...v1.3.0)
 
 Enhancements:
 
-* Suport Mongoid ORM to store `Notification` and `Subscription` records
-  * Separate `Notification` and `Subscription` models into ORMs and make them load from ORM selector
-  * Update query logic in `Notification` and `Subscription` models for Mongoid
-* Make `:dependent_notifications` option in `acts_as_notifiable` separate into each target configuration
-* Add `overriding_notification_template_key` to `Notifiable` model for `Renderable`
+* Suport Mongoid ORM to store *Notification* and *Subscription* records
+  * Separate *Notification* and *Subscription* models into ORMs and make them load from ORM selector
+  * Update query logic in *Notification* and *Subscription* models for Mongoid
+* Make *:dependent_notifications* option in *acts_as_notifiable* separate into each target configuration
+* Add *overriding_notification_template_key* to *Notifiable* model for *Renderable*
 * Enable Devise integration to use models with single table inheritance
 
 ## 1.2.1 / 2017-01-06
@@ -33,11 +33,11 @@ Enhancements:
 
 Enhancements:
 
-* Support default Slack optional target with `slack-notifier` 2.0.0
+* Support default Slack optional target with *slack-notifier* 2.0.0
 
 Breaking Changes:
 
-* Rename `:slack_name` initializing parameter and template parameter of default Slack optional target to `:target_username`
+* Rename *:slack_name* initializing parameter and template parameter of default Slack optional target to *:target_username*
 
 ## 1.2.0 / 2017-01-06
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.1.0...v1.2.0)
@@ -49,7 +49,7 @@ Enhancements:
   * Subscription management for optional targets
   * Amazon SNS client as default optional target implementation
   * Slack client as default optional target implementation
-* Add `:restrict_with_*` and `:update_group_and_*` options to `:dependent_notifications` of `acts_as_notifiable`
+* Add *:restrict_with_+* and *:update_group_and_+* options to *:dependent_notifications* of *acts_as_notifiable*
 
 ## 1.1.0 / 2016-12-18
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.0.2...v1.1.0)
@@ -59,17 +59,17 @@ Enhancements:
 * Add subscription management framework
   * Subscription management model and API
   * Default subscription controllers, routing and views
-  * Add `Subscriber` role configuration to `Target` role
-* Add `:as_latest_group_member` option to batch mailer API
-* Add `:group_expiry_delay` option to notification API
+  * Add *Subscriber* role configuration to *Target* role
+* Add *:as_latest_group_member* option to batch mailer API
+* Add *:group_expiry_delay* option to notification API
 
 Bug Fixes:
 
-* Fix unserializable error in `Target#send_batch_unopened_notification_email` since unnecessary options are passed to mailer
+* Fix unserializable error in *Target#send_batch_unopened_notification_email* since unnecessary options are passed to mailer
 
 Breaking Changes:
 
-* Remove `notifiable_type` from the argument of overriden method or configured lambda function with `:batch_email_allowed` option in `acts_as_target` role
+* Remove *notifiable_type* from the argument of overriden method or configured lambda function with *:batch_email_allowed* option in *acts_as_target* role
 
 ## 1.0.2 / 2016-11-14
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.0.1...v1.0.2)
@@ -86,10 +86,10 @@ Enhancements:
 * Add function to send batch email notification
   * Batch mailer API
   * Default batch notification email templates
-  * `Target` role configuration for batch email notification
+  * *Target* role configuration for batch email notification
 * Improve target API
-  * Add `:reverse`, `:with_group_members`, `:as_latest_group_member` and `:custom_filter` options to API loading notification index
-  * Add methods to get notifications for specified target type grouped by targets like `Target#notification_index_map`
+  * Add *:reverse*, *:with_group_members*, *:as_latest_group_member* and *:custom_filter* options to API loading notification index
+  * Add methods to get notifications for specified target type grouped by targets like *Target#notification_index_map*
 * Arrange default notification email view templates
 
 Breaking Changes:
@@ -102,14 +102,14 @@ Breaking Changes:
 Enhancements:
 
 * Improve notification API
-  * Add methods to count distinct group members or notifiers like `group_member_notifier_count`
-  * Update `send_later` argument of `send_notification_email` method to options hash argument
+  * Add methods to count distinct group members or notifiers like *group_member_notifier_count*
+  * Update *send_later* argument of *send_notification_email* method to options hash argument
 * Improve target API
-  * Update `notification_index` API to automatically load opened notifications with unopend notifications
+  * Update *notification_index* API to automatically load opened notifications with unopend notifications
 * Improve acts_as roles
-  * Add `acts_as_group` role
-  * Add `printable_name` configuration for all roles
-  * Add `:dependent_notifications` option to `acts_as_notifiable` to make handle notifications with deleted notifiables
+  * Add *acts_as_group* role
+  * Add *printable_name* configuration for all roles
+  * Add *:dependent_notifications* option to *acts_as_notifiable* to make handle notifications with deleted notifiables
 * Arrange default notification view templates
 * Arrange bundled test application
 * Make default rails version 5.0 and update gem dependency
@@ -125,14 +125,14 @@ Breaking Changes:
 Enhancements:
 
 * Improve controller action and notification API
-  * Add filter options to `NotificationsController#open_all` action and `Target#open_all_of` method
+  * Add filter options to *NotificationsController#open_all* action and *Target#open_all_of* method
 * Add source documentation with YARD
 * Support rails 5.0 and update gem dependency
 
 Bug Fixes:
 
-* Fix `Notification#notifiable_path` method to be called with key
-* Add including `PolymorphicHelpers` statement to `seed.rb` in test application to resolve String extention
+* Fix *Notification#notifiable_path* method to be called with key
+* Add including *PolymorphicHelpers* statement to *seed.rb* in test application to resolve String extention
 
 ## 0.0.9 / 2016-08-19
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v0.0.8...v0.0.9)
@@ -142,12 +142,12 @@ Enhancements:
 * Improve acts_as roles
   * Enable models to be configured by acts_as role without including statement
   * Disable email notification as default and add email configurations to acts_as roles
-  * Remove `:skip_email` option from `acts_as_target`
-* Update `Renderable#text` method to use `#{key}.text` field in i18n properties
+  * Remove *:skip_email* option from *acts_as_target*
+* Update *Renderable#text* method to use `"#{key}.text"` field in i18n properties
   
 Bug Fixes:
 
-* Fix wrong method name of `Notification#notifiable_path`
+* Fix wrong method name of *Notification#notifiable_path*
 
 ## 0.0.8 / 2016-07-31
 * First release
