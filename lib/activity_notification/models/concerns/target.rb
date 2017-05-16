@@ -96,7 +96,7 @@ module ActivityNotification
       # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [Array<Notificaion>] All notifications for this target type grouped by targets
+      # @return [Hash<Target, Notificaion>] All notifications for this target type grouped by targets
       def notification_index_map(options = {})
         all_notifications(options).group_by(&:target)
       end
