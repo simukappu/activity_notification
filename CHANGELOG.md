@@ -1,3 +1,10 @@
+## 1.4.1 / 2017-05-17
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.0...v1.4.1)
+
+Enhancements:
+
+* Remove dependency on activerecord from gem runtime dependency
+
 ## 1.4.0 / 2017-05-10
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.3.0...v1.4.0)
 
