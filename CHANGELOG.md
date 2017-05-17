@@ -3,7 +3,7 @@
 
 Enhancements:
 
-* Remove dependency on *activerecord* from gem runtime dependency
+* Remove dependency on *activerecord* from gemspec
 
 ## 1.4.0 / 2017-05-10
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.3.0...v1.4.0)
