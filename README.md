@@ -55,7 +55,6 @@
     - [Configuring target model](#configuring-target-model)
     - [Configuring notifiable model](#configuring-notifiable-model)
   - [Configuring views](#configuring-views)
-  - [Configuring controllers](#configuring-controllers)
   - [Configuring routes](#configuring-routes)
   - [Creating notifications](#creating-notifications)
     - [Notification API](#notification-api)
@@ -65,6 +64,7 @@
     - [Rendering notifications](#rendering-notifications)
     - [Notification views](#notification-views)
     - [i18n for notifications](#i18n-for-notifications)
+  - [Customizing controllers (optional)](#customizing-controllers-optional-)
 - [Functions](#functions)
   - [Email notification](#email-notification)
     - [Mailer setup](#mailer-setup)
@@ -274,61 +274,6 @@ you can pass a list of modules to the generator with the *-v* flag.
 ```console
 $ bin/rails generate activity_notification:views -v notifications
 ```
-
-### Configuring controllers
-
-If the customization at the views level is not enough, you can customize each controller by following these steps:
-
-1. Create your custom controllers using the generator with a target:
-
-    ```console
-    $ bin/rails generate activity_notification:controllers users
-    ```
-
-    If you specify *users* as the target, controllers will be created in *app/controllers/users*.
-    And the notifications controller will look like this:
-
-    ```ruby
-    class Users::NotificationsController < ActivityNotification::NotificationsController
-      # GET /:target_type/:target_id/notifications
-      # def index
-      #   super
-      # end
-
-      # ...
-
-      # POST /:target_type/:target_id/notifications/:id/open
-      # def open
-      #   super
-      # end
-
-      # ...
-    end
-    ```
-
-2. Tell the router to use this controller:
-
-    ```ruby
-    notify_to :users, controller: 'users/notifications'
-    ```
-
-3. Finally, change or extend the desired controller actions.
-
-    You can completely override a controller action
-    ```ruby
-    class Users::NotificationsController < ActivityNotification::NotificationsController
-      # ...
-
-      # POST /:target_type/:target_id/notifications/:id/open
-      def open
-        # Custom code to open notification here
-
-        # super
-      end
-
-      # ...
-    end
-    ```
 
 ### Configuring routes
 
@@ -543,6 +488,61 @@ notification:
 ```
 
 This structure is valid for notifications with keys *"notification.comment.reply"* or *"comment.reply"*. As mentioned before, *"notification."* part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record.
+
+### Customizing controllers (optional)
+
+If the customization at the views level is not enough, you can customize each controller by following these steps:
+
+1. Create your custom controllers using the generator with a target:
+
+    ```console
+    $ bin/rails generate activity_notification:controllers users
+    ```
+
+    If you specify *users* as the target, controllers will be created in *app/controllers/users*.
+    And the notifications controller will look like this:
+
+    ```ruby
+    class Users::NotificationsController < ActivityNotification::NotificationsController
+      # GET /:target_type/:target_id/notifications
+      # def index
+      #   super
+      # end
+
+      # ...
+
+      # POST /:target_type/:target_id/notifications/:id/open
+      # def open
+      #   super
+      # end
+
+      # ...
+    end
+    ```
+
+2. Tell the router to use this controller:
+
+    ```ruby
+    notify_to :users, controller: 'users/notifications'
+    ```
+
+3. Finally, change or extend the desired controller actions.
+
+    You can completely override a controller action
+    ```ruby
+    class Users::NotificationsController < ActivityNotification::NotificationsController
+      # ...
+
+      # POST /:target_type/:target_id/notifications/:id/open
+      def open
+        # Custom code to open notification here
+
+        # super
+      end
+
+      # ...
+    end
+    ```
 
 
 ## Functions
