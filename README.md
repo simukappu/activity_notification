@@ -52,8 +52,8 @@
     - [Using ActiveRecord ORM](#using_activerecord_orm)
     - [Using Mongoid ORM](#using_mongoid_orm)
   - [Configuring models](#configuring-models)
-    - [Configuring target model](#configuring-target-model)
-    - [Configuring notifiable model](#configuring-notifiable-model)
+    - [Configuring target models](#configuring-target-models)
+    - [Configuring notifiable models](#configuring-notifiable-models)
   - [Configuring views](#configuring-views)
   - [Configuring routes](#configuring-routes)
   - [Creating notifications](#creating-notifications)
@@ -64,7 +64,7 @@
     - [Rendering notifications](#rendering-notifications)
     - [Notification views](#notification-views)
     - [i18n for notifications](#i18n-for-notifications)
-  - [Customizing controllers (optional)](#customizing-controllers-optional-)
+  - [Customizing controllers (optional)](#customizing-controllers-optional)
 - [Functions](#functions)
   - [Email notification](#email-notification)
     - [Mailer setup](#mailer-setup)
@@ -147,12 +147,12 @@ You need to configure Mongoid in your Rails application for your MongoDB environ
 
 ### Configuring models
 
-#### Configuring target model
+#### Configuring target models
 
 Configure your target model (e.g. *app/models/user.rb*).
 Add **acts_as_target** configuration to your target model to get notifications.
 
-##### Target as ActiveRecord model
+##### Target as an ActiveRecord model
 
 ```ruby
 class User < ActiveRecord::Base
@@ -163,7 +163,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-##### Target as  Mongoid model
+##### Target as a Mongoid model
 
 ```ruby
 require 'mongoid'
@@ -180,13 +180,13 @@ end
 
 *Note*: *acts_as_notification_target* is an alias for *acts_as_target* and does the same.
 
-#### Configuring notifiable model
+#### Configuring notifiable models
 
 Configure your notifiable model (e.g. *app/models/comment.rb*).
 Add **acts_as_notifiable** configuration to your notifiable model representing activity to notify for each of your target model.
 You have to define notification targets for all notifications from this notifiable model by *:targets* option. Other configurations are options. *:notifiable_path* option is a path to move when the notification is opened by the target user.
 
-##### Notifiable as ActiveRecord model
+##### Notifiable as an ActiveRecord model
 
 ```ruby
 class Article < ActiveRecord::Base
@@ -218,7 +218,7 @@ class Comment < ActiveRecord::Base
 end
 ```
 
-##### Notifiable as Mongoid model
+##### Notifiable as a Mongoid model
 
 ```ruby
 require 'mongoid'
