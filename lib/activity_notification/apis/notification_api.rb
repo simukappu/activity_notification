@@ -455,7 +455,7 @@ module ActivityNotification
     # @param [Integer] limit Limit to query for opened notifications
     # @return [Integer] Count of group notifications including owner and members
     def group_notifier_count(limit = ActivityNotification.config.opened_index_limit)
-      notification = group_member? ? group_owner : self
+      notification = group_member? && group_owner.present? ? group_owner : self
       notification.notifier.present? ? group_member_notifier_count(limit) + 1 : 0
     end
 
@@ -464,7 +464,7 @@ module ActivityNotification
     #
     # @return [Notificaion] Notification instance of the latest group member notification
     def latest_group_member
-      notification = group_member? ? group_owner : self
+      notification = group_member? && group_owner.present? ? group_owner : self
       notification.group_member_exists? ? notification.group_members.latest : self
     end
 
@@ -530,7 +530,7 @@ module ActivityNotification
       # @param [Integer] limit Limit to query for opened notifications
       # @return [Integer] Count of various members of the notification
       def meta_group_member_count(opened_member_count_method_name, unopened_member_count_method_name, limit)
-        notification = group_member? ? group_owner : self
+        notification = group_member? && group_owner.present? ? group_owner : self
         notification.opened? ?
           notification.send(opened_member_count_method_name, limit) :
           notification.send(unopened_member_count_method_name)
