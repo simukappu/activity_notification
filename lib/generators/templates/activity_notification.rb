@@ -41,6 +41,9 @@ ActivityNotification.configure do |config|
   # Configure the parent class responsible to send e-mails.
   # config.parent_mailer = 'ActionMailer::Base'
 
+  # Configure the parent class for activity_notification controllers.
+  # config.parent_controller = 'ApplicationController'
+
   # Configure default limit number of opened notifications you can get from opened* scope
   config.opened_index_limit = 10
 
