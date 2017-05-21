@@ -10,7 +10,7 @@
 
 *activity_notification* provides integrated user activity notifications for Ruby on Rails. You can easily use it to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc.
 
-*activity_notification* supports Rails 4.2+ with ActiveRecord and [Mongoid](http://mongoid.org) ORM. It is tested for MySQL, PostgreSQL, SQLite with ActiveRecord and MongoDB with Mongoid.
+*activity_notification* supports Rails 4.2+ with ActiveRecord and [Mongoid](http://mongoid.org) ORM. It is tested for MySQL, PostgreSQL, SQLite3 with ActiveRecord and MongoDB with Mongoid.
 
 
 ## About
@@ -172,7 +172,7 @@ class User
   include Mongoid::Timestamps
   include GlobalID::Identification
 
-  # You need include ActivityNotification::Models except models which extends ActiveRecord::Base
+  # You need include ActivityNotification::Models except models which extend ActiveRecord::Base
   include ActivityNotification::Models
   acts_as_target
 end
@@ -240,7 +240,7 @@ class Comment
   include Mongoid::Timestamps
   include GlobalID::Identification
 
-  # You need include ActivityNotification::Models except models which extends ActiveRecord::Base
+  # You need include ActivityNotification::Models except models which extend ActiveRecord::Base
   include ActivityNotification::Models
   acts_as_notifiable :users,
     targets: ->(comment, key) {
