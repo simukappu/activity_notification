@@ -2,7 +2,7 @@ ActivityNotification.configure do |config|
 
   # Configure ORM name for ActivityNotification.
   # Set :active_record or :mongoid.
-  ENV['AN_ORM'] = 'active_record' if ENV['AN_ORM'] != 'mongoid'
+  ENV['AN_ORM'] = 'active_record' unless ENV['AN_ORM'] == 'mongoid'
   config.orm = ENV['AN_ORM']
 
   # Configure if all activity notifications are enabled.
