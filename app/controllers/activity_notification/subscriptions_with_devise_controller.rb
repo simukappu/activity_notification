@@ -1,6 +1,6 @@
 module ActivityNotification
   # Controller to manage subscriptions with Devise authentication.
   class SubscriptionsWithDeviseController < SubscriptionsController
-    include DeviceAuthenticationController
+    include DeviseAuthenticationController
   end
 end

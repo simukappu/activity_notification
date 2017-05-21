@@ -1,6 +1,6 @@
 module ActivityNotification
   # Module included in controllers to authenticate with Devise module
-  module DeviceAuthenticationController
+  module DeviseAuthenticationController
     extend ActiveSupport::Concern
 
     included do
