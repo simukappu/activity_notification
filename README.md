@@ -129,15 +129,15 @@ $ bin/rails generate activity_notification:migration
 $ bin/rake db:migrate
 ```
 
-If you are using a different table name than "notifications", change the settings in your config/initializers/activity_notification.rb file, e.g.:
+If you are using a different table name than "notifications", change the settings in your config/initializers/activity_notification.rb file, e.g., if you're using the table name "activity_notifications" instead of the default "notifications":
 
 ```
 config.notification_table_name = "activity_notifications"
 ```
 
-The same can be done for the subscription tablename:
+The same can be done for the subscription tablename, e.g., if you're using the table name "notifications_subscriptions" instead of the default "subscriptions":
 ```
-config.notification_table_name = "activity_notifications"
+config.subscription_table_name = "notifications_subscriptions"
 ```
 
 
@@ -764,7 +764,7 @@ If you do not have a subscriptions table in you database, create a migration for
 $ bin/rails generate activity_notification:migration CreateSubscriptions -t subscriptions
 $ bin/rake db:migrate
 ```
-If you are using a different table name than "subscriptions", change the settings in your config/initializers/activity_notification.rb file, e.g.:
+If you are using a different table name than the default "subscriptions", change the settings in your config/initializers/activity_notification.rb file, e.g, if you use the table name "notifications_subscription" instead:
 
 ```
 config.subscription_table_name = "notifications_subscriptions"
