@@ -129,6 +129,18 @@ $ bin/rails generate activity_notification:migration
 $ bin/rake db:migrate
 ```
 
+If you are using a different table name than "notifications", change the settings in your config/initializers/activity_notification.rb file, e.g., if you're using the table name "activity_notifications" instead of the default "notifications":
+
+```
+config.notification_table_name = "activity_notifications"
+```
+
+The same can be done for the subscription tablename, e.g., if you're using the table name "notifications_subscriptions" instead of the default "subscriptions":
+```
+config.subscription_table_name = "notifications_subscriptions"
+```
+
+
 #### Using Mongoid ORM
 
 When you use *activity_notification* with [Mongoid](http://mongoid.org) ORM, set **AN_ORM** environment variable to **mongoid**:
@@ -746,13 +758,17 @@ class User < ActiveRecord::Base
 end
 ```
 
-If you do not have subscriptions table in you database, create migration for subscriptions and migrate the database in your Rails project:
+If you do not have a subscriptions table in you database, create a migration for subscriptions and migrate the database in your Rails project:
 
 ```console
 $ bin/rails generate activity_notification:migration CreateSubscriptions -t subscriptions
 $ bin/rake db:migrate
 ```
+If you are using a different table name than the default "subscriptions", change the settings in your config/initializers/activity_notification.rb file, e.g, if you use the table name "notifications_subscription" instead:
 
+```
+config.subscription_table_name = "notifications_subscriptions"
+```
 
 #### Managing subscriptions
 
