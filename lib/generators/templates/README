@@ -14,7 +14,6 @@ Some setup you must do manually if you haven't yet:
 
    - Add including statement and acts_as_target definition to your target model
 
-       include ActivityNotification::Target
        acts_as_target email: :email, email_allowed: :confirmed_at
 
    - Add notification routing to config/routes.rb
@@ -29,8 +28,7 @@ Some setup you must do manually if you haven't yet:
   3. Setup your notifiable model (e.g. app/models/comment.rb)
 
     - Add including statement and acts_as_notifiable definition to your notifiable model
-     
-       include ActivityNotification::Notifiable
+
        acts_as_notifiable :users,
          targets: :custom_notification_users,
          group: :article,
