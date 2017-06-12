@@ -130,14 +130,15 @@ $ bin/rails generate activity_notification:migration
 $ bin/rake db:migrate
 ```
 
-If you are using a different table name than "notifications", change the settings in your config/initializers/activity_notification.rb file, e.g., if you're using the table name "activity_notifications" instead of the default "notifications":
+If you are using a different table name from *"notifications"*, change the settings in your *config/initializers/activity_notification.rb* file, e.g., if you're using the table name *"activity_notifications"* instead of the default *"notifications"*:
 
-```
+```ruby
 config.notification_table_name = "activity_notifications"
 ```
 
-The same can be done for the subscription tablename, e.g., if you're using the table name "notifications_subscriptions" instead of the default "subscriptions":
-```
+The same can be done for the subscription table name, e.g., if you're using the table name *"notifications_subscriptions"* instead of the default *"subscriptions"*:
+
+```ruby
 config.subscription_table_name = "notifications_subscriptions"
 ```
 
@@ -267,16 +268,16 @@ class Comment
 end
 ```
 
-#### Advanced Notifiable path
+##### Advanced notifiable path
 
-Sometimes it might be necessary to provide extra information in the notifiable_path. In those cases, passing a lambda-function to the notifiable_path will give you the notifiable-object and the notifiable-key to play around with:
+Sometimes it might be necessary to provide extra information in the notifiable_path. In those cases, passing a lambda function to the *notifiable_path* will give you the notifiable object and the notifiable key to play around with:
 
 ```ruby
 acts_as_notifiable :users,
-  targets: ->(object, key) {
-    get_notifiable_user_array_for(object, key)
+  targets: ->(comment, key) {
+    ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
   },
-  notifiable_path: ->(object, key) { object.objects_notifiable_path + "##{key}" }
+  notifiable_path: ->(comment, key) { comment.article_notifiable_path + "##{key}" }
 ```
 
 This will attach the key of the notification to the notifiable path.
