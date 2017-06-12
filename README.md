@@ -54,6 +54,7 @@
   - [Configuring models](#configuring-models)
     - [Configuring target models](#configuring-target-models)
     - [Configuring notifiable models](#configuring-notifiable-models)
+    - [Advanced notifiable path](#advanced-notifiable-path)
   - [Configuring views](#configuring-views)
   - [Configuring routes](#configuring-routes)
   - [Creating notifications](#creating-notifications)
@@ -265,6 +266,20 @@ class Comment
   end
 end
 ```
+
+#### Advanced Notifiable path
+
+Sometimes it might be necessary to provide extra information in the notifiable_path. In those cases, passing a lambda-function to the notifiable_path will give you the notifiable-object and the notifiable-key to play around with:
+
+```ruby
+acts_as_notifiable :users,
+  targets: ->(object, key) {
+    get_notifiable_user_array_for(object, key)
+  },
+  notifiable_path: ->(object, key) { object.objects_notifiable_path + "##{key}" }
+```
+
+This will attach the key of the notification to the notifiable path.
 
 ### Configuring views
 
