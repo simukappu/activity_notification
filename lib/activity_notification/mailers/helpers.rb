@@ -58,8 +58,14 @@ module ActivityNotification
              @notification.notifiable.overriding_notification_email_key(@target, key).present?
             key = @notification.notifiable.overriding_notification_email_key(@target, key)
           end
+          if @notification.notifiable.respond_to?(:overriding_notification_email_subject) &&
+              @notification.notifiable.overriding_notification_email_subject(@target, key).present?
+            subject = @notification.notifiable.overriding_notification_email_subject(@target, key)
+          else
+            subject = subject_for(key)
+          end
           headers = {
-            subject: subject_for(key),
+            subject: subject,
             to: mailer_to(@target),
             from: mailer_from(key),
             reply_to: mailer_reply_to(key),
