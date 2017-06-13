@@ -49,8 +49,8 @@
 - [Setup](#setup)
   - [Gem installation](#gem-installation)
   - [Database setup](#database-setup)
-    - [Using ActiveRecord ORM](#using_activerecord_orm)
-    - [Using Mongoid ORM](#using_mongoid_orm)
+    - [Using ActiveRecord ORM](#using-activerecord-orm)
+    - [Using Mongoid ORM](#using-mongoid-orm)
   - [Configuring models](#configuring-models)
     - [Configuring target models](#configuring-target-models)
     - [Configuring notifiable models](#configuring-notifiable-models)
@@ -277,7 +277,7 @@ acts_as_notifiable :users,
   targets: ->(comment, key) {
     ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
   },
-  notifiable_path: ->(comment, key) { comment.article_notifiable_path + "##{key}" }
+  notifiable_path: ->(comment, key) { "#{comment.article_notifiable_path}##{key}" }
 ```
 
 This will attach the key of the notification to the notifiable path.
