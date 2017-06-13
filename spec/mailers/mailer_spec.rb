@@ -88,6 +88,20 @@ describe ActivityNotification::Mailer do
         end
       end
 
+      context "with defined overriding_notification_email_subject in notifiable model" do
+        it "sends with updated subject" do
+          module AdditionalMethods
+            def overriding_notification_email_subject(target, key)
+              'Hi, You have got comment'
+            end
+          end
+          notification.notifiable.extend(AdditionalMethods)
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.subject)
+            .to eq("Hi, You have got comment")
+        end
+      end
+
       context "when fallback option is :none and the template is missing" do
         it "raise ActionView::MissingTemplate" do
           expect { ActivityNotification::Mailer.send_notification_email(notification, fallback: :none).deliver_now }
