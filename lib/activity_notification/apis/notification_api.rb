@@ -7,6 +7,9 @@ module ActivityNotification
       # Defines store_notification as private clas method
       private_class_method :store_notification
 
+      # Defines mailer class to send notification
+      @@notification_mailer = ActivityNotification.config.mailer.constantize
+
       # Selects all notification index.
       #   ActivityNotification::Notification.all_index!
       # is defined same as
@@ -285,8 +288,8 @@ module ActivityNotification
            target.subscribes_to_notification_email?(batch_key)
           send_later = options.has_key?(:send_later) ? options[:send_later] : true
           send_later ?
-            Mailer.send_batch_notification_email(target, notifications, batch_key, options).deliver_later :
-            Mailer.send_batch_notification_email(target, notifications, batch_key, options).deliver_now
+            @@notification_mailer.send_batch_notification_email(target, notifications, batch_key, options).deliver_later :
+            @@notification_mailer.send_batch_notification_email(target, notifications, batch_key, options).deliver_now
         end
       end
 
@@ -321,7 +324,6 @@ module ActivityNotification
       end
     end
 
-
     # Sends notification email to the target.
     #
     # @param [Hash] options Options for notification email
@@ -334,8 +336,8 @@ module ActivityNotification
          email_subscribed?
         send_later = options.has_key?(:send_later) ? options[:send_later] : true
         send_later ?
-          Mailer.send_notification_email(self, options).deliver_later :
-          Mailer.send_notification_email(self, options).deliver_now
+          @@notification_mailer.send_notification_email(self, options).deliver_later :
+          @@notification_mailer.send_notification_email(self, options).deliver_now
       end
     end
 
