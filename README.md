@@ -54,7 +54,7 @@
   - [Configuring models](#configuring-models)
     - [Configuring target models](#configuring-target-models)
     - [Configuring notifiable models](#configuring-notifiable-models)
-    - [Advanced notifiable path](#advanced-notifiable-path)
+      - [Advanced notifiable path](#advanced-notifiable-path)
   - [Configuring views](#configuring-views)
   - [Configuring routes](#configuring-routes)
   - [Creating notifications](#creating-notifications)
@@ -268,7 +268,7 @@ class Comment
 end
 ```
 
-##### Advanced notifiable path
+###### Advanced notifiable path
 
 Sometimes it might be necessary to provide extra information in the *notifiable_path*. In those cases, passing a lambda function to the *notifiable_path* will give you the notifiable object and the notifiable key to play around with:
 
