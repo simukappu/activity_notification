@@ -220,6 +220,12 @@ module ActivityNotification
     #
     # overriding_notification_email_key(target, key)
 
+    # overriding_notification_email_subject is the method to override subject definition for Mailer
+    # When respond_to?(:overriding_notification_email_subject) returns true,
+    # Mailer uses overriding_notification_email_subject instead of configured notification subject in locale file.
+    #
+    # overriding_notification_email_subject(target, key)
+
 
     # Generates notifications to configured targets with notifiable model.
     # This method calls NotificationApi#notify internally with self notifiable instance.
