@@ -8,7 +8,7 @@ module ActivityNotification
       private_class_method :store_notification
 
       # Defines mailer class to send notification
-      @@notification_mailer = ActivityNotification.config.mailer.constantize
+      set_notification_mailer
 
       # Selects all notification index.
       #   ActivityNotification::Notification.all_index!
@@ -298,6 +298,11 @@ module ActivityNotification
       # @return [Array<Notificaion>] Available options for kinds of notify methods
       def available_options
         [:key, :group, :parameters, :notifier, :send_email, :send_later].freeze
+      end
+
+      # Defines mailer class to send notification
+      def set_notification_mailer
+        @@notification_mailer = ActivityNotification.config.mailer.constantize
       end
 
       # Stores notifications to datastore
