@@ -92,6 +92,9 @@
   - [Testing gem alone](#testing-gem-alone)
 - [Documentation](#documentation)
 - **[Common examples](#common-examples)**
+- [Help](#help)
+- [Contributing](#contributing)
+- [License](#license)
 
 
 ## Setup
@@ -1203,7 +1206,15 @@ To be prepared. See dummy Rails application in *spec/rails_app*.
 
 ## Help
 
-Contact us by email of this repository.
+We are welcome your Github issues for gem problems or enhancement requests. If you have any questions or problems for your own application environment, contact us by email of this repository.
+
+
+## Contributing
+
+We are welcome all of your pull requests! Please check out the followings:
+* Write tests with RSpec
+* Write code docs and README if necessary
+* Send your pull request to *development* branch (Do NOT send to *master* branch)
 
 
 ## License
