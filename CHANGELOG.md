@@ -1,3 +1,14 @@
+## 1.4.2 / 2017-07-22
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.1...v1.4.2)
+
+Enhancements:
+
+* Add function to override the subject of notification email
+
+Bug Fixes:
+
+* Fix a bug which ActivityNotificaion.config.mailer configuration was ignored
+
 ## 1.4.1 / 2017-05-17
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.0...v1.4.1)
 

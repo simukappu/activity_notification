@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'jquery-rails', '>= 3.1.1'
 
   s.add_development_dependency 'sqlite3', '~> 1.3.13'
-  s.add_development_dependency 'mysql2', '~> 0.4.6'
+  s.add_development_dependency 'mysql2', '~> 0.4.8'
   s.add_development_dependency 'pg', '~> 0.21.0'
   s.add_development_dependency 'mongoid', '>= 4.0.0'
   s.add_development_dependency 'rspec-rails', '~> 3.6.0'
