@@ -15,14 +15,14 @@ shared_examples_for :notifiable do
     describe ".set_notifiable_class_defaults" do
       it "set parameter fields as default" do
         described_class.set_notifiable_class_defaults
-        expect(described_class._notification_targets).to       eq({})
-        expect(described_class._notification_group).to         eq({})
-        expect(described_class._notification_group_expiry_delay).to         eq({})
-        expect(described_class._notifier).to                   eq({})
-        expect(described_class._notification_parameters).to    eq({})
-        expect(described_class._notification_email_allowed).to eq({})
-        expect(described_class._notifiable_path).to            eq({})
-        expect(described_class._printable_notifiable_name).to  eq({})
+        expect(described_class._notification_targets).to            eq({})
+        expect(described_class._notification_group).to              eq({})
+        expect(described_class._notification_group_expiry_delay).to eq({})
+        expect(described_class._notifier).to                        eq({})
+        expect(described_class._notification_parameters).to         eq({})
+        expect(described_class._notification_email_allowed).to      eq({})
+        expect(described_class._notifiable_path).to                 eq({})
+        expect(described_class._printable_notifiable_name).to       eq({})
       end
     end    
   end
