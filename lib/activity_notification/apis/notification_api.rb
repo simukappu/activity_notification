@@ -160,10 +160,11 @@ module ActivityNotification
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
+      # @option options [Boolean]                 :pass_full_options        (false)                               Whether it passes full options to notifiable.notification_targets, not a key only
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Array<Notificaion>] Array of generated notifications
       def notify(target_type, notifiable, options = {})
-        targets = notifiable.notification_targets(target_type, options)
+        targets = notifiable.notification_targets(target_type, options[:pass_full_options] ? options : options[:key])
         unless targets.blank?
           notify_all(targets, notifiable, options)
         end
