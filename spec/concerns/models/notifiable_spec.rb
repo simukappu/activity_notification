@@ -15,14 +15,14 @@ shared_examples_for :notifiable do
     describe ".set_notifiable_class_defaults" do
       it "set parameter fields as default" do
         described_class.set_notifiable_class_defaults
-        expect(described_class._notification_targets).to       eq({})
-        expect(described_class._notification_group).to         eq({})
-        expect(described_class._notification_group_expiry_delay).to         eq({})
-        expect(described_class._notifier).to                   eq({})
-        expect(described_class._notification_parameters).to    eq({})
-        expect(described_class._notification_email_allowed).to eq({})
-        expect(described_class._notifiable_path).to            eq({})
-        expect(described_class._printable_notifiable_name).to  eq({})
+        expect(described_class._notification_targets).to            eq({})
+        expect(described_class._notification_group).to              eq({})
+        expect(described_class._notification_group_expiry_delay).to eq({})
+        expect(described_class._notifier).to                        eq({})
+        expect(described_class._notification_parameters).to         eq({})
+        expect(described_class._notification_email_allowed).to      eq({})
+        expect(described_class._notifiable_path).to                 eq({})
+        expect(described_class._printable_notifiable_name).to       eq({})
       end
     end
   end
@@ -40,6 +40,8 @@ shared_examples_for :notifiable do
     describe "#notification_targets" do
       context "without any configuration" do
         it "raises NotImplementedError" do
+          expect { test_instance.notification_targets(User, 'dummy_key') }
+            .to raise_error(NotImplementedError, /You have to implement .+ or set :targets in acts_as_notifiable/)
           expect { test_instance.notification_targets(User, { key: 'dummy_key' }) }
             .to raise_error(NotImplementedError, /You have to implement .+ or set :targets in acts_as_notifiable/)
         end
@@ -53,6 +55,7 @@ shared_examples_for :notifiable do
             end
           end
           test_instance.extend(AdditionalMethods)
+          expect(test_instance.notification_targets(User, 'dummy_key')).to eq(User.all)
           expect(test_instance.notification_targets(User, { key: 'dummy_key' })).to eq(User.all)
         end
       end
@@ -60,6 +63,7 @@ shared_examples_for :notifiable do
       context "configured with a field" do
         it "returns specified value" do
           described_class._notification_targets[:users] = User.all
+          expect(test_instance.notification_targets(User, 'dummy_key')).to eq(User.all)
           expect(test_instance.notification_targets(User, { key: 'dummy_key' })).to eq(User.all)
         end
 
@@ -71,6 +75,7 @@ shared_examples_for :notifiable do
           end
           test_instance.extend(AdditionalMethods)
           described_class._notification_targets[:users] = :custom_notification_users
+          expect(test_instance.notification_targets(User, 'dummy_key')).to eq(User.all)
           expect(test_instance.notification_targets(User, { key: 'dummy_key' })).to eq(User.all)
         end
 
@@ -82,16 +87,23 @@ shared_examples_for :notifiable do
           end
           test_instance.extend(AdditionalMethods)
           described_class._notification_targets[:users] = :custom_notification_users
+          expect(test_instance.notification_targets(User, 'dummy_key')).to eq(User.all)
           expect(test_instance.notification_targets(User, { key: 'dummy_key' })).to eq(User.all)
         end
 
         it "returns specified lambda with single notifiable argument" do
           described_class._notification_targets[:users] = ->(notifiable){ User.all }
+          expect(test_instance.notification_targets(User, 'dummy_key')).to eq(User.all)
           expect(test_instance.notification_targets(User, { key: 'dummy_key' })).to eq(User.all)
         end
 
         it "returns specified lambda with notifiable and key arguments" do
-          described_class._notification_targets[:users] = ->(notifiable, options){ User.all }
+          described_class._notification_targets[:users] = ->(notifiable, key){ User.all if key == 'dummy_key' }
+          expect(test_instance.notification_targets(User, 'dummy_key')).to eq(User.all)
+        end
+
+        it "returns specified lambda with notifiable and options arguments" do
+          described_class._notification_targets[:users] = ->(notifiable, options){ User.all if options[:key] == 'dummy_key' }
           expect(test_instance.notification_targets(User, { key: 'dummy_key' })).to eq(User.all)
         end
       end

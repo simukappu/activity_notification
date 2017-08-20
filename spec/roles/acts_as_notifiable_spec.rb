@@ -186,7 +186,7 @@ describe ActivityNotification::ActsAsNotifiable do
           @notifiable_1, @notifiable_2, @notifiable_3 = dummy_notifiable_class.create, dummy_notifiable_class.create, dummy_notifiable_class.create
           @group_owner  = create(:notification, target: user_target, notifiable: @notifiable_1, group: @notifiable_1)
           @group_member = create(:notification, target: user_target, notifiable: @notifiable_2, group: @notifiable_1, group_owner: @group_owner)
-                          create(:notification, target: user_target, notifiable: @notifiable_3, group: @notifiable_1, group_owner: @group_owner)
+                          create(:notification, target: user_target, notifiable: @notifiable_3, group: @notifiable_1, group_owner: @group_owner, created_at: @group_member.created_at + 10.second)
           @other_target_group_owner  = create(:notification, target: dummy_target, notifiable: @notifiable_1, group: @notifiable_1)
           @other_target_group_member = create(:notification, target: dummy_target, notifiable: @notifiable_2, group: @notifiable_1, group_owner: @other_target_group_owner)
                                        create(:notification, target: dummy_target, notifiable: @notifiable_3, group: @notifiable_1, group_owner: @other_target_group_owner)
