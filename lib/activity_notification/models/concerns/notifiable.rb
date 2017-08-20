@@ -64,15 +64,17 @@ module ActivityNotification
     # This method is able to be overriden.
     #
     # @param [String] target_type Target type to notify
-    # @param [String] key Key of the notification
+    # @param [Hash] options Options for notifications
+    # @option options [String]                  :key                      (notifiable.default_notification_key) Key of the notification
+    # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
     # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of the notification targets
-    def notification_targets(target_type, key = nil)
+    def notification_targets(target_type, options = {})
       target_typed_method_name = "notification_#{cast_to_resources_name(target_type)}"
       resolved_parameter = resolve_parameter(
         target_typed_method_name,
         _notification_targets[cast_to_resources_sym(target_type)],
         nil,
-        key)
+        options)
       unless resolved_parameter
         raise NotImplementedError, "You have to implement #{self.class}##{target_typed_method_name} "\
                                    "or set :targets in acts_as_notifiable"

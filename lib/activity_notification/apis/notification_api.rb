@@ -102,7 +102,7 @@ module ActivityNotification
       # @option options [Object]     :filtered_by_group      (nil) Group instance for filter
       # @option options [String]     :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
       # @option options [String]     :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
-      # @option options [String]     :filtered_by_key        (nil) Key of the notification for filter 
+      # @option options [String]     :filtered_by_key        (nil) Key of the notification for filter
       # @option options [Array|Hash] :custom_filter          (nil) Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
       # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
       scope :filtered_by_options,               ->(options = {}) {
@@ -160,10 +160,11 @@ module ActivityNotification
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
+      # @option options [Boolean]                 :pass_full_options        (false)                               Whether it passes full options to notifiable.notification_targets, not a key only
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Array<Notificaion>] Array of generated notifications
       def notify(target_type, notifiable, options = {})
-        targets = notifiable.notification_targets(target_type, options[:key])
+        targets = notifiable.notification_targets(target_type, options[:pass_full_options] ? options : options[:key])
         unless targets.blank?
           notify_all(targets, notifiable, options)
         end
@@ -262,7 +263,7 @@ module ActivityNotification
         target_unopened_notifications.update_all(opened_at: opened_at)
         unopened_notification_count
       end
-  
+
       # Returns if group member of the notifications exists.
       # This method is designed to be called from controllers or views to avoid N+1.
       #
@@ -405,7 +406,7 @@ module ActivityNotification
     def group_member?
       group_owner_id.present?
     end
-  
+
     # Returns if group member of the notification exists.
     # This method is designed to cache group by query result to avoid N+1 call.
     #

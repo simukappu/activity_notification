@@ -70,6 +70,35 @@ shared_examples_for :notification_api do
           expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@author_user.email)
         end
       end
+
+      context "with pass_full_options" do
+        context "as false (as default)" do
+          it "accepts specified lambda with notifiable and key arguments" do
+            Comment._notification_targets[:users] = ->(notifiable, key){ User.all if key == 'dummy_key' }
+            described_class.notify(:users, @comment_2, key: 'dummy_key')
+            expect(@author_user.notifications.unopened_only.count).to eq(1)
+          end
+
+          it "cannot accept specified lambda with notifiable and options arguments" do
+            Comment._notification_targets[:users] = ->(notifiable, options){ User.all if options[:key] == 'dummy_key' }
+            expect { described_class.notify(:users, @comment_2, key: 'dummy_key') }.to raise_error(TypeError)
+          end
+        end
+
+        context "as true" do
+          it "cannot accept specified lambda with notifiable and key arguments" do
+            Comment._notification_targets[:users] = ->(notifiable, key){ User.all if key == 'dummy_key' }
+            expect { described_class.notify(:users, @comment_2, key: 'dummy_key', pass_full_options: true) }.to raise_error(NotImplementedError)
+          end
+
+          it "accepts specified lambda with notifiable and options arguments" do
+            Comment._notification_targets[:users] = ->(notifiable, options){ User.all if options[:key] == 'dummy_key' }
+            described_class.notify(:users, @comment_2, key: 'dummy_key', pass_full_options: true)
+            expect(@author_user.notifications.unopened_only.count).to eq(1)
+          end
+        end
+      end
+
     end
 
     describe ".notify_all" do
