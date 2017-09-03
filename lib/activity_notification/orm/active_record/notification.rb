@@ -25,7 +25,7 @@ module ActivityNotification
         # Belongs to group instance of this notification as polymorphic association.
         # @scope instance
         # @return [Object] Group instance of this notification
-        belongs_to :group,         polymorphic: true
+        belongs_to :group,         { polymorphic: true }.merge(Rails::VERSION::MAJOR >= 5 ? { optional: true } : {})
 
         # Belongs to group owner notification instance of this notification.
         # Only group member instance has :group_owner value.
@@ -41,10 +41,10 @@ module ActivityNotification
         # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of the group member notification instances of this notification
         has_many   :group_members, class_name: "ActivityNotification::Notification", foreign_key: :group_owner_id
 
-        # Belongs to :otifier instance of this notification.
+        # Belongs to :notifier instance of this notification.
         # @scope instance
         # @return [Object] Notifier instance of this notification
-        belongs_to :notifier,      polymorphic: true
+        belongs_to :notifier,      { polymorphic: true }.merge(Rails::VERSION::MAJOR >= 5 ? { optional: true } : {})
 
         # Serialize parameters Hash
         serialize  :parameters, Hash
