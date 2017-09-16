@@ -1,3 +1,14 @@
+## 1.4.2 / 2017-09-16
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.2...v1.4.3)
+
+Enhancements:
+
+* Add *:pass_full_options* option to *NotificationApi#notify* passing the entire options to notification targets
+
+Bug Fixes:
+
+* Add `{ optional: true }` for *:group* and *:notifier* when it is used with Rails 5
+
 ## 1.4.2 / 2017-07-22
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.1...v1.4.2)
 
