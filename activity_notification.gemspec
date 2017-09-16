@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'mongoid', '>= 4.0.0'
   s.add_development_dependency 'rspec-rails', '~> 3.6.1'
   s.add_development_dependency 'factory_girl_rails', '~> 4.8.0'
-  s.add_development_dependency 'simplecov', '~> 0.15.0'
+  s.add_development_dependency 'simplecov', '~> 0.15.1'
   s.add_development_dependency 'yard', '~> 0.9.9'
   s.add_development_dependency 'yard-activesupport-concern', '~> 0.0.1'
   s.add_development_dependency 'devise', '~> 4.3.0'
