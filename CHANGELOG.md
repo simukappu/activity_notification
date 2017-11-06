@@ -1,4 +1,4 @@
-## 1.4.2 / 2017-09-16
+## 1.4.3 / 2017-09-16
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.2...v1.4.3)
 
 Enhancements:
