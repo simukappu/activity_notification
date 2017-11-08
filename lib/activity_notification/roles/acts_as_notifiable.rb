@@ -259,8 +259,8 @@ module ActivityNotification
           add_tracked_callback(tracked_callbacks, :create, ->{ notify target_type, tracked_option })
           add_tracked_callback(tracked_callbacks, :update, ->{ notify target_type, tracked_option })
         else
-          add_tracked_callback(tracked_callbacks, :create, ->{ notify target_type, *tracked_option, key: notification_key_for_tracked_creation })
-          add_tracked_callback(tracked_callbacks, :update, ->{ notify target_type, *tracked_option, key: notification_key_for_tracked_update })
+          add_tracked_callback(tracked_callbacks, :create, ->{ notify target_type, tracked_option.merge(key: notification_key_for_tracked_creation) })
+          add_tracked_callback(tracked_callbacks, :update, ->{ notify target_type, tracked_option.merge(key: notification_key_for_tracked_update) })
         end
         { tracked: tracked_callbacks }
       end
