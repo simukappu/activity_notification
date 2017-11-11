@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :user do
     email Array.new(10){[*"A".."Z", *"0".."9"].sample}.join + '@example.com'
     password "password"

@@ -34,7 +34,7 @@ require 'rails_app/config/environment'
 
 require 'rspec/rails'
 require 'ammeter/init'
-require 'factory_girl_rails'
+require 'factory_bot_rails'
 require 'activity_notification'
 
 def clear_database
@@ -44,9 +44,9 @@ def clear_database
 end
 
 RSpec.configure do |config|
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
   config.before(:all) do
-    FactoryGirl.reload
+    FactoryBot.reload
     clear_database
   end
   config.include Devise::Test::ControllerHelpers, type: :controller

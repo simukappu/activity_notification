@@ -1,4 +1,4 @@
-FactoryGirl.define do
+FactoryBot.define do
   factory :subscription, class: ActivityNotification::Subscription do
     association :target, factory: :confirmed_user
     key "default.default"
