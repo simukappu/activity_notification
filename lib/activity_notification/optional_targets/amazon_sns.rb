@@ -2,7 +2,11 @@ module ActivityNotification
   module OptionalTarget
     # Optional target implementation for mobile push notification or SMS using Amazon SNS.
     class AmazonSNS < ActivityNotification::OptionalTarget::Base
-      require 'aws-sdk'
+      begin
+        require 'aws-sdk'
+      rescue LoadError
+        require 'aws-sdk-sns'
+      end
 
       # Initialize method to prepare Aws::SNS::Client
       # @param [Hash] options Options for initializing

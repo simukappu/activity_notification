@@ -51,13 +51,14 @@ GEM
       railties (>= 3.0)
       rspec-rails (>= 2.2)
     arel (8.0.0)
-    aws-sdk (2.10.86)
-      aws-sdk-resources (= 2.10.86)
-    aws-sdk-core (2.10.86)
+    aws-partitions (1.36.0)
+    aws-sdk-core (3.7.0)
+      aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
       jmespath (~> 1.0)
-    aws-sdk-resources (2.10.86)
-      aws-sdk-core (= 2.10.86)
+    aws-sdk-sns (1.1.0)
+      aws-sdk-core (~> 3)
+      aws-sigv4 (~> 1.0)
     aws-sigv4 (1.0.2)
     bcrypt (3.1.11)
     bson (4.2.2)
@@ -210,7 +211,7 @@ PLATFORMS
 DEPENDENCIES
   activity_notification!
   ammeter
-  aws-sdk (~> 2)
+  aws-sdk-sns (~> 1)
   bullet
   coveralls
   devise (~> 4.3.0)
