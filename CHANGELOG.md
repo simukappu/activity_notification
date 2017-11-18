@@ -1,3 +1,15 @@
+## 1.4.4 / 2017-11-18
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.3...v1.4.4)
+
+Enhancements:
+
+* Enable Amazon SNS optional target to use aws-sdk v3
+
+Bug Fixes:
+
+* Fix error calling #notify for callbacks in *tracked_option*
+* Fix *unopened_group_member_notifier_count* and *opened_group_member_notifier_count* error when using a custom table name
+
 ## 1.4.3 / 2017-09-16
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.2...v1.4.3)
 
