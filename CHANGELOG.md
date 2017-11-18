@@ -3,7 +3,7 @@
 
 Enhancements:
 
-* Enable Amazon SNS optional target to use aws-sdk v3
+* Enable Amazon SNS optional target to use aws-sdk v3 service specific gems
 
 Bug Fixes:
 
