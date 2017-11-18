@@ -227,11 +227,11 @@ module ActivityNotification
             unopened_group_member_notifier_counts = target.notifications
                                                           .unopened_index_group_members_only
                                                           .includes(:group_owner)
-                                                          .where('group_owners_notifications.notifier_type = notifications.notifier_type')
-                                                          .where.not('group_owners_notifications.notifier_id = notifications.notifier_id')
+                                                          .where("group_owners_#{self.class.table_name}.notifier_type = #{self.class.table_name}.notifier_type")
+                                                          .where.not("group_owners_#{self.class.table_name}.notifier_id = #{self.class.table_name}.notifier_id")
                                                           .references(:group_owner)
                                                           .group(:group_owner_id, :notifier_type)
-                                                          .count('distinct notifications.notifier_id')
+                                                          .count("distinct #{self.class.table_name}.notifier_id")
             unopened_group_member_notifier_counts[[id, notifier_type]] || 0
           end
 
@@ -246,11 +246,11 @@ module ActivityNotification
             opened_group_member_notifier_counts   = target.notifications
                                                           .opened_index_group_members_only(limit)
                                                           .includes(:group_owner)
-                                                          .where('group_owners_notifications.notifier_type = notifications.notifier_type')
-                                                          .where.not('group_owners_notifications.notifier_id = notifications.notifier_id')
+                                                          .where("group_owners_#{self.class.table_name}.notifier_type = #{self.class.table_name}.notifier_type")
+                                                          .where.not("group_owners_#{self.class.table_name}.notifier_id = #{self.class.table_name}.notifier_id")
                                                           .references(:group_owner)
                                                           .group(:group_owner_id, :notifier_type)
-                                                          .count('distinct notifications.notifier_id')
+                                                          .count("distinct #{self.class.table_name}.notifier_id")
             count = opened_group_member_notifier_counts[[id, notifier_type]] || 0
             count > limit ? limit : count
           end
