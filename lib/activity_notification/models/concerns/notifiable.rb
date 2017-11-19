@@ -165,12 +165,16 @@ module ActivityNotification
         nil,
         key)
       unless resolved_parameter
-        begin
-          resolved_parameter = polymorphic_path(self)
-        rescue NoMethodError, ActionController::UrlGenerationError
-          raise NotImplementedError, "You have to implement #{self.class}##{__method__}, "\
+        if defined?(super)
+          resolved_parameter = super
+        else
+          begin
+            resolved_parameter = defined?(super) ? super : polymorphic_path(self)
+          rescue NoMethodError, ActionController::UrlGenerationError
+            raise NotImplementedError, "You have to implement #{self.class}##{__method__}, "\
                                      "set :notifiable_path in acts_as_notifiable or "\
                                      "set polymorphic_path routing for #{self.class}"
+          end
         end
       end
       resolved_parameter
