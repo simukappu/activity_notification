@@ -970,14 +970,19 @@ The gem will also look for templates whose *<target_class_name>* is *default*, *
 
 *activity_notification* provides **ActivityNotification::OptionalTarget::AmazonSNS** as default optional target implementation for Amazon SNS.
 
-First, add **aws-sdk** gem to your Gemfile and set AWS Credentials for SDK (See [Configuring the AWS SDK for Ruby](https://docs.aws.amazon.com/sdk-for-ruby/v2/developer-guide/setup-config.html)).
+First, add **aws-sdk** or **aws-sdk-sns** (>= AWS SDK for Ruby v3) gem to your Gemfile and set AWS Credentials for SDK (See [Configuring the AWS SDK for Ruby](https://docs.aws.amazon.com/sdk-for-ruby/v3/developer-guide/setup-config.html)).
 
 ```ruby
 gem 'aws-sdk', '~> 2'
+# --- or ---
+gem 'aws-sdk-sns', '~> 1'
 ```
 
 ```ruby
 require 'aws-sdk'
+# --- or ---
+require 'aws-sdk-sns'
+
 Aws.config.update(
   region: 'your_region',
   credentials: Aws::Credentials.new('your_access_key_id', 'your_secret_access_key')
@@ -985,7 +990,7 @@ Aws.config.update(
 ```
 
 Then, write `require 'activity_notification/optional_targets/amazon_sns'` statement in your notifiable model and set *ActivityNotification::OptionalTarget::AmazonSNS* to *acts_as_notifiable* with *:topic_arn*, *:target_arn* or *:phone_number* initializing parameters.
-Any other options for `Aws::SNS::Client.new` are available as initializing parameters. See [API Reference of Class: Aws::SNS::Client](http://docs.aws.amazon.com/sdkforruby/api/Aws/SNS/Client.html) for more details.
+Any other options for `Aws::SNS::Client.new` are available as initializing parameters. See [API Reference of Class: Aws::SNS::Client](http://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SNS/Client.html) for more details.
 
 ```ruby
 class Comment < ActiveRecord::Base
