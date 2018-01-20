@@ -69,6 +69,7 @@
 - [Functions](#functions)
   - [Email notification](#email-notification)
     - [Mailer setup](#mailer-setup)
+    - [Sender configuration](#sender-configuration)
     - [Email templates](#email-templates)
     - [i18n for email](#i18n-for-email)
   - [Batch email notification](#batch-email-notification)
@@ -594,7 +595,6 @@ Email notification is disabled as default. You can configure to enable email not
 
 ```ruby
 config.email_enabled = true
-config.mailer_sender = 'your_notification_sender@example.com'
 ```
 
 You can also configure them for each model by *acts_as roles* like these.
@@ -625,6 +625,21 @@ class Comment < ActiveRecord::Base
   end
 end
 ```
+
+#### Sender configuration
+
+You can configure the notification `from` address inside of *activity_notification.rb* in 2 ways.
+
+Using a simple email address as `string`.
+```ruby
+config.mailer_sender = 'your_notification_sender@example.com'
+```
+
+Using a `Proc` to configure the sender based on the *notification.key*.
+```ruby
+config.mailer_sender = ->(key){ key === 'my.key' ? 'support@example.com' : 'noreply@example.com' }
+```
+
 
 #### Email templates
 
