@@ -74,6 +74,7 @@
     - [i18n for email](#i18n-for-email)
   - [Batch email notification](#batch-email-notification)
     - [Batch mailer setup](#batch-mailer-setup)
+    - [Batch sender configuration](#batch-sender-configuration)
     - [Batch email templates](#batch-email-templates)
     - [i18n for batch email](#i18n-for-batch-email)
   - [Grouping notifications](#grouping-notifications)
@@ -628,18 +629,19 @@ end
 
 #### Sender configuration
 
-You can configure the notification `from` address inside of *activity_notification.rb* in 2 ways.
+You can configure the notification *"from"* address inside of *activity_notification.rb* in two ways.
 
-Using a simple email address as `string`.
+Using a simple email address as *String*:
+
 ```ruby
 config.mailer_sender = 'your_notification_sender@example.com'
 ```
 
-Using a `Proc` to configure the sender based on the *notification.key*.
-```ruby
-config.mailer_sender = ->(key){ key === 'my.key' ? 'support@example.com' : 'noreply@example.com' }
-```
+Using a *Proc* to configure the sender based on the *notification.key*:
 
+```ruby
+config.mailer_sender = ->(key){ key == 'inquiry.post' ? 'support@example.com' : 'noreply@example.com' }
+```
 
 #### Email templates
 
@@ -672,7 +674,6 @@ Batch email notification is disabled as default. You can configure to enable ema
 
 ```ruby
 config.email_enabled = true
-config.mailer_sender = 'your_notification_sender@example.com'
 ```
 
 You can also configure them for each target model by *acts_as_target* role like this.
@@ -699,10 +700,20 @@ You can also add conditions to filter notifications, like this:
 User.send_batch_unopened_notification_email(batch_key: 'batch.comment.post', filtered_by_key: 'comment.post', custom_filter: ["created_at >= ?", time.hour.ago])
 ```
 
+#### Batch sender configuration
+
+*activity_notification* uses same sender configuration of real-time email notification as batch email sender.
+You can configure *config.mailer_sender* as simply *String* or *Proc* based on the *batch_key*:
+
+```ruby
+config.mailer_sender = ->(batch_key){ batch_key == 'batch.inquiry.post' ? 'support@example.com' : 'noreply@example.com' }
+```
+
+*batch_key* is specified by **:batch_key** option. If this option is not specified, the key of the first notification will be used as *batch_key*.
+
 #### Batch email templates
 
 *activity_notification* will look for batch email template in the same way as email notification using *batch_key*.
-*batch_key* is specified by **:batch_key** option. If this option is not specified, the key of the first notification will be used as *batch_key*.
 
 #### i18n for batch email
 
