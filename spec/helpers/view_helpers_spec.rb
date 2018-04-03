@@ -69,6 +69,14 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       end
     end
 
+    context "with i18n param set" do
+      it "uses i18n text from key" do
+        notification.key = simple_text_key
+        expect(render_notification notification, i18n: { target: :text })
+          .to eq(simple_text_original)
+      end
+    end
+
     context "with custom view" do
       it "renders custom notification view for default target" do
         notification.key = 'custom.test'

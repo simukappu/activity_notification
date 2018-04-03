@@ -142,7 +142,7 @@ module ActivityNotification
     # @option params [Hash]           others                                  Parameters to be set as locals
     # @return [String] Rendered view or text as string
     def render(context, params = {})
-      params[:i18n] and return context.render text: self.text(params)
+      params[:i18n] and return context.render plain: self.text(params)
 
       partial = partial_path(*params.values_at(:partial, :partial_root, :target))
       layout  = layout_path(*params.values_at(:layout, :layout_root))
