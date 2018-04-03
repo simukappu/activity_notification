@@ -72,7 +72,7 @@ describe ActivityNotification::ViewHelpers, type: :helper do
     context "with i18n param set" do
       it "uses i18n text from key" do
         notification.key = simple_text_key
-        expect(render_notification notification, i18n: { target: :text })
+        expect(render_notification notification, i18n: true)
           .to eq(simple_text_original)
       end
     end
