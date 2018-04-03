@@ -6,6 +6,8 @@ en:
       article:
         create:
           text: 'Article has been created'
+        update:
+          text: 'Article %{title} has been updated'
         destroy:
           text: 'Some user removed an article!'
       comment:
