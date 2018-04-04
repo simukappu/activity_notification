@@ -8,7 +8,7 @@ module ActivityNotification
     #
     # @param [Hash] params Parameters for rendering notification text
     # @option params [String] :target Target type name to use as i18n text key
-    # @option params [Hash] others Parameters to be reffered in i18n text
+    # @option params [Hash] others Parameters to be referred in i18n text
     # @return [String] Rendered text
     def text(params = {})
       k = key.split('.')
@@ -88,7 +88,7 @@ module ActivityNotification
     #   <%= yield %>
     #
     # == Custom Layout Location
-    # 
+    #
     # You can customize the layout directory by supplying :layout_root
     # or by using an absolute path.
     #
