@@ -57,6 +57,8 @@ module ActivityNotification
     #   @param [Hash] params Request parameters
     #   @return [Responce] HTML view as default
     def show
+      @target.open_all_notifications(params)
+      return_back_or_ajax
     end
   
     # Deletes a notification.
