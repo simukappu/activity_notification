@@ -6,14 +6,18 @@ en:
       article:
         create:
           text: 'Article has been created'
+        update:
+          text: 'Article %{article_title} has been updated'
         destroy:
           text: 'Some user removed an article!'
       comment:
         post:
-          text: "<p>%{notifier_name} posted comments to your article %{article_title}</p>"
+          text:
+            one: "<p>%{notifier_name} posted a comment on your article %{article_title}</p>"
+            other: "<p>%{notifier_name} posted %{count} comments on your article %{article_title}</p>"
         reply:
-          text: "<p>%{notifier_name} and %{group_member_count} people replied for your comments</p>"
-          mail_subject: 'New comment to your article'
+          text: "<p>%{notifier_name} and %{group_member_count} other people replied %{group_notification_count} times to your comment</p>"
+          mail_subject: 'New comment on your article'
     admin:
       article:
         post:

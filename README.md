@@ -507,20 +507,25 @@ notification:
     article:
       create:
         text: 'Article has been created'
+      update:
+        text: 'Article %{article_title} has been updated'
       destroy:
         text: 'Some user removed an article!'
     comment:
       post:
-        text: "<p>%{notifier_name} posted comments to your article %{article_title}</p>"
+        text:
+          one: "<p>%{notifier_name} posted a comment on your article %{article_title}</p>"
+          other: "<p>%{notifier_name} posted %{count} comments on your article %{article_title}</p>"
       reply:
-        text: "<p>%{notifier_name} and %{group_member_count} other users replied for your comments</p>"
+        text: "<p>%{notifier_name} and %{group_member_count} other people replied %{group_notification_count} times to your comment</p>"
+        mail_subject: 'New comment on your article'
   admin:
     article:
       post:
         text: '[Admin] Article has been created'
 ```
 
-This structure is valid for notifications with keys *"notification.comment.reply"* or *"comment.reply"*. As mentioned before, *"notification."* part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record.
+This structure is valid for notifications with keys *"notification.comment.reply"* or *"comment.reply"*. As mentioned before, *"notification."* part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record. Pluralization is supported (but optional) for grouped notifications using the `%{group_notification_count}` value.
 
 ### Customizing controllers (optional)
 
