@@ -84,7 +84,7 @@ describe ActivityNotification::Mailer do
           notification.notifiable.extend(AdditionalMethods)
           ActivityNotification::Mailer.send_notification_email(notification).deliver_now
           expect(ActivityNotification::Mailer.deliveries.last.subject)
-            .to eq("New comment to your article")
+            .to eq("New comment on your article")
         end
       end
 
