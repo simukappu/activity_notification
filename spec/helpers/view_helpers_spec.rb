@@ -67,6 +67,13 @@ describe ActivityNotification::ViewHelpers, type: :helper do
         expect(render_notification notification, fallback: :text)
           .to eq(simple_text_original)
       end
+
+      it "interpolates from parameters" do
+        notification.parameters = { "title" => "title" }
+        notification.key = 'article.update'
+        expect(render_notification notification, fallback: :text)
+          .to eq("Article title has been updated")
+      end
     end
 
     context "with i18n param set" do
