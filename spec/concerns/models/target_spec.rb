@@ -924,18 +924,8 @@ shared_examples_for :target do
           end
 
           if ActivityNotification.config.orm == :active_record
-            it "calls with_target, with_notifiable and with_notifier" do
-              expect(ActiveRecord::Base).to receive(:includes).with(:target)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifiable)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifier)
-              test_instance.unopened_notification_index_with_attributes
-            end
-
-            it "does not call with_group" do
-              expect(ActiveRecord::Base).to receive(:includes).with(:target)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifiable)
-              expect(ActiveRecord::Base).not_to receive(:includes).with(:group)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifier)
+            it "calls with_target, with_notifiable, with_notifier and does not call with_group" do
+              expect(ActivityNotification::Notification).to receive_message_chain(:with_target, :with_notifiable, :with_notifier)
               test_instance.unopened_notification_index_with_attributes
             end
           end
@@ -950,10 +940,7 @@ shared_examples_for :target do
 
           if ActivityNotification.config.orm == :active_record
             it "calls with_group" do
-              expect(ActiveRecord::Base).to receive(:includes).with(:target)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifiable)
-              expect(ActiveRecord::Base).to receive(:includes).with(:group)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifier)
+              expect(ActivityNotification::Notification).to receive_message_chain(:with_target, :with_notifiable, :with_group, :with_notifier)
               test_instance.unopened_notification_index_with_attributes
             end
           end
@@ -986,18 +973,8 @@ shared_examples_for :target do
           end
 
           if ActivityNotification.config.orm == :active_record
-            it "calls with_target, with_notifiable and with_notifier" do
-              expect(ActiveRecord::Base).to receive(:includes).with(:target)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifiable)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifier)
-              test_instance.opened_notification_index_with_attributes
-            end
-
-            it "does not call with_group" do
-              expect(ActiveRecord::Base).to receive(:includes).with(:target)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifiable)
-              expect(ActiveRecord::Base).not_to receive(:includes).with(:group)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifier)
+            it "calls with_target, with_notifiable, with_notifier and does not call with_group" do
+              expect(ActivityNotification::Notification).to receive_message_chain(:with_target, :with_notifiable, :with_notifier)
               test_instance.opened_notification_index_with_attributes
             end
           end
@@ -1012,10 +989,7 @@ shared_examples_for :target do
 
           if ActivityNotification.config.orm == :active_record
             it "calls with_group" do
-              expect(ActiveRecord::Base).to receive(:includes).with(:target)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifiable)
-              expect(ActiveRecord::Base).to receive(:includes).with(:group)
-              expect(ActiveRecord::Base).to receive(:includes).with(:notifier)
+              expect(ActivityNotification::Notification).to receive_message_chain(:with_target, :with_notifiable, :with_group, :with_notifier)
               test_instance.opened_notification_index_with_attributes
             end
           end

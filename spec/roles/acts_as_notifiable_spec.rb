@@ -183,6 +183,7 @@ describe ActivityNotification::ActsAsNotifiable do
 
       context "with :dependent_notifications option" do
         before do
+          dummy_notifiable_class.delete_all
           @notifiable_1, @notifiable_2, @notifiable_3 = dummy_notifiable_class.create, dummy_notifiable_class.create, dummy_notifiable_class.create
           @group_owner  = create(:notification, target: user_target, notifiable: @notifiable_1, group: @notifiable_1)
           @group_member = create(:notification, target: user_target, notifiable: @notifiable_2, group: @notifiable_1, group_owner: @group_owner)
@@ -205,7 +206,7 @@ describe ActivityNotification::ActsAsNotifiable do
           it "does not deletes any notifications when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users
             expect(user_target.notifications.reload.size).to eq(3)
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(user_target.notifications.reload.size).to eq(3)
           end
         end
@@ -214,14 +215,14 @@ describe ActivityNotification::ActsAsNotifiable do
           it "deletes all notifications when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :delete_all
             expect(user_target.notifications.reload.size).to eq(3)
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(user_target.notifications.reload.size).to eq(2)
             expect(@group_member.reload.group_owner?).to be_falsey
           end
 
           it "does not delete notifications of other targets when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :delete_all
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(user_target.notifications.filtered_by_instance(@notifiable_1).count).to eq(0)
             expect(dummy_target.notifications.filtered_by_instance(@notifiable_1).count).to eq(1)
           end
@@ -231,14 +232,14 @@ describe ActivityNotification::ActsAsNotifiable do
           it "destroies all notifications when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :destroy
             expect(user_target.notifications.reload.size).to eq(3)
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(user_target.notifications.reload.size).to eq(2)
             expect(@group_member.reload.group_owner?).to be_falsey
           end
 
           it "does not destroy notifications of other targets when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :destroy
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(user_target.notifications.filtered_by_instance(@notifiable_1).count).to eq(0)
             expect(dummy_target.notifications.filtered_by_instance(@notifiable_1).count).to eq(1)
           end
@@ -260,7 +261,8 @@ describe ActivityNotification::ActsAsNotifiable do
           it "can not be deleted when it has generated notifications" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :restrict_with_error
             expect(user_target.notifications.reload.size).to eq(3)
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(0)
+            @notifiable_1.destroy
+            expect(@notifiable_1.destroyed?).to be_falsey
           end
         end
 
@@ -268,21 +270,21 @@ describe ActivityNotification::ActsAsNotifiable do
           it "deletes all notifications and update notification group when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :update_group_and_delete_all
             expect(user_target.notifications.reload.size).to eq(3)
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(user_target.notifications.reload.size).to eq(2)
             expect(@group_member.reload.group_owner?).to be_truthy
           end
 
           it "does not delete notifications of other targets when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :update_group_and_delete_all
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(user_target.notifications.filtered_by_instance(@notifiable_1).count).to eq(0)
             expect(dummy_target.notifications.filtered_by_instance(@notifiable_1).count).to eq(1)
           end
 
           it "does not update notification group when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :update_group_and_delete_all
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(@group_member.reload.group_owner?).to be_truthy
             expect(@other_target_group_member.reload.group_owner?).to be_falsey
           end
@@ -292,21 +294,21 @@ describe ActivityNotification::ActsAsNotifiable do
           it "destroies all notifications and update notification group when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :update_group_and_destroy
             expect(user_target.notifications.reload.size).to eq(3)
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(user_target.notifications.reload.size).to eq(2)
             expect(@group_member.reload.group_owner?).to be_truthy
           end
 
           it "does not destroy notifications of other targets when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :update_group_and_destroy
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(user_target.notifications.filtered_by_instance(@notifiable_1).count).to eq(0)
             expect(dummy_target.notifications.filtered_by_instance(@notifiable_1).count).to eq(1)
           end
 
           it "does not update notification group when notifiable is deleted" do
             dummy_notifiable_class.acts_as_notifiable :users, dependent_notifications: :update_group_and_destroy
-            expect { @notifiable_1.destroy }.to change(dummy_notifiable_class, :count).by(-1)
+            expect { @notifiable_1.destroy }.to change(@notifiable_1, :destroyed?).from(false).to(true)
             expect(@group_member.reload.group_owner?).to be_truthy
             expect(@other_target_group_member.reload.group_owner?).to be_falsey
           end

@@ -28,6 +28,9 @@ module Dummy
     if Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR >= 2 && ENV['AN_TEST_DB'] != 'mongodb'
       config.active_record.raise_in_transactional_callbacks = true
     end
+    if Rails::VERSION::MAJOR >= 5 && Rails::VERSION::MINOR >= 2 && ENV['AN_TEST_DB'] != 'mongodb'
+      config.active_record.sqlite3.represent_boolean_as_integer = true
+    end
   end
 end
 
