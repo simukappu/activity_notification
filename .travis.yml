@@ -5,10 +5,10 @@ branches:
     - images
 
 rvm:
-  - 2.1.10
-  - 2.2.7
-  - 2.3.4
-  - 2.4.1
+  - 2.5.1
+  - 2.4.4
+  - 2.3.7
+  - 2.2.10
   - ruby-head
 
 gemfile:
@@ -16,6 +16,7 @@ gemfile:
   - gemfiles/Gemfile.rails-4.2
   - gemfiles/Gemfile.rails-5.0
   - gemfiles/Gemfile.rails-5.1
+  - gemfiles/Gemfile.rails-5.2
 
 env:
   - AN_ORM=active_record
@@ -23,43 +24,46 @@ env:
 
 matrix:
   exclude:
-    - rvm: 2.1.10
-      gemfile: Gemfile
-    - rvm: 2.1.10
-      gemfile: gemfiles/Gemfile.rails-5.0
-    - rvm: 2.1.10
-      gemfile: gemfiles/Gemfile.rails-5.1
     - rvm: ruby-head
       env: AN_ORM=mongoid
     - gemfile: Gemfile
       env: AN_ORM=mongoid
   include:
-    - rvm: 2.4.1
+    - rvm: 2.5.1
       gemfile: gemfiles/Gemfile.rails-4.2
       env: AN_ORM=active_record AN_TEST_DB=mysql
-    - rvm: 2.4.1
+    - rvm: 2.5.1
       gemfile: gemfiles/Gemfile.rails-4.2
       env: AN_ORM=active_record AN_TEST_DB=postgresql
-    - rvm: 2.4.1
+    - rvm: 2.5.1
       gemfile: gemfiles/Gemfile.rails-4.2
       env: AN_ORM=mongoid AN_TEST_DB=mongodb
-    - rvm: 2.4.1
+    - rvm: 2.5.1
       gemfile: gemfiles/Gemfile.rails-5.0
       env: AN_ORM=active_record AN_TEST_DB=mysql
-    - rvm: 2.4.1
+    - rvm: 2.5.1
       gemfile: gemfiles/Gemfile.rails-5.0
       env: AN_ORM=active_record AN_TEST_DB=postgresql
-    - rvm: 2.4.1
+    - rvm: 2.5.1
       gemfile: gemfiles/Gemfile.rails-5.0
       env: AN_ORM=mongoid AN_TEST_DB=mongodb
-    - rvm: 2.4.1
+    - rvm: 2.5.1
       gemfile: gemfiles/Gemfile.rails-5.1
       env: AN_ORM=active_record AN_TEST_DB=mysql
-    - rvm: 2.4.1
+    - rvm: 2.5.1
       gemfile: gemfiles/Gemfile.rails-5.1
       env: AN_ORM=active_record AN_TEST_DB=postgresql
-    - rvm: 2.4.1
+    - rvm: 2.5.1
       gemfile: gemfiles/Gemfile.rails-5.1
+      env: AN_ORM=mongoid AN_TEST_DB=mongodb
+    - rvm: 2.5.1
+      gemfile: gemfiles/Gemfile.rails-5.2
+      env: AN_ORM=active_record AN_TEST_DB=mysql
+    - rvm: 2.5.1
+      gemfile: gemfiles/Gemfile.rails-5.2
+      env: AN_ORM=active_record AN_TEST_DB=postgresql
+    - rvm: 2.5.1
+      gemfile: gemfiles/Gemfile.rails-5.2
       env: AN_ORM=mongoid AN_TEST_DB=mongodb
   allow_failures:
     - rvm: ruby-head
@@ -72,7 +76,9 @@ sudo: false
 
 cache: bundler
 
-before_install: "rm ${BUNDLE_GEMFILE}.lock"
+before_install:
+  - gem install bundler --no-document
+  - rm ${BUNDLE_GEMFILE}.lock
 
 before_script:
   - bundle update
