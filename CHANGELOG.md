@@ -1,3 +1,18 @@
+## 1.5.0 / 2018-05-05
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.4...v1.5.0)
+
+Enhancements:
+
+* Allow use with Rails 5.2
+* Enhancements for using the gem with i18n
+  * Symbolize parameters for i18n interpolation
+  * Allow pluralization in i18n translation 
+  * Update render method to use plain
+
+Bug Fixes:
+
+* Fix a doc bug for controllers template
+
 ## 1.4.4 / 2017-11-18
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.3...v1.4.4)
 
