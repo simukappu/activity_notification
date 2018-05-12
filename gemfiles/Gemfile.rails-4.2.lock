@@ -48,7 +48,7 @@ GEM
       railties (>= 3.0)
       rspec-rails (>= 2.2)
     arel (6.0.4)
-    aws-partitions (1.83.0)
+    aws-partitions (1.86.0)
     aws-sdk-core (3.20.2)
       aws-partitions (~> 1.0)
       aws-sigv4 (~> 1.0)
@@ -209,7 +209,7 @@ DEPENDENCIES
   devise (~> 4.4.3)
   dotenv-rails
   factory_bot_rails (~> 4.8.2)
-  mongoid (>= 4.0.0)
+  mongoid (>= 4.0.0, < 7.0.0)
   mysql2 (~> 0.4.10)
   pg (~> 0.21.0)
   rails (~> 4.2.0)

@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sqlite3', '~> 1.3.13'
   s.add_development_dependency 'mysql2', '~> 0.5.1'
   s.add_development_dependency 'pg', '~> 1.0.0'
-  s.add_development_dependency 'mongoid', '>= 4.0.0'
+  s.add_development_dependency 'mongoid', '>= 4.0.0', '< 7.0.0'
   s.add_development_dependency 'rspec-rails', '~> 3.7.2'
   s.add_development_dependency 'factory_bot_rails', '~> 4.8.2'
   s.add_development_dependency 'simplecov', '~> 0'
