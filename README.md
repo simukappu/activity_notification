@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/simukappu/activity_notification.svg?branch=master)](https://travis-ci.org/simukappu/activity_notification)
 [![Coverage Status](https://coveralls.io/repos/github/simukappu/activity_notification/badge.svg?branch=master)](https://coveralls.io/github/simukappu/activity_notification?branch=master)
-[![Code Climate](https://codeclimate.com/github/simukappu/activity_notification/badges/gpa.svg)](https://codeclimate.com/github/simukappu/activity_notification)
-[![Dependency Status](https://gemnasium.com/badges/github.com/simukappu/activity_notification.svg)](https://gemnasium.com/github.com/simukappu/activity_notification)
 [![Inline docs](http://inch-ci.org/github/simukappu/activity_notification.svg?branch=master)](http://inch-ci.org/github/simukappu/activity_notification)
 [![Gem Version](https://badge.fury.io/rb/activity_notification.svg)](https://badge.fury.io/rb/activity_notification)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](MIT-LICENSE)
