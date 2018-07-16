@@ -120,14 +120,6 @@ module ActivityNotification
         # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
         scope :filtered_by_instance,              ->(notifiable) { where(notifiable: notifiable) }
 
-        # Selects filtered notifications by notifiable_type.
-        # @example Get filtered unopened notificatons of the @user for Comment notifiable class
-        #   @notifications = @user.notifications.unopened_only.filtered_by_type('Comment')
-        # @scope class
-        # @param [String] notifiable_type Notifiable type for filter
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
-        scope :filtered_by_type,                  ->(notifiable_type) { where(notifiable_type: notifiable_type) }
-
         # Selects filtered notifications by group instance.
         # @example Get filtered unopened notificatons of the @user for @article as group
         #   @notifications = @user.notifications.unopened_only.filtered_by_group(@article)
