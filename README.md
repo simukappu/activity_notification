@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/simukappu/activity_notification.svg?branch=master)](https://travis-ci.org/simukappu/activity_notification)
 [![Coverage Status](https://coveralls.io/repos/github/simukappu/activity_notification/badge.svg?branch=master)](https://coveralls.io/github/simukappu/activity_notification?branch=master)
 [![Inline docs](http://inch-ci.org/github/simukappu/activity_notification.svg?branch=master)](http://inch-ci.org/github/simukappu/activity_notification)
+[![Dependency](https://img.shields.io/depfu/simukappu/activity_notification.svg)](https://depfu.com/repos/simukappu/activity_notification)
 [![Gem Version](https://badge.fury.io/rb/activity_notification.svg)](https://badge.fury.io/rb/activity_notification)
 [![Gem Downloads](https://img.shields.io/gem/dt/activity_notification.svg)](https://badge.fury.io/rb/activity_notification)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](MIT-LICENSE)
