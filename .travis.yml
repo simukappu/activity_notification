@@ -78,7 +78,6 @@ cache: bundler
 
 before_install:
   - gem install bundler --no-document
-  - rm ${BUNDLE_GEMFILE}.lock
 
 before_script:
   - bundle update
