@@ -172,7 +172,7 @@ module ActivityNotification
       # @param [Array]   args    Arguments of evaluating subscription method
       # @return [Boolean] If the target subscribes
       def evaluate_subscription(record, field, default, *args)
-        default ? record.blank? || record.send(field, *args) : record.present? && record.send(field)
+        default ? record.blank? || record.send(field, *args) : record.present? && record.send(field, *args)
       end
 
   end
