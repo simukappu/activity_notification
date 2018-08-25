@@ -51,8 +51,8 @@ shared_examples_for :notification_api do
             end
           }.to change { ActivityNotification::Mailer.deliveries.size }.by(2)
           expect(ActivityNotification::Mailer.deliveries.size).to eq(2)
-          expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@user_1.email)
-          expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@author_user.email)
+          expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@author_user.email)
+          expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@user_1.email)
         end
   
         it "sends notification email with active job queue" do
@@ -66,8 +66,8 @@ shared_examples_for :notification_api do
         it "sends notification email now" do
           described_class.notify(:users, @comment_2, send_later: false)
           expect(ActivityNotification::Mailer.deliveries.size).to eq(2)
-          expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@user_1.email)
-          expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@author_user.email)
+          expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@author_user.email)
+          expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@user_1.email)
         end
       end
 
@@ -125,8 +125,8 @@ shared_examples_for :notification_api do
             end
           }.to change { ActivityNotification::Mailer.deliveries.size }.by(2)
           expect(ActivityNotification::Mailer.deliveries.size).to eq(2)
-          expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@user_1.email)
-          expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@author_user.email)
+          expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@author_user.email)
+          expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@user_1.email)
         end
 
         it "sends notification email with active job queue" do
@@ -140,8 +140,8 @@ shared_examples_for :notification_api do
         it "sends notification email now" do
           described_class.notify_all([@author_user, @user_1], @comment_2, send_later: false)
           expect(ActivityNotification::Mailer.deliveries.size).to eq(2)
-          expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@user_1.email)
-          expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@author_user.email)
+          expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@author_user.email)
+          expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@user_1.email)
         end
       end
     end
