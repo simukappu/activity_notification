@@ -101,6 +101,15 @@ module ActivityNotification
     #   @return [String] Base controller class for notifications_controller.
     attr_accessor :parent_controller
 
+    # @overload mailer_templates_dir
+    #   Returns custom mailer templates directory
+    #   @return [String] Custom mailer templates directory.
+    # @overload mailer_templates_dir=(value)
+    #   Sets custom mailer templates directory
+    #   @param [String] mailer_templates_dir The new custom mailer templates directory
+    #   @return [String] Custom mailer templates directory.
+    attr_accessor :mailer_templates_dir
+
     # @overload opened_index_limit
     #   Returns default limit to query for opened notifications
     #   @return [Integer] Default limit to query for opened notifications.
@@ -129,6 +138,7 @@ module ActivityNotification
       @mailer                  = 'ActivityNotification::Mailer'
       @parent_mailer           = 'ActionMailer::Base'
       @parent_controller       = 'ApplicationController'
+      @mailer_templates_dir    = 'activity_notification/mailer'
       @opened_index_limit      = 10
       @orm                     = :active_record
     end

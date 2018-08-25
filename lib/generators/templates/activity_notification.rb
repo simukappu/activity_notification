@@ -44,6 +44,9 @@ ActivityNotification.configure do |config|
   # Configure the parent class for activity_notification controllers.
   # config.parent_controller = 'ApplicationController'
 
+  # Configure the custom mailer templates directory
+  # config.mailer_templates_dir = 'activity_notification/mailer'
+
   # Configure default limit number of opened notifications you can get from opened* scope
   config.opened_index_limit = 10
 
