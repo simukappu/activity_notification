@@ -1,3 +1,17 @@
+## 1.5.1 / 2018-08-26
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.5.0...v1.5.1)
+
+Enhancements:
+
+* Allow configuration of custom mailer templates directory - [#32](https://github.com/simukappu/activity_notification/pull/32)
+* Make Notifiable#notifiable_path to work when it is defined in a superclass - [#45](https://github.com/simukappu/activity_notification/pull/45)
+
+Bug Fixes:
+
+* Fix mongoid development dependency to work with bullet - [#72](https://github.com/simukappu/activity_notification/issues/72)
+* Remove duplicate scope of filtered_by_type since it is also defined in API - [#78](https://github.com/simukappu/activity_notification/pull/78)
+* Fix a bug in Subscriber concern about lack of arguments - [#80](https://github.com/simukappu/activity_notification/issues/80)
+
 ## 1.5.0 / 2018-05-05
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.4...v1.5.0)
 
