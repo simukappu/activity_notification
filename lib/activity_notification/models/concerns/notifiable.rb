@@ -166,7 +166,7 @@ module ActivityNotification
         key)
       unless resolved_parameter
         begin
-          resolved_parameter = polymorphic_path(self)
+          resolved_parameter = defined?(super) ? super : polymorphic_path(self)
         rescue NoMethodError, ActionController::UrlGenerationError
           raise NotImplementedError, "You have to implement #{self.class}##{__method__}, "\
                                      "set :notifiable_path in acts_as_notifiable or "\
