@@ -1,3 +1,14 @@
+## 1.6.0 / 2018-11-11
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.5.1...v1.6.0)
+
+Enhancements:
+
+* Add simple default routes with devise integration - [#64](https://github.com/simukappu/activity_notification/issues/64)
+
+Bug Fixes:
+
+* Update *Subscription.optional_targets* into HashWithIndifferentAccess to fix subscriptions with mongoid
+
 ## 1.5.1 / 2018-08-26
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.5.0...v1.5.1)
 
