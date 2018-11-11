@@ -188,14 +188,14 @@ module ActivityNotification
 
     protected
 
-      # Validates subscribing_to_email cannot be true when subscribing isfalse.
+      # Validates subscribing_to_email cannot be true when subscribing is false.
       def subscribing_to_email_cannot_be_true_when_subscribing_is_false
         if !subscribing && subscribing_to_email?
           errors.add(:subscribing_to_email, "cannot be true when subscribing is false")
         end
       end
 
-      # Validates subscribing_to_optional_target cannot be true when subscribing isfalse.
+      # Validates subscribing_to_optional_target cannot be true when subscribing is false.
       def subscribing_to_optional_target_cannot_be_true_when_subscribing_is_false
         optional_target_names.each do |optional_target_name|
           if !subscribing && subscribing_to_optional_target?(optional_target_name)
