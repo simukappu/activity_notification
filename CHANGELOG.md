@@ -4,6 +4,7 @@
 Enhancements:
 
 * Add simple default routes with devise integration - [#64](https://github.com/simukappu/activity_notification/issues/64)
+* Add *:routing_scope* option to support routes with scope - [#56](https://github.com/simukappu/activity_notification/issues/56)
 
 Bug Fixes:
 
