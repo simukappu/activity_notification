@@ -6,6 +6,7 @@ unless ENV['AN_TEST_DB'] == 'mongodb'
     acts_as_notification_target email_allowed: false,
       subscription_allowed: true,
       devise_resource: :user,
+      current_devise_target: ->(current_user) { current_user.admin },
       printable_name: ->(admin) { "admin (#{admin.user.name})" }
   end
 else
@@ -25,6 +26,7 @@ else
     acts_as_notification_target email_allowed: false,
       subscription_allowed: true,
       devise_resource: :user,
+      current_devise_target: ->(current_user) { current_user.admin },
       printable_name: ->(admin) { "admin (#{admin.user.name})" }
   end
 end

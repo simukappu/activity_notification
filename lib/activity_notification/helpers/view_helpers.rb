@@ -40,6 +40,8 @@ module ActivityNotification
     # @option options [String]         :notification_layout    (nil)       Layout template name of the notification index content
     # @option options [String]         :fallback               (nil)       Fallback template to use when MissingTemplate is raised. Set :text to use i18n text as fallback.
     # @option options [String]         :partial                ('index')   Partial template name of the partial index
+    # @option options [String]         :routing_scope          (nil)       Routing scope for notification and subscription routes
+    # @option options [Boolean]        :devise_default_routes  (false)     If links in default views will be handles as devise default routes
     # @option options [String]         :layout                 (nil)       Layout template name of the partial index
     # @option options [Integer]        :limit                  (nil)       Limit to query for notifications
     # @option options [Boolean]        :reverse                (false)     If notification index will be ordered as earliest first
@@ -51,7 +53,7 @@ module ActivityNotification
     # @option options [String]         :filtered_by_key        (nil)       Key of the notification for filter
     # @option options [Array]          :custom_filter          (nil)       Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [String] Rendered view or text as string
-    def render_notification_of target, options = {}
+    def render_notification_of(target, options = {})
       return unless target.is_a? ActivityNotification::Target
 
       # Prepare content for notifications index
@@ -77,7 +79,10 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def notifications_path_for(target, params = {})
-      send("#{target.to_resource_name}_notifications_path", target, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("#{routing_scope(options)}notifications_path", options) :
+        send("#{routing_scope(options)}#{target.to_resource_name}_notifications_path", target, options)
     end
 
     # Returns notification_path for the notification
@@ -88,7 +93,10 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def notification_path_for(notification, params = {})
-      send("#{notification.target.to_resource_name}_notification_path", notification.target, notification, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("#{routing_scope(options)}notification_path", notification, options) :
+        send("#{routing_scope(options)}#{notification.target.to_resource_name}_notification_path", notification.target, notification, options)
     end
 
     # Returns move_notification_path for the target of specified notification
@@ -99,7 +107,10 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def move_notification_path_for(notification, params = {})
-      send("move_#{notification.target.to_resource_name}_notification_path", notification.target, notification, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("move_#{routing_scope(options)}notification_path", notification, options) :
+        send("move_#{routing_scope(options)}#{notification.target.to_resource_name}_notification_path", notification.target, notification, options)
     end
 
     # Returns open_notification_path for the target of specified notification
@@ -110,7 +121,10 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def open_notification_path_for(notification, params = {})
-      send("open_#{notification.target.to_resource_name}_notification_path", notification.target, notification, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("open_#{routing_scope(options)}notification_path", notification, options) :
+        send("open_#{routing_scope(options)}#{notification.target.to_resource_name}_notification_path", notification.target, notification, options)
     end
 
     # Returns open_all_notifications_path for the target
@@ -121,7 +135,10 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def open_all_notifications_path_for(target, params = {})
-      send("open_all_#{target.to_resource_name}_notifications_path", target, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("open_all_#{routing_scope(options)}notifications_path", options) :
+        send("open_all_#{routing_scope(options)}#{target.to_resource_name}_notifications_path", target, options)
     end
 
     # Returns notifications_url for the target
@@ -132,7 +149,10 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def notifications_url_for(target, params = {})
-      send("#{target.to_resource_name}_notifications_url", target, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("#{routing_scope(options)}notifications_url", options) :
+        send("#{routing_scope(options)}#{target.to_resource_name}_notifications_url", target, options)
     end
 
     # Returns notification_url for the target of specified notification
@@ -143,7 +163,10 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def notification_url_for(notification, params = {})
-      send("#{notification.target.to_resource_name}_notification_url", notification.target, notification, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("#{routing_scope(options)}notification_url", notification, options) :
+        send("#{routing_scope(options)}#{notification.target.to_resource_name}_notification_url", notification.target, notification, options)
     end
 
     # Returns move_notification_url for the target of specified notification
@@ -154,7 +177,10 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def move_notification_url_for(notification, params = {})
-      send("move_#{notification.target.to_resource_name}_notification_url", notification.target, notification, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("move_#{routing_scope(options)}notification_url", notification, options) :
+        send("move_#{routing_scope(options)}#{notification.target.to_resource_name}_notification_url", notification.target, notification, options)
     end
 
     # Returns open_notification_url for the target of specified notification
@@ -165,7 +191,10 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def open_notification_url_for(notification, params = {})
-      send("open_#{notification.target.to_resource_name}_notification_url", notification.target, notification, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("open_#{routing_scope(options)}notification_url", notification, options) :
+        send("open_#{routing_scope(options)}#{notification.target.to_resource_name}_notification_url", notification.target, notification, options)
     end
 
     # Returns open_all_notifications_url for the target of specified notification
@@ -176,7 +205,10 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def open_all_notifications_url_for(target, params = {})
-      send("open_all_#{target.to_resource_name}_notifications_url", target, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("open_all_#{routing_scope(options)}notifications_url", options) :
+        send("open_all_#{routing_scope(options)}#{target.to_resource_name}_notifications_url", target, options)
     end
 
     # Returns subscriptions_path for the target
@@ -186,7 +218,10 @@ module ActivityNotification
     # @return [String] subscriptions_path for the target
     # @todo Needs any other better implementation
     def subscriptions_path_for(target, params = {})
-      send("#{target.to_resource_name}_subscriptions_path", target, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("#{routing_scope(options)}subscriptions_path", options) :
+        send("#{routing_scope(options)}#{target.to_resource_name}_subscriptions_path", target, options)
     end
 
     # Returns subscription_path for the subscription
@@ -196,7 +231,10 @@ module ActivityNotification
     # @return [String] subscription_path for the subscription
     # @todo Needs any other better implementation
     def subscription_path_for(subscription, params = {})
-      send("#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("#{routing_scope(options)}subscription_path", subscription, options) :
+        send("#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, options)
     end
 
     # Returns subscribe_subscription_path for the target of specified subscription
@@ -206,7 +244,10 @@ module ActivityNotification
     # @return [String] subscription_path for the subscription
     # @todo Needs any other better implementation
     def subscribe_subscription_path_for(subscription, params = {})
-      send("subscribe_#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("subscribe_#{routing_scope(options)}subscription_path", subscription, options) :
+        send("subscribe_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, options)
     end
     alias_method :subscribe_path_for, :subscribe_subscription_path_for
 
@@ -217,7 +258,10 @@ module ActivityNotification
     # @return [String] subscription_path for the subscription
     # @todo Needs any other better implementation
     def unsubscribe_subscription_path_for(subscription, params = {})
-      send("unsubscribe_#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("unsubscribe_#{routing_scope(options)}subscription_path", subscription, options) :
+        send("unsubscribe_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, options)
     end
     alias_method :unsubscribe_path_for, :unsubscribe_subscription_path_for
 
@@ -228,7 +272,10 @@ module ActivityNotification
     # @return [String] subscription_path for the subscription
     # @todo Needs any other better implementation
     def subscribe_to_email_subscription_path_for(subscription, params = {})
-      send("subscribe_to_email_#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("subscribe_to_email_#{routing_scope(options)}subscription_path", subscription, options) :
+        send("subscribe_to_email_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, options)
     end
     alias_method :subscribe_to_email_path_for, :subscribe_to_email_subscription_path_for
 
@@ -239,7 +286,10 @@ module ActivityNotification
     # @return [String] subscription_path for the subscription
     # @todo Needs any other better implementation
     def unsubscribe_to_email_subscription_path_for(subscription, params = {})
-      send("unsubscribe_to_email_#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("unsubscribe_to_email_#{routing_scope(options)}subscription_path", subscription, options) :
+        send("unsubscribe_to_email_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, options)
     end
     alias_method :unsubscribe_to_email_path_for, :unsubscribe_to_email_subscription_path_for
 
@@ -250,7 +300,10 @@ module ActivityNotification
     # @return [String] subscription_path for the subscription
     # @todo Needs any other better implementation
     def subscribe_to_optional_target_subscription_path_for(subscription, params = {})
-      send("subscribe_to_optional_target_#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("subscribe_to_optional_target_#{routing_scope(options)}subscription_path", subscription, options) :
+        send("subscribe_to_optional_target_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, options)
     end
     alias_method :subscribe_to_optional_target_path_for, :subscribe_to_optional_target_subscription_path_for
 
@@ -261,7 +314,10 @@ module ActivityNotification
     # @return [String] subscription_path for the subscription
     # @todo Needs any other better implementation
     def unsubscribe_to_optional_target_subscription_path_for(subscription, params = {})
-      send("unsubscribe_to_optional_target_#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("unsubscribe_to_optional_target_#{routing_scope(options)}subscription_path", subscription, options) :
+        send("unsubscribe_to_optional_target_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_path", subscription.target, subscription, options)
     end
     alias_method :unsubscribe_to_optional_target_path_for, :unsubscribe_to_optional_target_subscription_path_for
 
@@ -272,7 +328,10 @@ module ActivityNotification
     # @return [String] subscriptions_url for the target
     # @todo Needs any other better implementation
     def subscriptions_url_for(target, params = {})
-      send("#{target.to_resource_name}_subscriptions_url", target, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("#{routing_scope(options)}subscriptions_url", options) :
+        send("#{routing_scope(options)}#{target.to_resource_name}_subscriptions_url", target, options)
     end
 
     # Returns subscription_url for the subscription
@@ -282,7 +341,10 @@ module ActivityNotification
     # @return [String] subscription_url for the subscription
     # @todo Needs any other better implementation
     def subscription_url_for(subscription, params = {})
-      send("#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("#{routing_scope(options)}subscription_url", subscription, options) :
+        send("#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, options)
     end
 
     # Returns subscribe_subscription_url for the target of specified subscription
@@ -292,7 +354,10 @@ module ActivityNotification
     # @return [String] subscription_url for the subscription
     # @todo Needs any other better implementation
     def subscribe_subscription_url_for(subscription, params = {})
-      send("subscribe_#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("subscribe_#{routing_scope(options)}subscription_url", subscription, options) :
+        send("subscribe_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, options)
     end
     alias_method :subscribe_url_for, :subscribe_subscription_url_for
 
@@ -303,7 +368,10 @@ module ActivityNotification
     # @return [String] subscription_url for the subscription
     # @todo Needs any other better implementation
     def unsubscribe_subscription_url_for(subscription, params = {})
-      send("unsubscribe_#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("unsubscribe_#{routing_scope(options)}subscription_url", subscription, options) :
+        send("unsubscribe_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, options)
     end
     alias_method :unsubscribe_url_for, :unsubscribe_subscription_url_for
 
@@ -314,7 +382,10 @@ module ActivityNotification
     # @return [String] subscription_url for the subscription
     # @todo Needs any other better implementation
     def subscribe_to_email_subscription_url_for(subscription, params = {})
-      send("subscribe_to_email_#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("subscribe_to_email_#{routing_scope(options)}subscription_url", subscription, options) :
+        send("subscribe_to_email_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, options)
     end
     alias_method :subscribe_to_email_url_for, :subscribe_to_email_subscription_url_for
 
@@ -325,7 +396,10 @@ module ActivityNotification
     # @return [String] subscription_url for the subscription
     # @todo Needs any other better implementation
     def unsubscribe_to_email_subscription_url_for(subscription, params = {})
-      send("unsubscribe_to_email_#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("unsubscribe_to_email_#{routing_scope(options)}subscription_url", subscription, options) :
+        send("unsubscribe_to_email_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, options)
     end
     alias_method :unsubscribe_to_email_url_for, :unsubscribe_to_email_subscription_url_for
 
@@ -336,7 +410,10 @@ module ActivityNotification
     # @return [String] subscription_url for the subscription
     # @todo Needs any other better implementation
     def subscribe_to_optional_target_subscription_url_for(subscription, params = {})
-      send("subscribe_to_optional_target_#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("subscribe_to_optional_target_#{routing_scope(options)}subscription_url", subscription, options) :
+        send("subscribe_to_optional_target_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, options)
     end
     alias_method :subscribe_to_optional_target_url_for, :subscribe_to_optional_target_subscription_url_for
 
@@ -347,7 +424,10 @@ module ActivityNotification
     # @return [String] subscription_url for the subscription
     # @todo Needs any other better implementation
     def unsubscribe_to_optional_target_subscription_url_for(subscription, params = {})
-      send("unsubscribe_to_optional_target_#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, params)
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("unsubscribe_to_optional_target_#{routing_scope(options)}subscription_url", subscription, options) :
+        send("unsubscribe_to_optional_target_#{routing_scope(options)}#{subscription.target.to_resource_name}_subscription_url", subscription.target, subscription, options)
     end
     alias_method :unsubscribe_to_optional_target_url_for, :unsubscribe_to_optional_target_subscription_url_for
 
@@ -439,6 +519,12 @@ module ActivityNotification
       # @api private
       def select_path(path, root)
         [root, path].map(&:to_s).join('/')
+      end
+
+      # Prepare routing scope from options
+      # @api private
+      def routing_scope(options = {})
+        options[:routing_scope] ? options.delete(:routing_scope).to_s + '_' : ''
       end
 
   end

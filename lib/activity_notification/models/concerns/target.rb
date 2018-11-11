@@ -20,6 +20,7 @@ module ActivityNotification
                       :_batch_notification_email_allowed,
                       :_notification_subscription_allowed,
                       :_notification_devise_resource,
+                      :_notification_current_devise_target,
                       :_printable_notification_target_name
       set_target_class_defaults
     end
@@ -39,6 +40,7 @@ module ActivityNotification
         self._batch_notification_email_allowed   = ActivityNotification.config.email_enabled
         self._notification_subscription_allowed  = ActivityNotification.config.subscription_enabled
         self._notification_devise_resource       = ->(model) { model }
+        self._notification_current_devise_target = ->(current_resource) { current_resource }
         self._printable_notification_target_name = :printable_name
         nil
       end
@@ -128,6 +130,15 @@ module ActivityNotification
         unopened_notification_index_map.map { |target, notifications|
           [target, Notification.send_batch_notification_email(target, notifications, mailer_options)]
         }.to_h
+      end
+
+      # Resolves current authenticated target by devise authentication from current resource signed in with Devise.
+      # This method is able to be overriden.
+      #
+      # @param [Object] current_resource Current resource signed in with Devise
+      # @return [Object] Current authenticated target by devise authentication
+      def resolve_current_devise_target(current_resource)
+        _notification_current_devise_target.call(current_resource)
       end
 
       # Returns if subscription management is allowed for this target type.

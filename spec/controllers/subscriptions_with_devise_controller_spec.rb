@@ -78,6 +78,21 @@ describe ActivityNotification::SubscriptionsWithDeviseController, type: :control
     end
   end
 
+  context "without target_id and (typed_target)_id parameters for devise integrated controller with devise_type option" do
+    let(:target_params) { { target_type: target_type, devise_type: :users } }
+
+    describe "GET #index" do
+      before do
+        sign_in test_target.user
+        get_with_compatibility :index, target_params, valid_session
+      end
+
+      it "returns 200 as http status code" do
+        expect(response.status).to eq(200)
+      end
+    end
+  end
+
   private
 
     def get_with_compatibility action, params, session

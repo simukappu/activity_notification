@@ -23,31 +23,31 @@
 
 <div class='<%= "notification_#{notification.id}" %>'>
   <% if notification.unopened? %>
-    <%= link_to open_notification_path_for(notification, reload: false, without_grouping: parameters[:with_group_members]), method: :post, remote: true, class: "unopened_wrapper" do %>
+    <%= link_to open_notification_path_for(notification, parameters.slice(:with_group_members, :routing_scope, :devise_default_routes).merge(reload: false), method: :post, remote: true, class: "unopened_wrapper" do %>
       <div class="unopned_circle"></div>
       <div class="unopned_description_wrapper">
         <p class="unopned_description">Open</p>
       </div>
     <% end %>
-    <%= link_to open_notification_path_for(notification, move: true), method: :post do %>
+    <%= link_to open_notification_path_for(notification, parameters.slice(:routing_scope, :devise_default_routes).merge(move: true)), method: :post do %>
       <%= yield :notification_content %>
     <% end %>
     <div class="unopened_wrapper"></div>
   <% else %>
-    <%= link_to move_notification_path_for(notification) do %>
+    <%= link_to move_notification_path_for(notification, parameters.slice(:routing_scope, :devise_default_routes)) do %>
       <%= yield :notification_content %>
     <% end %>
   <% end %>
 
-  <%#= link_to "Move", move_notification_path_for(notification) %>
+  <%#= link_to "Move", move_notification_path_for(notification, parameters.slice(:routing_scope, :devise_default_routes)) %>
   <%# if notification.unopened? %>
-    <%#= link_to "Open and move (GET)", move_notification_path_for(notification, open: true) %>
-    <%#= link_to "Open and move (POST)", open_notification_path_for(notification, move: true), method: :post %>
-    <%#= link_to "Open", open_notification_path_for(notification, index_options: @index_options), method: :post %>
-    <%#= link_to "Open (Ajax)", open_notification_path_for(notification, reload: false, with_group_members: parameters[:with_group_members]), method: :post, remote: true %>
+    <%#= link_to "Open and move (GET)", move_notification_path_for(notification, parameters.slice(:routing_scope, :devise_default_routes).merge(open: true)) %>
+    <%#= link_to "Open and move (POST)", open_notification_path_for(notification, parameters.slice(:routing_scope, :devise_default_routes).merge(move: true)), method: :post %>
+    <%#= link_to "Open", open_notification_path_for(notification, parameters.slice(:routing_scope, :devise_default_routes).merge(index_options: @index_options)), method: :post %>
+    <%#= link_to "Open (Ajax)", open_notification_path_for(notification, parameters.slice(with_group_members:, :routing_scope, :devise_default_routes).merge(reload: false)), method: :post, remote: true %>
   <%# end %>
-  <%#= link_to "Destroy", notification_path_for(notification, index_options: @index_options), method: :delete %>
-  <%#= link_to "Destroy (Ajax)", notification_path_for(notification, reload: false, with_group_members: parameters[:with_group_members]), method: :delete, remote: true %>
+  <%#= link_to "Destroy", notification_path_for(notification, index_options: parameters.slice(:routing_scope, :devise_default_routes).merge(index_options: @index_options)), method: :delete %>
+  <%#= link_to "Destroy (Ajax)", notification_path_for(notification, parameters.slice(with_group_members:, :routing_scope, :devise_default_routes).merge(reload: false)), method: :delete, remote: true %>
 
 </div>
 

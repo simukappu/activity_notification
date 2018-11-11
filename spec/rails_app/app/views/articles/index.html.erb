@@ -1,38 +1,42 @@
-<section>
-  <h1>Listing Users</h1>
-  <% User.all.each do |user| %>
-    <div class="list_wrapper">
-      <div class="list_image"></div>
-      <div class="list_description_wrapper">
-        <p class="list_description">
-          <span><%= user.name %></span> · <%= user.email %><br>
-          <%= link_to 'Notifications', user_notifications_path(user) %>
-          <% if User.subscription_enabled? %>
-            <%= link_to 'Subscriptions', user_subscriptions_path(user) %>
-          <% end %>
-        </p>
+<% if @exists_user_notification_routes %>
+  <section>
+    <h1>Listing Users</h1>
+    <% User.all.each do |user| %>
+      <div class="list_wrapper">
+        <div class="list_image"></div>
+        <div class="list_description_wrapper">
+          <p class="list_description">
+            <span><%= user.name %></span> · <%= user.email %><br>
+            <%= link_to 'Notifications', user_notifications_path(user) %>
+            <% if User.subscription_enabled? %>
+              <%= link_to 'Subscriptions', user_subscriptions_path(user) %>
+            <% end %>
+          </p>
+        </div>
       </div>
-    </div>
-  <% end %>
-</section>
+    <% end %>
+  </section>
+<% end %>
 
-<section>
-  <h1>Listing Admins</h1>
-  <% Admin.all.each do |admin| %>
-    <div class="list_wrapper">
-      <div class="list_image"></div>
-      <div class="list_description_wrapper">
-        <p class="list_description">
-          <span><%= admin.user.name %></span> · <%= admin.user.email %><br>
-          <%= link_to 'Notifications', admin_notifications_path(admin) %>
-          <% if Admin.subscription_enabled? %>
-            <%= link_to 'Subscriptions', admin_subscriptions_path(admin) %>
-          <% end %>
-        </p>
+<% if @exists_admin_notification_routes %>
+  <section>
+    <h1>Listing Admins</h1>
+    <% Admin.all.each do |admin| %>
+      <div class="list_wrapper">
+        <div class="list_image"></div>
+        <div class="list_description_wrapper">
+          <p class="list_description">
+            <span><%= admin.user.name %></span> · <%= admin.user.email %><br>
+            <%= link_to 'Notifications', admin_notifications_path(admin) %>
+            <% if Admin.subscription_enabled? %>
+              <%= link_to 'Subscriptions', admin_subscriptions_path(admin) %>
+            <% end %>
+          </p>
+        </div>
       </div>
-    </div>
-  <% end %>
-</section>
+    <% end %>
+  </section>
+<% end %>
 
 <section>
   <div class="create_button_wrapper">

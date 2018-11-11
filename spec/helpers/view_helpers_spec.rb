@@ -42,7 +42,7 @@ describe ActivityNotification::ViewHelpers, type: :helper do
         expect(render_notification notification, fallback: :default)
           .to eq(
             render partial: 'activity_notification/notifications/default/default',
-                   locals: { notification: notification }
+                   locals: { notification: notification, parameters: {} }
           )
       end
 

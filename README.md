@@ -57,6 +57,7 @@
       - [Advanced notifiable path](#advanced-notifiable-path)
   - [Configuring views](#configuring-views)
   - [Configuring routes](#configuring-routes)
+    - [Routes with scope](#routes-with-scope)
   - [Creating notifications](#creating-notifications)
     - [Notification API](#notification-api)
     - [Automatic tracked notifications](#automatic-tracked-notifications)
@@ -83,6 +84,9 @@
     - [Managing subscriptions](#managing-subscriptions)
     - [Customizing subscriptions](#customizing-subscriptions)
   - [Integration with Devise](#integration-with-devise)
+    - [Configuring integration with Devise](#configuring-integration-with-devise)
+    - [Using different model as target](#using-different-model-as-target)
+    - [Configuring simple default routes](#configuring-simple-default-routes)
   - [Optional notification targets](#optional-notification-targets)
     - [Configuring optional targets](#configuring-optional-targets)
     - [Customizing message format](#customizing-message-format)
@@ -318,7 +322,22 @@ Rails.application.routes.draw do
 end
 ```
 
-Then, you can access several pages like *users/1/notifications* and manage open/unopen of notifications using **notifications_controller**.
+Then, you can access several pages like */users/1/notifications* and manage open/unopen of notifications using **notifications_controller**.
+If you use Devise integration and you want to configure simple default routes for authenticated users, see [Configuring simple default routes](#configuring-simple-default-routes).
+
+#### Routes with scope
+
+You can also configure *activity_notification* routes with scope like this:
+
+```ruby
+Rails.application.routes.draw do
+  scope :myscope, as: :myscope do
+    notify_to :users, routing_scope: :myscope
+  end
+end
+```
+
+Then, pages are shown as */myscope/users/1/notifications*.
 
 ### Creating notifications
 
@@ -914,7 +933,9 @@ If you would like to customize subscription controllers or views, you can use ge
 
 *activity_notification* supports to integrate with devise authentication.
 
-First, add **:with_devise** option in notification routing to *config/routes.rb* for the target:
+#### Configuring integration with Devise
+
+Add **:with_devise** option in notification routing to *config/routes.rb* for the target:
 
 ```ruby
 Rails.application.routes.draw do
@@ -927,6 +948,8 @@ end
 Then *activity_notification* will use **notifications_with_devise_controller** as a notification controller. The controller actions automatically call *authenticate_user!* and the user will be restricted to access and operate own notifications only, not others'.
 
 *Hint*: HTTP 403 Forbidden will be returned for unauthorized notifications.
+
+#### Using different model as target
 
 You can also use different model from Devise resource as a target. When you will add this to *config/routes.rb*:
 
@@ -948,7 +971,32 @@ end
 ```
 
 *activity_notification* will authenticate *:admins* notifications with devise authentication for *:users*.
-In this example *activity_notification* will confirm the *user* who *admin* belongs to with authenticated user by devise.
+In this example, *activity_notification* will confirm *admin* belonging to authenticated *user* by Devise.
+
+#### Configuring simple default routes
+
+You can configure simple default routes for authenticated users, like */notifications* instead of */users/1/notifications*. Use *:devise_default_routes* option like this:
+
+```ruby
+Rails.application.routes.draw do
+  devise_for :users
+  notify_to :users, with_devise: :users, devise_default_routes: true
+end
+```
+
+If you use multiple notification targets with Devise, you can also use this option with scope like this:
+
+```ruby
+Rails.application.routes.draw do
+  devise_for :users
+  # Integrated with devise for different model, and use with scope
+  scope :admins, as: :admins do
+    notify_to :admins, with_devise: :users, devise_default_routes: true, routing_scope: :admins
+  end
+end
+```
+
+Then, you can access */admins/notifications* instead of */admins/1/notifications*.
 
 
 ### Optional notification targets

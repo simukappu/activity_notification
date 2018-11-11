@@ -4,6 +4,8 @@ class ArticlesController < ApplicationController
 
   # GET /articles
   def index
+    @exists_user_notification_routes  = respond_to?('user_notification_path')
+    @exists_admin_notification_routes = respond_to?('admin_notification_path')
     @articles = Article.all.includes(:user)
   end
 
