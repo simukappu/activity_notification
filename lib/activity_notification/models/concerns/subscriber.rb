@@ -59,7 +59,8 @@ module ActivityNotification
       subscription.subscribing_to_email? ?
         subscription.assign_attributes(subscribing_to_email: true, subscribed_to_email_at: created_at) :
         subscription.assign_attributes(subscribing_to_email: false, unsubscribed_to_email_at: created_at)
-      optional_targets = subscription.optional_targets
+      subscription.optional_targets = (subscription.optional_targets || {}).with_indifferent_access
+      optional_targets = {}.with_indifferent_access
       subscription.optional_target_names.each do |optional_target_name|
         optional_targets = subscription.subscribing_to_optional_target?(optional_target_name) ?
           optional_targets.merge(

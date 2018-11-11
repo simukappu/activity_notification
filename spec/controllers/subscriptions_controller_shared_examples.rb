@@ -273,9 +273,10 @@ shared_examples_for :subscription_controller do
 
       it "creates new subscription of the target" do
         expect(test_target.subscriptions.reload.size).to      eq(1)
-        expect(test_target.subscriptions.reload.first.key).to eq("new_subscription_key")
-        expect(test_target.subscriptions.reload.first.subscribing_to_optional_target?("base1")).to be_truthy
-        expect(test_target.subscriptions.reload.first.subscribing_to_optional_target?("base2")).to be_falsey
+        created_subscription = test_target.subscriptions.reload.first
+        expect(created_subscription.key).to eq("new_subscription_key")
+        expect(created_subscription.subscribing_to_optional_target?("base1")).to be_truthy
+        expect(created_subscription.subscribing_to_optional_target?("base2")).to be_falsey
       end
 
       it "redirects to :index" do
