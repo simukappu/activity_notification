@@ -189,7 +189,7 @@ module ActivityNotification
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Array<Notificaion>] Array of generated notifications
       def notify_all(targets, notifiable, options = {})
-        targets.map { |target| target.notify_to(notifiable, options) }
+        targets.map { |target| notifiable.notify_to(target, options) }
       end
 
       # Generates notifications to one target.
