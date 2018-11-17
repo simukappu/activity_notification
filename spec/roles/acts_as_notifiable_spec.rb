@@ -83,6 +83,20 @@ describe ActivityNotification::ActsAsNotifiable do
                 .to eq(@notifiable.notification_key_for_tracked_update)
             end
           end
+
+          context "when the target is also configured as notifiable" do
+            before do
+              ActivityNotification::Notification.filtered_by_type("Dummy::DummyNotifiableTarget").delete_all
+              Dummy::DummyNotifiableTarget.delete_all
+              @created_target = Dummy::DummyNotifiableTarget.create
+              @created_notifiable = Dummy::DummyNotifiableTarget.create
+            end
+
+            it "generates notifications to specified targets" do
+              expect(@created_target.notifications.filtered_by_instance(@created_notifiable).count).to eq(1)
+              expect(@created_notifiable.notifications.filtered_by_instance(@created_notifiable).count).to eq(1)
+            end
+          end
         end
 
         context "with :only option (creation only)" do
