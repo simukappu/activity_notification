@@ -1,3 +1,14 @@
+## 1.6.1 / 2018-11-19
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.6.0...v1.6.1)
+
+Enhancements:
+
+* Update README.md to describe how to customize email subject - [#93](https://github.com/simukappu/activity_notification/issues/93)
+
+Bug Fixes:
+
+* Fix *notify_all* method to handle single notifiable target models - [#88](https://github.com/simukappu/activity_notification/issues/88)
+
 ## 1.6.0 / 2018-11-11
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.5.1...v1.6.0)
 
