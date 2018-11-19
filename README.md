@@ -72,11 +72,13 @@
     - [Mailer setup](#mailer-setup)
     - [Sender configuration](#sender-configuration)
     - [Email templates](#email-templates)
+    - [Email subject](#email-subject)
     - [i18n for email](#i18n-for-email)
   - [Batch email notification](#batch-email-notification)
     - [Batch mailer setup](#batch-mailer-setup)
     - [Batch sender configuration](#batch-sender-configuration)
     - [Batch email templates](#batch-email-templates)
+    - [Batch email subject](#batch-email-subject)
     - [i18n for batch email](#i18n-for-batch-email)
   - [Grouping notifications](#grouping-notifications)
   - [Subscription management](#subscription-management)
@@ -673,6 +675,34 @@ config.mailer_sender = ->(key){ key == 'inquiry.post' ? 'support@example.com' : 
 
 If this template is missing, the gem will look for a partial in *default* as the target type which means *activity_notification/mailer/default/_default.html.(|erb|haml|slim|something_else)*.
 
+#### Email subject
+
+*activity_notification* will use `"Notification of #{@notification.notifiable.printable_type.downcase}"` as default email subject. If it is defined, *activity_notification* will resolve email subject from *overriding_notification_email_subject* method in notifiable models. You can customize email subject like this:
+
+```
+class Comment < ActiveRecord::Base
+  belongs_to :article
+  belongs_to :user
+
+  acts_as_notifiable :users,
+    targets: ->(comment, key) {
+      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+    },
+    notifiable_path: :article_notifiable_path
+
+  def overriding_notification_email_subject(target, key)
+    if key == "comment.create"
+      "New comment to your article!"
+    else
+      "Notification for new comments!"
+    end
+  end
+end
+
+```
+
+If you use i18n for email, you can configure email subject in your locale files. See [i18n for email](#i18n-for-email).
+
 #### i18n for email
 
 The subject of notification email can be put in your locale *.yml* files as **mail_subject** field:
@@ -738,6 +768,12 @@ config.mailer_sender = ->(batch_key){ batch_key == 'batch.inquiry.post' ? 'suppo
 #### Batch email templates
 
 *activity_notification* will look for batch email template in the same way as email notification using *batch_key*.
+
+#### Batch email subject
+
+*activity_notification* will resolve batch email subject as the same way as [email subject](#email-subject) with *batch_key*.
+
+If you use i18n for batch email, you can configure batch email subject in your locale files. See [i18n for batch email](#i18n-for-batch-email).
 
 #### i18n for batch email
 
