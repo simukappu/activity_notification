@@ -325,7 +325,7 @@ module ActivityNotification
     # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
     # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
     # @return [Notification] Generated notification instance
-    def notify_to(notifiable, options = {})
+    def receive_notification_of(notifiable, options = {})
       Notification.notify_to(self, notifiable, options)
     end
   

@@ -778,10 +778,10 @@ shared_examples_for :target do
 
     # Wrapper methods of Notification class methods
 
-    describe "#notify_to" do
+    describe "#receive_notification_of" do
       it "is an alias of ActivityNotification::Notification.notify_to" do
         expect(ActivityNotification::Notification).to receive(:notify_to)
-        test_instance.notify_to create(:user)
+        test_instance.receive_notification_of create(:user)
       end
     end
 

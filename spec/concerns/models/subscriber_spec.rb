@@ -338,7 +338,7 @@ shared_examples_for :subscriber do
 
     # Function test for subscriptions
 
-    describe "#notify_to" do
+    describe "#receive_notification_of" do
       before do
         @test_key = 'test_key'
         Comment.acts_as_notifiable described_class.to_s.underscore.pluralize.to_sym, targets: [], email_allowed: true
@@ -353,13 +353,13 @@ shared_examples_for :subscriber do
         end
 
         it "returns created notification" do
-          notification = test_instance.notify_to(@notifiable, key: @test_key)
+          notification = test_instance.receive_notification_of(@notifiable, key: @test_key)
           expect(notification).not_to be_nil
           expect(notification.target).to eq(test_instance)
         end
   
         it "creates notification records" do
-          test_instance.notify_to(@notifiable, key: @test_key)
+          test_instance.receive_notification_of(@notifiable, key: @test_key)
           expect(test_instance.notifications.unopened_only.count).to eq(1)
         end
       end
@@ -374,7 +374,7 @@ shared_examples_for :subscriber do
           it "sends notification email later" do
             expect {
               perform_enqueued_jobs do
-                test_instance.notify_to(@notifiable, key: @test_key)
+                test_instance.receive_notification_of(@notifiable, key: @test_key)
               end
             }.to change { ActivityNotification::Mailer.deliveries.size }.by(1)
             expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
@@ -382,14 +382,14 @@ shared_examples_for :subscriber do
   
           it "sends notification email with active job queue" do
             expect {
-              test_instance.notify_to(@notifiable, key: @test_key)
+              test_instance.receive_notification_of(@notifiable, key: @test_key)
             }.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(1)
           end
         end
 
         context "with send_later false" do
           it "sends notification email now" do
-            test_instance.notify_to(@notifiable, key: @test_key, send_later: false)
+            test_instance.receive_notification_of(@notifiable, key: @test_key, send_later: false)
             expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
           end
         end
@@ -402,12 +402,12 @@ shared_examples_for :subscriber do
         end
 
         it "returns nil" do
-          notification = test_instance.notify_to(@notifiable, key: @test_key)
+          notification = test_instance.receive_notification_of(@notifiable, key: @test_key)
           expect(notification).to be_nil
         end
   
         it "does not create notification records" do
-          test_instance.notify_to(@notifiable, key: @test_key)
+          test_instance.receive_notification_of(@notifiable, key: @test_key)
           expect(test_instance.notifications.unopened_only.count).to eq(0)
         end
       end
@@ -422,7 +422,7 @@ shared_examples_for :subscriber do
           it "does not send notification email later" do
             expect {
               perform_enqueued_jobs do
-                test_instance.notify_to(@notifiable, key: @test_key)
+                test_instance.receive_notification_of(@notifiable, key: @test_key)
               end
             }.to change { ActivityNotification::Mailer.deliveries.size }.by(0)
             expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
@@ -430,14 +430,14 @@ shared_examples_for :subscriber do
   
           it "does not send notification email with active job queue" do
             expect {
-              test_instance.notify_to(@notifiable, key: @test_key)
+              test_instance.receive_notification_of(@notifiable, key: @test_key)
             }.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(0)
           end
         end
 
         context "with send_later false" do
           it "does not send notification email now" do
-            test_instance.notify_to(@notifiable, key: @test_key, send_later: false)
+            test_instance.receive_notification_of(@notifiable, key: @test_key, send_later: false)
             expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
           end
         end
