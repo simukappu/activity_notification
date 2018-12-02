@@ -62,6 +62,23 @@ shared_examples_for :notification_api do
         end
       end
 
+      context "with notify_later true" do
+        it "generates notifications later" do
+          expect {
+            described_class.notify(:users, @comment_2, notify_later: true)
+          }.to have_enqueued_job(ActivityNotification::NotifyJob)
+        end
+
+        it "creates notification records later" do
+          perform_enqueued_jobs do
+            described_class.notify(:users, @comment_2, notify_later: true)
+          end
+          expect(@author_user.notifications.unopened_only.count).to eq(1)
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_2.notifications.unopened_only.count).to eq(0)
+        end
+      end
+
       context "with send_later false" do
         it "sends notification email now" do
           described_class.notify(:users, @comment_2, send_later: false)
@@ -72,6 +89,14 @@ shared_examples_for :notification_api do
       end
 
       context "with pass_full_options" do
+        before do
+          @original_targets = Comment._notification_targets[:users]
+        end
+
+        after do
+          Comment._notification_targets[:users] = @original_targets
+        end
+
         context "as false (as default)" do
           it "accepts specified lambda with notifiable and key arguments" do
             Comment._notification_targets[:users] = ->(notifiable, key){ User.all if key == 'dummy_key' }
@@ -98,7 +123,23 @@ shared_examples_for :notification_api do
           end
         end
       end
+    end
 
+    describe ".notify_later" do
+      it "generates notifications later" do
+        expect {
+          described_class.notify_later(:users, @comment_2)
+        }.to have_enqueued_job(ActivityNotification::NotifyJob)
+      end
+
+      it "creates notification records later" do
+        perform_enqueued_jobs do
+          described_class.notify_later(:users, @comment_2)
+        end
+        expect(@author_user.notifications.unopened_only.count).to eq(1)
+        expect(@user_1.notifications.unopened_only.count).to eq(1)
+        expect(@user_2.notifications.unopened_only.count).to eq(0)
+      end
     end
 
     describe ".notify_all" do
@@ -136,6 +177,23 @@ shared_examples_for :notification_api do
         end
       end
 
+      context "with notify_later true" do
+        it "generates notifications later" do
+          expect {
+            described_class.notify_all([@author_user, @user_1], @comment_2, notify_later: true)
+          }.to have_enqueued_job(ActivityNotification::NotifyAllJob)
+        end
+
+        it "creates notification records later" do
+          perform_enqueued_jobs do
+            described_class.notify_all([@author_user, @user_1], @comment_2, notify_later: true)
+          end
+          expect(@author_user.notifications.unopened_only.count).to eq(1)
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_2.notifications.unopened_only.count).to eq(0)
+        end
+      end
+
       context "with send_later false" do
         it "sends notification email now" do
           described_class.notify_all([@author_user, @user_1], @comment_2, send_later: false)
@@ -143,6 +201,23 @@ shared_examples_for :notification_api do
           expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@author_user.email)
           expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@user_1.email)
         end
+      end
+    end
+
+    describe ".notify_all_later" do
+      it "generates notifications later" do
+        expect {
+          described_class.notify_all_later([@author_user, @user_1], @comment_2)
+        }.to have_enqueued_job(ActivityNotification::NotifyAllJob)
+      end
+
+      it "creates notification records later" do
+        perform_enqueued_jobs do
+          described_class.notify_all_later([@author_user, @user_1], @comment_2)
+        end
+        expect(@author_user.notifications.unopened_only.count).to eq(1)
+        expect(@user_1.notifications.unopened_only.count).to eq(1)
+        expect(@user_2.notifications.unopened_only.count).to eq(0)
       end
     end
 
@@ -173,6 +248,22 @@ shared_examples_for :notification_api do
           expect {
             described_class.notify_to(@user_1, @comment_2)
           }.to change(ActiveJob::Base.queue_adapter.enqueued_jobs, :size).by(1)
+        end
+      end
+
+      context "with notify_later true" do
+        it "generates notifications later" do
+          expect {
+            described_class.notify_to(@user_1, @comment_2, notify_later: true)
+          }.to have_enqueued_job(ActivityNotification::NotifyToJob)
+        end
+
+        it "creates notification records later" do
+          perform_enqueued_jobs do
+            described_class.notify_to(@user_1, @comment_2, notify_later: true)
+          end
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_2.notifications.unopened_only.count).to eq(0)
         end
       end
 
@@ -352,6 +443,22 @@ shared_examples_for :notification_api do
             end
           end
         end
+      end
+    end
+
+    describe ".notify_later_to" do
+      it "generates notifications later" do
+        expect {
+          described_class.notify_later_to(@user_1, @comment_2)
+        }.to have_enqueued_job(ActivityNotification::NotifyToJob)
+      end
+
+      it "creates notification records later" do
+        perform_enqueued_jobs do
+          described_class.notify_later_to(@user_1, @comment_2)
+        end
+        expect(@user_1.notifications.unopened_only.count).to eq(1)
+        expect(@user_2.notifications.unopened_only.count).to eq(0)
       end
     end
 

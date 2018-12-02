@@ -1,4 +1,5 @@
 describe ActivityNotification::ActsAsNotifiable do
+  include ActiveJob::TestHelper
   let(:dummy_model_class)      { Dummy::DummyBase }
   let(:dummy_notifiable_class) { Dummy::DummyNotifiable }
   let(:user_target)            { create(:confirmed_user) }
@@ -190,6 +191,50 @@ describe ActivityNotification::ActsAsNotifiable do
             it "generated notification has notification_key_for_tracked_update as key" do
               expect(user_target.notifications.filtered_by_instance(@notifiable).first.key)
                 .to eq("test.key")
+            end
+          end
+        end
+
+        context "with :notify_later option" do
+          before do
+            ActiveJob::Base.queue_adapter = :test
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { notify_later: true }
+            @created_notifiable = dummy_notifiable_class.create
+          end
+
+          context "creation" do
+            it "generates notifications later when notifiable is created" do
+              expect {
+                @created_notifiable = dummy_notifiable_class.create
+              }.to have_enqueued_job(ActivityNotification::NotifyJob)
+            end
+
+            it "creates notification records later when notifiable is created" do
+              perform_enqueued_jobs do
+                @created_notifiable = dummy_notifiable_class.create
+              end
+              expect(user_target.notifications.filtered_by_instance(@created_notifiable).count).to eq(1)
+            end
+          end
+
+          context "update" do
+            before do
+              user_target.notifications.delete_all
+              expect(user_target.notifications.count).to eq(0)
+              @notifiable.update(created_at: @notifiable.updated_at)
+            end
+
+            it "generates notifications later when notifiable is created" do
+              expect {
+                @notifiable.update(created_at: @notifiable.updated_at)
+              }.to have_enqueued_job(ActivityNotification::NotifyJob)
+            end
+
+            it "creates notification records later when notifiable is created" do
+              perform_enqueued_jobs do
+                @notifiable.update(created_at: @notifiable.updated_at)
+              end
+              expect(user_target.notifications.filtered_by_instance(@notifiable).count).to eq(1)
             end
           end
         end

@@ -157,6 +157,7 @@ module ActivityNotification
       # @option options [ActiveSupport::Duration] :group_expiry_delay       (nil)                                 Expiry period of a notification group
       # @option options [Object]                  :notifier                 (nil)                                 Notifier of the notifications
       # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
+      # @option options [Boolean]                 :notify_later             (false)                               Whether it generates notifications asynchronously
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
@@ -164,10 +165,47 @@ module ActivityNotification
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Array<Notificaion>] Array of generated notifications
       def notify(target_type, notifiable, options = {})
-        targets = notifiable.notification_targets(target_type, options[:pass_full_options] ? options : options[:key])
-        unless targets.blank?
-          notify_all(targets, notifiable, options)
+        if options[:notify_later]
+          notify_later(target_type, notifiable, options)
+        else
+          targets = notifiable.notification_targets(target_type, options[:pass_full_options] ? options : options[:key])
+          unless targets.blank?
+            notify_all(targets, notifiable, options)
+          end
         end
+      end
+      alias_method :notify_now, :notify
+
+      # Generates notifications to configured targets with notifiable model later by ActiveJob queue.
+      #
+      # @example Use with target_type as Symbol
+      #   ActivityNotification::Notification.notify_later :users, @comment
+      # @example Use with target_type as String
+      #   ActivityNotification::Notification.notify_later 'User', @comment
+      # @example Use with target_type as Class
+      #   ActivityNotification::Notification.notify_later User, @comment
+      # @example Use with options
+      #   ActivityNotification::Notification.notify_later :users, @comment, key: 'custom.comment', group: @comment.article
+      #   ActivityNotification::Notification.notify_later :users, @comment, parameters: { reply_to: @comment.reply_to }, send_later: false
+      #
+      # @param [Symbol, String, Class] target_type Type of target
+      # @param [Object] notifiable Notifiable instance
+      # @param [Hash] options Options for notifications
+      # @option options [String]                  :key                      (notifiable.default_notification_key) Key of the notification
+      # @option options [Object]                  :group                    (nil)                                 Group unit of the notifications
+      # @option options [ActiveSupport::Duration] :group_expiry_delay       (nil)                                 Expiry period of a notification group
+      # @option options [Object]                  :notifier                 (nil)                                 Notifier of the notifications
+      # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
+      # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
+      # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
+      # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
+      # @option options [Boolean]                 :pass_full_options        (false)                               Whether it passes full options to notifiable.notification_targets, not a key only
+      # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
+      # @return [Array<Notificaion>] Array of generated notifications
+      def notify_later(target_type, notifiable, options = {})
+        target_type = target_type.to_s if target_type.is_a? Symbol
+        options.delete(:notify_later)
+        ActivityNotification::NotifyJob.perform_later(target_type, notifiable, options)
       end
 
       # Generates notifications to specified targets.
@@ -183,13 +221,42 @@ module ActivityNotification
       # @option options [ActiveSupport::Duration] :group_expiry_delay       (nil)                                 Expiry period of a notification group
       # @option options [Object]                  :notifier                 (nil)                                 Notifier of the notifications
       # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
+      # @option options [Boolean]                 :notify_later             (false)                               Whether it generates notifications asynchronously
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Array<Notificaion>] Array of generated notifications
       def notify_all(targets, notifiable, options = {})
-        targets.map { |target| notify_to(target, notifiable, options) }
+        if options[:notify_later]
+          notify_all_later(targets, notifiable, options)
+        else
+          targets.map { |target| notify_to(target, notifiable, options) }
+        end
+      end
+      alias_method :notify_all_now, :notify_all
+
+      # Generates notifications to specified targets later by ActiveJob queue.
+      #
+      # @example Notify to all users later
+      #   ActivityNotification::Notification.notify_all_later User.all, @comment
+      #
+      # @param [Array<Object>] targets Targets to send notifications
+      # @param [Object] notifiable Notifiable instance
+      # @param [Hash] options Options for notifications
+      # @option options [String]                  :key                      (notifiable.default_notification_key) Key of the notification
+      # @option options [Object]                  :group                    (nil)                                 Group unit of the notifications
+      # @option options [ActiveSupport::Duration] :group_expiry_delay       (nil)                                 Expiry period of a notification group
+      # @option options [Object]                  :notifier                 (nil)                                 Notifier of the notifications
+      # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
+      # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
+      # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
+      # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
+      # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
+      # @return [Array<Notificaion>] Array of generated notifications
+      def notify_all_later(targets, notifiable, options = {})
+        options.delete(:notify_later)
+        ActivityNotification::NotifyAllJob.perform_later(targets, notifiable, options)
       end
 
       # Generates notifications to one target.
@@ -205,27 +272,56 @@ module ActivityNotification
       # @option options [ActiveSupport::Duration] :group_expiry_delay       (nil)                                 Expiry period of a notification group
       # @option options [Object]                  :notifier                 (nil)                                 Notifier of the notifications
       # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
+      # @option options [Boolean]                 :notify_later             (false)                               Whether it generates notifications asynchronously
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Notification] Generated notification instance
       def notify_to(target, notifiable, options = {})
-        send_email            = options.has_key?(:send_email)                  ? options[:send_email]            : true
-        send_later            = options.has_key?(:send_later)                  ? options[:send_later]            : true
-        publish_optional_targets = options.has_key?(:publish_optional_targets) ? options[:publish_optional_targets] : true
-        # Generate notification
-        notification = generate_notification(target, notifiable, options)
-        # Send notification email
-        if notification.present? && send_email
-          notification.send_notification_email({ send_later: send_later })
+        if options[:notify_later]
+          notify_later_to(target, notifiable, options)
+        else
+          send_email            = options.has_key?(:send_email)                  ? options[:send_email]            : true
+          send_later            = options.has_key?(:send_later)                  ? options[:send_later]            : true
+          publish_optional_targets = options.has_key?(:publish_optional_targets) ? options[:publish_optional_targets] : true
+          # Generate notification
+          notification = generate_notification(target, notifiable, options)
+          # Send notification email
+          if notification.present? && send_email
+            notification.send_notification_email({ send_later: send_later })
+          end
+          # Publish to optional targets
+          if notification.present? && publish_optional_targets
+            notification.publish_to_optional_targets(options[:optional_targets] || {})
+          end
+          # Return generated notification
+          notification
         end
-        # Publish to optional targets
-        if notification.present? && publish_optional_targets
-          notification.publish_to_optional_targets(options[:optional_targets] || {})
-        end
-        # Return generated notification
-        notification
+      end
+      alias_method :notify_now_to, :notify_to
+
+      # Generates notifications to one target later by ActiveJob queue.
+      #
+      # @example Notify to one user later
+      #   ActivityNotification::Notification.notify_later_to @comment.auther, @comment
+      #
+      # @param [Object] target Target to send notifications
+      # @param [Object] notifiable Notifiable instance
+      # @param [Hash] options Options for notifications
+      # @option options [String]                  :key                      (notifiable.default_notification_key) Key of the notification
+      # @option options [Object]                  :group                    (nil)                                 Group unit of the notifications
+      # @option options [ActiveSupport::Duration] :group_expiry_delay       (nil)                                 Expiry period of a notification group
+      # @option options [Object]                  :notifier                 (nil)                                 Notifier of the notifications
+      # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
+      # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
+      # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
+      # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
+      # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
+      # @return [Notification] Generated notification instance
+      def notify_later_to(target, notifiable, options = {})
+        options.delete(:notify_later)
+        ActivityNotification::NotifyToJob.perform_later(target, notifiable, options)
       end
 
       # Generates a notification

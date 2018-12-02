@@ -7,6 +7,7 @@ else
   class Dummy::DummyNotifiable
     include Mongoid::Document
     include Mongoid::Timestamps
+    include GlobalID::Identification
     include ActivityNotification::Models
     include ActivityNotification::Notifiable
     field :title, type: String

@@ -92,6 +92,15 @@ module ActivityNotification
     #   @return [String] Base mailer class for email notification.
     attr_accessor :parent_mailer
 
+    # @overload parent_job
+    #   Returns base job class for delayed notifications
+    #   @return [String] Base job class for delayed notifications.
+    # @overload parent_job=(value)
+    #   Sets base job class for delayed notifications
+    #   @param [String] parent_job The new parent_job
+    #   @return [String] Base job class for delayed notifications.
+    attr_accessor :parent_job
+
     # @overload parent_controller
     #   Returns base controller class for notifications_controller
     #   @return [String] Base controller class for notifications_controller.
@@ -119,6 +128,15 @@ module ActivityNotification
     #   @return [Integer] Default limit to query for opened notifications.
     attr_accessor :opened_index_limit
 
+    # @overload active_job_queue
+    #   Returns ActiveJob queue name for delayed notifications
+    #   @return [Symbol] ActiveJob queue name for delayed notifications.
+    # @overload active_job_queue=(value)
+    #   Sets ActiveJob queue name for delayed notifications
+    #   @param [Symbol] active_job_queue The new active_job_queue
+    #   @return [Symbol] ActiveJob queue name for delayed notifications.
+    attr_accessor :active_job_queue
+
     # @overload :orm
     #   Returns ORM name for ActivityNotification (:active_record or :mongoid)
     #   @return [Boolean] ORM name for ActivityNotification (:active_record or :mongoid).
@@ -137,9 +155,11 @@ module ActivityNotification
       @mailer_sender           = nil
       @mailer                  = 'ActivityNotification::Mailer'
       @parent_mailer           = 'ActionMailer::Base'
+      @parent_job              = 'ActiveJob::Base'
       @parent_controller       = 'ApplicationController'
       @mailer_templates_dir    = 'activity_notification/mailer'
       @opened_index_limit      = 10
+      @active_job_queue        = :activity_notification
       @orm                     = :active_record
     end
 

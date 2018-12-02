@@ -607,10 +607,10 @@ shared_examples_for :notifiable do
       end
     end
 
-    describe "#notify_to" do
-      it "is an alias of ActivityNotification::Notification.notify_to" do
-        expect(ActivityNotification::Notification).to receive(:notify_to)
-        test_instance.notify_to create(:user)
+    describe "#notify_later" do
+      it "is an alias of ActivityNotification::Notification.notify_later" do
+        expect(ActivityNotification::Notification).to receive(:notify_later)
+        test_instance.notify_later :users
       end
     end
 
@@ -618,6 +618,27 @@ shared_examples_for :notifiable do
       it "is an alias of ActivityNotification::Notification.notify_all" do
         expect(ActivityNotification::Notification).to receive(:notify_all)
         test_instance.notify_all [create(:user)]
+      end
+    end
+
+    describe "#notify_all_later" do
+      it "is an alias of ActivityNotification::Notification.notify_all_later" do
+        expect(ActivityNotification::Notification).to receive(:notify_all_later)
+        test_instance.notify_all_later [create(:user)]
+      end
+    end
+
+    describe "#notify_to" do
+      it "is an alias of ActivityNotification::Notification.notify_to" do
+        expect(ActivityNotification::Notification).to receive(:notify_to)
+        test_instance.notify_to create(:user)
+      end
+    end
+
+    describe "#notify_later_to" do
+      it "is an alias of ActivityNotification::Notification.notify_later_to" do
+        expect(ActivityNotification::Notification).to receive(:notify_later_to)
+        test_instance.notify_later_to create(:user)
       end
     end
 

@@ -5,6 +5,7 @@ else
   class Dummy::DummyBase
     include Mongoid::Document
     include Mongoid::Timestamps
+    include GlobalID::Identification
     include ActivityNotification::Models
   end
 end

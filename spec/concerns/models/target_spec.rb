@@ -785,6 +785,13 @@ shared_examples_for :target do
       end
     end
 
+    describe "#receive_notification_later_of" do
+      it "is an alias of ActivityNotification::Notification.notify_later_to" do
+        expect(ActivityNotification::Notification).to receive(:notify_later_to)
+        test_instance.receive_notification_later_of create(:user)
+      end
+    end
+
     describe "#open_all_notifications" do
       it "is an alias of ActivityNotification::Notification.open_all_of" do
         expect(ActivityNotification::Notification).to receive(:open_all_of)

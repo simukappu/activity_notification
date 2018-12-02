@@ -7,6 +7,7 @@ else
   class Dummy::DummyGroup
     include Mongoid::Document
     include Mongoid::Timestamps
+    include GlobalID::Identification
     include ActivityNotification::Models
     include ActivityNotification::Group
     field :title, type: String

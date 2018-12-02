@@ -60,6 +60,7 @@
     - [Routes with scope](#routes-with-scope)
   - [Creating notifications](#creating-notifications)
     - [Notification API](#notification-api)
+    - [Asynchronous notification API with ActiveJob](#asynchronous-notification-api-with-activejob)
     - [Automatic tracked notifications](#automatic-tracked-notifications)
   - [Displaying notifications](#displaying-notifications)
     - [Preparing target notifications](#preparing-target-notifications)
@@ -345,8 +346,7 @@ Then, pages are shown as */myscope/users/1/notifications*.
 
 #### Notification API
 
-You can trigger notifications by setting all your required parameters and triggering **notify**
-on the notifiable model, like this:
+You can trigger notifications by setting all your required parameters and triggering **notify** on the notifiable model, like this:
 
 ```ruby
 @comment.notify :users, key: "comment.reply"
@@ -363,6 +363,31 @@ The new instances of **ActivityNotification::Notification** model will be genera
 
 *Hint*: *:key* is a option. Default key `#{notifiable_type}.default` which means *comment.default* will be used without specified key.
 You can override it by *Notifiable#default_notification_key*.
+
+#### Asynchronous notification API with ActiveJob
+
+Using Notification API with default configurations, the notifications will be generated synchronously. *activity_notification* also supports **asynchronous notification API** with ActiveJob to improve application performance. You can use **notify_later** method on the notifiable model, like this:
+
+```ruby
+@comment.notify_later :users, key: "comment.reply"
+```
+
+You can also use *:notify_later* option in *notify* method. This is the same operation as calling *notify_later* method.
+
+```ruby
+@comment.notify :users, key: "comment.reply", notify_later: true
+```
+
+*Note*: *notify_now* is an alias for *notify* and does the same.
+
+When you use asynchronous notification API, you should setup ActiveJob with background queuing service such as Sidekiq.
+You can set *config.active_job_queue* in your initializer to specify a queue name *activity_notification* will use.
+The default queue name is *:activity_notification*.
+
+```ruby
+# Configure ActiveJob queue name for delayed notifications.
+config.active_job_queue = :my_notification_queue
+```
 
 #### Automatic tracked notifications
 
@@ -404,13 +429,26 @@ class Comment < ActiveRecord::Base
     },
     # Set { except: [:update] } to :tracked option to generate tracked notifications except update (creation only).
     # It adds required callbacks to generate notifications for creation of the notifiable model.
-    tracked: { except: [:update], key: 'comment.edit', send_later: false }
+    tracked: { except: [:update], key: 'comment.create.now', send_later: false }
 end
 ```
 
 *Hint*: `#{notifiable_type}.create` and `#{notifiable_type}.update` will be used as the key of tracked notifications.
 You can override them by *Notifiable#notification_key_for_tracked_creation* and *Notifiable#notification_key_for_tracked_update*.
 You can also specify key option in the *:tracked* statement.
+
+As a default, the notifications will be generated synchronously along with model creation or update. If you want to generate notifications asynchronously, use *:notify_later* option with the *:tracked* option, like this:
+
+```ruby
+class Comment < ActiveRecord::Base
+  acts_as_notifiable :users,
+    targets: ->(comment, key) {
+      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+    },
+    # It adds required callbacks to generate notifications asynchronously for creation of the notifiable model.
+    tracked: { only: [:create], key: 'comment.create.later', notify_later: true }
+end
+```
 
 ### Displaying notifications
 

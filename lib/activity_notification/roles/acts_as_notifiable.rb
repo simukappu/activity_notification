@@ -115,6 +115,8 @@ module ActivityNotification
       #     Tracked notifications are disabled as default.
       #     When you set true as this :tracked option, default callbacks will be enabled for [:create, :update].
       #     You can use :only, :except and other notify options as hash for this option.
+      #     Tracked notifications are generated synchronously as default configuration.
+      #     You can use :notify_later option as notify options to make tracked notifications generated asynchronously.
       # @example Add all callbacks to generate notifications for creation and update
       #   # app/models/comment.rb
       #   class Comment < ActiveRecord::Base
@@ -132,6 +134,12 @@ module ActivityNotification
       #   class Comment < ActiveRecord::Base
       #     belongs_to :article
       #     acts_as_notifiable :users, targets: User.all, tracked: { except: [:update], key: "comment.edited", send_later: false }
+      #   end
+      # @example Add callbacks to generate notifications asynchronously for creation only
+      #   # app/models/comment.rb
+      #   class Comment < ActiveRecord::Base
+      #     belongs_to :article
+      #     acts_as_notifiable :users, targets: User.all, tracked: { only: [:create], notify_later: true }
       #   end
       #
       # * :printable_name or :printable_notifiable_name

@@ -8,6 +8,7 @@ else
   class Dummy::DummyNotifiableTarget
     include Mongoid::Document
     include Mongoid::Timestamps
+    include GlobalID::Identification
     field :email, type: String, default: ""
     field :name,  type: String
 

@@ -41,6 +41,9 @@ ActivityNotification.configure do |config|
   # Configure the parent class responsible to send e-mails.
   # config.parent_mailer = 'ActionMailer::Base'
 
+  # Configure the parent job class for delayed notifications.
+  # config.parent_job = 'ActiveJob::Base'
+
   # Configure the parent class for activity_notification controllers.
   # config.parent_controller = 'ApplicationController'
 
@@ -49,5 +52,8 @@ ActivityNotification.configure do |config|
 
   # Configure default limit number of opened notifications you can get from opened* scope
   config.opened_index_limit = 10
+
+  # Configure ActiveJob queue name for delayed notifications.
+  config.active_job_queue = :activity_notification
 
 end

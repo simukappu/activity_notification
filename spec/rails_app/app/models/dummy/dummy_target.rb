@@ -7,6 +7,7 @@ else
   class Dummy::DummyTarget
     include Mongoid::Document
     include Mongoid::Timestamps
+    include GlobalID::Identification
     include ActivityNotification::Models
     include ActivityNotification::Target
     field :email, type: String, default: ""

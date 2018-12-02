@@ -328,7 +328,28 @@ module ActivityNotification
     def receive_notification_of(notifiable, options = {})
       Notification.notify_to(self, notifiable, options)
     end
-  
+    alias_method :receive_notification_now_of, :receive_notification_of
+
+    # Generates notifications to this target later by ActiveJob queue.
+    # This method calls NotificationApi#notify_later_to internally with self target instance.
+    # @see NotificationApi#notify_later_to
+    #
+    # @param [Object] notifiable Notifiable instance to notify
+    # @param [Hash] options Options for notifications
+    # @option options [String]                  :key                      (notifiable.default_notification_key) Key of the notification
+    # @option options [Object]                  :group                    (nil)                                 Group unit of the notifications
+    # @option options [ActiveSupport::Duration] :group_expiry_delay       (nil)                                 Expiry period of a notification group
+    # @option options [Object]                  :notifier                 (nil)                                 Notifier of the notifications
+    # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
+    # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
+    # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
+    # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
+    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
+    # @return [Notification] Generated notification instance
+    def receive_notification_later_of(notifiable, options = {})
+      Notification.notify_later_to(self, notifiable, options)
+    end
+
     # Opens all notifications of this target.
     # This method calls NotificationApi#open_all_of internally with self target instance.
     # @see NotificationApi#open_all_of
