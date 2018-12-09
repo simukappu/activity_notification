@@ -4,7 +4,17 @@ describe ActivityNotification::Generators::MigrationGenerator, type: :generator 
 
   # setup_default_destination
   destination File.expand_path("../../../../tmp", __FILE__)
-  before { prepare_destination }
+
+  before do
+    prepare_destination
+  end
+
+  after do
+    if ActivityNotification.config.orm == :active_record
+      ActivityNotification::Notification.reset_column_information
+      ActivityNotification::Subscription.reset_column_information
+    end
+  end
 
   it 'runs generating migration tasks' do
     gen = generator
@@ -21,7 +31,19 @@ describe ActivityNotification::Generators::MigrationGenerator, type: :generator 
       describe 'CreateNotifications migration file' do
         subject { file(Dir["tmp/db/migrate/*_create_activity_notification_tables.rb"].first.gsub!('tmp/', '')) }
         it { is_expected.to exist }
-        it { is_expected.to contain(/class CreateActivityNotificationTables < ActiveRecord::Migration/) }
+        if Rails::VERSION::MAJOR >= 5
+          it { is_expected.to contain(/class CreateActivityNotificationTables < ActiveRecord::Migration\[\d\.\d\]/) }
+        else
+          it { is_expected.to contain(/class CreateActivityNotificationTables < ActiveRecord::Migration/) }
+        end
+
+        if ActivityNotification.config.orm == :active_record
+          it 'can be executed to migrate scheme' do
+            require subject
+            CreateActivityNotificationTables.new.migrate(:down)
+            CreateActivityNotificationTables.new.migrate(:up)
+          end
+        end
       end
     end
 
@@ -33,9 +55,20 @@ describe ActivityNotification::Generators::MigrationGenerator, type: :generator 
       describe 'CreateCustomNotifications migration file' do
         subject { file(Dir["tmp/db/migrate/*_create_custom_notifications.rb"].first.gsub!('tmp/', '')) }
         it { is_expected.to exist }
-        it { is_expected.to contain(/class CreateCustomNotifications < ActiveRecord::Migration/) }
+        if Rails::VERSION::MAJOR >= 5
+          it { is_expected.to contain(/class CreateCustomNotifications < ActiveRecord::Migration\[\d\.\d\]/) }
+        else
+          it { is_expected.to contain(/class CreateCustomNotifications < ActiveRecord::Migration/) }
+        end
+
+        if ActivityNotification.config.orm == :active_record
+          it 'can be executed to migrate scheme' do
+            require subject
+            CreateActivityNotificationTables.new.migrate(:down)
+            CreateActivityNotificationTables.new.migrate(:up)
+          end
+        end
       end
     end
-
   end
 end

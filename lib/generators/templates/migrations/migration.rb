@@ -1,5 +1,5 @@
 # Migration responsible for creating a table with notifications
-class <%= @migration_name %> < ActiveRecord::Migration
+class <%= @migration_name %> < ActiveRecord::Migration<%= Rails::VERSION::MAJOR >= 5 ? "[#{Rails.version.to_f}]" : "" %>
   # Create tables
   def change
     <% if @migration_tables.include?('notifications') %>create_table :notifications do |t|
@@ -12,7 +12,7 @@ class <%= @migration_name %> < ActiveRecord::Migration
       t.text       :parameters
       t.datetime   :opened_at
 
-      t.timestamps
+      t.timestamps null: false
     end<% else %># create_table :notifications do |t|
     #   t.belongs_to :target,     polymorphic: true, index: true, null: false
     #   t.belongs_to :notifiable, polymorphic: true, index: true, null: false
@@ -23,7 +23,7 @@ class <%= @migration_name %> < ActiveRecord::Migration
     #   t.text       :parameters
     #   t.datetime   :opened_at
     #
-    #   t.timestamps
+    #   t.timestamps null: false
     # end<% end %>
 
     <% if @migration_tables.include?('subscriptions') %>create_table :subscriptions do |t|
@@ -37,7 +37,7 @@ class <%= @migration_name %> < ActiveRecord::Migration
       t.datetime   :unsubscribed_to_email_at
       t.text       :optional_targets
 
-      t.timestamps
+      t.timestamps null: false
     end
     add_index :subscriptions, [:target_type, :target_id, :key], unique: true<% else %># create_table :subscriptions do |t|
     #   t.belongs_to :target,     polymorphic: true, index: true, null: false
@@ -50,7 +50,7 @@ class <%= @migration_name %> < ActiveRecord::Migration
     #   t.datetime   :unsubscribed_to_email_at
     #   t.text       :optional_targets
     #
-    #   t.timestamps
+    #   t.timestamps null: false
     # end
     # add_index :subscriptions, [:target_type, :target_id, :key], unique: true<% end %>
   end

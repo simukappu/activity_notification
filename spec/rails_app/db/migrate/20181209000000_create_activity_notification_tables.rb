@@ -1,5 +1,5 @@
 # Migration responsible for creating a table with notifications
-class CreateActivityNotificationTables < ActiveRecord::Migration[5.1]
+class CreateActivityNotificationTables < ActiveRecord::Migration[5.2]
   # Create tables
   def change
     create_table :notifications do |t|
@@ -12,7 +12,7 @@ class CreateActivityNotificationTables < ActiveRecord::Migration[5.1]
       t.text       :parameters
       t.datetime   :opened_at
 
-      t.timestamps
+      t.timestamps null: false
     end
 
     create_table :subscriptions do |t|
@@ -26,7 +26,7 @@ class CreateActivityNotificationTables < ActiveRecord::Migration[5.1]
       t.datetime   :unsubscribed_to_email_at
       t.text       :optional_targets
 
-      t.timestamps
+      t.timestamps null: false
     end
     add_index :subscriptions, [:target_type, :target_id, :key], unique: true
   end
