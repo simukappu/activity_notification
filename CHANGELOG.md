@@ -1,3 +1,18 @@
+## 1.7.0 / 2018-12-09
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.6.1...v1.7.0)
+
+Enhancements:
+
+* Support asynchronous notification API - [#29](https://github.com/simukappu/activity_notification/issues/29)
+
+Bug Fixes:
+
+* Fix migration generator to specify the Rails release in generated migration files for Rails 5.x - [#96](https://github.com/simukappu/activity_notification/issues/96)
+
+Breaking Changes:
+
+* Change method name of *Target#notify_to* into *Target#receive_notification_of* to avoid ambiguous method name with *Notifiable#notify_to* - [#88](https://github.com/simukappu/activity_notification/issues/88)
+
 ## 1.6.1 / 2018-11-19
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.6.0...v1.6.1)
 
