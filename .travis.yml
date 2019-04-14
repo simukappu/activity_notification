@@ -77,14 +77,20 @@ sudo: false
 cache: bundler
 
 before_install:
-  - gem install bundler --no-document
+  # Specify bundler version as '< 2.0' for Rails 4.2
+  - gem install bundler --no-document -v '1.17.3'
+
+install:
+  # Specify bundler version as '< 2.0' for Rails 4.2
+  - bundle _1.17.3_ install
 
 before_script:
-  - bundle update
+  # Specify bundler version as '< 2.0' for Rails 4.2
+  - bundle _1.17.3_ update
   - mysql -e 'create database activity_notification_test'
   - psql -c 'create database activity_notification_test' -U postgres
 
 script: bundle exec rspec
 
 notifications:
-  email: true 
+  email: true
