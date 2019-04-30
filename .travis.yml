@@ -5,14 +5,12 @@ branches:
     - images
 
 rvm:
-  - 2.5.1
-  - 2.4.4
-  - 2.3.7
-  - 2.2.10
-  - ruby-head
+  - 2.6.3
+#  - 2.5.5
+#  - 2.4.6
+#  - 2.3.8
 
 gemfile:
-  - Gemfile
   - gemfiles/Gemfile.rails-4.2
   - gemfiles/Gemfile.rails-5.0
   - gemfiles/Gemfile.rails-5.1
@@ -20,51 +18,18 @@ gemfile:
 
 env:
   - AN_ORM=active_record
-  - AN_ORM=mongoid
+  - AN_ORM=active_record AN_TEST_DB=mysql
+  - AN_ORM=active_record AN_TEST_DB=postgresql
+  - AN_ORM=mongoid AN_TEST_DB=mongodb
 
 matrix:
-  exclude:
-    - rvm: ruby-head
-      env: AN_ORM=mongoid
-    - gemfile: Gemfile
-      env: AN_ORM=mongoid
   include:
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-4.2
-      env: AN_ORM=active_record AN_TEST_DB=mysql
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-4.2
-      env: AN_ORM=active_record AN_TEST_DB=postgresql
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-4.2
-      env: AN_ORM=mongoid AN_TEST_DB=mongodb
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-5.0
-      env: AN_ORM=active_record AN_TEST_DB=mysql
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-5.0
-      env: AN_ORM=active_record AN_TEST_DB=postgresql
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-5.0
-      env: AN_ORM=mongoid AN_TEST_DB=mongodb
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-5.1
-      env: AN_ORM=active_record AN_TEST_DB=mysql
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-5.1
-      env: AN_ORM=active_record AN_TEST_DB=postgresql
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-5.1
-      env: AN_ORM=mongoid AN_TEST_DB=mongodb
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-5.2
-      env: AN_ORM=active_record AN_TEST_DB=mysql
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-5.2
-      env: AN_ORM=active_record AN_TEST_DB=postgresql
-    - rvm: 2.5.1
-      gemfile: gemfiles/Gemfile.rails-5.2
-      env: AN_ORM=mongoid AN_TEST_DB=mongodb
+    - rvm: ruby-head
+      gemfile: Gemfile
+      env: AN_ORM=active_record
+    - rvm: ruby-head
+      gemfile: Gemfile
+      env: AN_ORM=mongoid
   allow_failures:
     - rvm: ruby-head
   fast_finish: true
