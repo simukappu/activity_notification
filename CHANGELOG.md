@@ -1,3 +1,10 @@
+## 1.7.0 / 2019-04-30
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.7.0...v1.7.1)
+
+Enhancements:
+
+* Use after_commit for tracked callbacks instead of after_create and after_update - [#99](https://github.com/simukappu/activity_notification/issues/99)
+
 ## 1.7.0 / 2018-12-09
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.6.1...v1.7.0)
 
