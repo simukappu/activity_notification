@@ -20,6 +20,11 @@ SimpleCov.start('rails') do
   else
     nocov_token 'only-rails5+'
   end
+  if Gem::Version.new("5.1.6") <= Rails.gem_version && Rails.gem_version < Gem::Version.new("5.2.2")
+    nocov_token 'only-rails-without-callback-issue'
+  else
+    nocov_token 'only-rails-with-callback-issue'
+  end
   if ENV['AN_ORM'] == 'mongoid'
     add_filter '/lib/activity_notification/orm/active_record'
   else

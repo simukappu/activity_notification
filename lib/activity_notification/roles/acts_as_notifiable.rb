@@ -280,8 +280,15 @@ module ActivityNotification
       def add_tracked_callback(tracked_callbacks, tracked_action, tracked_proc)
         return unless tracked_callbacks.include? tracked_action
 
-        if respond_to? :after_commit
+        # FIXME: Avoid Rails issue that after commit callbacks on update does not triggered when optimistic locking is enabled
+        # See the followings:
+        #   https://github.com/rails/rails/issues/30779
+        #   https://github.com/rails/rails/pull/32167
+        # :only-rails-without-callback-issue:
+        if !(Gem::Version.new("5.1.6") <= Rails.gem_version && Rails.gem_version < Gem::Version.new("5.2.2")) && respond_to?(:after_commit)
           after_commit tracked_proc, on: tracked_action
+        # :only-rails-without-callback-issue:
+        # :only-rails-with-callback-issue:
         else
           case tracked_action
           when :create
@@ -290,6 +297,7 @@ module ActivityNotification
             after_update tracked_proc
           end
         end
+        # :only-rails-with-callback-issue:
       end
 
       # Adds destroy dependency.
