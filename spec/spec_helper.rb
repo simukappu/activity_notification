@@ -37,6 +37,8 @@ require 'ammeter/init'
 require 'factory_bot_rails'
 require 'activity_notification'
 
+Dir[Rails.root.join("../../spec/support/**/*.rb")].each { |file| require file }
+
 def clear_database
   [ActivityNotification::Notification, ActivityNotification::Subscription, Comment, Article, Admin, User].each do |model_class|
     model_class.delete_all
