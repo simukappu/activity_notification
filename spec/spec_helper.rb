@@ -15,10 +15,10 @@ SimpleCov.start('rails') do
   add_filter '/spec/'
   add_filter '/lib/generators/templates/'
   add_filter '/lib/activity_notification/version.rb'
-  if Rails::VERSION::MAJOR == 5
-    nocov_token 'skip-rails5'
-  elsif Rails::VERSION::MAJOR == 4
-    nocov_token 'skip-rails4'
+  if Rails::VERSION::MAJOR >= 5
+    nocov_token 'except-rails5+'
+  else
+    nocov_token 'only-rails5+'
   end
   if ENV['AN_ORM'] == 'mongoid'
     add_filter '/lib/activity_notification/orm/active_record'
