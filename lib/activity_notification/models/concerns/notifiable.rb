@@ -424,15 +424,15 @@ module ActivityNotification
           unless generated_notifications.empty?
             record = self.class.human_attribute_name("generated_notifications_as_notifiable_for_#{target_type.to_s.pluralize.underscore}").downcase
             self.errors.add(:base, :'restrict_dependent_destroy.has_many', record: record)
-            # :skip-rails4:
+            # :only-rails5+:
             if Rails::VERSION::MAJOR >= 5
               throw(:abort)
-            # :skip-rails4:
-            # :skip-rails5:
+            # :only-rails5+:
+            # :except-rails5+:
             else
               false
             end
-            # :skip-rails5:
+            # :except-rails5+:
           end
         when :destroy
           generated_notifications.each { |n| n.destroy }

@@ -101,17 +101,17 @@ module ActivityNotification
       # @api protected
       # @return [Boolean] True
       def compatibly_redirect_back(request_params = {})
-        # :skip-rails4:
+        # :only-rails5+:
         if Rails::VERSION::MAJOR >= 5
           redirect_back fallback_location: { action: :index }, **request_params
-        # :skip-rails4:
-        # :skip-rails5:
+        # :only-rails5+:
+        # :except-rails5+:
         elsif request.referer
           redirect_to :back, **request_params
         else
           redirect_to action: :index, **request_params
         end
-        # :skip-rails5:
+        # :except-rails5+:
         true
       end
   end
