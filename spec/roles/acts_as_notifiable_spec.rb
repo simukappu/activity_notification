@@ -12,6 +12,7 @@ describe ActivityNotification::ActsAsNotifiable do
         dummy_notifiable_class.reset_callbacks :create
         dummy_notifiable_class.reset_callbacks :update
         dummy_notifiable_class.reset_callbacks :destroy
+        dummy_notifiable_class.reset_callbacks :commit if dummy_notifiable_class.respond_to? :after_commit
         @notifiable = dummy_notifiable_class.create
       end
 

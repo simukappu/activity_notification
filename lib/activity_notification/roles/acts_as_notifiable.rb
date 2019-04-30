@@ -278,7 +278,11 @@ module ActivityNotification
       # @param [Symbol]        tracked_action    Tracked action (:create or :update)
       # @param [Proc]          tracked_proc      Proc or lambda function to execute
       def add_tracked_callback(tracked_callbacks, tracked_action, tracked_proc)
-        if tracked_callbacks.include? tracked_action
+        return unless tracked_callbacks.include? tracked_action
+
+        if respond_to? :after_commit
+          after_commit tracked_proc, on: tracked_action
+        else
           case tracked_action
           when :create
             after_create tracked_proc
