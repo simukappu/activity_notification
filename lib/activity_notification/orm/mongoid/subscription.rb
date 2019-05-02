@@ -26,7 +26,7 @@ module ActivityNotification
         field :subscribed_to_email_at,    type: DateTime
         field :unsubscribed_to_email_at,  type: DateTime
         field :optional_targets,          type: Hash,    default: {}
-    
+
         validates  :target,               presence: true
         validates  :key,                  presence: true
         validates_inclusion_of :subscribing,          in: [true, false]
