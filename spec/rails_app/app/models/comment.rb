@@ -14,7 +14,7 @@ unless ENV['AN_TEST_DB'] == 'mongodb'
       dependent_notifications: :update_group_and_delete_all
 
     require 'custom_optional_targets/console_output'
-    optional_targets = { CustomOptionalTarget::ConsoleOutput => {} }
+    # optional_targets = { CustomOptionalTarget::ConsoleOutput => {} }
     if ENV['OPTIONAL_TARGET_AMAZON_SNS']
       require 'activity_notification/optional_targets/amazon_sns'
       if ENV['OPTIONAL_TARGET_AMAZON_SNS_TOPIC_ARN']
