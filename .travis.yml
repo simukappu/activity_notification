@@ -20,6 +20,7 @@ env:
   - AN_ORM=active_record
   - AN_ORM=active_record AN_TEST_DB=mysql
   - AN_ORM=active_record AN_TEST_DB=postgresql
+  - AN_ORM=mongoid
   - AN_ORM=mongoid AN_TEST_DB=mongodb
 
 matrix:
