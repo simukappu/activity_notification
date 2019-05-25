@@ -1,4 +1,4 @@
-## 1.7.0 / 2019-04-30
+## 1.7.1 / 2019-04-30
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.7.0...v1.7.1)
 
 Enhancements:
