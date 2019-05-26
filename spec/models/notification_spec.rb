@@ -1,3 +1,7 @@
+# To run as single test for debugging
+# require Rails.root.join('../../spec/concerns/apis/notification_api_spec.rb').to_s
+# require Rails.root.join('../../spec/concerns/renderable_spec.rb').to_s
+
 describe ActivityNotification::Notification, type: :model do
 
   it_behaves_like :notification_api

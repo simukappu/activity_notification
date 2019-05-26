@@ -1,3 +1,6 @@
+# To run as single test for debugging
+# require Rails.root.join('../../spec/concerns/apis/subscription_api_spec.rb').to_s
+
 describe ActivityNotification::Subscription, type: :model do
 
   it_behaves_like :subscription_api
