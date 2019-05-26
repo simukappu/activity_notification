@@ -44,7 +44,7 @@ require 'activity_notification'
 
 Dir[Rails.root.join("../../spec/support/**/*.rb")].each { |file| require file }
 
-def clear_database
+def clean_database
   [ActivityNotification::Notification, ActivityNotification::Subscription, Comment, Article, Admin, User].each do |model_class|
     model_class.delete_all
   end
@@ -54,7 +54,7 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.before(:all) do
     FactoryBot.reload
-    clear_database
+    clean_database
   end
   config.include Devise::Test::ControllerHelpers, type: :controller
 end
