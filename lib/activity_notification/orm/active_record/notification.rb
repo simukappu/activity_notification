@@ -152,26 +152,6 @@ module ActivityNotification
         # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with notifier
         scope :with_notifier,                     -> { includes(:notifier) }
 
-        # Returns latest notification instance.
-        # @return [Notification] Latest notification instance
-        def self.latest
-          latest_order.first
-        end
-
-        # Returns earliest notification instance.
-        # @return [Notification] Earliest notification instance
-        def self.earliest
-          earliest_order.first
-        end
-
-        # Selects unique keys from query for notifications.
-        # @return [Array<String>] Array of notification unique keys
-        def self.uniq_keys
-          # select method cannot be chained with order by other columns like created_at
-          # select(:key).distinct.pluck(:key)
-          pluck(:key).uniq
-        end
-
         # Raise DeleteRestrictionError for notifications.
         # @param [String] error_text Error text for raised exception
         # @raise DeleteRestrictionError

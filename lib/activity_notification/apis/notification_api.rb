@@ -134,6 +134,28 @@ module ActivityNotification
       # Orders by earliest (older) first as created_at: :asc.
       # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of notifications ordered by earliest first
       scope :earliest_order,                    -> { order(created_at: :asc) }
+
+      # Returns latest notification instance.
+      # @return [Notification] Latest notification instance
+      def self.latest
+        latest_order.first
+      end
+
+      # Returns earliest notification instance.
+      # @return [Notification] Earliest notification instance
+      def self.earliest
+        earliest_order.first
+      end
+
+      # Selects unique keys from query for notifications.
+      # @return [Array<String>] Array of notification unique keys
+      def self.uniq_keys
+        ## select method cannot be chained with order by other columns like created_at
+        # select(:key).distinct.pluck(:key)
+        ## distinct method cannot keep original sort
+        # distinct(:key)
+        pluck(:key).uniq
+      end
     end
 
     class_methods do

@@ -170,26 +170,6 @@ module ActivityNotification
         # Dummy reload method for test of notifications.
         scope :reload,                            -> { }
 
-        # Returns latest notification instance.
-        # @return [Notification] Latest notification instance
-        def self.latest
-          latest_order.first
-        end
-
-        # Returns earliest notification instance.
-        # @return [Notification] Earliest notification instance
-        def self.earliest
-          earliest_order.first
-        end
-
-        # Selects unique keys from query for notifications.
-        # @return [Array<String>] Array of notification unique keys
-        def self.uniq_keys
-          # distinct method cannot keep original sort
-          # distinct(:key)
-          pluck(:key).uniq
-        end
-
         # Returns if the notification is group owner.
         # Calls NotificationApi#group_owner? as super method.
         # @return [Boolean] If the notification is group owner
