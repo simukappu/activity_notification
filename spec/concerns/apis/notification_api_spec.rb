@@ -308,7 +308,7 @@ shared_examples_for :notification_api do
           end
 
           it "has parameters of notifiable.notification_parameters" do
-            expect(created_notification.parameters)
+            expect(created_notification.parameters.stringify_keys)
               .to eq(
                 created_notification.notifiable.notification_parameters(
                   @user_1.class,
@@ -605,7 +605,7 @@ shared_examples_for :notification_api do
     describe ".available_options" do
       it "returns list of available options in notify api" do
         expect(described_class.available_options)
-          .to eq([:key, :group, :parameters, :notifier, :send_email, :send_later])
+          .to eq([:key, :group, :group_expiry_delay, :notifier, :parameters, :send_email, :send_later])
       end
     end
   end

@@ -52,7 +52,8 @@ module ActivityNotification
       if subscription_params[:subscribing] == false && subscription_params[:subscribing_to_email].nil?
         subscription_params[:subscribing_to_email] = subscription_params[:subscribing] 
       end
-      subscription = subscriptions.new(subscription_params)
+      subscription = Subscription.new(subscription_params)
+      subscription.assign_attributes(target: self)
       subscription.subscribing? ?
         subscription.assign_attributes(subscribing: true, subscribed_at: created_at) :
         subscription.assign_attributes(subscribing: false, unsubscribed_at: created_at)
@@ -65,11 +66,11 @@ module ActivityNotification
         optional_targets = subscription.subscribing_to_optional_target?(optional_target_name) ?
           optional_targets.merge(
             Subscription.to_optional_target_key(optional_target_name) => true,
-            Subscription.to_optional_target_subscribed_at_key(optional_target_name) => created_at
+            Subscription.to_optional_target_subscribed_at_key(optional_target_name) => Subscription.convert_time_as_hash(created_at)
           ) :
           optional_targets.merge(
             Subscription.to_optional_target_key(optional_target_name) => false,
-            Subscription.to_optional_target_unsubscribed_at_key(optional_target_name) => created_at
+            Subscription.to_optional_target_unsubscribed_at_key(optional_target_name) => Subscription.convert_time_as_hash(created_at)
           )
       end
       subscription.assign_attributes(optional_targets: optional_targets)

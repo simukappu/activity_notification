@@ -80,12 +80,16 @@ shared_examples_for :notification_controller do
       end
 
       it "returns json format" do
-        if ActivityNotification.config.orm == :active_record
+        case ActivityNotification.config.orm
+        when :active_record
           expect(JSON.parse(response.body).first)
           .to include("target_id" => test_target.id, "target_type" => test_target.to_class_name)
-        else
+        when :mongoid
           expect(JSON.parse(response.body).first)
           .to include("target_id" => test_target.id.to_s, "target_type" => test_target.to_class_name)
+        when :dynamoid
+          expect(JSON.parse(response.body).first)
+          .to include("target_key" => "#{test_target.to_class_name}#{ActivityNotification.config.composite_key_delimiter}#{test_target.id}")
         end
       end
     end
@@ -221,7 +225,7 @@ shared_examples_for :notification_controller do
         end
       end
 
-      context 'with filtered_by_group_type and :filtered_by_group_id parameters' do
+      context 'with filtered_by_group_type and filtered_by_group_id parameters' do
         it "returns filtered notifications only" do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filtered_by_group_type: 'Article', filtered_by_group_id: @group.id.to_s }), valid_session
           expect(assigns(:notifications)[0]).to eq(@notification1)

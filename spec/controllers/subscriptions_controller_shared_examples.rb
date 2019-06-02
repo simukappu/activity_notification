@@ -93,12 +93,16 @@ shared_examples_for :subscription_controller do
       end
 
       it "returns json format" do
-        if ActivityNotification.config.orm == :active_record
+        case ActivityNotification.config.orm
+        when :active_record
           expect(JSON.parse(response.body)["subscriptions"].first)
           .to include("target_id" => test_target.id, "target_type" => test_target.to_class_name)
-        else
+        when :mongoid
           expect(JSON.parse(response.body)["subscriptions"].first)
           .to include("target_id" => test_target.id.to_s, "target_type" => test_target.to_class_name)
+        when :dynamoid
+          expect(JSON.parse(response.body)["subscriptions"].first)
+          .to include("target_key" => "#{test_target.to_class_name}#{ActivityNotification.config.composite_key_delimiter}#{test_target.id}")
         end
         expect(JSON.parse(response.body)["unconfigured_notification_keys"].first)
         .to eq('test_notification_key')
@@ -227,7 +231,7 @@ shared_examples_for :subscription_controller do
 
   describe "POST #create" do
     before do
-      expect(test_target.subscriptions.size).to      eq(0)
+      expect(test_target.subscriptions.size).to       eq(0)
     end
 
     context "http direct POST request without optional targets" do

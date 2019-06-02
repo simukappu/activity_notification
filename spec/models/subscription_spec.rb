@@ -95,15 +95,21 @@ describe ActivityNotification::Subscription, type: :model do
 
         context 'with custom_filter options' do
           it "works with filtered_by_options scope" do
-            if ActivityNotification.config.orm == :active_record
-              subscriptions = ActivityNotification::Subscription.filtered_by_options({ custom_filter: ["subscriptions.key = ?", @key_1] })
-              expect(subscriptions.size).to eq(1)
-              expect(subscriptions.first).to eq(@subscription_1)
-            end
-
             subscriptions = ActivityNotification::Subscription.filtered_by_options({ custom_filter: { key: @key_2 } })
             expect(subscriptions.size).to eq(1)
             expect(subscriptions.first).to eq(@subscription_2)
+          end
+
+          it "works with filtered_by_options scope with filter depending on ORM" do
+            options =
+              case ActivityNotification.config.orm
+              when :active_record then { custom_filter: ["subscriptions.key = ?", @key_1] }
+              when :mongoid       then { custom_filter: { key: {'$eq': @key_1} } }
+              when :dynamoid      then { custom_filter: {'key.begins_with': @key_1} }
+              end
+            subscriptions = ActivityNotification::Subscription.filtered_by_options(options)
+            expect(subscriptions.size).to eq(1)
+            expect(subscriptions.first).to eq(@subscription_1)
           end
         end
   
@@ -119,21 +125,67 @@ describe ActivityNotification::Subscription, type: :model do
     context "to make order by created_at" do
       before do
         ActivityNotification::Subscription.delete_all
-        @subscription_1 = create(:subscription, key: 'key.1')
-        @subscription_2 = create(:subscription, key: 'key.2', created_at: @subscription_1.created_at + 10.second)
-        @subscription_3 = create(:subscription, key: 'key.3', created_at: @subscription_1.created_at + 20.second)
-        @subscription_4 = create(:subscription, key: 'key.4', created_at: @subscription_1.created_at + 30.second)
+        @target = create(:confirmed_user)
+        @subscription_1 = create(:subscription, target: @target, key: 'key.1')
+        @subscription_2 = create(:subscription, target: @target, key: 'key.2', created_at: @subscription_1.created_at + 10.second)
+        @subscription_3 = create(:subscription, target: @target, key: 'key.3', created_at: @subscription_1.created_at + 20.second)
+        @subscription_4 = create(:subscription, target: @target, key: 'key.4', created_at: @subscription_1.created_at + 30.second)
       end
 
-      it "works with latest_order scope" do
-        subscriptions = ActivityNotification::Subscription.latest_order
+      unless ActivityNotification.config.orm == :dynamoid
+        context "using ORM other than dynamoid, you can directly call latest/earliest order method from class objects" do
+
+          it "works with latest_order scope" do
+            subscriptions = ActivityNotification::Subscription.latest_order
+            expect(subscriptions.size).to eq(4)
+            expect(subscriptions.first).to eq(@subscription_4)
+            expect(subscriptions.last).to eq(@subscription_1)
+          end
+
+          it "works with earliest_order scope" do
+            subscriptions = ActivityNotification::Subscription.earliest_order
+            expect(subscriptions.size).to eq(4)
+            expect(subscriptions.first).to eq(@subscription_1)
+            expect(subscriptions.last).to eq(@subscription_4)
+          end
+
+        end
+      else
+        context "using dynamoid, you can call latest/earliest order method only with query using partition key of Global Secondary Index" do
+
+          it "works with latest_order scope" do
+            subscriptions = ActivityNotification::Subscription.filtered_by_target(@target).latest_order
+            expect(subscriptions.size).to eq(4)
+            expect(subscriptions.first).to eq(@subscription_4)
+            expect(subscriptions.last).to eq(@subscription_1)
+          end
+
+          it "works with earliest_order scope" do
+            subscriptions = ActivityNotification::Subscription.filtered_by_target(@target).earliest_order
+            expect(subscriptions.size).to eq(4)
+            expect(subscriptions.first).to eq(@subscription_1)
+            expect(subscriptions.last).to eq(@subscription_4)
+          end
+
+        end
+      end
+
+      it "works with latest_order! scope" do
+        subscriptions = ActivityNotification::Subscription.latest_order!
         expect(subscriptions.size).to eq(4)
         expect(subscriptions.first).to eq(@subscription_4)
         expect(subscriptions.last).to eq(@subscription_1)
       end
 
-      it "works with earliest_order scope" do
-        subscriptions = ActivityNotification::Subscription.earliest_order
+      it "works with latest_order!(reverse=true) scope" do
+        subscriptions = ActivityNotification::Subscription.latest_order!(true)
+        expect(subscriptions.size).to eq(4)
+        expect(subscriptions.first).to eq(@subscription_1)
+        expect(subscriptions.last).to eq(@subscription_4)
+      end
+
+      it "works with earliest_order! scope" do
+        subscriptions = ActivityNotification::Subscription.earliest_order!
         expect(subscriptions.size).to eq(4)
         expect(subscriptions.first).to eq(@subscription_1)
         expect(subscriptions.last).to eq(@subscription_4)

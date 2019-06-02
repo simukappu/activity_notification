@@ -101,17 +101,29 @@ module ActivityNotification
       # @api protected
       # @return [Boolean] True
       def compatibly_redirect_back(request_params = {})
-        # :only-rails5+:
+        # :only-rails5-plus#only-rails-with-callback-issue:
+        # :only-rails5-plus#only-rails-without-callback-issue:
+        # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+        # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
         if Rails::VERSION::MAJOR >= 5
           redirect_back fallback_location: { action: :index }, **request_params
-        # :only-rails5+:
-        # :except-rails5+:
+        # :only-rails5-plus#only-rails-with-callback-issue:
+        # :only-rails5-plus#only-rails-without-callback-issue:
+        # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+        # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+        # :except-rails5-plus#only-rails-with-callback-issue:
+        # :except-rails5-plus#only-rails-without-callback-issue:
+        # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+        # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
         elsif request.referer
           redirect_to :back, **request_params
         else
           redirect_to action: :index, **request_params
         end
-        # :except-rails5+:
+        # :except-rails5-plus#only-rails-with-callback-issue:
+        # :except-rails5-plus#only-rails-without-callback-issue:
+        # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+        # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
         true
       end
   end

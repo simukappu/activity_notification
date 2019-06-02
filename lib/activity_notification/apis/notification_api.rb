@@ -10,152 +10,187 @@ module ActivityNotification
       # Defines mailer class to send notification
       set_notification_mailer
 
-      # Selects all notification index.
-      #   ActivityNotification::Notification.all_index!
-      # is defined same as
-      #   ActivityNotification::Notification.group_owners_only.latest_order
-      # @scope class
-      # @example Get all notification index of the @user
-      #   @notifications = @user.notifications.all_index!
-      #   @notifications = @user.notifications.group_owners_only.latest_order
-      # @param [Boolean] reverse If notification index will be ordered as earliest first
-      # @param [Boolean] with_group_members If notification index will include group members
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
-      scope :all_index!,                        ->(reverse = false, with_group_members = false) {
-        target_index = with_group_members ? self : group_owners_only
-        reverse ? target_index.earliest_order : target_index.latest_order
-      }
+      # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+      # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+      # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+      # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+      unless ActivityNotification.config.orm == :dynamoid
+        # Selects all notification index.
+        #   ActivityNotification::Notification.all_index!
+        # is defined same as
+        #   ActivityNotification::Notification.group_owners_only.latest_order
+        # @scope class
+        # @example Get all notification index of the @user
+        #   @notifications = @user.notifications.all_index!
+        #   @notifications = @user.notifications.group_owners_only.latest_order
+        # @param [Boolean] reverse If notification index will be ordered as earliest first
+        # @param [Boolean] with_group_members If notification index will include group members
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :all_index!,                        ->(reverse = false, with_group_members = false) {
+          target_index = with_group_members ? self : group_owners_only
+          reverse ? target_index.earliest_order : target_index.latest_order
+        }
 
-      # Selects unopened notification index.
-      #   ActivityNotification::Notification.unopened_index
-      # is defined same as
-      #   ActivityNotification::Notification.unopened_only.group_owners_only.latest_order
-      # @scope class
-      # @example Get unopened notificaton index of the @user
-      #   @notifications = @user.notifications.unopened_index
-      #   @notifications = @user.notifications.unopened_only.group_owners_only.latest_order
-      # @param [Boolean] reverse If notification index will be ordered as earliest first
-      # @param [Boolean] with_group_members If notification index will include group members
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
-      scope :unopened_index,                    ->(reverse = false, with_group_members = false) {
-        target_index = with_group_members ? unopened_only : unopened_only.group_owners_only
-        reverse ? target_index.earliest_order : target_index.latest_order
-      }
+        # Selects unopened notification index.
+        #   ActivityNotification::Notification.unopened_index
+        # is defined same as
+        #   ActivityNotification::Notification.unopened_only.group_owners_only.latest_order
+        # @scope class
+        # @example Get unopened notificaton index of the @user
+        #   @notifications = @user.notifications.unopened_index
+        #   @notifications = @user.notifications.unopened_only.group_owners_only.latest_order
+        # @param [Boolean] reverse If notification index will be ordered as earliest first
+        # @param [Boolean] with_group_members If notification index will include group members
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :unopened_index,                    ->(reverse = false, with_group_members = false) {
+          target_index = with_group_members ? unopened_only : unopened_only.group_owners_only
+          reverse ? target_index.earliest_order : target_index.latest_order
+        }
 
-      # Selects unopened notification index.
-      #   ActivityNotification::Notification.opened_index(limit)
-      # is defined same as
-      #   ActivityNotification::Notification.opened_only(limit).group_owners_only.latest_order
-      # @scope class
-      # @example Get unopened notificaton index of the @user with limit 10
-      #   @notifications = @user.notifications.opened_index(10)
-      #   @notifications = @user.notifications.opened_only(10).group_owners_only.latest_order
-      # @param [Integer] limit Limit to query for opened notifications
-      # @param [Boolean] reverse If notification index will be ordered as earliest first
-      # @param [Boolean] with_group_members If notification index will include group members
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
-      scope :opened_index,                      ->(limit, reverse = false, with_group_members = false) {
-        target_index = with_group_members ? opened_only(limit) : opened_only(limit).group_owners_only
-        reverse ? target_index.earliest_order : target_index.latest_order
-      }
+        # Selects unopened notification index.
+        #   ActivityNotification::Notification.opened_index(limit)
+        # is defined same as
+        #   ActivityNotification::Notification.opened_only(limit).group_owners_only.latest_order
+        # @scope class
+        # @example Get unopened notificaton index of the @user with limit 10
+        #   @notifications = @user.notifications.opened_index(10)
+        #   @notifications = @user.notifications.opened_only(10).group_owners_only.latest_order
+        # @param [Integer] limit Limit to query for opened notifications
+        # @param [Boolean] reverse If notification index will be ordered as earliest first
+        # @param [Boolean] with_group_members If notification index will include group members
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :opened_index,                      ->(limit, reverse = false, with_group_members = false) {
+          target_index = with_group_members ? opened_only(limit) : opened_only(limit).group_owners_only
+          reverse ? target_index.earliest_order : target_index.latest_order
+        }
 
-      # Selects filtered notifications by target_type.
-      # @example Get filtered unopened notificatons of User as target type
-      #   @notifications = ActivityNotification.Notification.unopened_only.filtered_by_target_type('User')
-      # @scope class
-      # @param [String] target_type Target type for filter
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
-      scope :filtered_by_target_type,           ->(target_type) { where(target_type: target_type) }
+        # Selects filtered notifications by target_type.
+        # @example Get filtered unopened notificatons of User as target type
+        #   @notifications = ActivityNotification.Notification.unopened_only.filtered_by_target_type('User')
+        # @scope class
+        # @param [String] target_type Target type for filter
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :filtered_by_target_type,           ->(target_type) { where(target_type: target_type) }
 
-      # Selects filtered notifications by notifiable_type.
-      # @example Get filtered unopened notificatons of the @user for Comment notifiable class
-      #   @notifications = @user.notifications.unopened_only.filtered_by_type('Comment')
-      # @scope class
-      # @param [String] notifiable_type Notifiable type for filter
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
-      scope :filtered_by_type,                  ->(notifiable_type) { where(notifiable_type: notifiable_type) }
+        # Selects filtered notifications by notifiable_type.
+        # @example Get filtered unopened notificatons of the @user for Comment notifiable class
+        #   @notifications = @user.notifications.unopened_only.filtered_by_type('Comment')
+        # @scope class
+        # @param [String] notifiable_type Notifiable type for filter
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :filtered_by_type,                  ->(notifiable_type) { where(notifiable_type: notifiable_type) }
 
-      # Selects filtered notifications by key.
-      # @example Get filtered unopened notificatons of the @user with key 'comment.reply'
-      #   @notifications = @user.notifications.unopened_only.filtered_by_key('comment.reply')
-      # @scope class
-      # @param [String] key Key of the notification for filter
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
-      scope :filtered_by_key,                   ->(key) { where(key: key) }
+        # Selects filtered notifications by key.
+        # @example Get filtered unopened notificatons of the @user with key 'comment.reply'
+        #   @notifications = @user.notifications.unopened_only.filtered_by_key('comment.reply')
+        # @scope class
+        # @param [String] key Key of the notification for filter
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :filtered_by_key,                   ->(key) { where(key: key) }
 
-      # Selects filtered notifications by notifiable_type, group or key with filter options.
-      # @example Get filtered unopened notificatons of the @user for Comment notifiable class
-      #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment' })
-      # @example Get filtered unopened notificatons of the @user for @article as group
-      #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_group: @article })
-      # @example Get filtered unopened notificatons of the @user for Article instance id=1 as group
-      #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_group_type: 'Article', filtered_by_group_id: '1' })
-      # @example Get filtered unopened notificatons of the @user with key 'comment.reply'
-      #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_key: 'comment.reply' })
-      # @example Get filtered unopened notificatons of the @user for Comment notifiable class with key 'comment.reply'
-      #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment', filtered_by_key: 'comment.reply' })
-      # @example Get custom filtered notificatons of the @user
-      #   @notifications = @user.notifications.unopened_only.filtered_by_options({ custom_filter: ["created_at >= ?", time.hour.ago] })
-      # @scope class
-      # @param [Hash] options Options for filter
-      # @option options [String]     :filtered_by_type       (nil) Notifiable type for filter
-      # @option options [Object]     :filtered_by_group      (nil) Group instance for filter
-      # @option options [String]     :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
-      # @option options [String]     :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
-      # @option options [String]     :filtered_by_key        (nil) Key of the notification for filter
-      # @option options [Array|Hash] :custom_filter          (nil) Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
-      scope :filtered_by_options,               ->(options = {}) {
-        options = ActivityNotification.cast_to_indifferent_hash(options)
-        filtered_notifications = all
-        if options.has_key?(:filtered_by_type)
-          filtered_notifications = filtered_notifications.filtered_by_type(options[:filtered_by_type])
+        # Selects filtered notifications by notifiable_type, group or key with filter options.
+        # @example Get filtered unopened notificatons of the @user for Comment notifiable class
+        #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment' })
+        # @example Get filtered unopened notificatons of the @user for @article as group
+        #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_group: @article })
+        # @example Get filtered unopened notificatons of the @user for Article instance id=1 as group
+        #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_group_type: 'Article', filtered_by_group_id: '1' })
+        # @example Get filtered unopened notificatons of the @user with key 'comment.reply'
+        #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_key: 'comment.reply' })
+        # @example Get filtered unopened notificatons of the @user for Comment notifiable class with key 'comment.reply'
+        #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment', filtered_by_key: 'comment.reply' })
+        # @example Get custom filtered notificatons of the @user
+        #   @notifications = @user.notifications.unopened_only.filtered_by_options({ custom_filter: ["created_at >= ?", time.hour.ago] })
+        # @scope class
+        # @param [Hash] options Options for filter
+        # @option options [String]     :filtered_by_type       (nil) Notifiable type for filter
+        # @option options [Object]     :filtered_by_group      (nil) Group instance for filter
+        # @option options [String]     :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+        # @option options [String]     :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+        # @option options [String]     :filtered_by_key        (nil) Key of the notification for filter
+        # @option options [Array|Hash] :custom_filter          (nil) Custom notification filter (e.g. ["created_at >= ?", time.hour.ago] with ActiveRecord or {:created_at.gt => time.hour.ago} with Mongoid)
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :filtered_by_options,               ->(options = {}) {
+          options = ActivityNotification.cast_to_indifferent_hash(options)
+          filtered_notifications = all
+          if options.has_key?(:filtered_by_type)
+            filtered_notifications = filtered_notifications.filtered_by_type(options[:filtered_by_type])
+          end
+          if options.has_key?(:filtered_by_group)
+            filtered_notifications = filtered_notifications.filtered_by_group(options[:filtered_by_group])
+          end
+          if options.has_key?(:filtered_by_group_type) && options.has_key?(:filtered_by_group_id)
+            filtered_notifications = filtered_notifications
+                                     .where(group_type: options[:filtered_by_group_type], group_id: options[:filtered_by_group_id])
+          end
+          if options.has_key?(:filtered_by_key)
+            filtered_notifications = filtered_notifications.filtered_by_key(options[:filtered_by_key])
+          end
+          if options.has_key?(:custom_filter)
+            filtered_notifications = filtered_notifications.where(options[:custom_filter])
+          end
+          filtered_notifications
+        }
+
+        # Orders by latest (newest) first as created_at: :desc.
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of notifications ordered by latest first
+        scope :latest_order,                      -> { order(created_at: :desc) }
+
+        # Orders by earliest (older) first as created_at: :asc.
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of notifications ordered by earliest first
+        scope :earliest_order,                    -> { order(created_at: :asc) }
+
+        # Orders by latest (newest) first as created_at: :desc.
+        # This method is to be overriden in implementation for each ORM.
+        # @param [Boolean] reverse If notifications will be ordered as earliest first
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of ordered notifications
+        scope :latest_order!,                     ->(reverse = false) { reverse ? earliest_order : latest_order }
+
+        # Orders by earliest (older) first as created_at: :asc.
+        # This method is to be overriden in implementation for each ORM.
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of notifications ordered by earliest first
+        scope :earliest_order!,                   -> { earliest_order }
+
+        # Returns latest notification instance.
+        # @return [Notification] Latest notification instance
+        def self.latest
+          latest_order.first
         end
-        if options.has_key?(:filtered_by_group)
-          filtered_notifications = filtered_notifications.filtered_by_group(options[:filtered_by_group])
-        end
-        if options.has_key?(:filtered_by_group_type) && options.has_key?(:filtered_by_group_id)
-          filtered_notifications = filtered_notifications
-                                   .where(group_type: options[:filtered_by_group_type], group_id: options[:filtered_by_group_id])
-        end
-        if options.has_key?(:filtered_by_key)
-          filtered_notifications = filtered_notifications.filtered_by_key(options[:filtered_by_key])
-        end
-        if options.has_key?(:custom_filter)
-          filtered_notifications = filtered_notifications.where(options[:custom_filter])
-        end
-        filtered_notifications
-      }
 
-      # Orders by latest (newest) first as created_at: :desc.
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of notifications ordered by latest first
-      scope :latest_order,                      -> { order(created_at: :desc) }
+        # Returns earliest notification instance.
+        # @return [Notification] Earliest notification instance
+        def self.earliest
+          earliest_order.first
+        end
 
-      # Orders by earliest (older) first as created_at: :asc.
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of notifications ordered by earliest first
-      scope :earliest_order,                    -> { order(created_at: :asc) }
+        # Returns latest notification instance.
+        # This method is to be overriden in implementation for each ORM.
+        # @return [Notification] Latest notification instance
+        def self.latest!
+          latest
+        end
 
-      # Returns latest notification instance.
-      # @return [Notification] Latest notification instance
-      def self.latest
-        latest_order.first
+        # Returns earliest notification instance.
+        # This method is to be overriden in implementation for each ORM.
+        # @return [Notification] Earliest notification instance
+        def self.earliest!
+          earliest
+        end
+
+        # Selects unique keys from query for notifications.
+        # @return [Array<String>] Array of notification unique keys
+        def self.uniq_keys
+          ## select method cannot be chained with order by other columns like created_at
+          # select(:key).distinct.pluck(:key)
+          ## distinct method cannot keep original sort
+          # distinct(:key)
+          pluck(:key).uniq
+        end
       end
-
-      # Returns earliest notification instance.
-      # @return [Notification] Earliest notification instance
-      def self.earliest
-        earliest_order.first
-      end
-
-      # Selects unique keys from query for notifications.
-      # @return [Array<String>] Array of notification unique keys
-      def self.uniq_keys
-        ## select method cannot be chained with order by other columns like created_at
-        # select(:key).distinct.pluck(:key)
-        ## distinct method cannot keep original sort
-        # distinct(:key)
-        pluck(:key).uniq
-      end
+      # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+      # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+      # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+      # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
     end
 
     class_methods do
@@ -388,7 +423,7 @@ module ActivityNotification
       # @param [Array<Notificaion>, ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] notifications Array or database query of the notifications to test member exists
       # @return [Boolean] If group member of the notifications exists
       def group_member_exists?(notifications)
-        notifications.present? && group_members_of_owner_ids_only(notifications.map(&:id)).exists?
+        notifications.present? and group_members_of_owner_ids_only(notifications.map(&:id)).exists?
       end
 
       # Sends batch notification email to the target.
@@ -416,12 +451,31 @@ module ActivityNotification
       #
       # @return [Array<Notificaion>] Available options for kinds of notify methods
       def available_options
-        [:key, :group, :parameters, :notifier, :send_email, :send_later].freeze
+        [:key, :group, :group_expiry_delay, :notifier, :parameters, :send_email, :send_later].freeze
       end
 
       # Defines mailer class to send notification
       def set_notification_mailer
         @@notification_mailer = ActivityNotification.config.mailer.constantize
+      end
+
+      # Returns valid group owner within the expiration period
+      #
+      # @param [Object]                  target             Target to send notifications
+      # @param [Object]                  notifiable         Notifiable instance
+      # @param [String]                  key                Key of the notification
+      # @param [Object]                  group              Group unit of the notifications
+      # @param [ActiveSupport::Duration] group_expiry_delay Expiry period of a notification group
+      # @return [Notificaion] Valid group owner within the expiration period
+      def valid_group_owner(target, notifiable, key, group, group_expiry_delay)
+        return nil if group.blank?
+        # Bundle notification group by target, notifiable_type, group and key
+        # Different notifiable.id can be made in a same group
+        group_owner_notifications = filtered_by_target(target).filtered_by_type(notifiable.to_class_name).filtered_by_key(key)
+                                   .filtered_by_group(group).group_owners_only.unopened_only
+        group_expiry_delay.present? ?
+          group_owner_notifications.within_expiration_only(group_expiry_delay).earliest :
+          group_owner_notifications.earliest
       end
 
       # Stores notifications to datastore
@@ -434,18 +488,18 @@ module ActivityNotification
         parameters         = options[:parameters]         || {}
         parameters.merge!(options.except(*available_options))
         parameters.merge!(notifiable.notification_parameters(target_type, key))
+        group_owner = valid_group_owner(target, notifiable, key, group, group_expiry_delay)
 
-        # Bundle notification group by target, notifiable_type, group and key
-        # Different notifiable.id can be made in a same group
-        group_owner_notifications = filtered_by_target(target).filtered_by_type(notifiable.to_class_name).filtered_by_key(key)
-                                   .filtered_by_group(group).group_owners_only.unopened_only
-        group_owner = group_expiry_delay.present? ?
-                        group_owner_notifications.within_expiration_only(group_expiry_delay).earliest :
-                        group_owner_notifications.earliest
-        notification_fields = { target: target, notifiable: notifiable, key: key, group: group, parameters: parameters, notifier: notifier }
-        notification_fields = notification_fields.merge(group_owner: group_owner) if group.present? && group_owner.present?
-        create(notification_fields)
+        notification = new({ target: target, notifiable: notifiable, key: key, group: group, parameters: parameters, notifier: notifier, group_owner: group_owner })
+        notification.prepare_to_store.save
+        notification
       end
+    end
+
+    # Returns prepared notification object to store
+    # @return [Object] prepared notification object to store
+    def prepare_to_store
+      self
     end
 
     # Sends notification email to the target.

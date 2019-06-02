@@ -128,6 +128,15 @@ module ActivityNotification
     #   @return [Integer] Default limit to query for opened notifications.
     attr_accessor :opened_index_limit
 
+    # @overload composite_key_delimiter
+    #   Returns Delimiter of composite key for DynamoDB
+    #   @return [String] Delimiter of composite key for DynamoDB.
+    # @overload composite_key_delimiter=(value)
+    #   Sets delimiter of composite key for DynamoDB
+    #   @param [Symbol] composite_key_delimiter The new delimiter of composite key for DynamoDB
+    #   @return [Symbol] Delimiter of composite key for DynamoDB.
+    attr_accessor :composite_key_delimiter
+
     # @overload active_job_queue
     #   Returns ActiveJob queue name for delayed notifications
     #   @return [Symbol] ActiveJob queue name for delayed notifications.
@@ -138,8 +147,8 @@ module ActivityNotification
     attr_accessor :active_job_queue
 
     # @overload :orm
-    #   Returns ORM name for ActivityNotification (:active_record or :mongoid)
-    #   @return [Boolean] ORM name for ActivityNotification (:active_record or :mongoid).
+    #   Returns ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)
+    #   @return [Boolean] ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb).
     attr_reader :orm
 
     # Initialize configuration for ActivityNotification.
@@ -160,12 +169,13 @@ module ActivityNotification
       @mailer_templates_dir    = 'activity_notification/mailer'
       @opened_index_limit      = 10
       @active_job_queue        = :activity_notification
+      @composite_key_delimiter = '#'
       @orm                     = :active_record
     end
 
-    # Sets ORM name for ActivityNotification (:active_record or :mongoid)
-    # @param [Symbol, String] orm The new ORM name for ActivityNotification (:active_record or :mongoid)
-    # @return [Symbol] ORM name for ActivityNotification (:active_record or :mongoid).
+    # Sets ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)
+    # @param [Symbol, String] orm The new ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)
+    # @return [Symbol] ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb).
     def orm=(orm)
       @orm = orm.to_sym
     end

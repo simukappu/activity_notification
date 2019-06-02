@@ -15,7 +15,7 @@ def silent_stdout(&block)
 end
 
 # Load database schema
-if Rails.env.test? && ENV['AN_TEST_DB'] != 'mongodb'
+if Rails.env.test? && ['mongodb', 'dynamodb'].exclude?(ENV['AN_TEST_DB'])
   silent_stdout do
     load "#{Rails.root}/db/schema.rb"
   end
