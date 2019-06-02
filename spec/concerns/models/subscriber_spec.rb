@@ -15,7 +15,7 @@ shared_examples_for :subscriber do
       expect(test_instance.subscriptions.count).to                eq(2)
       expect(test_instance.subscriptions.earliest_order.first).to eq(subscription_1)
       expect(test_instance.subscriptions.latest_order.first).to   eq(subscription_2)
-      expect(test_instance.subscriptions.latest_order).to         eq(ActivityNotification::Subscription.filtered_by_target(test_instance).latest_order)
+      expect(test_instance.subscriptions.latest_order.to_a).to    eq(ActivityNotification::Subscription.filtered_by_target(test_instance).latest_order.to_a)
     end
   end    
 
@@ -30,13 +30,13 @@ shared_examples_for :subscriber do
   describe "as public instance methods" do
     describe "#find_subscription" do
       before do
-        expect(test_instance.subscriptions).to be_empty
+        expect(test_instance.subscriptions.to_a).to be_empty
       end
 
       context "when the cofigured subscription exists" do
         it "returns subscription record" do
           subscription = test_instance.create_subscription(key: 'test_key')
-          expect(test_instance.subscriptions.reload).not_to be_empty
+          expect(test_instance.subscriptions.reload.to_a).not_to be_empty
           expect(test_instance.find_subscription('test_key')).to eq(subscription)
         end
       end
@@ -50,13 +50,13 @@ shared_examples_for :subscriber do
 
     describe "#find_or_create_subscription" do
       before do
-        expect(test_instance.subscriptions).to be_empty
+        expect(test_instance.subscriptions.to_a).to be_empty
       end
 
       context "when the cofigured subscription exists" do
         it "returns subscription record" do
           subscription = test_instance.create_subscription(key: 'test_key')
-          expect(test_instance.subscriptions.reload).not_to be_empty
+          expect(test_instance.subscriptions.reload.to_a).not_to be_empty
           expect(test_instance.find_or_create_subscription('test_key')).to eq(subscription)
         end
       end
@@ -70,14 +70,14 @@ shared_examples_for :subscriber do
 
     describe "#create_subscription" do
       before do
-        expect(test_instance.subscriptions).to be_empty
+        expect(test_instance.subscriptions.to_a).to be_empty
       end
 
       context "without params" do
         it "does not create a new subscription since it is invalid" do
           new_subscription = test_instance.create_subscription
           expect(new_subscription).to                        be_nil
-          expect(test_instance.subscriptions.reload).to      be_empty
+          expect(test_instance.subscriptions.reload.to_a).to be_empty
         end
       end
 
@@ -85,8 +85,8 @@ shared_examples_for :subscriber do
         it "creates a new subscription" do
           params = { key: 'key_1' }
           new_subscription = test_instance.create_subscription(params)
-          expect(new_subscription.subscribing?).to            be_truthy
-          expect(new_subscription.subscribing_to_email?).to   be_truthy
+          expect(new_subscription.subscribing?).to           be_truthy
+          expect(new_subscription.subscribing_to_email?).to  be_truthy
           expect(test_instance.subscriptions.reload.size).to eq(1)
         end
       end
@@ -95,8 +95,8 @@ shared_examples_for :subscriber do
         it "creates a new subscription" do
           params = { key: 'key_1', subscribing: false }
           new_subscription = test_instance.create_subscription(params)
-          expect(new_subscription.subscribing?).to            be_falsey
-          expect(new_subscription.subscribing_to_email?).to   be_falsey
+          expect(new_subscription.subscribing?).to           be_falsey
+          expect(new_subscription.subscribing_to_email?).to  be_falsey
           expect(test_instance.subscriptions.reload.size).to eq(1)
         end
       end
@@ -105,8 +105,8 @@ shared_examples_for :subscriber do
         it "creates a new subscription" do
           params = { key: 'key_1', subscribing_to_email: false }
           new_subscription = test_instance.create_subscription(params)
-          expect(new_subscription.subscribing?).to            be_truthy
-          expect(new_subscription.subscribing_to_email?).to   be_falsey
+          expect(new_subscription.subscribing?).to           be_truthy
+          expect(new_subscription.subscribing_to_email?).to  be_falsey
           expect(test_instance.subscriptions.reload.size).to eq(1)
         end
       end
@@ -115,8 +115,8 @@ shared_examples_for :subscriber do
         it "creates a new subscription" do
           params = { key: 'key_1', subscribing: true, subscribing_to_email: false }
           new_subscription = test_instance.create_subscription(params)
-          expect(new_subscription.subscribing?).to            be_truthy
-          expect(new_subscription.subscribing_to_email?).to   be_falsey
+          expect(new_subscription.subscribing?).to           be_truthy
+          expect(new_subscription.subscribing_to_email?).to  be_falsey
           expect(test_instance.subscriptions.reload.size).to eq(1)
         end
       end
@@ -126,7 +126,7 @@ shared_examples_for :subscriber do
           params = { key: 'key_1', subscribing: false, subscribing_to_email: true }
           new_subscription = test_instance.create_subscription(params)
           expect(new_subscription).to                        be_nil
-          expect(test_instance.subscriptions.reload).to      be_empty
+          expect(test_instance.subscriptions.reload.to_a).to be_empty
         end
       end
 
@@ -167,7 +167,7 @@ shared_examples_for :subscriber do
           params = { key: 'key_1', subscribing: false, optional_targets: { subscribing_to_console_output: true } }
           new_subscription = test_instance.create_subscription(params)
           expect(new_subscription).to                        be_nil
-          expect(test_instance.subscriptions.reload).to      be_empty
+          expect(test_instance.subscriptions.reload.to_a).to be_empty
         end
       end
     end
@@ -187,8 +187,8 @@ shared_examples_for :subscriber do
 
         context "without any options" do
           it "returns the array of subscriptions" do
-            expect(test_instance.subscription_index[0]).to eq(@subscription1)
-            expect(test_instance.subscription_index[1]).to eq(@subscription2)
+            expect(test_instance.subscription_index[0]).to   eq(@subscription1)
+            expect(test_instance.subscription_index[1]).to   eq(@subscription2)
             expect(test_instance.subscription_index.size).to eq(2)
           end
         end
@@ -196,7 +196,7 @@ shared_examples_for :subscriber do
         context "with limit" do
           it "returns the same as subscriptions with limit" do
             options = { limit: 1 }
-            expect(test_instance.subscription_index(options)[0]).to eq(@subscription1)
+            expect(test_instance.subscription_index(options)[0]).to   eq(@subscription1)
             expect(test_instance.subscription_index(options).size).to eq(1)
           end
         end
@@ -204,8 +204,8 @@ shared_examples_for :subscriber do
         context "with reverse" do
           it "returns the earliest order" do
             options = { reverse: true }
-            expect(test_instance.subscription_index(options)[0]).to eq(@subscription2)
-            expect(test_instance.subscription_index(options)[1]).to eq(@subscription1)
+            expect(test_instance.subscription_index(options)[0]).to   eq(@subscription2)
+            expect(test_instance.subscription_index(options)[1]).to   eq(@subscription1)
             expect(test_instance.subscription_index(options).size).to eq(2)
           end
         end
@@ -213,37 +213,36 @@ shared_examples_for :subscriber do
         context 'with filtered_by_key options' do
           it "returns filtered notifications only" do
             options = { filtered_by_key: 'subscription_key_2' }
-            expect(test_instance.subscription_index(options)[0]).to eq(@subscription2)
+            expect(test_instance.subscription_index(options)[0]).to   eq(@subscription2)
             expect(test_instance.subscription_index(options).size).to eq(1)
           end
         end
 
         context 'with custom_filter options' do
-          it "returns filtered notifications only" do
-            if ActivityNotification.config.orm == :active_record
-              options = { custom_filter: ["subscriptions.key = ?", 'subscription_key_2'] }
-              expect(test_instance.subscription_index(options)[0]).to eq(@subscription2)
-              expect(test_instance.subscription_index(options).size).to eq(1)
-            end
-
+          it "returns filtered subscriptions only" do
             options = { custom_filter: { key: 'subscription_key_1' } }
-            expect(test_instance.subscription_index(options)[0]).to eq(@subscription1)
+            expect(test_instance.subscription_index(options)[0]).to   eq(@subscription1)
+            expect(test_instance.subscription_index(options).size).to eq(1)
+          end
+
+          it "returns filtered subscriptions only with filter depending on ORM" do
+            options =
+              case ActivityNotification.config.orm
+              when :active_record then { custom_filter: ["subscriptions.key = ?", 'subscription_key_2'] }
+              when :mongoid       then { custom_filter: { key: {'$eq': 'subscription_key_2'} } }
+              when :dynamoid      then { custom_filter: {'key.begins_with': 'subscription_key_2'} }
+              end
+            expect(test_instance.subscription_index(options)[0]).to   eq(@subscription2)
             expect(test_instance.subscription_index(options).size).to eq(1)
           end
         end
 
-        #TODO
-        # context 'with with_target options' do
-          # it "calls includes(:target)" do
-            # expect(ActiveRecord::Base).to receive(:includes).with(:target)
-            # test_instance.subscription_index(with_target: true)
-          # end
-        # end
-
-        context 'without with_target options' do
-          it "does not call includes(:target)" do
-            expect(ActiveRecord::Base).not_to receive(:includes).with(:target)
-            test_instance.subscription_index
+        if ActivityNotification.config.orm == :active_record
+          context 'with with_target options' do
+            it "calls with_target" do
+              expect(ActivityNotification::Subscription).to receive_message_chain(:with_target)
+              test_instance.subscription_index(with_target: true)
+            end
           end
         end
       end
@@ -322,14 +321,19 @@ shared_examples_for :subscriber do
 
         context 'with custom_filter options' do
           it "returns filtered notifications only" do
-            if ActivityNotification.config.orm == :active_record
-              options = { custom_filter: ["notifications.key = ?", 'notification_key_2'] }
-              expect(test_instance.notification_keys(options)[0]).to eq('notification_key_2')
-              expect(test_instance.notification_keys(options).size).to eq(1)
-            end
-
             options = { custom_filter: { key: 'notification_key_1' } }
             expect(test_instance.notification_keys(options)[0]).to eq('notification_key_1')
+            expect(test_instance.notification_keys(options).size).to eq(1)
+          end
+
+          it "returns filtered notifications only with filter depending on ORM" do
+            options =
+              case ActivityNotification.config.orm
+              when :active_record then { custom_filter: ["notifications.key = ?", 'notification_key_2'] }
+              when :mongoid       then { custom_filter: { key: {'$eq': 'notification_key_2'} } }
+              when :dynamoid      then { custom_filter: {'key.begins_with': 'notification_key_2'} }
+              end
+            expect(test_instance.notification_keys(options)[0]).to eq('notification_key_2')
             expect(test_instance.notification_keys(options).size).to eq(1)
           end
         end

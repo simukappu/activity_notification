@@ -1,14 +1,22 @@
 class ActivityNotification::MailerPreview < ActionMailer::Preview
 
   def send_notification_email_single
-    target_notification = ActivityNotification::Notification.where(group: nil).first
+    target_notification =
+      case ActivityNotification.config.orm
+      when :active_record then ActivityNotification::Notification.where(group: nil).first
+      when :mongoid       then ActivityNotification::Notification.where(group: nil).first
+      when :dynamoid      then ActivityNotification::Notification.where('group_key.null': true).first
+      end
     ActivityNotification::Mailer.send_notification_email(target_notification)
   end
 
   def send_notification_email_with_group
-    target_notification = ActivityNotification.config.orm == :active_record ?
-      ActivityNotification::Notification.where.not(group: nil).first :
-      ActivityNotification::Notification.where(:group_id.nin => ["", nil]).first
+    target_notification =
+      case ActivityNotification.config.orm
+      when :active_record then ActivityNotification::Notification.where.not(group: nil).first
+      when :mongoid       then ActivityNotification::Notification.where(:group_id.nin => ["", nil]).first
+      when :dynamoid      then ActivityNotification::Notification.where('group_key.not_null': true).first
+      end
     ActivityNotification::Mailer.send_notification_email(target_notification)
   end
 

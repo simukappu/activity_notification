@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'mysql2', '>= 0.5.2'
   s.add_development_dependency 'pg', '>= 1.0.0'
   s.add_development_dependency 'mongoid', '>= 4.0.0'
+  s.add_development_dependency 'dynamoid', '>= 3.0.0', '< 3.2.0'
   s.add_development_dependency 'rspec-rails', '>= 3.8.0'
   s.add_development_dependency 'factory_bot_rails', '>= 4.11.0', '< 5.0.0'
   s.add_development_dependency 'simplecov', '~> 0'

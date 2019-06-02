@@ -279,7 +279,7 @@ shared_examples_for :subscription_api do
           test_instance.subscribe_to_optional_target(:console_output)
           expect(test_instance.subscribing?).to                                         eq(true)
           expect(test_instance.subscribing_to_optional_target?(:console_output)).to     eq(true)
-          expect(test_instance.optional_targets[:subscribed_to_console_output_at]).to   eq(Time.current)
+          expect(test_instance.optional_targets[:subscribed_to_console_output_at]).to   eq(ActivityNotification::Subscription.convert_time_as_hash(Time.current))
           Timecop.return
         end
       end
@@ -310,7 +310,7 @@ shared_examples_for :subscription_api do
           test_instance.unsubscribe_to_optional_target(:console_output)
           expect(test_instance.subscribing?).to                                         eq(true)
           expect(test_instance.subscribing_to_optional_target?(:console_output)).to     eq(false)
-          expect(test_instance.optional_targets[:unsubscribed_to_console_output_at]).to eq(Time.current)
+          expect(test_instance.optional_targets[:unsubscribed_to_console_output_at]).to eq(ActivityNotification::Subscription.convert_time_as_hash(Time.current))
           Timecop.return
         end
       end

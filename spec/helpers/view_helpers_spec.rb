@@ -46,12 +46,14 @@ describe ActivityNotification::ViewHelpers, type: :helper do
           )
       end
 
-      if ActivityNotification.config.orm == :active_record
-        it 'handles multiple notifications of active_record' do
-          expect(notifications.to_a.first).to receive(:render).with(self, { fallback: :default })
-          expect(notifications.to_a.last).to  receive(:render).with(self, { fallback: :default })
-          render_notification notifications, fallback: :default
-        end
+      it 'handles multiple notifications of records' do
+        rendered_template = render_notification notifications, fallback: :default
+        expect(rendered_template).to start_with(
+          render partial: 'activity_notification/notifications/default/default',
+                 locals: { notification: notifications.to_a.first, parameters: {} })
+        expect(rendered_template).to end_with(
+          render partial: 'activity_notification/notifications/default/default',
+                 locals: { notification: notifications.to_a.last , parameters: {} })
       end
 
       it 'handles multiple notifications of array' do

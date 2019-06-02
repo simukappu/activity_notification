@@ -75,8 +75,8 @@ module ActivityNotification
         end
         target_notifications = target_notifications.limit(options[:limit]) if options[:limit].present?
         as_latest_group_member ?
-          target_notifications.map{ |n| n.latest_group_member } :
-          target_notifications.to_a
+          target_notifications.latest_order!(reverse).map{ |n| n.latest_group_member } :
+          target_notifications.latest_order!(reverse).to_a
       end
 
       # Gets all notifications for this target type grouped by targets.
@@ -237,7 +237,7 @@ module ActivityNotification
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Boolean] If the target has unopened notifications
     def has_unopened_notifications?(options = {})
-      _unopened_notification_index(options).present?
+      _unopened_notification_index(options).exists?
     end
 
     # Returns automatically arranged notification index of the target.
@@ -415,7 +415,7 @@ module ActivityNotification
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Array<Notificaion>] Unopened notification index of the target with attributes
     def unopened_notification_index_with_attributes(options = {})
-      include_attributes _unopened_notification_index(options)
+      include_attributes(_unopened_notification_index(options)).to_a
     end
 
     # Gets opened notification index of the target with including attributes like target, notifiable, group and notifier.
@@ -436,7 +436,7 @@ module ActivityNotification
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Array<Notificaion>] Opened notification index of the target with attributes
     def opened_notification_index_with_attributes(options = {})
-      include_attributes _opened_notification_index(options)
+      include_attributes(_opened_notification_index(options)).to_a
     end
 
     # Sends notification email to the target.
@@ -513,7 +513,7 @@ module ActivityNotification
       # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [ActiveRecord_AssociationRelation<Notificaion>] Unopened notification index of the target
+      # @return [ActiveRecord_AssociationRelation<Notificaion>|Mongoid::Criteria<Notificaion>|Dynamoid::Criteria::Chain] Unopened notification index of the target
       def _unopened_notification_index(options = {})
         reverse            = options[:reverse] || false
         with_group_members = options[:with_group_members] || false
@@ -533,7 +533,7 @@ module ActivityNotification
       # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [Array<Notificaion>] Opened notification index of the target
+      # @return [ActiveRecord_AssociationRelation<Notificaion>|Mongoid::Criteria<Notificaion>|Dynamoid::Criteria::Chain] Opened notification index of the target
       def _opened_notification_index(options = {})
         limit              = options[:limit] || ActivityNotification.config.opened_index_limit
         reverse            = options[:reverse] || false
@@ -546,11 +546,11 @@ module ActivityNotification
       # Otherwise, target, notifiable and or notifier will be include without group.
       # @api private
       #
-      # @param [ActiveRecord_AssociationRelation<Notificaion>] target_index Notification index
-      # @return [ActiveRecord_AssociationRelation<Notificaion>] Notification index with attributes
+      # @param [ActiveRecord_AssociationRelation<Notificaion>|Mongoid::Criteria<Notificaion>|Dynamoid::Criteria::Chain] target_index Notification index
+      # @return [ActiveRecord_AssociationRelation<Notificaion>|Mongoid::Criteria<Notificaion>|Dynamoid::Criteria::Chain] Notification index with attributes
       def include_attributes(target_index)
         if target_index.present?
-          Notification.group_member_exists?(target_index) ?
+          Notification.group_member_exists?(target_index.to_a) ?
             target_index.with_target.with_notifiable.with_group.with_notifier :
             target_index.with_target.with_notifiable.with_notifier
         else
@@ -606,7 +606,7 @@ module ActivityNotification
         if has_unopened_notifications?(options)
           # Return unopened notifications first
           target_unopened_index = arrange_single_notification_index(loading_unopened_index_method, options)
-          # Total limit if notification index
+          # Total limit of notification index
           total_limit = options[:limit] || ActivityNotification.config.opened_index_limit
           # Additionaly, return opened notifications unless unopened index size overs the limit
           if (opened_limit = total_limit - target_unopened_index.size) > 0

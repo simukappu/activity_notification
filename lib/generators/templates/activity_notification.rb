@@ -1,9 +1,9 @@
 ActivityNotification.configure do |config|
 
   # Configure ORM name for ActivityNotification.
-  # Set :active_record or :mongoid.
-  ENV['AN_ORM'] = 'active_record' unless ENV['AN_ORM'] == 'mongoid'
-  config.orm = ENV['AN_ORM']
+  # Set :active_record, :mongoid or :dynamoid.
+  ENV['AN_ORM'] = 'active_record' if ['mongoid', 'dynamoid'].exclude?(ENV['AN_ORM'])
+  config.orm = ENV['AN_ORM'].to_sym
 
   # Configure if all activity notifications are enabled.
   # Set false when you want to turn off activity notifications.
@@ -55,5 +55,8 @@ ActivityNotification.configure do |config|
 
   # Configure ActiveJob queue name for delayed notifications.
   config.active_job_queue = :activity_notification
+
+  # Configure delimiter of composite key for DynamoDB.
+  # config.composite_key_delimiter = '#'
 
 end

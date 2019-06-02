@@ -22,8 +22,12 @@ env:
   - AN_ORM=active_record AN_TEST_DB=postgresql
   - AN_ORM=mongoid
   - AN_ORM=mongoid AN_TEST_DB=mongodb
+  - AN_ORM=dynamoid
 
 matrix:
+  exclude:
+    - gemfile: gemfiles/Gemfile.rails-4.2
+      env: AN_ORM=dynamoid
   include:
     - rvm: ruby-head
       gemfile: Gemfile
@@ -31,6 +35,9 @@ matrix:
     - rvm: ruby-head
       gemfile: Gemfile
       env: AN_ORM=mongoid
+    - rvm: ruby-head
+      gemfile: Gemfile
+      env: AN_ORM=dynamoid
   allow_failures:
     - rvm: ruby-head
   fast_finish: true
@@ -49,12 +56,15 @@ before_install:
 install:
   # Specify bundler version as '< 2.0' for Rails 4.2
   - bundle _1.17.3_ install
+  - if [ "$AN_ORM" = "dynamoid" ]; then bin/install_dynamodblocal.sh; fi
 
 before_script:
   # Specify bundler version as '< 2.0' for Rails 4.2
   - bundle _1.17.3_ update
-  - mysql -e 'create database activity_notification_test'
-  - psql -c 'create database activity_notification_test' -U postgres
+  - if [ "$AN_TEST_DB" = "mysql" ]; then mysql -e 'create database activity_notification_test'; fi
+  - if [ "$AN_TEST_DB" = "postgresql" ]; then psql -c 'create database activity_notification_test' -U postgres; fi
+  - if [ "$AN_ORM" = "dynamoid" ]; then bin/start_dynamodblocal.sh; fi
+  - if [ "$AN_ORM" = "dynamoid" ]; then export AWS_DEFAULT_REGION=ap-northeast-1 AWS_ACCESS_KEY_ID=dummy AWS_SECRET_ACCESS_KEY=dummy; fi
 
 script: bundle exec rspec
 

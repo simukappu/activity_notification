@@ -8,16 +8,16 @@
 [![Gem Downloads](https://img.shields.io/gem/dt/activity_notification.svg)](https://rubygems.org/gems/activity_notification)
 [![MIT License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](MIT-LICENSE)
 
-*activity_notification* provides integrated user activity notifications for Ruby on Rails. You can easily use it to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc.
+*activity_notification* provides integrated user activity notifications for [Ruby on Rails](https://rubyonrails.org). You can easily use it to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc.
 
-*activity_notification* supports Rails 4.2+ with ActiveRecord and [Mongoid](http://mongoid.org) ORM. It is tested for MySQL, PostgreSQL, SQLite3 with ActiveRecord and MongoDB with Mongoid.
+*activity_notification* supports Rails 4.2+ with [ActiveRecord](https://guides.rubyonrails.org/active_record_basics.html), [Mongoid](https://mongoid.org) and [Dynamoid](https://github.com/Dynamoid/dynamoid) ORM. It is tested for [MySQL](https://www.mysql.com), [PostgreSQL](https://www.postgresql.org), [SQLite3](https://www.sqlite.org) with ActiveRecord, [MongoDB](https://www.mongodb.com) with Mongoid and [Amazon DynamoDB](https://aws.amazon.com/dynamodb) with Dynamoid.
 
 
 ## About
 
 *activity_notification* provides following functions:
 * Notification API (creating notifications, query for notifications and managing notification parameters)
-* Notification models (stored with ActiveRecord or Mongoid ORM)
+* Notification models (stored with ActiveRecord, Mongoid or Dynamoid ORM)
 * Notification controllers (managing open/unopen of notifications, providing link to notifiable activity page)
 * Notification views (presentation of notifications)
 * Automatic tracked notifications (generating notifications along with the lifecycle of notifiable models)
@@ -26,7 +26,7 @@
 * Batch email notification (event driven or periodical email notification, daily or weekly etc)
 * Subscription management (subscribing and unsubscribing for each target and notification type)
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
-* Optional notification targets (Configurable optional notification targets like Amazon SNS, Slack, SMS and so on)
+* Optional notification targets (Configurable optional notification targets like [Amazon SNS](https://aws.amazon.com/sns), [Slack](https://slack.com), SMS and so on)
 
 ### Notification index and plugin notifications
 <kbd>![plugin-notifications-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus_with_subscription.png)</kbd>
@@ -51,6 +51,7 @@
   - [Database setup](#database-setup)
     - [Using ActiveRecord ORM](#using-activerecord-orm)
     - [Using Mongoid ORM](#using-mongoid-orm)
+    - [Using Dynamoid ORM](#using-dynamoid-orm)
   - [Configuring models](#configuring-models)
     - [Configuring target models](#configuring-target-models)
     - [Configuring notifiable models](#configuring-notifiable-models)
@@ -154,7 +155,6 @@ The same can be done for the subscription table name, e.g., if you're using the 
 config.subscription_table_name = "notifications_subscriptions"
 ```
 
-
 #### Using Mongoid ORM
 
 When you use *activity_notification* with [Mongoid](http://mongoid.org) ORM, set **AN_ORM** environment variable to **mongoid**:
@@ -170,6 +170,33 @@ config.orm = :mongoid
 ```
 
 You need to configure Mongoid in your Rails application for your MongoDB environment. Then, your notifications and subscriptions will be stored in your MongoDB.
+
+#### Using Dynamoid ORM
+
+When you use *activity_notification* with [Dynamoid](https://github.com/Dynamoid/dynamoid) ORM, set **AN_ORM** environment variable to **dynamoid**:
+
+```console
+$ export AN_ORM=dynamoid
+```
+
+You can also configure ORM in initializer **activity_notification.rb**:
+
+```ruby
+config.orm = :dynamoid
+```
+
+You need to configure Dynamoid in your Rails application for your Amazon DynamoDB environment.
+Then, you can use this rake task to create DynamoDB tables used by *activity_notification* with Dynamoid:
+
+```console
+$ bin/rake activity_notification:create_dynamodb_tables
+```
+
+After these configurations, your notifications and subscriptions will be stored in your Amazon DynamoDB.
+You can capture *activity_notification*'s table activity with [DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html).
+Using DynamoDB Streams, activity notifications in your Rails application will be integrated into cloud native event stream processed by [DynamoDB Streams Kinesis Adapter](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.KCLAdapter.html) or [AWS Lambda](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.Lambda.html).
+
+Note: Amazon DynamoDB integration using Dynamoid ORM is only supported with Rails 5.0+.
 
 ### Configuring models
 
@@ -1301,6 +1328,32 @@ $ bundle exec rspec
 $ bundle exec rake
 ```
 
+##### Testing with DynamoDB Local
+You can use [DynamoDB Local](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html) to test Amazon DynamoDB integration in your local environment.
+
+At first, set up DynamoDB Local by install script:
+```console
+$ bin/install_dynamodblocal.sh
+```
+Then, start DynamoDB Local by start script:
+```console
+$ bin/start_dynamodblocal.sh
+```
+And you can stop DynamoDB Local by stop script:
+```console
+$ bin/stop_dynamodblocal.sh
+```
+
+In short, you can test DynamoDB integration by the following step:
+```console
+$ git pull https://github.com/simukappu/activity_notification.git
+$ cd activity_notification
+$ bundle install —path vendor/bundle
+$ bin/install_dynamodblocal.sh
+$ bin/start_dynamodblocal.sh
+$ AN_ORM=dynamoid bundle exec rspec
+```
+
 #### Dummy Rails application
 Test module includes dummy Rails application in **spec/rails_app**. You can run the dummy application as common Rails application.
 ```console
@@ -1313,25 +1366,38 @@ Then, you can access <http://localhost:3000> for the dummy application.
 
 ##### Run with your local database
 As default, dummy Rails application runs with local SQLite database in *spec/rails_app/db/development.sqlite3*.
-This application supports to run with your local MySQL, PostgreSQL and MongoDB.
-Set **AN_TEST_DB** environment variable like:
+This application supports to run with your local MySQL, PostgreSQL, MongoDB.
+Set **AN_TEST_DB** environment variable as follows.
+
+To use MySQL:
 ```console
 $ export AN_TEST_DB=mysql
 ```
-for MySQL,
+To use PostgreSQL:
 ```console
 $ export AN_TEST_DB=postgresql
 ```
-for PostgreSQL, and
+To use MongoDB:
 ```console
 $ export AN_TEST_DB=mongodb
 ```
-for MongoDB. When you set **mongodb** as *AN_TEST_DB*, you have to use *activity_notification* with MongoDB. Also set **AN_ORM** like:
+When you set **mongodb** as *AN_TEST_DB*, you have to use *activity_notification* with MongoDB. Also set **AN_ORM** like:
 ```console
 $ export AN_ORM=mongoid
 ```
 
-Then, configure *spec/rails_app/config/database.yml* or *spec/rails_app/config/mongoid.yml* as your local database.
+You can also run this Rails application in cross database environment like these.
+
+To use MySQL for your application and use MongoDB for *activity_notification*:
+```console
+$ export AN_ORM=mongoid AN_TEST_DB=mysql
+```
+To use PostgreSQL for your application and use Amazon DynamoDB for *activity_notification*:
+```console
+$ export AN_ORM=dynamoid AN_TEST_DB=postgresql
+```
+
+Then, configure *spec/rails_app/config/database.yml* or *spec/rails_app/config/mongoid.yml*, *spec/rails_app/config/dynamoid.rb* as your local database.
 Finally, run database migration, seed data script and the dummy appliation.
 ```console
 $ cd spec/rails_app

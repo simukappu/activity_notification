@@ -16,20 +16,27 @@ SimpleCov.start('rails') do
   add_filter '/lib/generators/templates/'
   add_filter '/lib/activity_notification/version.rb'
   if Rails::VERSION::MAJOR >= 5
-    nocov_token 'except-rails5+'
+    skip_token_tag = 'except-rails5-plus'
   else
-    nocov_token 'only-rails5+'
+    skip_token_tag = 'only-rails5-plus'
   end
   if Gem::Version.new("5.1.6") <= Rails.gem_version && Rails.gem_version < Gem::Version.new("5.2.2")
-    nocov_token 'only-rails-without-callback-issue'
+    skip_token_tag += '#only-rails-without-callback-issue'
   else
-    nocov_token 'only-rails-with-callback-issue'
+    skip_token_tag += '#only-rails-with-callback-issue'
   end
   if ENV['AN_ORM'] == 'mongoid'
     add_filter '/lib/activity_notification/orm/active_record'
+    add_filter '/lib/activity_notification/orm/dynamoid'
+  elsif ENV['AN_ORM'] == 'dynamoid'
+    add_filter '/lib/activity_notification/orm/active_record'
+    add_filter '/lib/activity_notification/orm/mongoid'
+    skip_token_tag += '#except-dynamoid'
   else
     add_filter '/lib/activity_notification/orm/mongoid'
+    add_filter '/lib/activity_notification/orm/dynamoid'
   end
+  skip_token skip_token_tag
 end
 
 # Testing with Devise
@@ -44,7 +51,7 @@ require 'activity_notification'
 
 Dir[Rails.root.join("../../spec/support/**/*.rb")].each { |file| require file }
 
-def clear_database
+def clean_database
   [ActivityNotification::Notification, ActivityNotification::Subscription, Comment, Article, Admin, User].each do |model_class|
     model_class.delete_all
   end
@@ -54,7 +61,7 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.before(:all) do
     FactoryBot.reload
-    clear_database
+    clean_database
   end
   config.include Devise::Test::ControllerHelpers, type: :controller
 end

@@ -18,7 +18,7 @@ module ActivityNotification
       if notifications.is_a? ActivityNotification::Notification
         notifications.render self, options
       elsif notifications.respond_to?(:map)
-        return nil if notifications.empty?
+        return nil if (notifications.respond_to?(:empty?) ? notifications.empty? : notifications.to_a.empty?)
         notifications.map {|notification| notification.render self, options.dup }.join.html_safe
       end
     end

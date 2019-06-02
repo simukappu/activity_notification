@@ -419,20 +419,12 @@ module ActivityNotification
         generated_notifications = generated_notifications_as_notifiable_for(target_type)
         case dependent
         when :restrict_with_exception
-          ActivityNotification::Notification.raise_delete_restriction_error("generated_notifications_as_notifiable_for_#{target_type.to_s.pluralize.underscore}") unless generated_notifications.empty?
+          ActivityNotification::Notification.raise_delete_restriction_error("generated_notifications_as_notifiable_for_#{target_type.to_s.pluralize.underscore}") unless generated_notifications.to_a.empty?
         when :restrict_with_error
-          unless generated_notifications.empty?
+          unless generated_notifications.to_a.empty?
             record = self.class.human_attribute_name("generated_notifications_as_notifiable_for_#{target_type.to_s.pluralize.underscore}").downcase
             self.errors.add(:base, :'restrict_dependent_destroy.has_many', record: record)
-            # :only-rails5+:
-            if Rails::VERSION::MAJOR >= 5
-              throw(:abort)
-            # :only-rails5+:
-            # :except-rails5+:
-            else
-              false
-            end
-            # :except-rails5+:
+            if Rails::VERSION::MAJOR >= 5 then throw(:abort) else false end
           end
         when :destroy
           generated_notifications.each { |n| n.destroy }
