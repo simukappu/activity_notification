@@ -26,6 +26,7 @@
 * Batch email notification (event driven or periodical email notification, daily or weekly etc)
 * Subscription management (subscribing and unsubscribing for each target and notification type)
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
+* Activity notifications integrated into cloud native event stream using [Amazon DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)
 * Optional notification targets (Configurable optional notification targets like [Amazon SNS](https://aws.amazon.com/sns), [Slack](https://slack.com), SMS and so on)
 
 ### Notification index and plugin notifications
