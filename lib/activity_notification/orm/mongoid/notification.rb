@@ -19,12 +19,12 @@ module ActivityNotification
         # Belongs to target instance of this notification as polymorphic association.
         # @scope instance
         # @return [Object] Target instance of this notification
-        belongs_to_polymorphic_xdb_record :target
+        belongs_to_polymorphic_xdb_record :target, store_with_associated_records: true
 
         # Belongs to notifiable instance of this notification as polymorphic association.
         # @scope instance
         # @return [Object] Notifiable instance of this notification
-        belongs_to_polymorphic_xdb_record :notifiable
+        belongs_to_polymorphic_xdb_record :notifiable, store_with_associated_records: true
 
         # Belongs to group instance of this notification as polymorphic association.
         # @scope instance
@@ -53,7 +53,7 @@ module ActivityNotification
         # Belongs to :otifier instance of this notification.
         # @scope instance
         # @return [Object] Notifier instance of this notification
-        belongs_to_polymorphic_xdb_record :notifier
+        belongs_to_polymorphic_xdb_record :notifier, store_with_associated_records: true
 
         validates  :target,        presence: true
         validates  :notifiable,    presence: true

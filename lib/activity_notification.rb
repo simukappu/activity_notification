@@ -56,6 +56,7 @@ module ActivityNotification
 end
 
 # Load ActivityNotification helpers
+require 'activity_notification/helpers/errors'
 require 'activity_notification/helpers/polymorphic_helpers'
 require 'activity_notification/helpers/view_helpers'
 require 'activity_notification/controllers/common_controller'

@@ -52,6 +52,7 @@
     - [Using ActiveRecord ORM](#using-activerecord-orm)
     - [Using Mongoid ORM](#using-mongoid-orm)
     - [Using Dynamoid ORM](#using-dynamoid-orm)
+      - [Integration with DynamoDB Streams](#integration-with-dynamodb-streams)
   - [Configuring models](#configuring-models)
     - [Configuring target models](#configuring-target-models)
     - [Configuring notifiable models](#configuring-notifiable-models)
@@ -193,10 +194,101 @@ $ bin/rake activity_notification:create_dynamodb_tables
 ```
 
 After these configurations, your notifications and subscriptions will be stored in your Amazon DynamoDB.
+
+Note: Amazon DynamoDB integration using Dynamoid ORM is only supported with Rails 5.0+.
+
+##### Integration with DynamoDB Streams
+
 You can capture *activity_notification*'s table activity with [DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html).
 Using DynamoDB Streams, activity notifications in your Rails application will be integrated into cloud native event stream processed by [DynamoDB Streams Kinesis Adapter](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.KCLAdapter.html) or [AWS Lambda](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.Lambda.html).
 
-Note: Amazon DynamoDB integration using Dynamoid ORM is only supported with Rails 5.0+.
+When you consume your activity notifications from DynamoDB Streams, sometimes you need to process notification records with associated target, notifiable or notifier record which is stored in database of your Rails application.
+In such cases, you can use **store_with_associated_records** option in initializer **activity_notification.rb**:
+
+```ruby
+config.store_with_associated_records = true
+```
+
+When **store_with_associated_records** is set to *false* as default, *activity_notification* stores notificaion records with association like this:
+
+```json
+{
+    "id": {
+        "S": "f05756ef-661e-4ef5-9e99-5af51243125c"
+    },
+    "target_key": {
+        "S": "User#1"
+    },
+    "notifiable_key": {
+        "S": "Comment#2"
+    },
+    "key": {
+        "S": "comment.default"
+    },
+    "group_key": {
+        "S": "Article#1"
+    },
+    "notifier_key": {
+        "S": "User#2"
+    },
+    "created_at": {
+        "N": "1560085332.689929"
+    },
+    "updated_at": {
+        "N": "1560085332.695515"
+    },
+    "parameters": {
+        "M": {}
+    }
+}
+```
+
+When you set **store_with_associated_records** to *true*, *activity_notification* stores notificaion records including associated target, notifiable and notifier like this:
+
+```json
+{
+    "id": {
+        "S": "f05756ef-661e-4ef5-9e99-5af51243125c"
+    },
+    "target_key": {
+        "S": "User#1"
+    },
+    "target_record": {
+        "S": "{\"id\":1,\"email\":\"ichiro@example.com\",\"name\":\"Ichiro\",\"created_at\":\"2019-06-09T13:10:44.853Z\",\"updated_at\":\"2019-06-09T13:10:44.853Z\"}"
+    },
+    "notifiable_key": {
+        "S": "Comment#2"
+    },
+    "notifiable_record": {
+        "S": "{\"id\":2,\"user_id\":2,\"article_id\":1,\"body\":\"This is the first Stephen's comment to Ichiro's article.\",\"created_at\":\"2019-06-09T13:10:45.677Z\",\"updated_at\":\"2019-06-09T13:10:45.677Z\"}"
+    },
+    "key": {
+        "S": "comment.default"
+    },
+    "group_key": {
+        "S": "Article#1"
+    },
+    "notifier_key": {
+        "S": "User#2"
+    },
+    "notifier_record": {
+        "S": "{\"id\":2,\"email\":\"stephen@example.com\",\"name\":\"Stephen\",\"created_at\":\"2019-06-09T13:10:45.006Z\",\"updated_at\":\"2019-06-09T13:10:45.006Z\"}"
+    },
+    "created_at": {
+        "N": "1560085332.689929"
+    },
+    "updated_at": {
+        "N": "1560085332.695515"
+    },
+    "parameters": {
+        "M": {}
+    }
+}
+```
+
+Then, you can process notification records with associated records in your DynamoDB Streams.
+
+Note: This **store_with_associated_records** option can be set true only when you use mongoid or dynamoid ORM.
 
 ### Configuring models
 

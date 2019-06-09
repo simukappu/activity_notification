@@ -24,6 +24,8 @@ module ActivityNotification
         id_field, type_field = "#{association_name}_id", "#{association_name}_type"
         field id_field,   type: String
         field type_field, type: String
+        associated_record_field = "#{association_name}_record"
+        field associated_record_field, type: String if ActivityNotification.config.store_with_associated_records && _options[:store_with_associated_records]
 
         self.instance_eval do
           define_method(name) do |reload = false|
@@ -41,6 +43,7 @@ module ActivityNotification
             if new_instance.nil? then instance_id, instance_type = nil, nil else instance_id, instance_type = new_instance.id, new_instance.class.name end
             self.send("#{id_field}=", instance_id)
             self.send("#{type_field}=", instance_type)
+            self.send("#{associated_record_field}=", new_instance.to_json) if ActivityNotification.config.store_with_associated_records && _options[:store_with_associated_records]
             self.instance_variable_set("@#{name}", nil)
           end
         end

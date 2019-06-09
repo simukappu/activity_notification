@@ -20,22 +20,17 @@ module ActivityNotification
         # Belongs to target instance of this notification as polymorphic association using composite key.
         # @scope instance
         # @return [Object] Target instance of this notification
-        belongs_to_composite_xdb_record :target
+        belongs_to_composite_xdb_record :target, store_with_associated_records: true
 
         # Belongs to notifiable instance of this notification as polymorphic association using composite key.
         # @scope instance
         # @return [Object] Notifiable instance of this notification
-        belongs_to_composite_xdb_record :notifiable
+        belongs_to_composite_xdb_record :notifiable, store_with_associated_records: true
 
         # Belongs to group instance of this notification as polymorphic association using composite key.
         # @scope instance
         # @return [Object] Group instance of this notification
         belongs_to_composite_xdb_record :group
-
-        # Belongs to :otifier instance of this notification.
-        # @scope instance
-        # @return [Object] Notifier instance of this notification
-        belongs_to_composite_xdb_record :notifier
 
         field :key,            :string
         field :parameters,     :raw,      default: {}
@@ -65,6 +60,11 @@ module ActivityNotification
         def group_members
           Notification.where(group_owner_id: id)
         end
+
+        # Belongs to :otifier instance of this notification.
+        # @scope instance
+        # @return [Object] Notifier instance of this notification
+        belongs_to_composite_xdb_record :notifier, store_with_associated_records: true
 
         # Mandatory global secondary index to query effectively
         global_secondary_index hash_key: :target_key,     range_key: :created_at, projected_attributes: :all

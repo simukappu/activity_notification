@@ -1,6 +1,12 @@
 module ActivityNotification
   # Class used to initialize configuration object.
   class Config
+
+    # @overload :orm
+    #   Returns ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)
+    #   @return [Boolean] ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb).
+    attr_reader :orm
+
     # @overload enabled
     #   Returns whether ActivityNotification is enabled
     #   @return [Boolean] Whether ActivityNotification is enabled.
@@ -128,15 +134,6 @@ module ActivityNotification
     #   @return [Integer] Default limit to query for opened notifications.
     attr_accessor :opened_index_limit
 
-    # @overload composite_key_delimiter
-    #   Returns Delimiter of composite key for DynamoDB
-    #   @return [String] Delimiter of composite key for DynamoDB.
-    # @overload composite_key_delimiter=(value)
-    #   Sets delimiter of composite key for DynamoDB
-    #   @param [Symbol] composite_key_delimiter The new delimiter of composite key for DynamoDB
-    #   @return [Symbol] Delimiter of composite key for DynamoDB.
-    attr_accessor :composite_key_delimiter
-
     # @overload active_job_queue
     #   Returns ActiveJob queue name for delayed notifications
     #   @return [Symbol] ActiveJob queue name for delayed notifications.
@@ -146,31 +143,41 @@ module ActivityNotification
     #   @return [Symbol] ActiveJob queue name for delayed notifications.
     attr_accessor :active_job_queue
 
-    # @overload :orm
-    #   Returns ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)
-    #   @return [Boolean] ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb).
-    attr_reader :orm
+    # @overload composite_key_delimiter
+    #   Returns Delimiter of composite key for DynamoDB
+    #   @return [String] Delimiter of composite key for DynamoDB.
+    # @overload composite_key_delimiter=(value)
+    #   Sets delimiter of composite key for DynamoDB
+    #   @param [Symbol] composite_key_delimiter The new delimiter of composite key for DynamoDB
+    #   @return [Symbol] Delimiter of composite key for DynamoDB.
+    attr_accessor :composite_key_delimiter
+
+    # @overload store_with_associated_records
+    #   Returns whether activity_notification stores notificaion records including associated records like target and notifiable
+    #   @return [Boolean] Whether activity_notification stores notificaion records including associated records like target and notifiable.
+    attr_reader :store_with_associated_records
 
     # Initialize configuration for ActivityNotification.
     # These configuration can be overriden in initializer.
     # @return [Config] A new instance of Config
     def initialize
-      @enabled                 = true
-      @notification_table_name = 'notifications'
-      @subscription_table_name = 'subscriptions'
-      @email_enabled           = false
-      @subscription_enabled    = false
-      @subscribe_as_default    = true
-      @mailer_sender           = nil
-      @mailer                  = 'ActivityNotification::Mailer'
-      @parent_mailer           = 'ActionMailer::Base'
-      @parent_job              = 'ActiveJob::Base'
-      @parent_controller       = 'ApplicationController'
-      @mailer_templates_dir    = 'activity_notification/mailer'
-      @opened_index_limit      = 10
-      @active_job_queue        = :activity_notification
-      @composite_key_delimiter = '#'
-      @orm                     = :active_record
+      @enabled                       = true
+      @orm                           = :active_record
+      @notification_table_name       = 'notifications'
+      @subscription_table_name       = 'subscriptions'
+      @email_enabled                 = false
+      @subscription_enabled          = false
+      @subscribe_as_default          = true
+      @mailer_sender                 = nil
+      @mailer                        = 'ActivityNotification::Mailer'
+      @parent_mailer                 = 'ActionMailer::Base'
+      @parent_job                    = 'ActiveJob::Base'
+      @parent_controller             = 'ApplicationController'
+      @mailer_templates_dir          = 'activity_notification/mailer'
+      @opened_index_limit            = 10
+      @active_job_queue              = :activity_notification
+      @composite_key_delimiter       = '#'
+      @store_with_associated_records = false
     end
 
     # Sets ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)
@@ -178,6 +185,15 @@ module ActivityNotification
     # @return [Symbol] ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb).
     def orm=(orm)
       @orm = orm.to_sym
+    end
+
+    # Sets whether activity_notification stores notificaion records including associated records like target and notifiable.
+    # This store_with_associated_records option can be set true only when you use mongoid or dynamoid ORM.
+    # @param [Boolean] store_with_associated_records The new store_with_associated_records
+    # @return [Boolean] Whether activity_notification stores notificaion records including associated records like target and notifiable.
+    def store_with_associated_records=(store_with_associated_records)
+      if store_with_associated_records && [:mongoid, :dynamoid].exclude?(@orm) then raise ActivityNotification::ConfigError, "config.store_with_associated_records can be set true only when you use mongoid or dynamoid ORM." end
+      @store_with_associated_records = store_with_associated_records
     end
   end
 end

@@ -1,18 +1,18 @@
 ActivityNotification.configure do |config|
 
+  # Configure if all activity notifications are enabled
+  # Set false when you want to turn off activity notifications
+  config.enabled = true
+
   # Configure ORM name for ActivityNotification.
   # Set :active_record, :mongoid or :dynamoid.
   ENV['AN_ORM'] = 'active_record' if ['mongoid', 'dynamoid'].exclude?(ENV['AN_ORM'])
   config.orm = ENV['AN_ORM'].to_sym
 
-  # Configure if all activity notifications are enabled
-  # Set false when you want to turn off activity notifications
-  config.enabled = true
-
-  # Configure table name to store notification data
+  # Configure table name to store notification data.
   config.notification_table_name = "notifications"
 
-  # Configure table name to store subscription data
+  # Configure table name to store subscription data.
   config.subscription_table_name = "subscriptions"
 
   # Configure if email notification is enabled as default.
@@ -58,5 +58,9 @@ ActivityNotification.configure do |config|
 
   # Configure delimiter of composite key for DynamoDB.
   # config.composite_key_delimiter = '#'
+
+  # Configure if activity_notification stores notificaion records including associated records like target and notifiable..
+  # This store_with_associated_records option can be set true only when you use mongoid or dynamoid ORM.
+  config.store_with_associated_records = false
 
 end
