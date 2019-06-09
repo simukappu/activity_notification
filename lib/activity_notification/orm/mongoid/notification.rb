@@ -177,13 +177,12 @@ module ActivityNotification
           super
         end
 
-        # Raise DeleteRestrictionError for notifications.
-        # This method raises RuntimeError instead of DeleteRestrictionError not to have ActiveRecord dependency.
+        # Raise ActivityNotification::DeleteRestrictionError for notifications.
         # @param [String] error_text Error text for raised exception
-        # @raise RuntimeError
+        # @raise ActivityNotification::DeleteRestrictionError
         # @return [void]
         def self.raise_delete_restriction_error(error_text)
-          raise error_text
+          raise ActivityNotification::DeleteRestrictionError, error_text
         end
 
         protected

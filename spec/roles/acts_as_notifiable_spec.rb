@@ -312,7 +312,7 @@ describe ActivityNotification::ActsAsNotifiable do
             if ActivityNotification.config.orm == :active_record
               expect { @notifiable_1.destroy }.to raise_error(ActiveRecord::DeleteRestrictionError)
             else
-              expect { @notifiable_1.destroy }.to raise_error(RuntimeError)
+              expect { @notifiable_1.destroy }.to raise_error(ActivityNotification::DeleteRestrictionError)
             end
           end
         end
