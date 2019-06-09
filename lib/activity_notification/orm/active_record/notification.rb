@@ -8,9 +8,7 @@ module ActivityNotification
         include Common
         include Renderable
         include NotificationApi
-        # @deprecated ActivityNotification.config.table_name as of 1.1.0
-        self.table_name = ActivityNotification.config.table_name || ActivityNotification.config.notification_table_name
-        # self.table_name = ActivityNotification.config.notification_table_name
+        self.table_name = ActivityNotification.config.notification_table_name
 
         # Belongs to target instance of this notification as polymorphic association.
         # @scope instance

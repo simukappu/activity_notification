@@ -16,16 +16,6 @@ module ActivityNotification
     #   @return [Boolean] Whether ActivityNotification is enabled.
     attr_accessor :enabled
 
-    # @deprecated as of 1.1.0
-    # @overload table_name
-    #   Returns table name to store notifications
-    #   @return [String] Table name to store notifications.
-    # @overload table_name=(value)
-    #   Sets table name to store notifications
-    #   @param [String] table_name The new notification_table_name
-    #   @return [String] Table name to store notifications.
-    attr_accessor :table_name
-
     # @overload notification_table_name
     #   Returns table name to store notifications
     #   @return [String] Table name to store notifications.
