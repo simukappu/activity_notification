@@ -106,20 +106,20 @@ module ActivityNotification
     # Convets to singularized model name (resource name).
     # @return [String] Singularized model name (resource name)
     def to_resource_name
-      self.class.name.demodulize.singularize.underscore
+      self.to_class_name.demodulize.singularize.underscore
     end
 
     # Convets to pluralized model name (resources name).
     # @return [String] Pluralized model name (resources name)
     def to_resources_name
-      self.class.name.demodulize.pluralize.underscore
+      self.to_class_name.demodulize.pluralize.underscore
     end
 
     # Convets to printable model type name to be humanized.
     # @return [String] Printable model type name
     # @todo Is this the best to make readable?
     def printable_type
-      "#{self.class.name.demodulize.humanize}"
+      "#{self.to_class_name.demodulize.humanize}"
     end
 
     # Convets to printable model name to show in view or email.
