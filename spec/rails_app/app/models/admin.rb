@@ -7,8 +7,9 @@ unless ENV['AN_TEST_DB'] == 'mongodb'
       subscription_allowed: true,
       devise_resource: :user,
       current_devise_target: ->(current_user) { current_user.admin },
-      printable_name: ->(admin) { "admin (#{admin.user.name})" }
-  end
+      printable_name: ->(admin) { "admin (#{admin.user.name})" },
+      action_cable_allowed: true, action_cable_with_devise: true
+    end
 else
   require 'mongoid'
   class Admin
@@ -27,6 +28,7 @@ else
       subscription_allowed: true,
       devise_resource: :user,
       current_devise_target: ->(current_user) { current_user.admin },
-      printable_name: ->(admin) { "admin (#{admin.user.name})" }
-  end
+      printable_name: ->(admin) { "admin (#{admin.user.name})" },
+      action_cable_allowed: true, action_cable_with_devise: true
+    end
 end

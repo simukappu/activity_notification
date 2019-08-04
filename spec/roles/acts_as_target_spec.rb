@@ -33,7 +33,7 @@ describe ActivityNotification::ActsAsTarget do
     describe ".available_target_options" do
       it "returns list of available options in acts_as_target" do
         expect(dummy_model_class.available_target_options)
-          .to eq([:email, :email_allowed, :batch_email_allowed, :subscription_allowed, :devise_resource, :printable_notification_target_name, :printable_name])
+          .to eq([:email, :email_allowed, :batch_email_allowed, :subscription_allowed, :action_cable_enabled, :action_cable_with_devise, :devise_resource, :printable_notification_target_name, :printable_name])
       end
     end
   end

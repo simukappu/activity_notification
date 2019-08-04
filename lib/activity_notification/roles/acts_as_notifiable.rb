@@ -95,6 +95,18 @@ module ActivityNotification
       #     acts_as_notifiable :users, targets: User.all, email_allowed: true
       #   end
       #
+      # * :action_cable_allowed
+      #   * Whether activity_notification publishes notifications to ActionCable channel.
+      #     Specified method or symbol is expected to return true (not nil) or false (nil).
+      #     This parameter is a optional since default value is false.
+      #     To use ActionCable for notifications, action_cable_allowed option must return true (not nil) in both of notifiable and target model.
+      #     This can be also configured default option in initializer.
+      # @example Enable notification ActionCable for this notifiable model
+      #   # app/models/comment.rb
+      #   class Comment < ActiveRecord::Base
+      #     acts_as_notifiable :users, targets: User.all, action_cable_allowed: true
+      #   end
+      #
       # * :notifiable_path
       #   * Path to redirect from open or move action of notification controller.
       #     You can also use this notifiable_path as notifiable link in notification view.
@@ -196,6 +208,7 @@ module ActivityNotification
       # @option options [Symbol, Proc, Object]  :notifier                (nil)                    Notifier of the notifications
       # @option options [Symbol, Proc, Hash]    :parameters              ({})                     Additional parameters of the notifications
       # @option options [Symbol, Proc, Boolean] :email_allowed           (ActivityNotification.config.email_enabled) Whether activity_notification sends notification email
+      # @option options [Symbol, Proc, Boolean] :action_cable_allowed    (ActivityNotification.config.action_cable_enabled) Whether activity_notification publishes WebSocket using ActionCable
       # @option options [Symbol, Proc, String]  :notifiable_path         (polymorphic_path(self)) Path to redirect from open or move action of notification controller
       # @option options [Boolean, Hash]         :tracked                 (nil)                    Flag or parameters for automatic tracked notifications
       # @option options [Symbol, Proc, String]  :printable_name          (ActivityNotification::Common.printable_name) Printable notifiable name
@@ -220,7 +233,7 @@ module ActivityNotification
 
         options[:printable_notifiable_name] ||= options.delete(:printable_name)
         configured_params
-          .merge set_acts_as_parameters_for_target(target_type, [:targets, :group, :group_expiry_delay, :parameters, :email_allowed], options, "notification_")
+          .merge set_acts_as_parameters_for_target(target_type, [:targets, :group, :group_expiry_delay, :parameters, :email_allowed, :action_cable_allowed], options, "notification_")
           .merge set_acts_as_parameters_for_target(target_type, [:notifier, :notifiable_path, :printable_notifiable_name, :optional_targets], options)
       end
 
@@ -233,6 +246,7 @@ module ActivityNotification
           :notifier,
           :parameters,
           :email_allowed,
+          :action_cable_allowed,
           :notifiable_path,
           :printable_notifiable_name, :printable_name,
           :dependent_notifications,

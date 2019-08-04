@@ -19,6 +19,8 @@ module ActivityNotification
                       :_notification_email_allowed,
                       :_batch_notification_email_allowed,
                       :_notification_subscription_allowed,
+                      :_notification_action_cable_allowed,
+                      :_notification_action_cable_with_devise,
                       :_notification_devise_resource,
                       :_notification_current_devise_target,
                       :_printable_notification_target_name
@@ -35,13 +37,15 @@ module ActivityNotification
       # Sets default values to target class fields.
       # @return [NilClass] nil
       def set_target_class_defaults
-        self._notification_email                 = nil
-        self._notification_email_allowed         = ActivityNotification.config.email_enabled
-        self._batch_notification_email_allowed   = ActivityNotification.config.email_enabled
-        self._notification_subscription_allowed  = ActivityNotification.config.subscription_enabled
-        self._notification_devise_resource       = ->(model) { model }
-        self._notification_current_devise_target = ->(current_resource) { current_resource }
-        self._printable_notification_target_name = :printable_name
+        self._notification_email                    = nil
+        self._notification_email_allowed            = ActivityNotification.config.email_enabled
+        self._batch_notification_email_allowed      = ActivityNotification.config.email_enabled
+        self._notification_subscription_allowed     = ActivityNotification.config.subscription_enabled
+        self._notification_action_cable_allowed     = ActivityNotification.config.action_cable_enabled
+        self._notification_action_cable_with_devise = ActivityNotification.config.action_cable_with_devise
+        self._notification_devise_resource          = ->(model) { model }
+        self._notification_current_devise_target    = ->(current_resource) { current_resource }
+        self._printable_notification_target_name    = :printable_name
         nil
       end
 
@@ -186,13 +190,54 @@ module ActivityNotification
     end
     alias_method :notification_subscription_allowed?, :subscription_allowed?
 
+    # Returns if publishing WebSocket using ActionCable is allowed for the target from configured field or overriden method.
+    # This method is able to be overriden.
+    #
+    # @param [Object] notifiable Notifiable instance of the notification
+    # @param [String] key Key of the notification
+    # @return [Boolean] If publishing WebSocket using ActionCable is allowed for the target
+    def notification_action_cable_allowed?(notifiable = nil, key = nil)
+      resolve_value(_notification_action_cable_allowed, notifiable, key)
+    end
+
+    # Returns if publishing WebSocket using ActionCable is allowed only for the authenticated target with Devise from configured field or overriden method.
+    #
+    # @return [Boolean] If publishing WebSocket using ActionCable is allowed for the target
+    def notification_action_cable_with_devise?
+      resolve_value(_notification_action_cable_with_devise)
+    end
+
+    # :only-rails5-plus#only-rails-with-callback-issue:
+    # :only-rails5-plus#only-rails-without-callback-issue:
+    # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+    # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+    if Rails::VERSION::MAJOR >= 5
+      # Returns notification ActionCable channel class name from action_cable_with_devise? configuration.
+      #
+      # @return [String] Notification ActionCable channel class name from action_cable_with_devise? configuration
+      def notification_action_cable_channel_class_name
+        notification_action_cable_with_devise? ? "ActivityNotification::NotificationWithDeviseChannel" : "ActivityNotification::NotificationChannel"
+      end
+    end
+    # :only-rails5-plus#only-rails-with-callback-issue:
+    # :only-rails5-plus#only-rails-without-callback-issue:
+    # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+    # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+
+    # Returns Devise resource model associated with this target.
+    #
+    # @return [Object] Devise resource model associated with this target
+    def notification_devise_resource
+      resolve_value(_notification_devise_resource)
+    end
+
     # Returns if current resource signed in with Devise is authenticated for the notification.
     # This method is able to be overriden.
     #
     # @param [Object] current_resource Current resource signed in with Devise
     # @return [Boolean] If current resource signed in with Devise is authenticated for the notification
     def authenticated_with_devise?(current_resource)
-      devise_resource = resolve_value(_notification_devise_resource)
+      devise_resource = notification_devise_resource
       unless current_resource.blank? or current_resource.is_a? devise_resource.class
         raise TypeError,
           "Different type of current resource #{current_resource.class} "\

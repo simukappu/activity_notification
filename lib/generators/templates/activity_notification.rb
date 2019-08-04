@@ -47,6 +47,9 @@ ActivityNotification.configure do |config|
   # Configure the parent class for activity_notification controllers.
   # config.parent_controller = 'ApplicationController'
 
+  # Configure the parent class for activity_notification channels.
+  # config.parent_channel = 'ActionCable::Channel::Base'
+
   # Configure the custom mailer templates directory
   # config.mailer_templates_dir = 'activity_notification/mailer'
 
@@ -62,5 +65,18 @@ ActivityNotification.configure do |config|
   # Configure if activity_notification stores notificaion records including associated records like target and notifiable..
   # This store_with_associated_records option can be set true only when you use mongoid or dynamoid ORM.
   config.store_with_associated_records = false
+
+  # Configure if WebSocket subscription using ActionCable is enabled.
+  # Note that you can configure them for each model by acts_as roles.
+  # Set true when you want to turn on WebSocket subscription using ActionCable as default.
+  config.action_cable_enabled = false
+
+  # Configure if ctivity_notification publishes WebSocket notifications using ActionCable only to authenticated target with Devise.
+  # Note that you can configure them for each model by acts_as roles.
+  # Set true when you want to use Device integration with WebSocket subscription using ActionCable as default.
+  config.action_cable_with_devise = false
+
+  # Configure notification channel prefix for ActionCable.
+  config.notification_channel_prefix = 'activity_notification_channel'
 
 end

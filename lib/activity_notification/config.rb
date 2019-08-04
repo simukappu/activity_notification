@@ -106,6 +106,15 @@ module ActivityNotification
     #   @return [String] Base controller class for notifications_controller.
     attr_accessor :parent_controller
 
+    # @overload parent_channel
+    #   Returns base channel class for notification_channel
+    #   @return [String] Base channel class for notification_channel.
+    # @overload parent_channel=(value)
+    #   Sets base channel class for notification_channel
+    #   @param [String] parent_channel The new parent_channel
+    #   @return [String] Base channel class for notification_channel.
+    attr_accessor :parent_channel
+
     # @overload mailer_templates_dir
     #   Returns custom mailer templates directory
     #   @return [String] Custom mailer templates directory.
@@ -147,6 +156,33 @@ module ActivityNotification
     #   @return [Boolean] Whether activity_notification stores notificaion records including associated records like target and notifiable.
     attr_reader :store_with_associated_records
 
+    # @overload action_cable_enabled
+    #   Returns whether WebSocket subscription using ActionCable is enabled
+    #   @return [Boolean] Whether WebSocket subscription using ActionCable is enabled.
+    # @overload action_cable_enabled=(value)
+    #   Sets whether WebSocket subscription using ActionCable is enabled
+    #   @param [Boolean] action_cable_enabled The new action_cable_enabled
+    #   @return [Boolean] Whether WebSocket subscription using ActionCable is enabled.
+    attr_accessor :action_cable_enabled
+
+    # @overload action_cable_with_devise
+    #   Returns whether activity_notification publishes WebSocket notifications using ActionCable only to authenticated target with Devise
+    #   @return [Boolean] Whether activity_notification publishes WebSocket notifications using ActionCable only to authenticated target with Devise.
+    # @overload action_cable_with_devise=(value)
+    #   Sets whether activity_notification publishes WebSocket notifications using ActionCable only to authenticated target with Devise
+    #   @param [Boolean] action_cable_with_devise The new action_cable_with_devise
+    #   @return [Boolean] Whether activity_notification publishes WebSocket notifications using ActionCable only to authenticated target with Devise.
+    attr_accessor :action_cable_with_devise
+
+    # @overload notification_channel_prefix
+    #   Returns notification channel prefix for ActionCable
+    #   @return [String] Notification channel prefix for ActionCable.
+    # @overload notification_channel_prefix=(value)
+    #   Sets notification channel prefix for ActionCable
+    #   @param [String] notification_channel_prefix The new notification_channel_prefix
+    #   @return [String] Notification channel prefix for ActionCable.
+    attr_accessor :notification_channel_prefix
+
     # Initialize configuration for ActivityNotification.
     # These configuration can be overriden in initializer.
     # @return [Config] A new instance of Config
@@ -163,11 +199,15 @@ module ActivityNotification
       @parent_mailer                 = 'ActionMailer::Base'
       @parent_job                    = 'ActiveJob::Base'
       @parent_controller             = 'ApplicationController'
+      @parent_channel                = 'ActionCable::Channel::Base'
       @mailer_templates_dir          = 'activity_notification/mailer'
       @opened_index_limit            = 10
       @active_job_queue              = :activity_notification
       @composite_key_delimiter       = '#'
       @store_with_associated_records = false
+      @action_cable_enabled          = false
+      @action_cable_with_devise      = false
+      @notification_channel_prefix   = 'activity_notification_channel'
     end
 
     # Sets ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)

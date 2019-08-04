@@ -19,6 +19,7 @@ SimpleCov.start('rails') do
     skip_token_tag = 'except-rails5-plus'
   else
     skip_token_tag = 'only-rails5-plus'
+    add_filter '/app/channels/activity_notification/'
   end
   if Gem::Version.new("5.1.6") <= Rails.gem_version && Rails.gem_version < Gem::Version.new("5.2.2")
     skip_token_tag += '#only-rails-without-callback-issue'
@@ -46,6 +47,7 @@ require 'rails_app/config/environment'
 
 require 'rspec/rails'
 require 'ammeter/init'
+require "action_cable/testing/rspec" if Rails::VERSION::MAJOR >= 5
 require 'factory_bot_rails'
 require 'activity_notification'
 

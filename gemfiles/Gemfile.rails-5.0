@@ -10,6 +10,7 @@ end
 
 group :test do
   gem 'rails-controller-testing'
+  gem 'action-cable-testing'
   gem 'ammeter'
   gem 'timecop'
   gem 'coveralls', require: false

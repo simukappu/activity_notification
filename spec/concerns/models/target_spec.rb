@@ -24,10 +24,15 @@ shared_examples_for :target do
     describe ".set_target_class_defaults" do
       it "set parameter fields as default" do
         described_class.set_target_class_defaults
-        expect(described_class._notification_email).to                 eq(nil)
-        expect(described_class._notification_email_allowed).to         eq(ActivityNotification.config.email_enabled)
-        expect(described_class._notification_devise_resource).to       be_a_kind_of(Proc)
-        expect(described_class._printable_notification_target_name).to eq(:printable_name)
+        expect(described_class._notification_email).to                    eq(nil)
+        expect(described_class._notification_email_allowed).to            eq(ActivityNotification.config.email_enabled)
+        expect(described_class._batch_notification_email_allowed).to      eq(ActivityNotification.config.email_enabled)
+        expect(described_class._notification_subscription_allowed).to     eq(ActivityNotification.config.subscription_enabled)
+        expect(described_class._notification_action_cable_allowed).to     eq(ActivityNotification.config.action_cable_enabled)
+        expect(described_class._notification_action_cable_with_devise).to eq(ActivityNotification.config.action_cable_with_devise)
+        expect(described_class._notification_devise_resource).to          be_a_kind_of(Proc)
+        expect(described_class._notification_current_devise_target).to    be_a_kind_of(Proc)
+        expect(described_class._printable_notification_target_name).to    eq(:printable_name)
       end
     end    
 
@@ -264,7 +269,8 @@ shared_examples_for :target do
           expect(test_instance.notification_email_allowed?(test_notifiable, 'dummy_key')).to eq(true)
         end
 
-        it "returns specified symbol with target and key arguments" do
+        it "returns specified symbol with notifiable
+         and key arguments" do
           module AdditionalMethods
             def custom_notification_email_allowed?(notifiable, key)
               true
@@ -387,6 +393,117 @@ shared_examples_for :target do
         it "returns specified lambda with target and key arguments" do
           described_class._notification_subscription_allowed = ->(target, key){ true }
           expect(test_instance.subscription_allowed?('dummy_key')).to eq(true)
+        end
+      end
+    end
+
+    describe "#notification_action_cable_allowed?" do
+      context "without any configuration" do
+        it "returns ActivityNotification.config.action_cable_enabled without arguments" do
+          expect(test_instance.notification_action_cable_allowed?)
+            .to eq(ActivityNotification.config.action_cable_enabled)
+        end
+
+        it "returns ActivityNotification.config.action_cable_enabled with arguments" do
+          expect(test_instance.notification_action_cable_allowed?(test_notifiable, 'dummy_key'))
+            .to eq(ActivityNotification.config.action_cable_enabled)
+        end
+
+        it "returns false as default" do
+          expect(test_instance.notification_action_cable_allowed?).to be_falsey
+        end
+      end
+
+      context "configured with a field" do
+        it "returns specified value" do
+          described_class._notification_action_cable_allowed = true
+          expect(test_instance.notification_action_cable_allowed?).to eq(true)
+        end
+
+        it "returns specified symbol without argument" do
+          module AdditionalMethods
+            def custom_notification_action_cable_allowed?
+              true
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._notification_action_cable_allowed = :custom_notification_action_cable_allowed?
+          expect(test_instance.notification_action_cable_allowed?).to eq(true)
+        end
+
+        it "returns specified symbol with notifiable and key arguments" do
+          module AdditionalMethods
+            def custom_notification_action_cable_allowed?(notifiable, key)
+              true
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._notification_action_cable_allowed = :custom_notification_action_cable_allowed?
+          expect(test_instance.notification_action_cable_allowed?(test_notifiable, 'dummy_key')).to eq(true)
+        end
+
+        it "returns specified lambda with single target argument" do
+          described_class._notification_action_cable_allowed = ->(target){ true }
+          expect(test_instance.notification_action_cable_allowed?(test_notifiable, 'dummy_key')).to eq(true)
+        end
+
+        it "returns specified lambda with target, notifiable and key arguments" do
+          described_class._notification_action_cable_allowed = ->(target, notifiable, key){ true }
+          expect(test_instance.notification_action_cable_allowed?(test_notifiable, 'dummy_key')).to eq(true)
+        end
+      end
+    end
+
+    describe "#notification_action_cable_with_devise?" do
+      context "without any configuration" do
+        it "returns ActivityNotification.config.action_cable_with_devise without arguments" do
+          expect(test_instance.notification_action_cable_with_devise?)
+            .to eq(ActivityNotification.config.action_cable_with_devise)
+        end
+
+        it "returns false as default" do
+          expect(test_instance.notification_action_cable_with_devise?).to be_falsey
+        end
+      end
+
+      context "configured with a field" do
+        it "returns specified value" do
+          described_class._notification_action_cable_with_devise = true
+          expect(test_instance.notification_action_cable_with_devise?).to eq(true)
+        end
+
+        it "returns specified symbol without argument" do
+          module AdditionalMethods
+            def custom_notification_action_cable_with_devise?
+              true
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          described_class._notification_action_cable_with_devise = :custom_notification_action_cable_with_devise?
+          expect(test_instance.notification_action_cable_with_devise?).to eq(true)
+        end
+
+        it "returns specified lambda with single target argument" do
+          described_class._notification_action_cable_with_devise = ->(target){ true }
+          expect(test_instance.notification_action_cable_with_devise?).to eq(true)
+        end
+      end
+    end
+
+    if Rails::VERSION::MAJOR >= 5
+      describe "#notification_action_cable_channel_class_name" do
+        context "when custom_notification_action_cable_with_devise? returns true" do
+          it "returns ActivityNotification::NotificationWithDeviseChannel" do
+            described_class._notification_action_cable_with_devise = true
+            expect(test_instance.notification_action_cable_channel_class_name).to eq(ActivityNotification::NotificationWithDeviseChannel.name)
+          end
+        end
+
+        context "when custom_notification_action_cable_with_devise? returns false" do
+          it "returns ActivityNotification::NotificationChannel" do
+            described_class._notification_action_cable_with_devise = false
+            expect(test_instance.notification_action_cable_channel_class_name).to eq(ActivityNotification::NotificationChannel.name)
+          end
         end
       end
     end

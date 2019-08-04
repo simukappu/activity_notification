@@ -8,6 +8,7 @@ unless ENV['AN_TEST_DB'] == 'mongodb'
     acts_as_notifiable :users,
       targets: ->(comment, key) { ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq },
       group: :article, notifier: :user, email_allowed: true,
+      action_cable_allowed: true,
       parameters: { 'test_default_param' => '1' },
       notifiable_path: :article_notifiable_path,
       printable_name: ->(comment) { "comment \"#{comment.body}\"" },
@@ -37,12 +38,17 @@ unless ENV['AN_TEST_DB'] == 'mongodb'
         }
       )
     end
-    acts_as_notifiable :admins, targets: [Admin.first].compact,
+    acts_as_notifiable :admins,
+      targets: Admin.all.to_a,
       group: :article, notifier: :user, notifiable_path: :article_notifiable_path,
-      tracked: { only: [:create] },
+      action_cable_allowed: true,
+      tracked: { only: [:create], action_cable_rendering: { fallback: :default } },
       printable_name: ->(comment) { "comment \"#{comment.body}\"" },
       dependent_notifications: :delete_all,
       optional_targets: optional_targets
+
+    # For testing
+    acts_as_group
 
     def article_notifiable_path
       article_path(article)
@@ -69,6 +75,7 @@ else
     acts_as_notifiable :users,
       targets: ->(comment, key) { ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq },
       group: :article, notifier: :user, email_allowed: true,
+      action_cable_allowed: true,
       parameters: { 'test_default_param' => '1' },
       notifiable_path: :article_notifiable_path,
       printable_name: ->(comment) { "comment \"#{comment.body}\"" },
@@ -98,12 +105,17 @@ else
         }
       )
     end
-    acts_as_notifiable :admins, targets: [Admin.first].compact,
+    acts_as_notifiable :admins,
+      targets: Admin.all.to_a,
       group: :article, notifier: :user, notifiable_path: :article_notifiable_path,
-      tracked: { only: [:create] },
+      action_cable_allowed: true,
+      tracked: { only: [:create], action_cable_rendering: { fallback: :default } },
       printable_name: ->(comment) { "comment \"#{comment.body}\"" },
       dependent_notifications: :delete_all,
       optional_targets: optional_targets
+
+    # For testing
+    acts_as_group
 
     def article_notifiable_path
       article_path(article)

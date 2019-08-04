@@ -11,6 +11,8 @@ en:
         destroy:
           text: 'Some user removed an article!'
       comment:
+        create:
+          text: '%{notifier_name} posted a comment on the article "%{article_title}"'
         post:
           text:
             one: "<p>%{notifier_name} posted a comment on your article %{article_title}</p>"
