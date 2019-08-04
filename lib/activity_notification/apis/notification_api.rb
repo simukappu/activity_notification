@@ -141,13 +141,13 @@ module ActivityNotification
         scope :earliest_order,                    -> { order(created_at: :asc) }
 
         # Orders by latest (newest) first as created_at: :desc.
-        # This method is to be overriden in implementation for each ORM.
+        # This method is to be overridden in implementation for each ORM.
         # @param [Boolean] reverse If notifications will be ordered as earliest first
         # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of ordered notifications
         scope :latest_order!,                     ->(reverse = false) { reverse ? earliest_order : latest_order }
 
         # Orders by earliest (older) first as created_at: :asc.
-        # This method is to be overriden in implementation for each ORM.
+        # This method is to be overridden in implementation for each ORM.
         # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of notifications ordered by earliest first
         scope :earliest_order!,                   -> { earliest_order }
 
@@ -164,14 +164,14 @@ module ActivityNotification
         end
 
         # Returns latest notification instance.
-        # This method is to be overriden in implementation for each ORM.
+        # This method is to be overridden in implementation for each ORM.
         # @return [Notification] Latest notification instance
         def self.latest!
           latest
         end
 
         # Returns earliest notification instance.
-        # This method is to be overriden in implementation for each ORM.
+        # This method is to be overridden in implementation for each ORM.
         # @return [Notification] Earliest notification instance
         def self.earliest!
           earliest
@@ -764,13 +764,13 @@ module ActivityNotification
       target.subscribes_to_optional_target?(key, optional_target_name)
     end
 
-    # Returns optional_targets of the notification from configured field or overriden method.
+    # Returns optional_targets of the notification from configured field or overridden method.
     # @return [Array<ActivityNotification::OptionalTarget::Base>] Array of optional target instances
     def optional_targets
       notifiable.optional_targets(target.to_resources_name, key)
     end
 
-    # Returns optional_target names of the notification from configured field or overriden method.
+    # Returns optional_target names of the notification from configured field or overridden method.
     # @return [Array<Symbol>] Array of optional target names
     def optional_target_names
       notifiable.optional_target_names(target.to_resources_name, key)

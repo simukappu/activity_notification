@@ -137,7 +137,7 @@ module ActivityNotification
       end
 
       # Resolves current authenticated target by devise authentication from current resource signed in with Devise.
-      # This method is able to be overriden.
+      # This method is able to be overridden.
       #
       # @param [Object] current_resource Current resource signed in with Devise
       # @return [Object] Current authenticated target by devise authentication
@@ -154,15 +154,15 @@ module ActivityNotification
     end
 
     # Returns target email address for email notification.
-    # This method is able to be overriden.
+    # This method is able to be overridden.
     #
     # @return [String] Target email address
     def mailer_to
       resolve_value(_notification_email)
     end
 
-    # Returns if sending notification email is allowed for the target from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns if sending notification email is allowed for the target from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [Object] notifiable Notifiable instance of the notification
     # @param [String] key Key of the notification
@@ -171,8 +171,8 @@ module ActivityNotification
       resolve_value(_notification_email_allowed, notifiable, key)
     end
 
-    # Returns if sending batch notification email is allowed for the target from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns if sending batch notification email is allowed for the target from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [String] key Key of the notifications
     # @return [Boolean] If sending batch notification email is allowed for the target
@@ -180,8 +180,8 @@ module ActivityNotification
       resolve_value(_batch_notification_email_allowed, key)
     end
 
-    # Returns if subscription management is allowed for the target from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns if subscription management is allowed for the target from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [String] key Key of the notifications
     # @return [Boolean] If subscription management is allowed for the target
@@ -190,8 +190,8 @@ module ActivityNotification
     end
     alias_method :notification_subscription_allowed?, :subscription_allowed?
 
-    # Returns if publishing WebSocket using ActionCable is allowed for the target from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns if publishing WebSocket using ActionCable is allowed for the target from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [Object] notifiable Notifiable instance of the notification
     # @param [String] key Key of the notification
@@ -200,7 +200,7 @@ module ActivityNotification
       resolve_value(_notification_action_cable_allowed, notifiable, key)
     end
 
-    # Returns if publishing WebSocket using ActionCable is allowed only for the authenticated target with Devise from configured field or overriden method.
+    # Returns if publishing WebSocket using ActionCable is allowed only for the authenticated target with Devise from configured field or overridden method.
     #
     # @return [Boolean] If publishing WebSocket using ActionCable is allowed for the target
     def notification_action_cable_with_devise?
@@ -232,7 +232,7 @@ module ActivityNotification
     end
 
     # Returns if current resource signed in with Devise is authenticated for the notification.
-    # This method is able to be overriden.
+    # This method is able to be overridden.
     #
     # @param [Object] current_resource Current resource signed in with Devise
     # @return [Boolean] If current resource signed in with Devise is authenticated for the notification

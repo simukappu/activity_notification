@@ -28,13 +28,13 @@ module ActivityNotification
         self.class.name.demodulize.underscore.to_sym
       end
 
-      # Initialize method to be overriden in user implementation class
+      # Initialize method to be overridden in user implementation class
       # @param [Hash] _options Options for initializing
       def initialize_target(_options = {})
         raise NotImplementedError, "You have to implement #{self.class}##{__method__}"
       end
 
-      # Publishing notification method to be overriden in user implementation class
+      # Publishing notification method to be overridden in user implementation class
       # @param [Notification] _notification Notification instance
       # @param [Hash] _options Options for publishing
       def notify(_notification, _options = {})

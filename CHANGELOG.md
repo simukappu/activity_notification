@@ -184,7 +184,7 @@ Bug Fixes:
 
 Breaking Changes:
 
-* Remove *notifiable_type* from the argument of overriden method or configured lambda function with *:batch_email_allowed* option in *acts_as_target* role
+* Remove *notifiable_type* from the argument of overridden method or configured lambda function with *:batch_email_allowed* option in *acts_as_target* role
 
 ## 1.0.2 / 2016-11-14
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.0.1...v1.0.2)

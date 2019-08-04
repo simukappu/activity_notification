@@ -922,7 +922,7 @@ shared_examples_for :target do
     end
 
 
-    # Methods to be overriden
+    # Methods to be overridden
 
     describe "#notification_index_with_attributes" do
       context "when the target has no notifications" do

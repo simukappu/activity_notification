@@ -48,7 +48,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      context "configured with overriden method" do
+      context "configured with overridden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notification_users(key)
@@ -117,7 +117,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      context "configured with overriden method" do
+      context "configured with overridden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notification_group_for_users(key)
@@ -176,7 +176,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      context "configured with overriden method" do
+      context "configured with overridden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notification_group_expiry_delay_for_users(key)
@@ -235,7 +235,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      context "configured with overriden method" do
+      context "configured with overridden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notification_parameters_for_users(key)
@@ -294,7 +294,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      context "configured with overriden method" do
+      context "configured with overridden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notifier_for_users(key)
@@ -358,7 +358,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      context "configured with overriden method" do
+      context "configured with overridden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notification_email_allowed_for_users?(target, key)
@@ -422,7 +422,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      context "configured with overriden method" do
+      context "configured with overridden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notification_action_cable_allowed_for_users?(target, key)
@@ -489,7 +489,7 @@ shared_examples_for :notifiable do
         end
       end
 
-      context "configured with overriden method" do
+      context "configured with overridden method" do
         it "returns specified value" do
           module AdditionalMethods
             def notifiable_path_for_users(key)

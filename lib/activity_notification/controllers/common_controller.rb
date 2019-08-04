@@ -42,7 +42,7 @@ module ActivityNotification
       end
 
       # Sets options to load resource index from request parameters.
-      # This method is to be overriden.
+      # This method is to be overridden.
       # @api protected
       # @return [Hash] options to load resource index
       def set_index_options
@@ -50,7 +50,7 @@ module ActivityNotification
       end
 
       # Loads resource index with request parameters.
-      # This method is to be overriden.
+      # This method is to be overridden.
       # @api protected
       # @return [Array] Array of resource index
       def load_index
@@ -58,7 +58,7 @@ module ActivityNotification
       end
 
       # Returns controller path.
-      # This method is called from target_view_path method and can be overriden.
+      # This method is called from target_view_path method and can be overridden.
       # @api protected
       # @return [String] "activity_notification" as controller path
       def controller_path

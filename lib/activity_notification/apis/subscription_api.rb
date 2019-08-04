@@ -48,13 +48,13 @@ module ActivityNotification
         scope :earliest_order,            -> { order(created_at: :asc) }
 
         # Orders by latest (newest) first as created_at: :desc.
-        # This method is to be overriden in implementation for each ORM.
+        # This method is to be overridden in implementation for each ORM.
         # @param [Boolean] reverse If subscriptions will be ordered as earliest first
         # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of ordered subscriptions
         scope :latest_order!,             ->(reverse = false) { reverse ? earliest_order : latest_order }
 
         # Orders by earliest (older) first as created_at: :asc.
-        # This method is to be overriden in implementation for each ORM.
+        # This method is to be overridden in implementation for each ORM.
         # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of subscriptions ordered by earliest first
         scope :earliest_order!,           -> { earliest_order }
 

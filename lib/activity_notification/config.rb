@@ -184,7 +184,7 @@ module ActivityNotification
     attr_accessor :notification_channel_prefix
 
     # Initialize configuration for ActivityNotification.
-    # These configuration can be overriden in initializer.
+    # These configuration can be overridden in initializer.
     # @return [Config] A new instance of Config
     def initialize
       @enabled                       = true

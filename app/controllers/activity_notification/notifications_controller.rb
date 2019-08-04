@@ -156,7 +156,7 @@ module ActivityNotification
       end
 
       # Returns controller path.
-      # This method is called from target_view_path method and can be overriden.
+      # This method is called from target_view_path method and can be overridden.
       # @api protected
       # @return [String] "activity_notification/notifications" as controller path
       def controller_path

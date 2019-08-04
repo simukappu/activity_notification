@@ -129,7 +129,7 @@ module ActivityNotification
     protected
 
       # Returns if the target subscribes to the notification.
-      # This method can be overriden.
+      # This method can be overridden.
       # @api protected
       #
       # @param [String]  key                  Key of the notification
@@ -140,7 +140,7 @@ module ActivityNotification
       end
 
       # Returns if the target subscribes to the notification email.
-      # This method can be overriden.
+      # This method can be overridden.
       # @api protected
       #
       # @param [String]  key                  Key of the notification
@@ -152,7 +152,7 @@ module ActivityNotification
       alias_method :_subscribes_to_email?, :_subscribes_to_notification_email?
 
       # Returns if the target subscribes to the specified optional target.
-      # This method can be overriden.
+      # This method can be overridden.
       # @api protected
       #
       # @param [String]         key                  Key of the notification

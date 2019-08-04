@@ -12,7 +12,7 @@ module ActivityNotification
       include Rails.application.routes.url_helpers
 
       # Has many notification instances for this notifiable.
-      # Dependency for these notifications can be overriden from acts_as_notifiable.
+      # Dependency for these notifications can be overridden from acts_as_notifiable.
       # @scope instance
       # @return [Array<Notificaion>, Mongoid::Criteria<Notificaion>] Array or database query of notifications for this notifiable
       has_many_records :generated_notifications_as_notifiable,
@@ -62,8 +62,8 @@ module ActivityNotification
       end
     end
 
-    # Returns notification targets from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns notification targets from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [Hash] options Options for notifications
@@ -84,8 +84,8 @@ module ActivityNotification
       resolved_parameter
     end
 
-    # Returns group unit of the notifications from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns group unit of the notifications from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -98,8 +98,8 @@ module ActivityNotification
         key)
     end
 
-    # Returns group expiry period of the notifications from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns group expiry period of the notifications from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -112,8 +112,8 @@ module ActivityNotification
         key)
     end
 
-    # Returns additional notification parameters from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns additional notification parameters from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -126,8 +126,8 @@ module ActivityNotification
         key)
     end
 
-    # Returns notifier of the notification from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns notifier of the notification from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -140,8 +140,8 @@ module ActivityNotification
         key)
     end
 
-    # Returns if sending notification email is allowed for the notifiable from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns if sending notification email is allowed for the notifiable from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [Object] target Target instance to notify
     # @param [String] key Key of the notification
@@ -154,8 +154,8 @@ module ActivityNotification
         target, key)
     end
 
-    # Returns if publishing WebSocket using ActionCable is allowed for the notifiable from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns if publishing WebSocket using ActionCable is allowed for the notifiable from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [Object] target Target instance to notify
     # @param [String] key Key of the notification
@@ -168,8 +168,8 @@ module ActivityNotification
         target, key)
     end
 
-    # Returns notifiable_path to move after opening notification from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns notifiable_path to move after opening notification from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -202,8 +202,8 @@ module ActivityNotification
         target, key)
     end
 
-    # Returns optional_targets of the notification from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns optional_targets of the notification from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -216,8 +216,8 @@ module ActivityNotification
         key)
     end
 
-    # Returns optional_target names of the notification from configured field or overriden method.
-    # This method is able to be overriden.
+    # Returns optional_target names of the notification from configured field or overridden method.
+    # This method is able to be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -369,7 +369,7 @@ module ActivityNotification
     end
 
     # Returns default key of the notification.
-    # This method is able to be overriden.
+    # This method is able to be overridden.
     # "#{to_resource_name}.default" is defined as default key.
     #
     # @return [String] Default key of the notification
@@ -378,7 +378,7 @@ module ActivityNotification
     end
 
     # Returns key of the notification for tracked notifiable creation.
-    # This method is able to be overriden.
+    # This method is able to be overridden.
     # "#{to_resource_name}.create" is defined as default creation key.
     #
     # @return [String] Key of the notification for tracked notifiable creation
@@ -387,7 +387,7 @@ module ActivityNotification
     end
 
     # Returns key of the notification for tracked notifiable update.
-    # This method is able to be overriden.
+    # This method is able to be overridden.
     # "#{to_resource_name}.update" is defined as default update key.
     #
     # @return [String] Key of the notification for tracked notifiable update
@@ -400,10 +400,10 @@ module ActivityNotification
       # Used to transform parameter value from configured field or defined method.
       # @api private
       #
-      # @param [String] target_typed_method_name Method name overriden for the target type
+      # @param [String] target_typed_method_name Method name overridden for the target type
       # @param [Object] parameter_field Parameter Configured field in this model
       # @param [Object] default_value Default parameter value
-      # @param [Array] args Arguments to pass to the method overriden or defined as parameter field
+      # @param [Array] args Arguments to pass to the method overridden or defined as parameter field
       # @return [Object] Resolved parameter value
       def resolve_parameter(target_typed_method_name, parameter_field, default_value, *args)
         if respond_to?(target_typed_method_name)
