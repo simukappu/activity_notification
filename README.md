@@ -27,7 +27,7 @@
 * Push notification with [Action Cable](https://guides.rubyonrails.org/action_cable_overview.html)
 * Subscription management (subscribing and unsubscribing for each target and notification type)
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
-* Activity notifications integrated into cloud native event stream using [Amazon DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)
+* Activity notifications stream integrated into cloud computing using [Amazon DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)
 * Optional notification targets (Configurable optional notification targets like [Amazon SNS](https://aws.amazon.com/sns), [Slack](https://slack.com), SMS and so on)
 
 ### Notification index and plugin notifications
@@ -206,7 +206,7 @@ Note: Amazon DynamoDB integration using Dynamoid ORM is only supported with Rail
 ##### Integration with DynamoDB Streams
 
 You can capture *activity_notification*'s table activity with [DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html).
-Using DynamoDB Streams, activity notifications in your Rails application will be integrated into cloud native event stream processed by [DynamoDB Streams Kinesis Adapter](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.KCLAdapter.html) or [AWS Lambda](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.Lambda.html).
+Using DynamoDB Streams, activity notifications in your Rails application will be integrated into cloud computing and available as event stream processed by [DynamoDB Streams Kinesis Adapter](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.KCLAdapter.html) or [AWS Lambda](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.Lambda.html).
 
 When you consume your activity notifications from DynamoDB Streams, sometimes you need to process notification records with associated target, notifiable or notifier record which is stored in database of your Rails application.
 In such cases, you can use **store_with_associated_records** option in initializer **activity_notification.rb**:
@@ -1300,7 +1300,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-When you set *action_cable_with_devise* option to *true*, `ActivityNotification::NotificationChannel` will reject your subscription request for the target type.
+When you set *action_cable_with_devise* option to *true*, `ActivityNotification::NotificationChannel` will reject your subscription requests for the target type.
 
 *activity_notification* also provides *[ActivityNotification::NotificationWithDeviseChannel](/app/channels/activity_notification/notification_with_devise_channel.rb)* to create subscriptions integrated with Devise authentication.
 You can simply use `ActivityNotification::NotificationWithDeviseChannel` instead of `ActivityNotification::NotificationChannel`:
@@ -1331,7 +1331,7 @@ App.activity_notification = App.cable.subscriptions.create(
 );
 ```
 
-`ActivityNotification::NotificationWithDeviseChannel` will confirm subscription request from authenticated cookies by Devise. If the user has not signed in, the subscription request will be rejected. If the user has signed in as unauthorized user, the subscription request will be also rejected.
+`ActivityNotification::NotificationWithDeviseChannel` will confirm subscription requests from authenticated cookies by Devise. If the user has not signed in, the subscription request will be rejected. If the user has signed in as unauthorized user, the subscription request will be also rejected.
 
 In addtion, you can use `Target#notification_action_cable_channel_class_name` method to select channel class depending on your *action_cable_with_devise* configuration for the target.
 
@@ -1604,18 +1604,18 @@ $ bin/start_dynamodblocal.sh
 $ AN_ORM=dynamoid bundle exec rspec
 ```
 
-#### Dummy Rails application
-Test module includes dummy Rails application in **spec/rails_app**. You can run the dummy application as common Rails application.
+#### Example Rails application
+Test module includes example Rails application in **[spec/rails_app](/spec/rails_app)**. You can run the example application as common Rails application.
 ```console
 $ cd spec/rails_app
 $ bin/rake db:migrate
 $ bin/rake db:seed
 $ bin/rails server
 ```
-Then, you can access <http://localhost:3000> for the dummy application.
+Then, you can access <http://localhost:3000> for the example application.
 
 ##### Run with your local database
-As default, dummy Rails application runs with local SQLite database in *spec/rails_app/db/development.sqlite3*.
+As default, example Rails application runs with local SQLite database in *spec/rails_app/db/development.sqlite3*.
 This application supports to run with your local MySQL, PostgreSQL, MongoDB.
 Set **AN_TEST_DB** environment variable as follows.
 
@@ -1648,7 +1648,7 @@ $ export AN_ORM=dynamoid AN_TEST_DB=postgresql
 ```
 
 Then, configure *spec/rails_app/config/database.yml* or *spec/rails_app/config/mongoid.yml*, *spec/rails_app/config/dynamoid.rb* as your local database.
-Finally, run database migration, seed data script and the dummy appliation.
+Finally, run database migration, seed data script and the example appliation.
 ```console
 $ cd spec/rails_app
 $ # You don't need migration when you use MongoDB only (AN_ORM=mongoid and AN_TEST_DB=mongodb)
@@ -1673,14 +1673,15 @@ $ bundle exec yard server
 ```
 Then you can see the documents at <http://localhost:8808/docs/index>.
 
+
 ## Common examples
 
-To be prepared. See dummy Rails application in *spec/rails_app*.
+See example Rails application in **[spec/rails_app](/spec/rails_app)**.
 
 
 ## Help
 
-We are welcome your Github issues for gem problems or enhancement requests. If you have any questions or problems for your own application environment, contact us by email of this repository.
+We are welcome your Github issues for gem problems or enhancement requests.
 
 
 ## Contributing
@@ -1688,7 +1689,6 @@ We are welcome your Github issues for gem problems or enhancement requests. If y
 We are welcome all of your pull requests! Please check out the followings:
 * Write tests with RSpec
 * Write code docs and README if necessary
-* Send your pull request to *development* branch (Do NOT send to *master* branch)
 
 
 ## License
