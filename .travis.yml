@@ -43,6 +43,8 @@ matrix:
   fast_finish: true
 
 services:
+  - mysql
+  - postgresql
   - mongodb
 
 sudo: false
