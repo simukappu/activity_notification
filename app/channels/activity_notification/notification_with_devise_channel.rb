@@ -1,4 +1,5 @@
 if defined?(ActionCable)
+  # Action Cable channel to subscribe broadcasted notifications with Devise authentication.
   class ActivityNotification::NotificationWithDeviseChannel < ActivityNotification::NotificationChannel
     # Include PolymorphicHelpers to resolve string extentions
     include ActivityNotification::PolymorphicHelpers
@@ -7,6 +8,7 @@ if defined?(ActionCable)
 
       # Find current signed-in target from Devise session data.
       # @api protected
+      # @param [String] devise_type Class name of authenticated Devise resource
       # @return [Object] Current signed-in target
       def find_current_target(devise_type = nil)
         devise_type = (devise_type || @target.notification_devise_resource.class.name).to_s

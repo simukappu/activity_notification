@@ -1,4 +1,5 @@
 if defined?(ActionCable)
+  # Action Cable channel to subscribe broadcasted notifications.
   class ActivityNotification::NotificationChannel < ActivityNotification.config.parent_channel.constantize
     before_subscribe :set_target
     before_subscribe :authenticate_target!

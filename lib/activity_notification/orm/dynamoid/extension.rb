@@ -164,6 +164,7 @@ module Dynamoid # :nodoc: all
 end
 
 module ActivityNotification
+  # Dynamoid extension module for ActivityNotification.
   module DynamoidExtension
     extend ActiveSupport::Concern
 
