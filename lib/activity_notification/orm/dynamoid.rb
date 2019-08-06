@@ -96,6 +96,12 @@ module ActivityNotification
   end
 end
 
+# Monkey patching for Rails 6.0+
+class ActiveModel::NullMutationTracker
+  # Monkey patching for Rails 6.0+
+  def force_change(attr_name); end if Rails::VERSION::MAJOR >= 6
+end
+
 # Entend Dynamoid to support ActivityNotification scope in Dynamoid::Criteria::Chain
 # @private
 module Dynamoid # :nodoc: all

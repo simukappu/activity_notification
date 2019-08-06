@@ -47,7 +47,7 @@ require 'rails_app/config/environment'
 
 require 'rspec/rails'
 require 'ammeter/init'
-require "action_cable/testing/rspec" if Rails::VERSION::MAJOR >= 5
+require "action_cable/testing/rspec" if Rails::VERSION::MAJOR == 5
 require 'factory_bot_rails'
 require 'activity_notification'
 

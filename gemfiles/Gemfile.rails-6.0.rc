@@ -2,16 +2,17 @@ source 'https://rubygems.org'
 
 gemspec path: '../'
 
-gem 'rails', '~> 5.0.0'
-gem 'sqlite3', '~> 1.3.13'
+gem 'rails', '~> 6.0.0.rc2'
 
 group :development do
   gem 'bullet'
 end
 
 group :test do
+  #TODO https://github.com/rails/rails/issues/35417
+  gem 'rspec-rails', git: 'https://github.com/rspec/rspec-rails', branch: '4-0-dev'
+
   gem 'rails-controller-testing'
-  gem 'action-cable-testing'
   gem 'ammeter'
   gem 'timecop'
   gem 'coveralls', require: false
