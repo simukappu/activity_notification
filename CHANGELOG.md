@@ -1,3 +1,23 @@
+## 2.0.0 / 2019-08-09
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.7.1...v2.0.0)
+
+Enhancements:
+
+* Add push notification with Action Cable - [#101](https://github.com/simukappu/activity_notification/issues/101)
+* Allow use with Rails 6.0 - [#102](https://github.com/simukappu/activity_notification/issues/102)
+* Add Amazon DynamoDB support using Dynamoid
+* Add *ActivityNotification.config.store_with_associated_records* option
+* Add test case using Mongoid orm with ActiveRecord application
+* Publish demo application on Heroku
+
+Bug Fixes:
+
+* Fix syntax error of a default view *_default_without_grouping.html.erb*
+
+Deprecated:
+
+* Remove deprecated *ActivityNotification.config.table_name* option
+
 ## 1.7.1 / 2019-04-30
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.7.0...v1.7.1)
 
