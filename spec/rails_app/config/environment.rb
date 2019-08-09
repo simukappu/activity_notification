@@ -1,6 +1,9 @@
 # Load the Rails application.
 require File.expand_path('../application', __FILE__)
 
+# Demo application uses Devise
+require 'devise'
+
 # Initialize the Rails application.
 Rails.application.initialize!
 

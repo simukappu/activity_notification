@@ -10,6 +10,7 @@
 /spec/examples.txt
 /spec/rails_app/log/*
 /spec/rails_app/tmp/*
+/spec/rails_app/public/assets/
 /spec/DynamoDBLocal-latest/
 /test/tmp/
 /test/version_tmp/

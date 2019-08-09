@@ -30,6 +30,21 @@
 * Activity notifications stream integrated into cloud computing using [Amazon DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)
 * Optional notification targets (Configurable optional notification targets like [Amazon SNS](https://aws.amazon.com/sns), [Slack](https://slack.com), SMS and so on)
 
+### Online demo
+
+You can see an actual application using this gem here: **https://activity-notification-example.herokuapp.com/**
+
+Login as the following test users to experience user activity notifications:
+
+| Email | Password | Admin? |
+|:---:|:---:|:---:|
+| ichiro@example.com  | changeit | Yes |
+| stephen@example.com | changeit |     |
+| klay@example.com    | changeit |     |
+| kevin@example.com   | changeit |     |
+
+The deployed demo application is included in this gem's source code as a test application here: **[/spec/rails_app](/spec/rails_app/)**
+
 ### Notification index and plugin notifications
 <kbd>![plugin-notifications-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus_with_subscription.png)</kbd>
 
@@ -1676,7 +1691,10 @@ Then you can see the documents at <http://localhost:8808/docs/index>.
 
 ## Common examples
 
-See example Rails application in **[spec/rails_app](/spec/rails_app)**.
+See example Rails application in **[/spec/rails_app](/spec/rails_app)**.
+
+You can also try this example Rails application as a online demo here: **https://activity-notification-example.herokuapp.com/**  
+You can login as test users to experience user activity notifications. For more details, see [Online demo](#online-demo).
 
 
 ## Help

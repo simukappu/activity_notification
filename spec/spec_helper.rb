@@ -40,8 +40,6 @@ SimpleCov.start('rails') do
   skip_token skip_token_tag
 end
 
-# Testing with Devise
-require 'devise'
 # Dummy application
 require 'rails_app/config/environment'
 
