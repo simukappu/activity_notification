@@ -1669,7 +1669,7 @@ $ cd spec/rails_app
 $ # You don't need migration when you use MongoDB only (AN_ORM=mongoid and AN_TEST_DB=mongodb)
 $ bin/rake db:migrate
 $ bin/rake db:seed
-$ bin/rails server
+$ bin/rails server Puma
 ```
 
 
