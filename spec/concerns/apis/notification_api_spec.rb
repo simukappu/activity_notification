@@ -123,6 +123,24 @@ shared_examples_for :notification_api do
           end
         end
       end
+
+      context "when some optional targets raise error" do
+        before do
+          require 'custom_optional_targets/raise_error'
+          @optional_target = CustomOptionalTarget::RaiseError.new
+          @current_optional_target = Comment._optional_targets[:users]
+          Comment.acts_as_notifiable :users, optional_targets: ->{ [@optional_target] }
+        end
+
+        after do
+          Comment._optional_targets[:users] = @current_optional_target
+        end
+
+        it "generates notifications even if some optional targets raise error" do
+          notifications = described_class.notify(:users, @comment_2)
+          expect(notifications.size).to eq(2)  
+        end
+      end
     end
 
     describe ".notify_later" do
