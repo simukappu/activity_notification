@@ -1,6 +1,6 @@
 unless ENV['AN_TEST_DB'] == 'mongodb'
   class User < ActiveRecord::Base
-    devise :database_authenticatable, :registerable, :confirmable
+    devise :database_authenticatable, :confirmable
     validates :email, presence: true
     has_many :articles, dependent: :destroy
     has_one :admin, dependent: :destroy
@@ -21,7 +21,7 @@ else
     include Mongoid::Timestamps
     include GlobalID::Identification
 
-    devise :database_authenticatable, :registerable, :confirmable
+    devise :database_authenticatable, :confirmable
     has_many :articles, dependent: :destroy
     has_one :admin, dependent: :destroy
     validates :email, presence: true

@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root to: 'articles#index'
   devise_for :users
-  resources :articles
+  resources :articles, except: [:destroy]
   resources :comments, only: [:create, :destroy]
 
   notify_to :users, with_subscription: true
