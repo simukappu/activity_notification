@@ -5,17 +5,17 @@ branches:
     - images
 
 rvm:
-  - 2.6.3
-#  - 2.5.5
-#  - 2.4.6
-#  - 2.3.8
+  - 2.6.4
+#  - 2.5.6
+#  - 2.4.7
+#  - 2.3.8 #EOL
 
 gemfile:
   - gemfiles/Gemfile.rails-4.2
   - gemfiles/Gemfile.rails-5.0
   - gemfiles/Gemfile.rails-5.1
   - gemfiles/Gemfile.rails-5.2
-  - gemfiles/Gemfile.rails-6.0.rc
+  - gemfiles/Gemfile.rails-6.0
 
 env:
   - AN_ORM=active_record
