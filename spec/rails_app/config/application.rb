@@ -7,6 +7,7 @@ if ENV['AN_ORM'] == 'mongoid'
   if Rails.env != 'test'
     Mongoid.load!(File.expand_path("config/mongoid.yml"), :development)
   end
+# Load dynamoid configuration if necessary:
 elsif ENV['AN_ORM'] == 'dynamoid'
   require 'dynamoid'
   require 'rails'
@@ -14,7 +15,9 @@ elsif ENV['AN_ORM'] == 'dynamoid'
 end
 
 # Pick the frameworks you want:
-unless ENV['AN_ORM'] == 'mongoid' && ENV['AN_TEST_DB'] == 'mongodb'
+if ENV['AN_ORM'] == 'mongoid' && ENV['AN_TEST_DB'] == 'mongodb'
+  require "mongoid/railtie"
+else
   require "active_record/railtie"
 end
 require "action_controller/railtie"
