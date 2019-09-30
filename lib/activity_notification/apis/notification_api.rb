@@ -746,7 +746,7 @@ module ActivityNotification
     #
     # @return [String] Notifiable path URL to move after opening notification
     def notifiable_path
-      notifiable.present? or raise ActiveRecord::RecordNotFound.new("Couldn't find notifiable #{notifiable_type}")
+      notifiable.blank? and raise ActivityNotification::NotifiableNotFoundError.new("Couldn't find associated notifiable (#{notifiable_type}) of #{self.class.name} with 'id'=#{id}")
       notifiable.notifiable_path(target_type, key)
     end
 
