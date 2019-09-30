@@ -229,14 +229,14 @@ shared_examples_for :subscription_controller do
     end
   end
 
-  describe "POST #create" do
+  describe "PUT #create" do
     before do
       expect(test_target.subscriptions.size).to       eq(0)
     end
 
-    context "http direct POST request without optional targets" do
+    context "http direct PUT request without optional targets" do
       before do
-        post_with_compatibility :create, target_params.merge({
+        put_with_compatibility :create, target_params.merge({
             typed_target_param => test_target,
             "subscription"     => { "key"        => "new_subscription_key",
                                     "subscribing"=> "true",
@@ -259,9 +259,9 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "http direct POST request with optional targets" do
+    context "http direct PUT request with optional targets" do
       before do
-        post_with_compatibility :create, target_params.merge({
+        put_with_compatibility :create, target_params.merge({
             typed_target_param => test_target,
             "subscription"     => { "key"        => "new_subscription_key",
                                     "subscribing"=> "true",
@@ -288,10 +288,10 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "http POST request from root_path" do
+    context "http PUT request from root_path" do
       before do
         request.env["HTTP_REFERER"] = root_path
-        post_with_compatibility :create, target_params.merge({
+        put_with_compatibility :create, target_params.merge({
             typed_target_param => test_target,
             "subscription"     => { "key"        => "new_subscription_key",
                                     "subscribing"=> "true",
@@ -314,10 +314,10 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "Ajax POST request" do
+    context "Ajax PUT request" do
       before do
         request.env["HTTP_REFERER"] = root_path
-        xhr_with_compatibility :post, :create, target_params.merge({
+        xhr_with_compatibility :put, :create, target_params.merge({
             typed_target_param => test_target,
             "subscription"     => { "key"        => "new_subscription_key",
                                     "subscribing"=> "true",
@@ -441,13 +441,13 @@ shared_examples_for :subscription_controller do
     end
   end
 
-  describe "POST #subscribe" do
-    context "http direct POST request" do
+  describe "PUT #subscribe" do
+    context "http direct PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe
         expect(@subscription.subscribing?).to be_falsey
-        post_with_compatibility :subscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :subscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -463,13 +463,13 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "http POST request from root_path" do
+    context "http PUT request from root_path" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe
         expect(@subscription.subscribing?).to be_falsey
         request.env["HTTP_REFERER"] = root_path
-        post_with_compatibility :subscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :subscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -485,13 +485,13 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "Ajax POST request" do
+    context "Ajax PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe
         expect(@subscription.subscribing?).to be_falsey
         request.env["HTTP_REFERER"] = root_path
-        xhr_with_compatibility :post, :subscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        xhr_with_compatibility :put, :subscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
   
       it "returns 200 as http status code" do
@@ -512,12 +512,12 @@ shared_examples_for :subscription_controller do
     end
   end
 
-  describe "POST #unsubscribe" do
-    context "http direct POST request" do
+  describe "PUT #unsubscribe" do
+    context "http direct PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         expect(@subscription.subscribing?).to be_truthy
-        post_with_compatibility :unsubscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :unsubscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -533,12 +533,12 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "http POST request from root_path" do
+    context "http PUT request from root_path" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         expect(@subscription.subscribing?).to be_truthy
         request.env["HTTP_REFERER"] = root_path
-        post_with_compatibility :unsubscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :unsubscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -554,12 +554,12 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "Ajax POST request" do
+    context "Ajax PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         expect(@subscription.subscribing?).to be_truthy
         request.env["HTTP_REFERER"] = root_path
-        xhr_with_compatibility :post, :unsubscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        xhr_with_compatibility :put, :unsubscribe, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
   
       it "returns 200 as http status code" do
@@ -580,13 +580,13 @@ shared_examples_for :subscription_controller do
     end
   end
 
-  describe "POST #subscribe_to_email" do
-    context "http direct POST request" do
+  describe "PUT #subscribe_to_email" do
+    context "http direct PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe_to_email
         expect(@subscription.subscribing_to_email?).to be_falsey
-        post_with_compatibility :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -602,13 +602,13 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "http POST request from root_path" do
+    context "http PUT request from root_path" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe_to_email
         expect(@subscription.subscribing_to_email?).to be_falsey
         request.env["HTTP_REFERER"] = root_path
-        post_with_compatibility :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -624,13 +624,13 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "Ajax POST request" do
+    context "Ajax PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe_to_email
         expect(@subscription.subscribing_to_email?).to be_falsey
         request.env["HTTP_REFERER"] = root_path
-        xhr_with_compatibility :post, :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        xhr_with_compatibility :put, :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
   
       it "returns 200 as http status code" do
@@ -656,7 +656,7 @@ shared_examples_for :subscription_controller do
         @subscription.unsubscribe
         expect(@subscription.subscribing?).to be_falsey
         expect(@subscription.subscribing_to_email?).to be_falsey
-        post_with_compatibility :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -673,12 +673,12 @@ shared_examples_for :subscription_controller do
     end
   end
 
-  describe "POST #unsubscribe_to_email" do
-    context "http direct POST request" do
+  describe "PUT #unsubscribe_to_email" do
+    context "http direct PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         expect(@subscription.subscribing_to_email?).to be_truthy
-        post_with_compatibility :unsubscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :unsubscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -694,12 +694,12 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "http POST request from root_path" do
+    context "http PUT request from root_path" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         expect(@subscription.subscribing_to_email?).to be_truthy
         request.env["HTTP_REFERER"] = root_path
-        post_with_compatibility :unsubscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :unsubscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -715,12 +715,12 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "Ajax POST request" do
+    context "Ajax PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         expect(@subscription.subscribing_to_email?).to be_truthy
         request.env["HTTP_REFERER"] = root_path
-        xhr_with_compatibility :post, :unsubscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        xhr_with_compatibility :put, :unsubscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
   
       it "returns 200 as http status code" do
@@ -741,13 +741,13 @@ shared_examples_for :subscription_controller do
     end
   end
 
-  describe "POST #subscribe_to_optional_target" do
+  describe "PUT #subscribe_to_optional_target" do
     context "without optional_target_name param" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe_to_optional_target(:base)
         expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
-        post_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 400 as http status code" do
@@ -759,12 +759,12 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "http direct POST request" do
+    context "http direct PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe_to_optional_target(:base)
         expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
-        post_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+        put_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -780,13 +780,13 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "http POST request from root_path" do
+    context "http PUT request from root_path" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe_to_optional_target(:base)
         expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
         request.env["HTTP_REFERER"] = root_path
-        post_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+        put_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -802,13 +802,13 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "Ajax POST request" do
+    context "Ajax PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         @subscription.unsubscribe_to_optional_target(:base)
         expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
         request.env["HTTP_REFERER"] = root_path
-        xhr_with_compatibility :post, :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+        xhr_with_compatibility :put, :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
       end
   
       it "returns 200 as http status code" do
@@ -835,7 +835,7 @@ shared_examples_for :subscription_controller do
         @subscription.unsubscribe
         expect(@subscription.subscribing?).to be_falsey
         expect(@subscription.subscribing_to_optional_target?(:base)).to be_falsey
-        post_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+        put_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -852,12 +852,12 @@ shared_examples_for :subscription_controller do
     end
   end
 
-  describe "POST #unsubscribe_to_email" do
+  describe "PUT #unsubscribe_to_email" do
     context "without optional_target_name param" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         expect(@subscription.subscribing_to_optional_target?(:base)).to be_truthy
-        post_with_compatibility :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+        put_with_compatibility :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
       it "returns 400 as http status code" do
@@ -869,11 +869,11 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "http direct POST request" do
+    context "http direct PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         expect(@subscription.subscribing_to_optional_target?(:base)).to be_truthy
-        post_with_compatibility :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+        put_with_compatibility :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -889,12 +889,12 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "http POST request from root_path" do
+    context "http PUT request from root_path" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         expect(@subscription.subscribing_to_optional_target?(:base)).to be_truthy
         request.env["HTTP_REFERER"] = root_path
-        post_with_compatibility :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+        put_with_compatibility :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
       end
 
       it "returns 302 as http status code" do
@@ -910,12 +910,12 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    context "Ajax POST request" do
+    context "Ajax PUT request" do
       before do
         @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
         expect(@subscription.subscribing_to_optional_target?(:base)).to be_truthy
         request.env["HTTP_REFERER"] = root_path
-        xhr_with_compatibility :post, :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
+        xhr_with_compatibility :put, :unsubscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
       end
   
       it "returns 200 as http status code" do
@@ -947,11 +947,11 @@ shared_examples_for :subscription_controller do
       end
     end
 
-    def post_with_compatibility action, params, session
+    def put_with_compatibility action, params, session
       if Rails::VERSION::MAJOR <= 4
-        post action, params, session
+        put action, params, session
       else
-        post action, params: params, session: session
+        put action, params: params, session: session
       end
     end
 

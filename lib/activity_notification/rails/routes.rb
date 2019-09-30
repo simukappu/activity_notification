@@ -23,7 +23,7 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/notifications", action:"open_all", target_type:"users" }
     #     move_user_notification      GET    /users/:user_id/notifications/:id/move(.:format)
     #       { controller:"activity_notification/notifications", action:"move", target_type:"users" }
-    #     open_user_notification      POST   /users/:user_id/notifications/:id/open(.:format)
+    #     open_user_notification      PUT    /users/:user_id/notifications/:id/open(.:format)
     #       { controller:"activity_notification/notifications", action:"open", target_type:"users" }
     #
     # You can also configure notification routes with scope like this:
@@ -42,7 +42,7 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/notifications", action:"open_all", target_type:"users", routing_scope: :myscope }
     #     move_myscope_user_notification      GET    /myscope/users/:user_id/notifications/:id/move(.:format)
     #       { controller:"activity_notification/notifications", action:"move", target_type:"users", routing_scope: :myscope }
-    #     open_myscope_user_notification      POST   /myscope/users/:user_id/notifications/:id/open(.:format)
+    #     open_myscope_user_notification      PUT    /myscope/users/:user_id/notifications/:id/open(.:format)
     #       { controller:"activity_notification/notifications", action:"open", target_type:"users", routing_scope: :myscope }
     #
     # When you use devise authentication and you want make notification targets assciated with devise,
@@ -60,7 +60,7 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/notifications_with_devise", action:"open_all", target_type:"users", devise_type:"users" }
     #     move_user_notification      GET    /users/:user_id/notifications/:id/move(.:format)
     #       { controller:"activity_notification/notifications_with_devise", action:"move", target_type:"users", devise_type:"users" }
-    #     open_user_notification      POST   /users/:user_id/notifications/:id/open(.:format)
+    #     open_user_notification      PUT    /users/:user_id/notifications/:id/open(.:format)
     #       { controller:"activity_notification/notifications_with_devise", action:"open", target_type:"users", devise_type:"users" }
     #
     # When you use with_devise option and you want to make simple default routes as follows, you can use devise_default_routes option:
@@ -77,7 +77,7 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/notifications_with_devise", action:"open_all", target_type:"users", devise_type:"users" }
     #     move_user_notification      GET    /notifications/:id/move(.:format)
     #       { controller:"activity_notification/notifications_with_devise", action:"move", target_type:"users", devise_type:"users" }
-    #     open_user_notification      POST   /notifications/:id/open(.:format)
+    #     open_user_notification      PUT    /notifications/:id/open(.:format)
     #       { controller:"activity_notification/notifications_with_devise", action:"open", target_type:"users", devise_type:"users" }
     #
     # When you would like to define subscription management paths with notification paths,
@@ -148,21 +148,21 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/subscriptions", action:"index", target_type:"users" }
     #     user_subscription                                 GET    /users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions", action:"show", target_type:"users" }
-    #     open_all_user_subscriptions                       POST   /users/:user_id/subscriptions(.:format)
+    #     open_all_user_subscriptions                       PUT    /users/:user_id/subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions", action:"create", target_type:"users" }
     #     user_subscription                                 DELETE /users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions", action:"destroy", target_type:"users" }
-    #     subscribe_user_subscription                       POST   /users/:user_id/subscriptions/:id/subscribe(.:format)
+    #     subscribe_user_subscription                       PUT    /users/:user_id/subscriptions/:id/subscribe(.:format)
     #       { controller:"activity_notification/subscriptions", action:"subscribe", target_type:"users" }
-    #     unsubscribe_user_subscription                     POST   /users/:user_id/subscriptions/:id/unsubscribe(.:format)
+    #     unsubscribe_user_subscription                     PUT    /users/:user_id/subscriptions/:id/unsubscribe(.:format)
     #       { controller:"activity_notification/subscriptions", action:"unsubscribe", target_type:"users" }
-    #     subscribe_to_email_user_subscription              POST   /users/:user_id/subscriptions/:id/subscribe_to_email(.:format)
+    #     subscribe_to_email_user_subscription              PUT    /users/:user_id/subscriptions/:id/subscribe_to_email(.:format)
     #       { controller:"activity_notification/subscriptions", action:"subscribe_to_email", target_type:"users" }
-    #     unsubscribe_to_email_user_subscription            POST   /users/:user_id/subscriptions/:id/unsubscribe_to_email(.:format)
+    #     unsubscribe_to_email_user_subscription            PUT    /users/:user_id/subscriptions/:id/unsubscribe_to_email(.:format)
     #       { controller:"activity_notification/subscriptions", action:"unsubscribe_to_email", target_type:"users" }
-    #     subscribe_to_optional_target_user_subscription    POST   /users/:user_id/subscriptions/:id/subscribe_to_optional_target(.:format)
+    #     subscribe_to_optional_target_user_subscription    PUT    /users/:user_id/subscriptions/:id/subscribe_to_optional_target(.:format)
     #       { controller:"activity_notification/subscriptions", action:"subscribe_to_optional_target", target_type:"users" }
-    #     unsubscribe_to_optional_target_user_subscription  POST   /users/:user_id/subscriptions/:id/unsubscribe_to_optional_target(.:format)
+    #     unsubscribe_to_optional_target_user_subscription  PUT    /users/:user_id/subscriptions/:id/unsubscribe_to_optional_target(.:format)
     #       { controller:"activity_notification/subscriptions", action:"unsubscribe_to_optional_target", target_type:"users" }
     #
     # You can also configure notification routes with scope like this:
@@ -175,21 +175,21 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/subscriptions", action:"index", target_type:"users", routing_scope: :myscope }
     #     myscope_user_subscription                                 GET    /myscope/users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions", action:"show", target_type:"users", routing_scope: :myscope }
-    #     open_all_myscope_user_subscriptions                       POST   /myscope/users/:user_id/subscriptions(.:format)
+    #     open_all_myscope_user_subscriptions                       PUT    /myscope/users/:user_id/subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions", action:"create", target_type:"users", routing_scope: :myscope }
     #     myscope_user_subscription                                 DELETE /myscope/users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions", action:"destroy", target_type:"users", routing_scope: :myscope }
-    #     subscribe_myscope_user_subscription                       POST   /myscope/users/:user_id/subscriptions/:id/subscribe(.:format)
+    #     subscribe_myscope_user_subscription                       PUT    /myscope/users/:user_id/subscriptions/:id/subscribe(.:format)
     #       { controller:"activity_notification/subscriptions", action:"subscribe", target_type:"users", routing_scope: :myscope }
-    #     unsubscribe_myscope_user_subscription                     POST   /myscope/users/:user_id/subscriptions/:id/unsubscribe(.:format)
+    #     unsubscribe_myscope_user_subscription                     PUT    /myscope/users/:user_id/subscriptions/:id/unsubscribe(.:format)
     #       { controller:"activity_notification/subscriptions", action:"unsubscribe", target_type:"users", routing_scope: :myscope }
-    #     subscribe_to_email_myscope_user_subscription              POST   /myscope/users/:user_id/subscriptions/:id/subscribe_to_email(.:format)
+    #     subscribe_to_email_myscope_user_subscription              PUT    /myscope/users/:user_id/subscriptions/:id/subscribe_to_email(.:format)
     #       { controller:"activity_notification/subscriptions", action:"subscribe_to_email", target_type:"users", routing_scope: :myscope }
-    #     unsubscribe_to_email_myscope_user_subscription            POST   /myscope/users/:user_id/subscriptions/:id/unsubscribe_to_email(.:format)
+    #     unsubscribe_to_email_myscope_user_subscription            PUT    /myscope/users/:user_id/subscriptions/:id/unsubscribe_to_email(.:format)
     #       { controller:"activity_notification/subscriptions", action:"unsubscribe_to_email", target_type:"users", routing_scope: :myscope }
-    #     subscribe_to_optional_target_myscope_user_subscription    POST   /myscope/users/:user_id/subscriptions/:id/subscribe_to_optional_target(.:format)
+    #     subscribe_to_optional_target_myscope_user_subscription    PUT    /myscope/users/:user_id/subscriptions/:id/subscribe_to_optional_target(.:format)
     #       { controller:"activity_notification/subscriptions", action:"subscribe_to_optional_target", target_type:"users", routing_scope: :myscope }
-    #     unsubscribe_to_optional_target_myscope_user_subscription  POST   /myscope/users/:user_id/subscriptions/:id/unsubscribe_to_optional_target(.:format)
+    #     unsubscribe_to_optional_target_myscope_user_subscription  PUT    /myscope/users/:user_id/subscriptions/:id/unsubscribe_to_optional_target(.:format)
     #       { controller:"activity_notification/subscriptions", action:"unsubscribe_to_optional_target", target_type:"users", routing_scope: :myscope }
     #
     # When you use devise authentication and you want make subscription targets assciated with devise,
@@ -201,21 +201,21 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/subscriptions_with_devise", action:"index", target_type:"users", devise_type:"users" }
     #     user_subscription                                 GET    /users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"show", target_type:"users", devise_type:"users" }
-    #     open_all_user_subscriptions                       POST   /users/:user_id/subscriptions(.:format)
+    #     open_all_user_subscriptions                       PUT    /users/:user_id/subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"create", target_type:"users", devise_type:"users" }
     #     user_subscription                                 DELETE /users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"destroy", target_type:"users", devise_type:"users" }
-    #     subscribe_user_subscription                       POST   /users/:user_id/subscriptions/:id/subscribe(.:format)
+    #     subscribe_user_subscription                       PUT    /users/:user_id/subscriptions/:id/subscribe(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"subscribe", target_type:"users", devise_type:"users" }
-    #     unsubscribe_user_subscription                     POST   /users/:user_id/subscriptions/:id/unsubscribe(.:format)
+    #     unsubscribe_user_subscription                     PUT    /users/:user_id/subscriptions/:id/unsubscribe(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"unsubscribe", target_type:"users", devise_type:"users" }
-    #     subscribe_to_email_user_subscription              POST   /users/:user_id/subscriptions/:id/subscribe_to_email(.:format)
+    #     subscribe_to_email_user_subscription              PUT    /users/:user_id/subscriptions/:id/subscribe_to_email(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"subscribe_to_email", target_type:"users", devise_type:"users" }
-    #     unsubscribe_to_email_user_subscription            POST   /users/:user_id/subscriptions/:id/unsubscribe_to_email(.:format)
+    #     unsubscribe_to_email_user_subscription            PUT    /users/:user_id/subscriptions/:id/unsubscribe_to_email(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"unsubscribe_to_email", target_type:"users", devise_type:"users" }
-    #     subscribe_to_optional_target_user_subscription    POST   /users/:user_id/subscriptions/:id/subscribe_to_optional_target(.:format)
+    #     subscribe_to_optional_target_user_subscription    PUT    /users/:user_id/subscriptions/:id/subscribe_to_optional_target(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"subscribe_to_optional_target", target_type:"users", devise_type:"users" }
-    #     unsubscribe_to_optional_target_user_subscription  POST   /users/:user_id/subscriptions/:id/unsubscribe_to_optional_target(.:format)
+    #     unsubscribe_to_optional_target_user_subscription  PUT    /users/:user_id/subscriptions/:id/unsubscribe_to_optional_target(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"unsubscribe_to_optional_target", target_type:"users", devise_type:"users" }
     #
     # When you use with_devise option and you want to make simple default routes as follows, you can use devise_default_routes option:
@@ -226,21 +226,21 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/subscriptions_with_devise", action:"index", target_type:"users", devise_type:"users" }
     #     user_subscription                                 GET    /subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"show", target_type:"users", devise_type:"users" }
-    #     open_all_user_subscriptions                       POST   /subscriptions(.:format)
+    #     open_all_user_subscriptions                       PUT    /subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"create", target_type:"users", devise_type:"users" }
     #     user_subscription                                 DELETE /subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"destroy", target_type:"users", devise_type:"users" }
-    #     subscribe_user_subscription                       POST   /subscriptions/:id/subscribe(.:format)
+    #     subscribe_user_subscription                       PUT    /subscriptions/:id/subscribe(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"subscribe", target_type:"users", devise_type:"users" }
-    #     unsubscribe_user_subscription                     POST   /subscriptions/:id/unsubscribe(.:format)
+    #     unsubscribe_user_subscription                     PUT    /subscriptions/:id/unsubscribe(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"unsubscribe", target_type:"users", devise_type:"users" }
-    #     subscribe_to_email_user_subscription              POST   /subscriptions/:id/subscribe_to_email(.:format)
+    #     subscribe_to_email_user_subscription              PUT    /subscriptions/:id/subscribe_to_email(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"subscribe_to_email", target_type:"users", devise_type:"users" }
-    #     unsubscribe_to_email_user_subscription            POST   /subscriptions/:id/unsubscribe_to_email(.:format)
+    #     unsubscribe_to_email_user_subscription            PUT    /subscriptions/:id/unsubscribe_to_email(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"unsubscribe_to_email", target_type:"users", devise_type:"users" }
-    #     subscribe_to_optional_target_user_subscription    POST   /subscriptions/:id/subscribe_to_optional_target(.:format)
+    #     subscribe_to_optional_target_user_subscription    PUT    /subscriptions/:id/subscribe_to_optional_target(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"subscribe_to_optional_target", target_type:"users", devise_type:"users" }
-    #     unsubscribe_to_optional_target_user_subscription  POST   /subscriptions/:id/unsubscribe_to_optional_target(.:format)
+    #     unsubscribe_to_optional_target_user_subscription  PUT    /subscriptions/:id/unsubscribe_to_optional_target(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"unsubscribe_to_optional_target", target_type:"users", devise_type:"users" }
     #
     # @example Define subscribed_by in config/routes.rb
@@ -337,7 +337,7 @@ module ActionDispatch::Routing
           end
           member do
             get  :move     unless ignore_path?(:move, options)
-            post :open     unless ignore_path?(:open, options)
+            put  :open     unless ignore_path?(:open, options)
           end
         end
       end
@@ -351,12 +351,12 @@ module ActionDispatch::Routing
       def create_subscription_routes(options = {}, resources_options = [])
         self.resources options[:model], resources_options do
           member do
-            post :subscribe                      unless ignore_path?(:subscribe, options)
-            post :unsubscribe                    unless ignore_path?(:unsubscribe, options)
-            post :subscribe_to_email             unless ignore_path?(:subscribe_to_email, options)
-            post :unsubscribe_to_email           unless ignore_path?(:unsubscribe_to_email, options)
-            post :subscribe_to_optional_target   unless ignore_path?(:subscribe_to_optional_target, options)
-            post :unsubscribe_to_optional_target unless ignore_path?(:unsubscribe_to_optional_target, options)
+            put :subscribe                      unless ignore_path?(:subscribe, options)
+            put :unsubscribe                    unless ignore_path?(:unsubscribe, options)
+            put :subscribe_to_email             unless ignore_path?(:subscribe_to_email, options)
+            put :unsubscribe_to_email           unless ignore_path?(:unsubscribe_to_email, options)
+            put :subscribe_to_optional_target   unless ignore_path?(:subscribe_to_optional_target, options)
+            put :unsubscribe_to_optional_target unless ignore_path?(:unsubscribe_to_optional_target, options)
           end
         end
       end
