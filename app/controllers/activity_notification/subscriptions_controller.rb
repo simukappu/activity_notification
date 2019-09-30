@@ -27,7 +27,7 @@ module ActivityNotification
 
     # Creates a subscription.
     #
-    # POST /:target_type/:target_id/subscriptions
+    # PUT /:target_type/:target_id/subscriptions
     #
     # @overload create(params)
     #   @param [Hash] params Request parameters
@@ -79,7 +79,7 @@ module ActivityNotification
 
     # Subscribes to the notification.
     #
-    # POST /:target_type/:target_id/subscriptions/:id/subscribe
+    # PUT /:target_type/:target_id/subscriptions/:id/subscribe
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :with_email_subscription ('true')  If the subscriber also subscribes notification email
@@ -97,7 +97,7 @@ module ActivityNotification
 
     # Unsubscribes to the notification.
     #
-    # POST /:target_type/:target_id/subscriptions/:id/unsubscribe
+    # PUT /:target_type/:target_id/subscriptions/:id/unsubscribe
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :filter          (nil)     Filter option to load subscription index (Nothing as all, 'configured' or 'unconfigured')
@@ -112,7 +112,7 @@ module ActivityNotification
 
     # Subscribes to the notification email.
     #
-    # POST /:target_type/:target_id/subscriptions/:id/subscribe_email
+    # PUT /:target_type/:target_id/subscriptions/:id/subscribe_email
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :filter          (nil)     Filter option to load subscription index (Nothing as all, 'configured' or 'unconfigured')
@@ -127,7 +127,7 @@ module ActivityNotification
 
     # Unsubscribes to the notification email.
     #
-    # POST /:target_type/:target_id/subscriptions/:id/unsubscribe_email
+    # PUT /:target_type/:target_id/subscriptions/:id/unsubscribe_email
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :filter          (nil)     Filter option to load subscription index (Nothing as all, 'configured' or 'unconfigured')
@@ -142,7 +142,7 @@ module ActivityNotification
 
     # Subscribes to the specified optional target.
     #
-    # POST /:target_type/:target_id/subscriptions/:id/subscribe_to_optional_target
+    # PUT /:target_type/:target_id/subscriptions/:id/subscribe_to_optional_target
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [required, String] :optional_target_name (nil)           Class name of the optional target implementation (e.g. 'amazon_sns', 'slack')
@@ -158,7 +158,7 @@ module ActivityNotification
 
     # Unsubscribes to the specified optional target.
     #
-    # POST /:target_type/:target_id/subscriptions/:id/unsubscribe_to_optional_target
+    # PUT /:target_type/:target_id/subscriptions/:id/unsubscribe_to_optional_target
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [required, String] :optional_target_name (nil)           Class name of the optional target implementation (e.g. 'amazon_sns', 'slack')

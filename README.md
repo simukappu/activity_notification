@@ -756,7 +756,7 @@ If the customization at the views level is not enough, you can customize each co
 
       # ...
 
-      # POST /:target_type/:target_id/notifications/:id/open
+      # PUT /:target_type/:target_id/notifications/:id/open
       # def open
       #   super
       # end
@@ -778,7 +778,7 @@ If the customization at the views level is not enough, you can customize each co
     class Users::NotificationsController < ActivityNotification::NotificationsController
       # ...
 
-      # POST /:target_type/:target_id/notifications/:id/open
+      # PUT /:target_type/:target_id/notifications/:id/open
       def open
         # Custom code to open notification here
 

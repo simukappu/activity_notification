@@ -449,13 +449,13 @@ shared_examples_for :notification_controller do
     end
   end
 
-  describe "POST #open" do
+  describe "PUT #open" do
     context "without move parameter" do
-      context "http direct POST request" do
+      context "http direct PUT request" do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
-          post_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+          put_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
         end
 
         it "returns 302 as http status code" do
@@ -471,12 +471,12 @@ shared_examples_for :notification_controller do
         end
       end
 
-      context "http POST request from root_path" do
+      context "http PUT request from root_path" do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
           request.env["HTTP_REFERER"] = root_path
-          post_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+          put_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
         end
 
         it "returns 302 as http status code" do
@@ -492,12 +492,12 @@ shared_examples_for :notification_controller do
         end
       end
 
-      context "Ajax POST request" do
+      context "Ajax PUT request" do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
           request.env["HTTP_REFERER"] = root_path
-          xhr_with_compatibility :post, :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+          xhr_with_compatibility :put, :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
         end
     
         it "returns 200 as http status code" do
@@ -519,11 +519,11 @@ shared_examples_for :notification_controller do
     end
 
     context "with true as move parameter" do
-      context "http direct POST request" do
+      context "http direct PUT request" do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
-          post_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target, move: true }), valid_session
+          put_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target, move: true }), valid_session
         end
 
         it "returns 302 as http status code" do
@@ -597,6 +597,14 @@ shared_examples_for :notification_controller do
         post action, params, session
       else
         post action, params: params, session: session
+      end
+    end
+
+    def put_with_compatibility action, params, session
+      if Rails::VERSION::MAJOR <= 4
+        put action, params, session
+      else
+        put action, params: params, session: session
       end
     end
 

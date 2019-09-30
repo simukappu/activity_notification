@@ -32,7 +32,7 @@ module ActivityNotification
 
     # Opens all notifications of the target.
     #
-    # POST /:target_type/:target_id/notifications/open_all
+    # PUT /:target_type/:target_id/notifications/open_all
     # @overload open_all(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :filter  (nil)     Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
@@ -78,7 +78,7 @@ module ActivityNotification
   
     # Opens a notification.
     #
-    # POST /:target_type/:target_id/notifications/:id/open
+    # PUT /:target_type/:target_id/notifications/:id/open
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :move               ('false') Whether redirects to notifiable_path after the notification is opened
