@@ -152,7 +152,7 @@ module ActivityNotification
 
         # Raise DeleteRestrictionError for notifications.
         # @param [String] error_text Error text for raised exception
-        # @raise DeleteRestrictionError
+        # @raise [ActiveRecord::DeleteRestrictionError] DeleteRestrictionError from used ORM
         # @return [void]
         def self.raise_delete_restriction_error(error_text)
           raise ::ActiveRecord::DeleteRestrictionError.new(error_text)

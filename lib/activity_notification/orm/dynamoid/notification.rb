@@ -116,7 +116,7 @@ module ActivityNotification
 
         # Raise ActivityNotification::DeleteRestrictionError for notifications.
         # @param [String] error_text Error text for raised exception
-        # @raise ActivityNotification::DeleteRestrictionError
+        # @raise [ActivityNotification::DeleteRestrictionError] DeleteRestrictionError from used ORM
         # @return [void]
         def self.raise_delete_restriction_error(error_text)
           raise ActivityNotification::DeleteRestrictionError, error_text
