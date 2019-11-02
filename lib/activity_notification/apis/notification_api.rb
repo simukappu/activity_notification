@@ -426,14 +426,13 @@ module ActivityNotification
       # @option options [String]   :filtered_by_group_type (nil)          Group type for filter, valid with :filtered_by_group_id
       # @option options [String]   :filtered_by_group_id   (nil)          Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]   :filtered_by_key        (nil)          Key of the notification for filter
-      # @return [Integer] Number of opened notification records
-      # @todo Add filter option
+      # @return [Array<Notification>] Opened notification records
       def open_all_of(target, options = {})
         opened_at = options[:opened_at] || Time.current
         target_unopened_notifications = target.notifications.unopened_only.filtered_by_options(options)
-        unopened_notification_count = target_unopened_notifications.count
+        opened_notifications = target_unopened_notifications.to_a.map { |n| n.opened_at = opened_at; n }
         target_unopened_notifications.update_all(opened_at: opened_at)
-        unopened_notification_count
+        opened_notifications
       end
 
       # Returns if group member of the notifications exists.
