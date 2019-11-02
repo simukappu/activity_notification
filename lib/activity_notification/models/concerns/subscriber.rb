@@ -46,6 +46,7 @@ module ActivityNotification
     # Creates new subscription of the target.
     #
     # @param [Hash] subscription_params Parameters to create subscription record
+    # @raise [ActivityNotification::InvalidParameterError] Failed to save subscription due to invalid parameter
     # @return [Subscription] Created subscription instance
     def create_subscription(subscription_params = {})
       created_at = Time.current
@@ -74,7 +75,8 @@ module ActivityNotification
           )
       end
       subscription.assign_attributes(optional_targets: optional_targets)
-      subscription.save ? subscription : nil
+      raise InvalidParameterError, subscription.errors.full_messages.first unless subscription.save
+      subscription
     end
 
     # Gets configured subscription index of the target.

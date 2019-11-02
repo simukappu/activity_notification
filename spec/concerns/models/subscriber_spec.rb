@@ -74,10 +74,9 @@ shared_examples_for :subscriber do
       end
 
       context "without params" do
-        it "does not create a new subscription since it is invalid" do
-          new_subscription = test_instance.create_subscription
-          expect(new_subscription).to                        be_nil
-          expect(test_instance.subscriptions.reload.to_a).to be_empty
+        it "raises ActivityNotification::InvalidParameterError it is invalid" do
+          expect { test_instance.create_subscription }
+          .to raise_error(ActivityNotification::InvalidParameterError)
         end
       end
 
@@ -122,15 +121,13 @@ shared_examples_for :subscriber do
       end
 
       context "with false as subscribing and true as subscribing_to_email params" do
-        it "does not create a new subscription since it is invalid" do
-          params = { key: 'key_1', subscribing: false, subscribing_to_email: true }
-          new_subscription = test_instance.create_subscription(params)
-          expect(new_subscription).to                        be_nil
-          expect(test_instance.subscriptions.reload.to_a).to be_empty
+        it "raises ActivityNotification::InvalidParameterError it is invalid" do
+          expect {
+            params = { key: 'key_1', subscribing: false, subscribing_to_email: true }
+            test_instance.create_subscription(params)
+          }.to raise_error(ActivityNotification::InvalidParameterError)
         end
       end
-
-
 
       context "with true as optional_targets params" do
         it "creates a new subscription" do
@@ -163,11 +160,11 @@ shared_examples_for :subscriber do
       end
 
       context "with false as subscribing and true as optional_targets params" do
-        it "does not create a new subscription since it is invalid" do
-          params = { key: 'key_1', subscribing: false, optional_targets: { subscribing_to_console_output: true } }
-          new_subscription = test_instance.create_subscription(params)
-          expect(new_subscription).to                        be_nil
-          expect(test_instance.subscriptions.reload.to_a).to be_empty
+        it "raises ActivityNotification::InvalidParameterError it is invalid" do
+          expect {
+            params = { key: 'key_1', subscribing: false, optional_targets: { subscribing_to_console_output: true } }
+            test_instance.create_subscription(params)
+          }.to raise_error(ActivityNotification::InvalidParameterError)
         end
       end
     end
