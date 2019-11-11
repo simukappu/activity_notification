@@ -93,6 +93,7 @@ The deployed demo application is included in this gem's source code as a test ap
     - [Sender configuration](#sender-configuration)
     - [Email templates](#email-templates)
     - [Email subject](#email-subject)
+    - [Other header fields](#other-header-fields)
     - [i18n for email](#i18n-for-email)
   - [Batch email notification](#batch-email-notification)
     - [Batch mailer setup](#batch-mailer-setup)
@@ -865,7 +866,7 @@ If this template is missing, the gem will look for a partial in *default* as the
 
 *activity_notification* will use `"Notification of #{@notification.notifiable.printable_type.downcase}"` as default email subject. If it is defined, *activity_notification* will resolve email subject from *overriding_notification_email_subject* method in notifiable models. You can customize email subject like this:
 
-```
+```ruby
 class Comment < ActiveRecord::Base
   belongs_to :article
   belongs_to :user
@@ -888,6 +889,36 @@ end
 ```
 
 If you use i18n for email, you can configure email subject in your locale files. See [i18n for email](#i18n-for-email).
+
+#### Other header fields
+
+Similarly to the [email subject](#email-subject), the `From`, `Reply-To` and `Message-ID` headers are configurable per notifiable model. From and reply to will override the `config.mailer_sender` config setting.
+
+```ruby
+class Comment < ActiveRecord::Base
+  belongs_to :article
+  belongs_to :user
+
+  acts_as_notifiable :users,
+    targets: ->(comment, key) {
+      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+    },
+    notifiable_path: :article_notifiable_path
+
+  def overriding_notification_email_from(target, key)
+    "no-reply.article@example.com"
+  end
+
+  def overriding_notification_email_reply_to(target, key)
+    "no-reply.article+comment-#{self.id}@example.com"
+  end
+
+  def overriding_notification_email_message_id(target, key)
+    "https://www.example.com/article/#{article.id}@example.com/"
+  end
+end
+
+```
 
 #### i18n for email
 

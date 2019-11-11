@@ -102,6 +102,47 @@ describe ActivityNotification::Mailer do
         end
       end
 
+      context "with defined overriding_notification_email_from in notifiable model" do
+        it "sends with updated from" do
+          module AdditionalMethods
+            def overriding_notification_email_from(target, key)
+              'test05@example.com'
+            end
+          end
+          notification.notifiable.extend(AdditionalMethods)
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.from.first)
+            .to eq('test05@example.com')
+        end
+      end
+
+      context "with defined overriding_notification_email_reply_to in notifiable model" do
+        it "sends with updated reply_to" do
+          module AdditionalMethods
+            def overriding_notification_email_reply_to(target, key)
+              'test06@example.com'
+            end
+          end
+          notification.notifiable.extend(AdditionalMethods)
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.reply_to.first)
+            .to eq('test06@example.com')
+        end
+      end
+
+      context "with defined overriding_notification_email_message_id in notifiable model" do
+        it "sends with specific message id" do
+          module AdditionalMethods
+            def overriding_notification_email_message_id(target, key)
+              "https://www.example.com/test@example.com/"
+            end
+          end
+          notification.notifiable.extend(AdditionalMethods)
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.message_id)
+            .to eq("https://www.example.com/test@example.com/")
+        end
+      end
       context "when fallback option is :none and the template is missing" do
         it "raise ActionView::MissingTemplate" do
           expect { ActivityNotification::Mailer.send_notification_email(notification, fallback: :none).deliver_now }
