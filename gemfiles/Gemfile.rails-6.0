@@ -6,6 +6,7 @@ gem 'rails', '~> 6.0.0'
 
 group :development do
   gem 'bullet'
+  gem 'rack-cors'
 end
 
 group :test do
@@ -15,6 +16,8 @@ group :test do
   gem 'rails-controller-testing'
   gem 'ammeter'
   gem 'timecop'
+  gem 'committee'
+  gem 'committee-rails'
   gem 'coveralls', require: false
 end
 

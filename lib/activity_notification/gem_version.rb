@@ -4,6 +4,7 @@ module ActivityNotification
     Gem::Version.new VERSION
   end
 
+  # Manages individual gem version from Gem::Version
   module GEM_VERSION
     MAJOR = VERSION.split(".")[0]
     MINOR = VERSION.split(".")[1]

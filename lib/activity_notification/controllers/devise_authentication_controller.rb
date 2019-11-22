@@ -2,6 +2,7 @@ module ActivityNotification
   # Module included in controllers to authenticate with Devise module
   module DeviseAuthenticationController
     extend ActiveSupport::Concern
+    include CommonController
 
     included do
       prepend_before_action :authenticate_devise_resource!
@@ -20,10 +21,10 @@ module ActivityNotification
           if respond_to?(authenticate_method_name)
             send(authenticate_method_name)
           else
-            render plain: "403 Forbidden: Unauthenticated", status: 403
+            render status: 403, json: error_response(code: 403, message: "Unauthenticated with Devise")
           end
         else
-          render plain: "400 Bad Request: Missing parameter", status: 400
+          render status: 400, json: error_response(code: 400, message: "Invalid parameter", type: "Missing devise_type")
         end
       end
 
@@ -38,7 +39,7 @@ module ActivityNotification
           target_class = target_type.to_model_class
           current_resource_method_name = "current_#{params[:devise_type].to_resource_name}"
           params[:target_id] = target_class.resolve_current_devise_target(send(current_resource_method_name))
-          render(plain: "403 Forbidden: Unauthenticated as default target", status: 403) and return if params[:target_id].blank?
+          render status: 403, json: error_response(code: 403, message: "Unauthenticated as default target") and return if params[:target_id].blank?
         end
         super
       end
@@ -50,7 +51,7 @@ module ActivityNotification
       def authenticate_target!
         current_resource_method_name = "current_#{params[:devise_type].to_resource_name}"
         unless @target.authenticated_with_devise?(send(current_resource_method_name))
-          render plain: "403 Forbidden: Unauthorized target", status: 403
+          render status: 403, json: error_response(code: 403, message: "Unauthorized target")
         end
       end
   end

@@ -38,6 +38,16 @@ module Dummy
     if Rails::VERSION::MAJOR >= 5 && Rails::VERSION::MINOR >= 2 && ENV['AN_TEST_DB'] != 'mongodb'
       config.active_record.sqlite3.represent_boolean_as_integer = true
     end
+
+    # Configure CORS for API mode
+    if defined?(Rack::Cors)
+      config.middleware.insert_before 0, Rack::Cors do
+        allow do
+          origins '*'
+          resource '*', :headers => :any, :methods => [:get, :post, :put, :delete]
+        end
+      end
+    end
   end
 end
 

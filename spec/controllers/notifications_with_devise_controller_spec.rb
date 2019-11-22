@@ -14,7 +14,7 @@ describe ActivityNotification::NotificationsWithDeviseController, type: :control
       sign_in test_user
     end
   
-    it_behaves_like :notification_controller
+    it_behaves_like :notifications_controller
   end
 
   context "signed in with devise as unauthenticated user" do

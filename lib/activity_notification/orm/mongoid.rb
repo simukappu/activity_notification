@@ -72,5 +72,23 @@ module ActivityNotification
   end
 end
 
+# Monkey patching for Mongoid::Document as_json
+module Mongoid
+  # Monkey patching for Mongoid::Document as_json
+  module Document
+    # Monkey patching for Mongoid::Document as_json
+    # @param [Hash] options Options parameter
+    # @return [Hash] Hash representing the model
+    def as_json(options = {})
+      json = super(options)
+      json["id"] = json["_id"].to_s.start_with?("{\"$oid\"=>") ? self.id.to_s : json["_id"].to_s
+      (options[:include] || []).each do |associated_model|
+        json[associated_model] = self.send(associated_model).as_json
+      end
+      json
+    end
+  end
+end
+
 require_relative 'mongoid/notification.rb'
 require_relative 'mongoid/subscription.rb'
