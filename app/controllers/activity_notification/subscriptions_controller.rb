@@ -16,7 +16,7 @@ module ActivityNotification
     #   @option params [String] :limit           (nil)     Limit to query for subscriptions
     #   @option params [String] :reverse         ('false') Whether subscription index and unconfigured notification keys will be ordered as earliest first
     #   @option params [String] :filtered_by_key (nil)     Key of the subscription for filter
-    #   @return [Responce] HTML view of subscription index
+    #   @return [Response] HTML view of subscription index
     def index
       set_index_options
       load_index if params[:reload].to_s.to_boolean(true)
@@ -35,7 +35,7 @@ module ActivityNotification
     #   @option params [String] :limit           (nil)                     Limit to query for subscriptions
     #   @option params [String] :reverse         ('false')                 Whether subscription index and unconfigured notification keys will be ordered as earliest first
     #   @option params [String] :filtered_by_key (nil)                     Key of the subscription for filter
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def create
       @subscription = @target.build_subscription(subscription_params)
       if @subscription.save
@@ -53,7 +53,7 @@ module ActivityNotification
     # @overload index(params)
     #   @param [Hash] params Request parameter options for subscription index
     #   @option params [required, String] :key (nil) Key of the subscription
-    #   @return [Responce] HTML view as default or JSON of subscription index with json format parameter
+    #   @return [Response] HTML view as default or JSON of subscription index with json format parameter
     def find
       @subscription = @target.find_subscription(params[:key])
       @subscription ? redirect_to_subscription_path : render_resource_not_found("Couldn't find subscription with this target and 'key'=#{params[:key]}")
@@ -64,7 +64,7 @@ module ActivityNotification
     # GET /:target_type/:target_id/subscriptions/:id
     # @overload show(params)
     #   @param [Hash] params Request parameters
-    #   @return [Responce] HTML view as default
+    #   @return [Response] HTML view as default
     def show
       set_index_options
     end
@@ -78,7 +78,7 @@ module ActivityNotification
     #   @option params [String] :limit           (nil)     Limit to query for subscriptions
     #   @option params [String] :reverse         ('false') Whether subscription index and unconfigured notification keys will be ordered as earliest first
     #   @option params [String] :filtered_by_key (nil)     Key of the subscription for filter
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def destroy
       @subscription.destroy
       return_back_or_ajax
@@ -95,7 +95,7 @@ module ActivityNotification
     #   @option params [String] :limit                   (nil)     Limit to query for subscriptions
     #   @option params [String] :reverse                 ('false') Whether subscription index and unconfigured notification keys will be ordered as earliest first
     #   @option params [String] :filtered_by_key         (nil)     Key of the subscription for filter
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def subscribe
       @subscription.subscribe(with_email_subscription: params[:with_email_subscription].to_s.to_boolean(true),
                               with_optional_targets:   params[:with_optional_targets].to_s.to_boolean(true))
@@ -111,7 +111,7 @@ module ActivityNotification
     #   @option params [String] :limit           (nil)     Limit to query for subscriptions
     #   @option params [String] :reverse         ('false') Whether subscription index and unconfigured notification keys will be ordered as earliest first
     #   @option params [String] :filtered_by_key (nil)     Key of the subscription for filter
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def unsubscribe
       @subscription.unsubscribe
       return_back_or_ajax
@@ -126,7 +126,7 @@ module ActivityNotification
     #   @option params [String] :limit           (nil)     Limit to query for subscriptions
     #   @option params [String] :reverse         ('false') Whether subscription index and unconfigured notification keys will be ordered as earliest first
     #   @option params [String] :filtered_by_key (nil)     Key of the subscription for filter
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def subscribe_to_email
       @subscription.subscribe_to_email
       return_back_or_ajax
@@ -141,7 +141,7 @@ module ActivityNotification
     #   @option params [String] :limit           (nil)     Limit to query for subscriptions
     #   @option params [String] :reverse         ('false') Whether subscription index and unconfigured notification keys will be ordered as earliest first
     #   @option params [String] :filtered_by_key (nil)     Key of the subscription for filter
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def unsubscribe_to_email
       @subscription.unsubscribe_to_email
       return_back_or_ajax
@@ -157,7 +157,7 @@ module ActivityNotification
     #   @option params [String]           :limit                (nil)     Limit to query for subscriptions
     #   @option params [String]           :reverse              ('false') Whether subscription index and unconfigured notification keys will be ordered as earliest first
     #   @option params [String]           :filtered_by_key      (nil)     Key of the subscription for filter
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def subscribe_to_optional_target
       @subscription.subscribe_to_optional_target(params[:optional_target_name])
       return_back_or_ajax
@@ -173,7 +173,7 @@ module ActivityNotification
     #   @option params [String]           :limit                (nil)     Limit to query for subscriptions
     #   @option params [String]           :reverse              ('false') Whether subscription index and unconfigured notification keys will be ordered as earliest first
     #   @option params [String]           :filtered_by_key      (nil)     Key of the subscription for filter
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def unsubscribe_to_optional_target
       @subscription.unsubscribe_to_optional_target(params[:optional_target_name])
       return_back_or_ajax
