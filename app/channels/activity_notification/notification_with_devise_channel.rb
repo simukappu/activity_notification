@@ -40,7 +40,7 @@ if defined?(ActionCable)
 
       # Authenticate the target of requested notification with authenticated devise resource.
       # @api protected
-      # @return [Responce] Returns connected or rejected
+      # @return [Response] Returns connected or rejected
       def authenticate_target!
         current_resource = find_current_target
         reject unless @target.authenticated_with_devise?(current_resource)

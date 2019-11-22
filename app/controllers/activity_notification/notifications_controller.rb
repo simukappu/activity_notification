@@ -20,7 +20,7 @@ module ActivityNotification
     #   @option params [String] :filtered_by_group_id   (nil)     Group instance ID to filter notification index, valid with :filtered_by_group_type
     #   @option params [String] :filtered_by_key        (nil)     Key of notifications to filter notification index
     #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
-    #   @return [Responce] HTML view of notification index
+    #   @return [Response] HTML view of notification index
     def index
       set_index_options
       load_index if params[:reload].to_s.to_boolean(true)
@@ -40,7 +40,7 @@ module ActivityNotification
     #   @option params [String] :filtered_by_group_id   (nil)     Group instance ID to filter notification index, valid with :filtered_by_group_type
     #   @option params [String] :filtered_by_key        (nil)     Key of notifications to filter notification index
     #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def open_all
       @opened_notifications = @target.open_all_notifications(params)
       return_back_or_ajax
@@ -51,7 +51,7 @@ module ActivityNotification
     # GET /:target_type/:target_id/notifications/:id
     # @overload show(params)
     #   @param [Hash] params Request parameters
-    #   @return [Responce] HTML view as default
+    #   @return [Response] HTML view as default
     def show
     end
   
@@ -65,7 +65,7 @@ module ActivityNotification
     #   @option params [String] :without_grouping       ('false') Whether notification index will include group members
     #   @option params [String] :with_group_members     ('false') Whether notification index will include group members
     #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def destroy
       @notification.destroy
       return_back_or_ajax
@@ -82,7 +82,7 @@ module ActivityNotification
     #   @option params [String] :without_grouping       ('false') Whether notification index will include group members
     #   @option params [String] :with_group_members     ('false') Whether notification index will include group members
     #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def open
       with_members = !(params[:with_group_members].to_s.to_boolean(false) || params[:without_grouping].to_s.to_boolean(false))
       @opened_notifications_count = @notification.open!(with_members: with_members)
@@ -100,7 +100,7 @@ module ActivityNotification
     #   @option params [String] :without_grouping       ('false') Whether notification index will include group members
     #   @option params [String] :with_group_members     ('false') Whether notification index will include group members
     #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
-    #   @return [Responce] JavaScript view for ajax request or redirects to back as default
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def move
       with_members = !(params[:with_group_members].to_s.to_boolean(false) || params[:without_grouping].to_s.to_boolean(false))
       @opened_notifications_count = @notification.open!(with_members: with_members) if params[:open].to_s.to_boolean(false)
