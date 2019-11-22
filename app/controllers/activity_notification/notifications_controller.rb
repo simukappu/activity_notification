@@ -10,24 +10,20 @@ module ActivityNotification
     # GET /:target_type/:target_id/notifications
     # @overload index(params)
     #   @param [Hash] params Request parameter options for notification index
-    #   @option params [String] :filter                 (nil)     Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
-    #   @option params [String] :limit                  (nil)     Limit to query for notifications
-    #   @option params [String] :reverse                ('false') If notification index will be ordered as earliest first
-    #   @option params [String] :without_grouping       ('false') If notification index will include group members
-    #   @option params [String] :with_group_members     ('false') If notification index will include group members
-    #   @option params [String] :filtered_by_type       (nil)     Notifiable type for filter
-    #   @option params [String] :filtered_by_group_type (nil)     Group type for filter, valid with :filtered_by_group_id
-    #   @option params [String] :filtered_by_group_id   (nil)     Group instance id for filter, valid with :filtered_by_group_type
-    #   @option params [String] :filtered_by_key        (nil)     Key of the notification for filter
+    #   @option params [String] :filter                 (nil)     Filter option to load notification index by their status (Nothing as auto, 'opened' or 'unopened')
+    #   @option params [String] :limit                  (nil)     Maximum number of notifications to return
+    #   @option params [String] :reverse                ('false') Whether notification index will be ordered as earliest first
+    #   @option params [String] :without_grouping       ('false') Whether notification index will include group members
+    #   @option params [String] :with_group_members     ('false') Whether notification index will include group members
+    #   @option params [String] :filtered_by_type       (nil)     Notifiable type to filter notification index
+    #   @option params [String] :filtered_by_group_type (nil)     Group type to filter notification index, valid with :filtered_by_group_id
+    #   @option params [String] :filtered_by_group_id   (nil)     Group instance ID to filter notification index, valid with :filtered_by_group_type
+    #   @option params [String] :filtered_by_key        (nil)     Key of notifications to filter notification index
     #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
-    #   @return [Responce] HTML view as default or JSON of notification index with json format parameter
+    #   @return [Responce] HTML view of notification index
     def index
       set_index_options
       load_index if params[:reload].to_s.to_boolean(true)
-      respond_to do |format|
-        format.html # index.html.erb
-        format.json { render json: @notifications.to_json(include: [:target, :notifiable, :group]) }
-      end
     end
 
     # Opens all notifications of the target.
@@ -35,18 +31,18 @@ module ActivityNotification
     # PUT /:target_type/:target_id/notifications/open_all
     # @overload open_all(params)
     #   @param [Hash] params Request parameters
-    #   @option params [String] :filter  (nil)     Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
-    #   @option params [String] :limit   (nil)     Limit to query for notifications
-    #   @option params [String] :reload  ('true')  Whether notification index will be reloaded
-    #   @option params [String] :without_grouping       ('false') If notification index will include group members
-    #   @option params [String] :with_group_members     ('false') If notification index will include group members
-    #   @option params [String] :filtered_by_type       (nil) Notifiable type for filter
-    #   @option params [String] :filtered_by_group_type (nil) Group type for filter, valid only :filtered_by_group_id
-    #   @option params [String] :filtered_by_group_id   (nil) Group instance id for filter, valid only :filtered_by_group_type
-    #   @option params [String] :filtered_by_key        (nil) Key of the notification for filter 
+    #   @option params [String] :filter                 (nil)     Filter option to load notification index by their status (Nothing as auto, 'opened' or 'unopened')
+    #   @option params [String] :limit                  (nil)     Maximum number of notifications to return
+    #   @option params [String] :without_grouping       ('false') Whether notification index will include group members
+    #   @option params [String] :with_group_members     ('false') Whether notification index will include group members
+    #   @option params [String] :filtered_by_type       (nil)     Notifiable type to filter notification index
+    #   @option params [String] :filtered_by_group_type (nil)     Group type to filter notification index, valid with :filtered_by_group_id
+    #   @option params [String] :filtered_by_group_id   (nil)     Group instance ID to filter notification index, valid with :filtered_by_group_type
+    #   @option params [String] :filtered_by_key        (nil)     Key of notifications to filter notification index
+    #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
     #   @return [Responce] JavaScript view for ajax request or redirects to back as default
     def open_all
-      @target.open_all_notifications(params)
+      @opened_notifications = @target.open_all_notifications(params)
       return_back_or_ajax
     end
   
@@ -62,14 +58,13 @@ module ActivityNotification
     # Deletes a notification.
     #
     # DELETE /:target_type/:target_id/notifications/:id
-    #
     # @overload destroy(params)
     #   @param [Hash] params Request parameters
-    #   @option params [String] :filter             (nil)     Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
-    #   @option params [String] :limit              (nil)     Limit to query for notifications
-    #   @option params [String] :reload             ('true')  Whether notification index will be reloaded
-    #   @option params [String] :without_grouping   ('false') If notification index will include group members
-    #   @option params [String] :with_group_members ('false') If notification index will include group members
+    #   @option params [String] :filter                 (nil)     Filter option to load notification index by their status (Nothing as auto, 'opened' or 'unopened')
+    #   @option params [String] :limit                  (nil)     Maximum number of notifications to return
+    #   @option params [String] :without_grouping       ('false') Whether notification index will include group members
+    #   @option params [String] :with_group_members     ('false') Whether notification index will include group members
+    #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
     #   @return [Responce] JavaScript view for ajax request or redirects to back as default
     def destroy
       @notification.destroy
@@ -81,19 +76,17 @@ module ActivityNotification
     # PUT /:target_type/:target_id/notifications/:id/open
     # @overload open(params)
     #   @param [Hash] params Request parameters
-    #   @option params [String] :move               ('false') Whether redirects to notifiable_path after the notification is opened
-    #   @option params [String] :filter             (nil)     Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
-    #   @option params [String] :limit              (nil)     Limit to query for notifications
-    #   @option params [String] :reload             ('true')  Whether notification index will be reloaded
-    #   @option params [String] :without_grouping   ('false') If notification index will include group members
-    #   @option params [String] :with_group_members ('false') If notification index will include group members
+    #   @option params [String] :move                   ('false') Whether it redirects to notifiable_path after the notification is opened
+    #   @option params [String] :filter                 (nil)     Filter option to load notification index by their status (Nothing as auto, 'opened' or 'unopened')
+    #   @option params [String] :limit                  (nil)     Maximum number of notifications to return
+    #   @option params [String] :without_grouping       ('false') Whether notification index will include group members
+    #   @option params [String] :with_group_members     ('false') Whether notification index will include group members
+    #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
     #   @return [Responce] JavaScript view for ajax request or redirects to back as default
     def open
       with_members = !(params[:with_group_members].to_s.to_boolean(false) || params[:without_grouping].to_s.to_boolean(false))
-      @notification.open!(with_members: with_members)
-      params[:move].to_s.to_boolean(false) ? 
-        move : 
-        return_back_or_ajax
+      @opened_notifications_count = @notification.open!(with_members: with_members)
+      params[:move].to_s.to_boolean(false) ? move : return_back_or_ajax
     end
 
     # Moves to notifiable_path of the notification.
@@ -101,14 +94,17 @@ module ActivityNotification
     # GET /:target_type/:target_id/notifications/:id/move
     # @overload open(params)
     #   @param [Hash] params Request parameters
-    #   @option params [String] :open    ('false') Whether the notification will be opened
-    #   @option params [String] :filter  (nil)     Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
-    #   @option params [String] :limit   (nil)     Limit to query for notifications
-    #   @option params [String] :reload  ('true')  Whether notification index will be reloaded
+    #   @option params [String] :open                   ('false') Whether the notification will be opened
+    #   @option params [String] :filter                 (nil)     Filter option to load notification index by their status (Nothing as auto, 'opened' or 'unopened')
+    #   @option params [String] :limit                  (nil)     Maximum number of notifications to return
+    #   @option params [String] :without_grouping       ('false') Whether notification index will include group members
+    #   @option params [String] :with_group_members     ('false') Whether notification index will include group members
+    #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
     #   @return [Responce] JavaScript view for ajax request or redirects to back as default
     def move
-      @notification.open! if params[:open].to_s.to_boolean(false)
-      redirect_to @notification.notifiable_path
+      with_members = !(params[:with_group_members].to_s.to_boolean(false) || params[:without_grouping].to_s.to_boolean(false))
+      @opened_notifications_count = @notification.open!(with_members: with_members) if params[:open].to_s.to_boolean(false)
+      redirect_to_notifiable_path
     end
   
     # Returns path of the target view templates.
@@ -153,6 +149,12 @@ module ActivityNotification
           else
             @target.notification_index_with_attributes(@index_options)
           end
+      end
+
+      # Redirect to notifiable_path
+      # @api protected
+      def redirect_to_notifiable_path
+        redirect_to @notification.notifiable_path
       end
 
       # Returns controller path.

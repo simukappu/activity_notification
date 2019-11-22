@@ -14,7 +14,7 @@ describe ActivityNotification::SubscriptionsWithDeviseController, type: :control
       sign_in test_user
     end
   
-    it_behaves_like :subscription_controller
+    it_behaves_like :subscriptions_controller
   end
 
   context "signed in with devise as unauthenticated user" do

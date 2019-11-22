@@ -1,4 +1,8 @@
-shared_examples_for :subscription_controller do
+require_relative 'controller_spec_utility'
+
+shared_examples_for :subscriptions_controller do
+  include ActivityNotification::ControllerSpec::RequestUtility
+
   let(:target_params) { { target_type: target_type }.merge(extra_params || {}) }
 
   describe "GET #index" do
@@ -78,34 +82,6 @@ shared_examples_for :subscription_controller do
             get_with_compatibility :index, target_params.merge({ typed_target_param => 0 }), valid_session
           }.to raise_error(ActiveRecord::RecordNotFound)
         end
-      end
-    end
-
-    context "with json as format parameter" do
-      before do
-        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
-        @notification = create(:notification, target: test_target, key: 'test_notification_key')
-        get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, format: :json }), valid_session
-      end
-
-      it "returns 200 as http status code" do
-        expect(response.status).to eq(200)
-      end
-
-      it "returns json format" do
-        case ActivityNotification.config.orm
-        when :active_record
-          expect(JSON.parse(response.body)["subscriptions"].first)
-          .to include("target_id" => test_target.id, "target_type" => test_target.to_class_name)
-        when :mongoid
-          expect(JSON.parse(response.body)["subscriptions"].first)
-          .to include("target_id" => test_target.id.to_s, "target_type" => test_target.to_class_name)
-        when :dynamoid
-          expect(JSON.parse(response.body)["subscriptions"].first)
-          .to include("target_key" => "#{test_target.to_class_name}#{ActivityNotification.config.composite_key_delimiter}#{test_target.id}")
-        end
-        expect(JSON.parse(response.body)["unconfigured_notification_keys"].first)
-        .to eq('test_notification_key')
       end
     end
 
@@ -345,6 +321,38 @@ shared_examples_for :subscription_controller do
     end
   end
 
+  describe "GET #find" do
+    context "with key, target_type and (typed_target)_id parameters" do
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        get_with_compatibility :find, target_params.merge({ key: 'test_subscription_key', typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "assigns the requested subscription as @subscription" do
+        expect(assigns(:subscription)).to eq(@subscription)
+      end
+
+      it "redirects to :show" do
+        expect(response).to redirect_to action: :show, id: @subscription
+      end
+    end
+
+    context "with wrong id and (typed_target)_id parameters" do
+      before do
+        @subscription = create(:subscription, target: create(:user))
+        get_with_compatibility :find, target_params.merge({ key: 'test_subscription_key', typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 404 as http status code" do
+        expect(response.status).to eq(404)
+      end
+    end
+  end
+
   describe "GET #show" do
     context "with id, target_type and (typed_target)_id parameters" do
       before do
@@ -360,7 +368,7 @@ shared_examples_for :subscription_controller do
         expect(assigns(:subscription)).to eq(@subscription)
       end
 
-      it "renders the :index template" do
+      it "renders the :show template" do
         expect(response).to render_template :show
       end
     end
@@ -389,7 +397,7 @@ shared_examples_for :subscription_controller do
       end
 
       it "deletes the subscription" do
-        expect(assigns(test_target.subscriptions.where(id: @subscription.id).exists?)).to be_falsey
+        expect(test_target.subscriptions.where(id: @subscription.id).exists?).to be_falsey
       end
 
       it "redirects to :index" do
@@ -935,39 +943,4 @@ shared_examples_for :subscription_controller do
       end
     end
   end
-
-
-  private
-
-    def get_with_compatibility action, params, session
-      if Rails::VERSION::MAJOR <= 4
-        get action, params, session
-      else
-        get action, params: params, session: session
-      end
-    end
-
-    def put_with_compatibility action, params, session
-      if Rails::VERSION::MAJOR <= 4
-        put action, params, session
-      else
-        put action, params: params, session: session
-      end
-    end
-
-    def delete_with_compatibility action, params, session
-      if Rails::VERSION::MAJOR <= 4
-        delete action, params, session
-      else
-        delete action, params: params, session: session
-      end
-    end
-
-    def xhr_with_compatibility method, action, params, session
-      if Rails::VERSION::MAJOR <= 4
-        xhr method, action, params, session
-      else
-        send method.to_s, action, xhr: true, params: params, session: session
-      end
-    end
 end

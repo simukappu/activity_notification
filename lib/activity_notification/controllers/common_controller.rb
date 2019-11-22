@@ -19,7 +19,7 @@ module ActivityNotification
 
       # Sets @target instance variable from request parameters.
       # @api protected
-      # @return [Object] Target instance (Returns HTTP 400 when request parameters are not enough)
+      # @return [Object] Target instance (Returns HTTP 400 when request parameters are invalid)
       def set_target
         if (target_type = params[:target_type]).present?
           target_class = target_type.to_model_class
@@ -27,7 +27,7 @@ module ActivityNotification
             target_class.find_by!(id: params[:target_id]) :
             target_class.find_by!(id: params["#{target_type.to_resource_name}_id"])
         else
-          render plain: "400 Bad Request: Missing parameter", status: 400
+          render status: 400, json: error_response(code: 400, message: "Invalid parameter", type: "Parameter is missing or the value is empty: target_type")
         end
       end
 
@@ -37,7 +37,7 @@ module ActivityNotification
       # @return Nil or render HTTP 403 status
       def validate_target(belonging_model)
         if @target.present? && belonging_model.target != @target
-          render plain: "403 Forbidden: Wrong target", status: 403
+          render status: 403, json: error_response(code: 403, message: "Forbidden because of invalid parameter", type: "Wrong target is specified")
         end
       end
 
@@ -82,9 +82,39 @@ module ActivityNotification
         lookup_context.prefixes.prepend(target_view_path)
       end
 
+      # Returns error response as Hash
+      # @api protected
+      # @return [Hash] Error message
+      def error_response(error_info = {})
+        { gem: "activity_notification", error: error_info }
+      end
+
+      # Render Resource Not Found error with 404 status
+      # @api protected
+      # @return [void]
+      def render_resource_not_found(error = nil)
+        message_type = error.respond_to?(:message) ? error.message : error
+        render status: 404, json: error_response(code: 404, message: "Resource not found", type: message_type)
+      end
+
+      # Render Invalid Parameter error with 400 status
+      # @api protected
+      # @return [void]
+      def render_invalid_parameter(message)
+        render status: 400, json: error_response(code: 400, message: "Invalid parameter", type: message)
+      end
+
+      # Validate param and return HTTP 400 unless it presents.
+      # @api protected
+      # @param [String, Symbol] param_name Parameter name to validate
+      # @return [void]
+      def validate_param(param_name)
+        render_invalid_parameter("Parameter is missing: #{param_name}") if params[param_name].blank?
+      end
+
       # Returns JavaScript view for ajax request or redirects to back as default.
       # @api protected
-      # @return [Responce] JavaScript view for ajax request or redirects to back as default
+      # @return [Response] JavaScript view for ajax request or redirects to back as default
       def return_back_or_ajax
         set_index_options
         respond_to do |format|

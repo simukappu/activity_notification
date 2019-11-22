@@ -7,6 +7,5 @@ describe ActivityNotification::SubscriptionsController, type: :controller do
   let(:extra_params)       { {} }
   let(:valid_session)      {}
 
-  it_behaves_like :subscription_controller
-
+  it_behaves_like :subscriptions_controller
 end

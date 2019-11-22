@@ -9,11 +9,14 @@ gem 'pg', '~> 0.21.0'
 
 group :development do
   gem 'bullet'
+  gem 'rack-cors'
 end
 
 group :test do
   gem 'ammeter'
   gem 'timecop'
+  gem 'committee'
+  gem 'committee-rails'
   gem 'coveralls', require: false
 end
 

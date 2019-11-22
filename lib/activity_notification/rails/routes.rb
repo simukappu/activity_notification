@@ -80,6 +80,28 @@ module ActionDispatch::Routing
     #     open_user_notification      PUT    /notifications/:id/open(.:format)
     #       { controller:"activity_notification/notifications_with_devise", action:"open", target_type:"users", devise_type:"users" }
     #
+    # When you use activity_notification controllers as REST API mode,
+    # you can create as follows in your routes:
+    #   scope :api do
+    #     scope :"v2" do
+    #       notify_to :users, api_mode: true
+    #     end
+    #   end
+    # This api_mode option creates the needed routes as REST API:
+    #   # Notification as API mode routes
+    #     GET    /api/v2/users/:user_id/notifications(.:format)
+    #       { controller:"activity_notification/notifications_api", action:"index", target_type:"users" }
+    #     GET    /api/v2/users/:user_id/notifications/:id(.:format)
+    #       { controller:"activity_notification/notifications_api", action:"show", target_type:"users" }
+    #     DELETE /api/v2/users/:user_id/notifications/:id(.:format)
+    #       { controller:"activity_notification/notifications_api", action:"destroy", target_type:"users" }
+    #     POST   /api/v2/users/:user_id/notifications/open_all(.:format)
+    #       { controller:"activity_notification/notifications_api", action:"open_all", target_type:"users" }
+    #     GET    /api/v2/users/:user_id/notifications/:id/move(.:format)
+    #       { controller:"activity_notification/notifications_api", action:"move", target_type:"users" }
+    #     PUT    /api/v2/users/:user_id/notifications/:id/open(.:format)
+    #       { controller:"activity_notification/notifications_api", action:"open", target_type:"users" }
+    #
     # When you would like to define subscription management paths with notification paths,
     # you can create as follows in your routes:
     #   notify_to :users, with_subscription: true
@@ -102,12 +124,19 @@ module ActionDispatch::Routing
     #   scope :myscope, as: :myscope do
     #     notify_to :myscope, with_devise: :users, devise_default_routes: true, with_subscription: true, routing_scope: :myscope
     #   end
+    # @example Define notification paths as API mode including subscription paths
+    #   scope :api do
+    #     scope :"v2" do
+    #       notify_to :users, api_mode: true, with_subscription: true
+    #     end
+    #   end
     #
     # @overload notify_to(*resources, *options)
     #   @param          [Symbol]       resources Resources to notify
     #   @option options [String]       :routing_scope         (nil)            Routing scope for notification routes
     #   @option options [Symbol]       :with_devise           (false)          Devise resources name for devise integration. Devise integration will be enabled by this option.
     #   @option options [Boolean]      :devise_default_routes (false)          Whether you will create routes as device default routes assciated with authenticated devise resource as the default target
+    #   @option options [Boolean]      :api_mode              (false)          Whether you will use activity_notification controllers as REST API mode
     #   @option options [Hash|Boolean] :with_subscription     (false)          Subscription path options to define subscription management paths with notification paths. Calls subscribed_by routing when truthy value is passed as this option.
     #   @option options [String]       :model                 (:notifications) Model name of notifications
     #   @option options [String]       :controller            ("activity_notification/notifications" | activity_notification/notifications_with_devise") :controller option as resources routing
@@ -120,7 +149,7 @@ module ActionDispatch::Routing
 
       resources.each do |target|
         options[:defaults] = { target_type: target.to_s }.merge(options[:devise_defaults])
-        resources_options = options.select { |key, _| [:with_devise, :devise_default_routes, :with_subscription, :subscription_option, :model, :devise_defaults].exclude? key }
+        resources_options = options.select { |key, _| [:api_mode, :with_devise, :devise_default_routes, :with_subscription, :subscription_option, :model, :devise_defaults].exclude? key }
         if options[:with_devise].present? && options[:devise_default_routes].present?
           create_notification_routes options, resources_options
         else
@@ -146,11 +175,13 @@ module ActionDispatch::Routing
     #   # Subscription routes
     #     user_subscriptions                                GET    /users/:user_id/subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions", action:"index", target_type:"users" }
+    #     find_user_subscriptions                           GET    /users/:user_id/subscriptions/find(.:format)
+    #       { controller:"activity_notification/subscriptions", action:"find", target_type:"users" }
     #     user_subscription                                 GET    /users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions", action:"show", target_type:"users" }
-    #     open_all_user_subscriptions                       PUT    /users/:user_id/subscriptions(.:format)
+    #                                                       PUT    /users/:user_id/subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions", action:"create", target_type:"users" }
-    #     user_subscription                                 DELETE /users/:user_id/subscriptions/:id(.:format)
+    #                                                       DELETE /users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions", action:"destroy", target_type:"users" }
     #     subscribe_user_subscription                       PUT    /users/:user_id/subscriptions/:id/subscribe(.:format)
     #       { controller:"activity_notification/subscriptions", action:"subscribe", target_type:"users" }
@@ -173,11 +204,13 @@ module ActionDispatch::Routing
     #   # Subscription routes
     #     myscope_user_subscriptions                                GET    /myscope/users/:user_id/subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions", action:"index", target_type:"users", routing_scope: :myscope }
+    #     find_myscope_user_subscriptions                           GET    /myscope/users/:user_id/subscriptions/find(.:format)
+    #       { controller:"activity_notification/subscriptions", action:"find", target_type:"users", routing_scope: :myscope }
     #     myscope_user_subscription                                 GET    /myscope/users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions", action:"show", target_type:"users", routing_scope: :myscope }
-    #     open_all_myscope_user_subscriptions                       PUT    /myscope/users/:user_id/subscriptions(.:format)
+    #                                                               PUT    /myscope/users/:user_id/subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions", action:"create", target_type:"users", routing_scope: :myscope }
-    #     myscope_user_subscription                                 DELETE /myscope/users/:user_id/subscriptions/:id(.:format)
+    #                                                               DELETE /myscope/users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions", action:"destroy", target_type:"users", routing_scope: :myscope }
     #     subscribe_myscope_user_subscription                       PUT    /myscope/users/:user_id/subscriptions/:id/subscribe(.:format)
     #       { controller:"activity_notification/subscriptions", action:"subscribe", target_type:"users", routing_scope: :myscope }
@@ -199,11 +232,13 @@ module ActionDispatch::Routing
     #   # Subscription with devise routes
     #     user_subscriptions                                GET    /users/:user_id/subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"index", target_type:"users", devise_type:"users" }
+    #     find_user_subscriptions                           GET    /users/:user_id/subscriptions/find(.:format)
+    #       { controller:"activity_notification/subscriptions_with_devise", action:"find", target_type:"users", devise_type:"users" }
     #     user_subscription                                 GET    /users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"show", target_type:"users", devise_type:"users" }
-    #     open_all_user_subscriptions                       PUT    /users/:user_id/subscriptions(.:format)
+    #                                                       PUT    /users/:user_id/subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"create", target_type:"users", devise_type:"users" }
-    #     user_subscription                                 DELETE /users/:user_id/subscriptions/:id(.:format)
+    #                                                       DELETE /users/:user_id/subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"destroy", target_type:"users", devise_type:"users" }
     #     subscribe_user_subscription                       PUT    /users/:user_id/subscriptions/:id/subscribe(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"subscribe", target_type:"users", devise_type:"users" }
@@ -224,11 +259,13 @@ module ActionDispatch::Routing
     #   # Subscription with devise routes
     #     user_subscriptions                                GET    /subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"index", target_type:"users", devise_type:"users" }
+    #     find_user_subscriptions                           GET    /subscriptions/find(.:format)
+    #       { controller:"activity_notification/subscriptions_with_devise", action:"find", target_type:"users", devise_type:"users" }
     #     user_subscription                                 GET    /subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"show", target_type:"users", devise_type:"users" }
-    #     open_all_user_subscriptions                       PUT    /subscriptions(.:format)
+    #                                                       PUT    /subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"create", target_type:"users", devise_type:"users" }
-    #     user_subscription                                 DELETE /subscriptions/:id(.:format)
+    #                                                       DELETE /subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"destroy", target_type:"users", devise_type:"users" }
     #     subscribe_user_subscription                       PUT    /subscriptions/:id/subscribe(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"subscribe", target_type:"users", devise_type:"users" }
@@ -243,18 +280,57 @@ module ActionDispatch::Routing
     #     unsubscribe_to_optional_target_user_subscription  PUT    /subscriptions/:id/unsubscribe_to_optional_target(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"unsubscribe_to_optional_target", target_type:"users", devise_type:"users" }
     #
+    # When you use activity_notification controllers as REST API mode,
+    # you can create as follows in your routes:
+    #   scope :api do
+    #     scope :"v2" do
+    #       subscribed_by :users, api_mode: true
+    #     end
+    #   end
+    # This api_mode option creates the needed routes as REST API:
+    #   # Subscription as API mode routes
+    #     GET    /subscriptions(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"index", target_type:"users" }
+    #     GET    /subscriptions/find(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"find", target_type:"users" }
+    #     GET    /subscriptions/:id(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"show", target_type:"users" }
+    #     PUT    /subscriptions(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"create", target_type:"users" }
+    #     DELETE /subscriptions/:id(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"destroy", target_type:"users" }
+    #     PUT    /subscriptions/:id/subscribe(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"subscribe", target_type:"users" }
+    #     PUT    /subscriptions/:id/unsubscribe(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"unsubscribe", target_type:"users" }
+    #     PUT    /subscriptions/:id/subscribe_to_email(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"subscribe_to_email", target_type:"users" }
+    #     PUT    /subscriptions/:id/unsubscribe_to_email(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"unsubscribe_to_email", target_type:"users" }
+    #     PUT    /subscriptions/:id/subscribe_to_optional_target(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"subscribe_to_optional_target", target_type:"users" }
+    #     PUT    /subscriptions/:id/unsubscribe_to_optional_target(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"unsubscribe_to_optional_target", target_type:"users" }
+    #
     # @example Define subscribed_by in config/routes.rb
     #   subscribed_by :users
     # @example Define subscribed_by with options
     #   subscribed_by :users, except: [:index, :show]
     # @example Integrated with Devise authentication
     #   subscribed_by :users, with_devise: :users
+    # @example Define subscription paths as API mode
+    #   scope :api do
+    #     scope :"v2" do
+    #       subscribed_by :users, api_mode: true
+    #     end
+    #   end
     #
     # @overload subscribed_by(*resources, *options)
     #   @param          [Symbol]       resources Resources to notify
     #   @option options [String]       :routing_scope         (nil)            Routing scope for subscription routes
     #   @option options [Symbol]       :with_devise           (false)          Devise resources name for devise integration. Devise integration will be enabled by this option.
     #   @option options [Boolean]      :devise_default_routes (false)          Whether you will create routes as device default routes assciated with authenticated devise resource as the default target
+    #   @option options [Boolean]      :api_mode              (false)          Whether you will use activity_notification controllers as REST API mode
     #   @option options [String]       :model                 (:subscriptions) Model name of subscriptions
     #   @option options [String]       :controller            ("activity_notification/subscriptions" | activity_notification/subscriptions_with_devise") :controller option as resources routing
     #   @option options [Symbol]       :as                    (nil)            :as option as resources routing
@@ -266,7 +342,7 @@ module ActionDispatch::Routing
 
       resources.each do |target|
         options[:defaults] = { target_type: target.to_s }.merge(options[:devise_defaults])
-        resources_options = options.select { |key, _| [:with_devise, :devise_default_routes, :model, :devise_defaults].exclude? key }
+        resources_options = options.select { |key, _| [:api_mode, :with_devise, :devise_default_routes, :model, :devise_defaults].exclude? key }
         if options[:with_devise].present? && options[:devise_default_routes].present?
           create_subscription_routes options, resources_options
         else
@@ -305,20 +381,22 @@ module ActionDispatch::Routing
         # Check resources if it includes target module
         resources_name = resource.to_s.pluralize.underscore
         options[:model] ||= resources_name.to_sym
+        controller_name = "activity_notification/#{resources_name}"
+        controller_name.concat("_api") if options[:api_mode]
         if options[:with_devise].present?
-          options[:controller] ||= "activity_notification/#{resources_name}_with_devise"
+          options[:controller] ||= "#{controller_name}_with_devise"
           options[:as]         ||= resources_name
           # Check devise configuration in model
           options[:devise_defaults] = { devise_type: options[:with_devise].to_s }
           options[:devise_defaults] = options[:devise_defaults].merge(options.slice(:devise_default_routes))
         else
-          options[:controller] ||= "activity_notification/#{resources_name}"
+          options[:controller] ||= controller_name
           options[:devise_defaults] = {}
         end
         (options[:except] ||= []).concat(except_actions)
         if options[:with_subscription].present?
           options[:subscription_option] = (options[:with_subscription].is_a?(Hash) ? options[:with_subscription] : {})
-                                            .merge(options.slice(:with_devise, :devise_default_routes, :routing_scope))
+                                            .merge(options.slice(:api_mode, :with_devise, :devise_default_routes, :routing_scope))
         end
         # Support other options like :as, :path_prefix, :path_names ...
         options
@@ -350,6 +428,9 @@ module ActionDispatch::Routing
       # @param [Hash] resources_options Options to send resources method
       def create_subscription_routes(options = {}, resources_options = [])
         self.resources options[:model], resources_options do
+          collection do
+            get :find                           unless ignore_path?(:find, options)
+          end
           member do
             put :subscribe                      unless ignore_path?(:subscribe, options)
             put :unsubscribe                    unless ignore_path?(:unsubscribe, options)

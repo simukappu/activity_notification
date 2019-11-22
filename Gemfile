@@ -19,7 +19,10 @@ group :test do
   gem 'action-cable-testing'
   gem 'ammeter'
   gem 'timecop'
+  gem 'committee'
+  gem 'committee-rails'
   gem 'coveralls', require: false
 end
 
+gem 'rack-cors', groups: [:production, :development]
 gem 'dotenv-rails', groups: [:development, :test]

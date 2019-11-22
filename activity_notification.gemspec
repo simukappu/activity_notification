@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'railties', '>= 4.2.0', '< 6.1'
   s.add_dependency 'i18n', '>= 0.5.0'
   s.add_dependency 'jquery-rails', '>= 3.1.1'
+  s.add_dependency 'swagger-blocks', '>= 3.0.0'
 
   s.add_development_dependency 'puma', '>= 3.12.0'
   s.add_development_dependency 'sqlite3', '>= 1.3.13'

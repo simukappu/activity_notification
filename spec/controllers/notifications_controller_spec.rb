@@ -7,6 +7,5 @@ describe ActivityNotification::NotificationsController, type: :controller do
   let(:extra_params)       { {} }
   let(:valid_session)      {}
 
-  it_behaves_like :notification_controller
-
+  it_behaves_like :notifications_controller
 end

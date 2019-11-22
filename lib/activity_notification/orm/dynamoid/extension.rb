@@ -1,6 +1,6 @@
 require 'dynamoid/adapter_plugin/aws_sdk_v3'
 
-# Entend Dynamoid to support none, limit, exists?, update_all in Dynamoid::Criteria::Chain.
+# Entend Dynamoid v3.1.0 to support none, limit, exists?, update_all, serializable_hash in Dynamoid::Criteria::Chain.
 # ActivityNotification project will try to contribute these fundamental functions to Dynamoid upstream.
 # @private
 module Dynamoid # :nodoc: all
@@ -32,6 +32,7 @@ module Dynamoid # :nodoc: all
     # https://github.com/Dynamoid/dynamoid/blob/master/lib/dynamoid/criteria/chain.rb
     # @private
     class Chain
+      # Return new none object
       def none
         None.new(self.source)
       end
@@ -63,6 +64,11 @@ module Dynamoid # :nodoc: all
         each do |document|
           document.update_attributes(conditions)
         end
+      end
+
+      # Return serializable_hash as array
+      def serializable_hash(options = {})
+        all.to_a.map { |r| r.serializable_hash(options) }
       end
     end
 

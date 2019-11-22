@@ -1,7 +1,8 @@
 require_relative 'controller_spec_utility'
 
-shared_examples_for :notifications_controller do
+shared_examples_for :notifications_api_controller do
   include ActivityNotification::ControllerSpec::RequestUtility
+  include ActivityNotification::ControllerSpec::ApiResponseUtility
 
   let(:target_params) { { target_type: target_type }.merge(extra_params || {}) }
 
@@ -16,12 +17,9 @@ shared_examples_for :notifications_controller do
         expect(response.status).to eq(200)
       end
 
-      it "assigns notification index as @notifications" do
-        expect(assigns(:notifications)).to eq([@notification])
-      end
-
-      it "renders the :index template" do
-        expect(response).to render_template :index
+      it "returns JSON response" do
+        expect(response_json["count"]).to eq(1)
+        assert_json_with_object_array(response_json["notifications"], [@notification])
       end
     end
 
@@ -34,14 +32,6 @@ shared_examples_for :notifications_controller do
       it "returns 200 as http status code" do
         expect(response.status).to eq(200)
       end
-
-      it "assigns notification index as @notifications" do
-        expect(assigns(:notifications)).to eq([@notification])
-      end
-
-      it "renders the :index template" do
-        expect(response).to render_template :index
-      end
     end
 
     context "without target_type parameters" do
@@ -53,23 +43,24 @@ shared_examples_for :notifications_controller do
       it "returns 400 as http status code" do
         expect(response.status).to eq(400)
       end
+
+      it "returns error JSON response" do
+        assert_error_response(400)
+      end
     end
 
     context "with not found (typed_target)_id parameter" do
       before do
         @notification = create(:notification, target: test_target)
+        get_with_compatibility :index, target_params.merge({ typed_target_param => 0 }), valid_session
       end
 
-      it "raises ActiveRecord::RecordNotFound" do
-        if ENV['AN_TEST_DB'] == 'mongodb'
-          expect {
-            get_with_compatibility :index, target_params.merge({ typed_target_param => 0 }), valid_session
-          }.to raise_error(Mongoid::Errors::DocumentNotFound)
-        else
-          expect {
-            get_with_compatibility :index, target_params.merge({ typed_target_param => 0 }), valid_session
-          }.to raise_error(ActiveRecord::RecordNotFound)
-        end
+      it "returns 404 as http status code" do
+        expect(response.status).to eq(404)
+      end
+
+      it "returns error JSON response" do
+        assert_error_response(404)
       end
     end
 
@@ -80,8 +71,8 @@ shared_examples_for :notifications_controller do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filter: 'unopened' }), valid_session
         end
 
-        it "assigns unopened notification index as @notifications" do
-          expect(assigns(:notifications)).to eq([@notification])
+        it "returns unopened notification index as JSON" do
+          assert_json_with_object_array(response_json["notifications"], [@notification])
         end
       end
 
@@ -91,8 +82,8 @@ shared_examples_for :notifications_controller do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filter: 'opened' }), valid_session
         end
 
-        it "assigns unopened notification index as @notifications" do
-          expect(assigns(:notifications)).to eq([])
+        it "returns unopened notification index as JSON" do
+          assert_json_with_object_array(response_json["notifications"], [])
         end
       end
     end
@@ -107,8 +98,8 @@ shared_examples_for :notifications_controller do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, limit: 2 }), valid_session
         end
 
-        it "assigns notification index of size 2 as @notifications" do
-          expect(assigns(:notifications).size).to eq(2)
+        it "returns notification index of size 2 as JSON" do
+          assert_json_with_array_size(response_json["notifications"], 2)
         end
       end
 
@@ -117,29 +108,8 @@ shared_examples_for :notifications_controller do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, limit: 1 }), valid_session
         end
 
-        it "assigns notification index of size 1 as @notifications" do
-          expect(assigns(:notifications).size).to eq(1)
-        end
-      end
-    end
-
-    context "with reload parameter" do
-      context "with false as reload" do
-        before do
-          @notification = create(:notification, target: test_target)
-          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, reload: false }), valid_session
-        end
-    
-        it "returns 200 as http status code" do
-          expect(response.status).to eq(200)
-        end
-  
-        it "does not assign notification index as @notifications" do
-          expect(assigns(:notifications)).to be_nil
-        end
-  
-        it "renders the :index template" do
-          expect(response).to render_template :index
+        it "returns notification index of size 1 as JSON" do
+          assert_json_with_array_size(response_json["notifications"], 1)
         end
       end
     end
@@ -163,10 +133,7 @@ shared_examples_for :notifications_controller do
         end
 
         it "returns the latest order" do
-          expect(assigns(:notifications)[0]).to eq(@notification1)
-          expect(assigns(:notifications)[1]).to eq(@notification2)
-          expect(assigns(:notifications)[2]).to eq(@notification3)
-          expect(assigns(:notifications).size).to eq(3)
+          assert_json_with_object_array(response_json["notifications"], [@notification1, @notification2, @notification3])
         end
       end
 
@@ -176,10 +143,7 @@ shared_examples_for :notifications_controller do
         end
 
         it "returns the earliest order" do
-          expect(assigns(:notifications)[0]).to eq(@notification2)
-          expect(assigns(:notifications)[1]).to eq(@notification1)
-          expect(assigns(:notifications)[2]).to eq(@notification3)
-          expect(assigns(:notifications).size).to eq(3)
+          assert_json_with_object_array(response_json["notifications"], [@notification2, @notification1, @notification3])
         end
       end
     end
@@ -198,93 +162,45 @@ shared_examples_for :notifications_controller do
       context 'with filtered_by_type parameter' do
         it "returns filtered notifications only" do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filtered_by_type: 'Article' }), valid_session
-          expect(assigns(:notifications)[0]).to eq(@notification2)
-          expect(assigns(:notifications)[1]).to eq(@notification3)
-          expect(assigns(:notifications).size).to eq(2)
+          assert_json_with_object_array(response_json["notifications"], [@notification2, @notification3])
         end
       end
 
       context 'with filtered_by_group_type and filtered_by_group_id parameters' do
         it "returns filtered notifications only" do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filtered_by_group_type: 'Article', filtered_by_group_id: @group.id.to_s }), valid_session
-          expect(assigns(:notifications)[0]).to eq(@notification1)
-          expect(assigns(:notifications).size).to eq(1)
+          assert_json_with_object_array(response_json["notifications"], [@notification1])
         end
       end
 
       context 'with filtered_by_key parameter' do
         it "returns filtered notifications only" do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filtered_by_key: @key }), valid_session
-          expect(assigns(:notifications)[0]).to eq(@notification3)
-          expect(assigns(:notifications).size).to eq(1)
+          assert_json_with_object_array(response_json["notifications"], [@notification3])
         end
       end
     end
   end
 
   describe "POST #open_all" do
-    context "http direct POST request" do
+    context "http POST request" do
       before do
         @notification = create(:notification, target: test_target)
         expect(@notification.opened?).to be_falsey
         post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target }), valid_session
-      end
-
-      it "returns 302 as http status code" do
-        expect(response.status).to eq(302)
-      end
-
-      it "opens all notifications of the target" do
-        expect(@notification.reload.opened?).to be_truthy
-      end
-
-      it "redirects to :index" do
-        expect(response).to redirect_to action: :index
-      end
-    end
-
-    context "http POST request from root_path" do
-      before do
-        @notification = create(:notification, target: test_target)
-        expect(@notification.opened?).to be_falsey
-        request.env["HTTP_REFERER"] = root_path
-        post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target }), valid_session
-      end
-
-      it "returns 302 as http status code" do
-        expect(response.status).to eq(302)
-      end
-
-      it "opens all notifications of the target" do
-        expect(@notification.reload.opened?).to be_truthy
-      end
-
-      it "redirects to root_path as request.referer" do
-        expect(response).to redirect_to root_path
-      end
-    end
-
-    context "Ajax POST request" do
-      before do
-        @notification = create(:notification, target: test_target)
-        expect(@notification.opened?).to be_falsey
-        xhr_with_compatibility :post, :open_all, target_params.merge({ typed_target_param => test_target }), valid_session
       end
 
       it "returns 200 as http status code" do
         expect(response.status).to eq(200)
       end
 
-      it "assigns notification index as @notifications" do
-        expect(assigns(:notifications)).to eq([@notification])
-      end
-
       it "opens all notifications of the target" do
-        expect(assigns(:notifications).first.opened?).to be_truthy
+        expect(@notification.reload.opened?).to be_truthy
       end
 
-      it "renders the :open_all template as format js" do
-        expect(response).to render_template :open_all, format: :js
+      it "returns JSON response" do
+        expect(response_json["count"]).to eq(1)
+        assert_json_with_object_array(response_json["notifications"], [@notification])
       end
     end
 
@@ -343,12 +259,8 @@ shared_examples_for :notifications_controller do
         expect(response.status).to eq(200)
       end
 
-      it "assigns the requested notification as @notification" do
-        expect(assigns(:notification)).to eq(@notification)
-      end
-
-      it "renders the :index template" do
-        expect(response).to render_template :show
+      it "returns the requested notification as JSON" do
+        assert_json_with_object(response_json, @notification)
       end
     end
 
@@ -361,144 +273,72 @@ shared_examples_for :notifications_controller do
       it "returns 403 as http status code" do
         expect(response.status).to eq(403)
       end
+
+      it "returns error JSON response" do
+        assert_error_response(403)
+      end
+    end
+
+    context "when associated notifiable record was not found" do
+      before do
+        @notification = create(:notification, target: test_target)
+        @notification.notifiable.delete
+        get_with_compatibility :show, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 500 as http status code" do
+        expect(response.status).to eq(500)
+      end
+
+      it "returns error JSON response" do
+        assert_error_response(500)
+      end
     end
   end
 
   describe "DELETE #destroy" do
-    context "http direct DELETE request" do
+    context "http DELETE request" do
       before do
         @notification = create(:notification, target: test_target)
         delete_with_compatibility :destroy, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
       end
 
-      it "returns 302 as http status code" do
-        expect(response.status).to eq(302)
+      it "returns 204 as http status code" do
+        expect(response.status).to eq(204)
       end
 
       it "deletes the notification" do
         expect(test_target.notifications.where(id: @notification.id).exists?).to be_falsey
-      end
-
-      it "redirects to :index" do
-        expect(response).to redirect_to action: :index
-      end
-    end
-
-    context "http DELETE request from root_path" do
-      before do
-        @notification = create(:notification, target: test_target)
-        request.env["HTTP_REFERER"] = root_path
-        delete_with_compatibility :destroy, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
-      end
-
-      it "returns 302 as http status code" do
-        expect(response.status).to eq(302)
-      end
-
-      it "deletes the notification" do
-        expect(assigns(test_target.notifications.where(id: @notification.id).exists?)).to be_falsey
-      end
-
-      it "redirects to root_path as request.referer" do
-        expect(response).to redirect_to root_path
-      end
-    end
-
-    context "Ajax DELETE request" do
-      before do
-        @notification = create(:notification, target: test_target)
-        xhr_with_compatibility :delete, :destroy, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
-      end
-
-      it "returns 200 as http status code" do
-        expect(response.status).to eq(200)
-      end
-
-      it "assigns notification index as @notifications" do
-        expect(assigns(:notifications)).to eq([])
-      end
-
-      it "deletes the notification" do
-        expect(assigns(test_target.notifications.where(id: @notification.id).exists?)).to be_falsey
-      end
-
-      it "renders the :destroy template as format js" do
-        expect(response).to render_template :destroy, format: :js
       end
     end
   end
 
   describe "PUT #open" do
     context "without move parameter" do
-      context "http direct PUT request" do
+      context "http PUT request" do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
           put_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
         end
 
-        it "returns 302 as http status code" do
-          expect(response.status).to eq(302)
-        end
-
-        it "opens the notification" do
-          expect(@notification.reload.opened?).to be_truthy
-        end
-
-        it "redirects to :index" do
-          expect(response).to redirect_to action: :index
-        end
-      end
-
-      context "http PUT request from root_path" do
-        before do
-          @notification = create(:notification, target: test_target)
-          expect(@notification.opened?).to be_falsey
-          request.env["HTTP_REFERER"] = root_path
-          put_with_compatibility :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
-        end
-
-        it "returns 302 as http status code" do
-          expect(response.status).to eq(302)
-        end
-
-        it "opens the notification" do
-          expect(@notification.reload.opened?).to be_truthy
-        end
-
-        it "redirects to root_path as request.referer" do
-          expect(response).to redirect_to root_path
-        end
-      end
-
-      context "Ajax PUT request" do
-        before do
-          @notification = create(:notification, target: test_target)
-          expect(@notification.opened?).to be_falsey
-          request.env["HTTP_REFERER"] = root_path
-          xhr_with_compatibility :put, :open, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
-        end
-    
         it "returns 200 as http status code" do
           expect(response.status).to eq(200)
         end
-    
-        it "assigns notification index as @notifications" do
-          expect(assigns(:notifications)).to eq([@notification])
-        end
-  
+
         it "opens the notification" do
           expect(@notification.reload.opened?).to be_truthy
         end
-  
-        it "renders the :open template as format js" do
-          expect(response).to render_template :open, format: :js
+
+        it "returns JSON response" do
+          expect(response_json["count"]).to eq(1)
+          assert_json_with_object(response_json["notification"], @notification)
         end
       end
     end
 
     context "with true as move parameter" do
-      context "http direct PUT request" do
+      context "http PUT request" do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
@@ -522,7 +362,7 @@ shared_examples_for :notifications_controller do
 
   describe "GET #move" do
     context "without open parameter" do
-      context "http direct GET request" do
+      context "http GET request" do
         before do
           @notification = create(:notification, target: test_target)
           get_with_compatibility :move, target_params.merge({ id: @notification, typed_target_param => test_target }), valid_session
@@ -539,7 +379,7 @@ shared_examples_for :notifications_controller do
     end
 
     context "with true as open parameter" do
-      context "http direct GET request" do
+      context "http GET request" do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
@@ -558,6 +398,79 @@ shared_examples_for :notifications_controller do
           expect(response).to redirect_to @notification.notifiable_path
         end
       end
+    end
+  end
+end
+
+shared_examples_for :notifications_api_request do
+  include ActivityNotification::ControllerSpec::CommitteeUtility
+
+  before do
+    group = create(:article)
+    notifier = create(:user)
+    create(:notification, target: test_target)
+    group_owner = create(:notification, target: test_target, group: group, notifier: notifier, parameters: { "test_default_param": "1" })
+    @notification = create(:notification, target: test_target, group: group, group_owner: group_owner, notifier: notifier, parameters: { "test_default_param": "1" })
+    group_owner.open!
+  end
+
+  describe "GET /apidocs" do
+    it "returns API references as OpenAPI Specification JSON schema" do
+      get "#{root_path}/apidocs"
+      write_schema_file(response.body)
+      expect(read_schema_file["openapi"]).to eq("3.0.0")
+    end
+  end
+
+  describe "GET /{target_type}/{target_id}/notifications", type: :request do
+    it "returns response as API references" do
+      get "#{api_path}/notifications"
+      assert_all_schema_confirm(response, 200)
+    end
+  end
+
+  describe "POST /{target_type}/{target_id}/notifications/open_all", type: :request do
+    it "returns response as API references" do
+      post "#{api_path}/notifications/open_all"
+      assert_all_schema_confirm(response, 200)
+    end
+  end
+
+  describe "GET /{target_type}/{target_id}/notifications/{id}", type: :request do
+    it "returns response as API references" do
+      get "#{api_path}/notifications/#{@notification.id}"
+      assert_all_schema_confirm(response, 200)
+    end
+
+    it "returns error response as API references" do
+      get "#{api_path}/notifications/0"
+      assert_all_schema_confirm(response, 404)
+    end
+  end
+
+  describe "DELETE /{target_type}/{target_id}/notifications/{id}", type: :request do
+    it "returns response as API references" do
+      delete "#{api_path}/notifications/#{@notification.id}"
+      assert_all_schema_confirm(response, 204)
+    end
+  end
+
+  describe "PUT /{target_type}/{target_id}/notifications/{id}/open", type: :request do
+    it "returns response as API references" do
+      put "#{api_path}/notifications/#{@notification.id}/open"
+      assert_all_schema_confirm(response, 200)
+    end
+
+    it "returns response as API references when request parameters have move=true" do
+      put "#{api_path}/notifications/#{@notification.id}/open?move=true"
+      assert_all_schema_confirm(response, 302)
+    end
+  end
+
+  describe "GET /{target_type}/{target_id}/notifications/{id}/move", type: :request do
+    it "returns response as API references" do
+      get "#{api_path}/notifications/#{@notification.id}/move"
+      assert_all_schema_confirm(response, 302)
     end
   end
 end
