@@ -6,30 +6,39 @@ describe ActivityNotification::Subscription, type: :model do
   it_behaves_like :subscription_api
 
   describe "with association" do
+    let(:target) { create(:confirmed_user) }
+    let(:subscription) { create(:subscription, target: target) }
+
     it "belongs to target" do
-      target = create(:confirmed_user)
-      subscription = create(:subscription, target: target)
       expect(subscription.reload.target).to eq(target)
     end
   end
 
   describe "with validation" do
-    before { @subscription = build(:subscription) }
+    let(:subscription) { build(:subscription) }
 
     it "is valid with target and key" do
-      expect(@subscription).to be_valid
+      expect(subscription).to be_valid
     end
 
     it "is invalid with blank target" do
-      @subscription.target = nil
-      expect(@subscription).to be_invalid
-      expect(@subscription.errors[:target].size).to eq(1)
+      subscription.target = nil
+      expect(subscription).to be_invalid
+      expect(subscription.errors[:target].size).to eq(1)
     end
 
     it "is invalid with blank key" do
-      @subscription.key = nil
-      expect(@subscription).to be_invalid
-      expect(@subscription.errors[:key].size).to eq(1)
+      subscription.key = nil
+      expect(subscription).to be_invalid
+      expect(subscription.errors[:key].size).to eq(1)
+    end
+
+    it "is invalid with duplicated key for same target" do
+      subscription_with_taken_key = create(:subscription)
+      subscription.key = subscription_with_taken_key.key
+      subscription.target = subscription_with_taken_key.target
+      expect(subscription).to be_invalid
+      expect(subscription.errors[:key].size).to eq(1)
     end
 
     #TODO
@@ -46,10 +55,10 @@ describe ActivityNotification::Subscription, type: :model do
     # end
 
     it "is invalid with true as subscribing_to_email and false as subscribing" do
-      @subscription.subscribing = false
-      @subscription.subscribing_to_email = true
-      expect(@subscription).to be_invalid
-      expect(@subscription.errors[:subscribing_to_email].size).to eq(1)
+      subscription.subscribing = false
+      subscription.subscribing_to_email = true
+      expect(subscription).to be_invalid
+      expect(subscription.errors[:subscribing_to_email].size).to eq(1)
     end
   end
 
