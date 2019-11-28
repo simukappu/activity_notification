@@ -65,3 +65,6 @@ build-iPhoneSimulator/
 
 # Security files for testing
 /spec/rails_app/config/initializers/aws.rb
+
+## Specific to RubyMine:
+.idea/
