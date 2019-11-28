@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'rails', '~> 5.2'
+gem 'sprockets', '~> 3.0'
 
 group :production do
   gem 'puma'
