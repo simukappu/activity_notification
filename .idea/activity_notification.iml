@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="RUBY_MODULE" version="4">
+  <component name="ModuleRunConfigurationManager">
+    <shared />
+  </component>
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$" />
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="arel (v9.0.0, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="bcrypt (v3.1.13, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="builder (v3.2.3, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="bullet (v6.0.2, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="bundler (v2.0.2, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="concurrent-ruby (v1.1.5, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="crass (v1.0.5, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="diff-lcs (v1.3, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="docile (v1.3.2, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="erubi (v1.9.0, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="globalid (v0.4.2, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="i18n (v1.7.0, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="jquery-rails (v4.3.5, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="json (v2.2.0, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mail (v2.7.1, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="marcel (v0.3.3, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="method_source (v0.9.2, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mimemagic (v0.3.3, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mini_mime (v1.0.2, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mini_portile2 (v2.4.0, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="orm_adapter (v0.5.0, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="pg (v1.1.4, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rack (v2.0.7, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rack-test (v1.1.0, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rails-controller-testing (v1.0.4, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rails-dom-testing (v2.0.3, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rails-html-sanitizer (v1.3.0, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="railties (v5.2.3, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="responders (v3.0.0, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rspec-rails (v3.8.2, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="simplecov (v0.17.0, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="simplecov-html (v0.10.2, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="sprockets-rails (v3.2.1, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="thor (v0.20.3, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="thread_safe (v0.3.6, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="timecop (v0.9.1, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="tzinfo (v1.2.5, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="warden (v1.2.8, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="websocket-driver (v0.7.1, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="websocket-extensions (v0.1.4, RVM: ruby-2.5.1 [cordeo]) [gem]" level="application" />
+  </component>
+</module>
