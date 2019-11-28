@@ -29,7 +29,7 @@ if defined?(ActionCable)
 
       # Allow the target to subscribe notification channel if notification_action_cable_with_devise? returns false
       # @api protected
-      # @return [Responce] Returns connected or rejected
+      # @return [Response] Returns connected or rejected
       def authenticate_target!
         reject if @target.nil? || @target.notification_action_cable_with_devise?
       end

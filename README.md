@@ -16,7 +16,7 @@
 ## About
 
 *activity_notification* provides following functions:
-* Notification API (creating notifications, query for notifications and managing notification parameters)
+* Notification API for your Rails application (creating and managing notifications, query for notifications)
 * Notification models (stored with ActiveRecord, Mongoid or Dynamoid ORM)
 * Notification controllers (managing open/unopen of notifications, providing link to notifiable activity page)
 * Notification views (presentation of notifications)
@@ -26,6 +26,7 @@
 * Batch email notification (event driven or periodical email notification, daily or weekly etc)
 * Push notification with [Action Cable](https://guides.rubyonrails.org/action_cable_overview.html)
 * Subscription management (subscribing and unsubscribing for each target and notification type)
+* REST API backend and [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification)
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
 * Activity notifications stream integrated into cloud computing using [Amazon DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)
 * Optional notification targets (Configurable optional notification targets like [Amazon SNS](https://aws.amazon.com/sns), [Slack](https://slack.com), SMS and so on)
@@ -59,6 +60,8 @@ The deployed demo application is included in this gem's source code as a test ap
 ### Slack as optional notification target
 <kbd>![optional-target-slack-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_optional_target_slack.png)</kbd>
 
+### REST API document with OpenAPI Specification
+**https://app.swaggerhub.com/apis/simukappu/activity-notification/**
 
 ## Table of contents
 
@@ -77,6 +80,7 @@ The deployed demo application is included in this gem's source code as a test ap
   - [Configuring views](#configuring-views)
   - [Configuring routes](#configuring-routes)
     - [Routes with scope](#routes-with-scope)
+    - [Routes as REST API backend](#routes-as-rest-api-backend)
   - [Creating notifications](#creating-notifications)
     - [Notification API](#notification-api)
     - [Asynchronous notification API with ActiveJob](#asynchronous-notification-api-with-activejob)
@@ -105,6 +109,9 @@ The deployed demo application is included in this gem's source code as a test ap
     - [Configuring subscriptions](#configuring-subscriptions)
     - [Managing subscriptions](#managing-subscriptions)
     - [Customizing subscriptions](#customizing-subscriptions)
+  - [REST API backend](#rest-api-backend)
+    - [Configuring REST API backend](#configuring-rest-api-backend)
+    - [API reference as OpenAPI Specification](#api-reference-as-openapi-specification)
   - [Integration with Devise](#integration-with-devise)
     - [Configuring integration with Devise authentication](#configuring-integration-with-devise-authentication)
     - [Using different model as target](#using-different-model-as-target)
@@ -488,6 +495,22 @@ end
 
 Then, pages are shown as */myscope/users/1/notifications*.
 
+#### Routes as REST API backend
+
+You can configure *activity_notification* routes as REST API backend with *api_mode* option like this:
+
+```ruby
+Rails.application.routes.draw do
+  scope :api do
+    scope :"v2" do
+      notify_to :users, api_mode: true
+    end
+  end
+end
+```
+
+Then, you can call *activity_notification* REST API as */api/v2/notifications* from your frontend application. See [REST API backend](#rest-api-backend) for more details.
+
 ### Creating notifications
 
 #### Notification API
@@ -756,7 +779,7 @@ If the customization at the views level is not enough, you can customize each co
 
       # ...
 
-      # POST /:target_type/:target_id/notifications/:id/open
+      # PUT /:target_type/:target_id/notifications/:id/open
       # def open
       #   super
       # end
@@ -778,7 +801,7 @@ If the customization at the views level is not enough, you can customize each co
     class Users::NotificationsController < ActivityNotification::NotificationsController
       # ...
 
-      # POST /:target_type/:target_id/notifications/:id/open
+      # PUT /:target_type/:target_id/notifications/:id/open
       def open
         # Custom code to open notification here
 
@@ -1149,6 +1172,51 @@ If you would like to customize subscription controllers or views, you can use ge
     ```console
     $ bin/rails generate activity_notification:views users -v subscriptions
     ```
+
+
+### REST API backend
+
+*activity_notification* provides REST API backend to operate notifications and subscriptions.
+
+#### Configuring REST API backend
+
+You can configure *activity_notification* routes as REST API backend with *api_mode* option of *notify_to* method. See [Routes as REST API backend](#routes-as-rest-api-backend) for more details. With *api_mode* option, *activity_notification* uses *[ActivityNotification::NotificationsApiController](/app/controllers/activity_notification/notifications_api_controller.rb)* instead of *[ActivityNotification::NotificationsController](/app/controllers/activity_notification/notifications_controller.rb)*.
+
+In addition, you can use *with_subscription* option with *api_mode* to enable subscription management like this:
+
+```ruby
+Rails.application.routes.draw do
+  scope :api do
+    scope :"v2" do
+      notify_to :users, api_mode: true, with_subscription: true
+    end
+  end
+end
+```
+
+Then, *activity_notification* uses *[ActivityNotification::SubscriptionsApiController](/app/controllers/activity_notification/subscriptions_api_controller.rb)* instead of *[ActivityNotification::SubscriptionsController](/app/controllers/activity_notification/subscriptions_controller.rb)*, and you can call *activity_notification* REST API as */api/v2/notifications* and */api/v2/subscriptions* from your frontend application.
+
+#### API reference as OpenAPI Specification
+
+*activity_notification* provides API reference as [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification).
+
+OpenAPI Specification in [online demo](https://activity-notification-example.herokuapp.com/) is published here: **https://activity-notification-example.herokuapp.com/api/v2/apidocs**
+
+Public API reference is also hosted in [SwaggerHub](https://swagger.io/tools/swaggerhub/) here: **https://app.swaggerhub.com/apis/simukappu/activity-notification/**
+
+You can also publish OpenAPI Specification in your own application using *[ActivityNotification::ApidocsController](/app/controllers/activity_notification/apidocs_controller.rb)* like this:
+
+```ruby
+Rails.application.routes.draw do
+  scope :api do
+    scope :"v2" do
+      resources :apidocs, only: [:index], controller: 'activity_notification/apidocs'
+    end
+  end
+end
+```
+
+You can use [Swagger UI](https://swagger.io/tools/swagger-ui/) with this OpenAPI Specification to visualize and interact with *activity_notification* API’s resources.
 
 
 ### Integration with Devise

@@ -4,7 +4,7 @@ class <%= @target_prefix %>NotificationsWithDeviseController < ActivityNotificat
   #   super
   # end
 
-  # POST /:target_type/:target_id/notifications/open_all
+  # PUT /:target_type/:target_id/notifications/open_all
   # def open_all
   #   super
   # end
@@ -19,7 +19,7 @@ class <%= @target_prefix %>NotificationsWithDeviseController < ActivityNotificat
   #   super
   # end
 
-  # POST /:target_type/:target_id/notifications/:id/open
+  # PUT /:target_type/:target_id/notifications/:id/open
   # def open
   #   super
   # end

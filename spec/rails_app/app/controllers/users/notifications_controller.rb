@@ -19,7 +19,7 @@ class Users::NotificationsController < ActivityNotification::NotificationsContro
   #   super
   # end
 
-  # POST /:target_type/:target_id/notifications/:id/open
+  # PUT /:target_type/:target_id/notifications/:id/open
   # def open
   #   super
   # end

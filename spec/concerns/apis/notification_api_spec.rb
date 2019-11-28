@@ -488,8 +488,8 @@ shared_examples_for :notification_api do
         expect(@user_1.notifications.opened_only!.count).to eq(0)
       end
 
-      it "returns the number of opened notification records" do
-        expect(described_class.open_all_of(@user_1)).to eq(2)
+      it "returns array of opened notification records" do
+        expect(described_class.open_all_of(@user_1).size).to eq(2)
       end
 
       it "opens all notifications of the target" do

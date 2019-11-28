@@ -4,7 +4,7 @@ class <%= @target_prefix %>SubscriptionsWithDeviseController < ActivityNotificat
   #   super
   # end
 
-  # POST /:target_type/:target_id/subscriptions
+  # PUT /:target_type/:target_id/subscriptions
   # def create
   #   super
   # end
@@ -19,22 +19,22 @@ class <%= @target_prefix %>SubscriptionsWithDeviseController < ActivityNotificat
   #   super
   # end
 
-  # POST /:target_type/:target_id/subscriptions/:id/subscribe
+  # PUT /:target_type/:target_id/subscriptions/:id/subscribe
   # def subscribe
   #   super
   # end
 
-  # POST /:target_type/:target_id/subscriptions/:id/unsubscribe
+  # PUT /:target_type/:target_id/subscriptions/:id/unsubscribe
   # def unsubscribe
   #   super
   # end
 
-  # POST /:target_type/:target_id/subscriptions/:id/subscribe_to_email
+  # PUT /:target_type/:target_id/subscriptions/:id/subscribe_to_email
   # def subscribe_to_email
   #   super
   # end
 
-  # POST /:target_type/:target_id/subscriptions/:id/unsubscribe_to_email
+  # PUT /:target_type/:target_id/subscriptions/:id/unsubscribe_to_email
   # def unsubscribe_to_email
   #   super
   # end

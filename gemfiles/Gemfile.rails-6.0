@@ -6,15 +6,18 @@ gem 'rails', '~> 6.0.0'
 
 group :development do
   gem 'bullet'
+  gem 'rack-cors'
 end
 
 group :test do
   #TODO https://github.com/rails/rails/issues/35417
-  gem 'rspec-rails', git: 'https://github.com/rspec/rspec-rails', branch: '4-0-dev'
+  gem 'rspec-rails', '4.0.0.beta3'
 
   gem 'rails-controller-testing'
   gem 'ammeter'
   gem 'timecop'
+  gem 'committee'
+  gem 'committee-rails'
   gem 'coveralls', require: false
 end
 

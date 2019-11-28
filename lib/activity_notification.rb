@@ -16,7 +16,7 @@ module ActivityNotification
   autoload :Common
   autoload :Config
   autoload :Renderable
-  autoload :VERSION
+  autoload :GEM_VERSION
 
   module Mailers
     autoload :Helpers,        'activity_notification/mailers/helpers'
@@ -60,9 +60,21 @@ require 'activity_notification/helpers/errors'
 require 'activity_notification/helpers/polymorphic_helpers'
 require 'activity_notification/helpers/view_helpers'
 require 'activity_notification/controllers/common_controller'
+require 'activity_notification/controllers/common_api_controller'
 require 'activity_notification/controllers/store_controller'
 require 'activity_notification/controllers/devise_authentication_controller'
 require 'activity_notification/optional_targets/base'
+
+# Load Swagger API references
+require 'activity_notification/apis/swagger'
+require 'activity_notification/models/concerns/swagger/notification_schema'
+require 'activity_notification/models/concerns/swagger/subscription_schema'
+require 'activity_notification/models/concerns/swagger/error_schema'
+require 'activity_notification/controllers/concerns/swagger/notifications_parameters'
+require 'activity_notification/controllers/concerns/swagger/subscriptions_parameters'
+require 'activity_notification/controllers/concerns/swagger/error_responses'
+require 'activity_notification/controllers/concerns/swagger/notifications_api'
+require 'activity_notification/controllers/concerns/swagger/subscriptions_api'
 
 # Load role for models
 require 'activity_notification/models'

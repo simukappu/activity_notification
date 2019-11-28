@@ -7,6 +7,7 @@ if ENV['AN_ORM'] == 'mongoid'
   if Rails.env != 'test'
     Mongoid.load!(File.expand_path("config/mongoid.yml"), :development)
   end
+# Load dynamoid configuration if necessary:
 elsif ENV['AN_ORM'] == 'dynamoid'
   require 'dynamoid'
   require 'rails'
@@ -14,7 +15,9 @@ elsif ENV['AN_ORM'] == 'dynamoid'
 end
 
 # Pick the frameworks you want:
-unless ENV['AN_ORM'] == 'mongoid' && ENV['AN_TEST_DB'] == 'mongodb'
+if ENV['AN_ORM'] == 'mongoid' && ENV['AN_TEST_DB'] == 'mongodb'
+  require "mongoid/railtie"
+else
   require "active_record/railtie"
 end
 require "action_controller/railtie"
@@ -34,6 +37,16 @@ module Dummy
     end
     if Rails::VERSION::MAJOR >= 5 && Rails::VERSION::MINOR >= 2 && ENV['AN_TEST_DB'] != 'mongodb'
       config.active_record.sqlite3.represent_boolean_as_integer = true
+    end
+
+    # Configure CORS for API mode
+    if defined?(Rack::Cors)
+      config.middleware.insert_before 0, Rack::Cors do
+        allow do
+          origins '*'
+          resource '*', :headers => :any, :methods => [:get, :post, :put, :delete]
+        end
+      end
     end
   end
 end
