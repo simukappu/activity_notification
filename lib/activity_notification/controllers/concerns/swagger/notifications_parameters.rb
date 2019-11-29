@@ -68,6 +68,24 @@ module ActivityNotification
           key :type, :string
           key :example, "comment.default"
         end
+        base.parameter do
+          key :name, :later_than
+          key :in, :query
+          key :description, "ISO 8601 format time to filter notification index later than specified time"
+          key :required, false
+          key :type, :string
+          key :format, :'date-time'
+          key :example, Time.current.iso8601(3)
+        end
+        base.parameter do
+          key :name, :earlier_than
+          key :in, :query
+          key :description, "ISO 8601 format time to filter notification index earlier than specified time"
+          key :required, false
+          key :type, :string
+          key :format, :'date-time'
+          key :example, Time.current.iso8601(3)
+        end
       end
     end
   end
