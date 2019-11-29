@@ -729,6 +729,22 @@ shared_examples_for :target do
           end
         end
 
+        context 'with later_than options' do
+          it "returns filtered notifications only" do
+            options = { later_than: (@notification1.created_at.in_time_zone + 0.001).iso8601(3) }
+            expect(test_instance.notification_index(options)[0]).to eq(@notification3)
+            expect(test_instance.notification_index(options).size).to eq(1)
+          end
+        end
+
+        context 'with earlier_than options' do
+          it "returns filtered notifications only" do
+            options = { earlier_than: @notification1.created_at.iso8601(3) }
+            expect(test_instance.notification_index(options)[0]).to eq(@notification2)
+            expect(test_instance.notification_index(options).size).to eq(1)
+          end
+        end
+
         context 'with custom_filter options' do
           it "returns filtered notifications only" do
             options = { custom_filter: { key: @key } }
@@ -1006,6 +1022,22 @@ shared_examples_for :target do
           it "returns filtered notifications only" do
             options = { filtered_by_key: @key }
             expect(test_instance.notification_index_with_attributes(options)[0]).to eq(@notification3)
+            expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
+          end
+        end
+
+        context 'with later_than options' do
+          it "returns filtered notifications only" do
+            options = { later_than: (@notification1.created_at.in_time_zone + 0.001).iso8601(3) }
+            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(@notification3)
+            expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
+          end
+        end
+
+        context 'with earlier_than options' do
+          it "returns filtered notifications only" do
+            options = { earlier_than: @notification1.created_at.iso8601(3) }
+            expect(test_instance.notification_index_with_attributes(options)[0]).to eq(@notification2)
             expect(test_instance.notification_index_with_attributes(options).size).to eq(1)
           end
         end

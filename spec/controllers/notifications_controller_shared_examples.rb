@@ -219,6 +219,22 @@ shared_examples_for :notifications_controller do
           expect(assigns(:notifications).size).to eq(1)
         end
       end
+
+      context 'with later_than parameter' do
+        it "returns filtered notifications only" do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, later_than: (@notification1.created_at.in_time_zone + 0.001).iso8601(3) }), valid_session
+          expect(assigns(:notifications)[0]).to eq(@notification3)
+          expect(assigns(:notifications).size).to eq(1)
+        end
+      end
+
+      context 'with earlier_than parameter' do
+        it "returns filtered notifications only" do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, earlier_than: @notification1.created_at.iso8601(3) }), valid_session
+          expect(assigns(:notifications)[0]).to eq(@notification2)
+          expect(assigns(:notifications).size).to eq(1)
+        end
+      end
     end
   end
 
@@ -319,6 +335,22 @@ shared_examples_for :notifications_controller do
           post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, 'filtered_by_key' => 'key.2' }), valid_session
           expect(@notification_1.reload.opened?).to be_falsey
           expect(@notification_2.reload.opened?).to be_truthy
+        end
+      end
+
+      context 'with later_than parameter' do
+        it "opens filtered notifications only" do
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, later_than: (@notification_1.created_at.in_time_zone + 0.001).iso8601(3) }), valid_session
+          expect(@notification_1.reload.opened?).to be_falsey
+          expect(@notification_2.reload.opened?).to be_truthy
+        end
+      end
+
+      context 'with earlier_than parameter' do
+        it "opens filtered notifications only" do
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, earlier_than: @notification_2.created_at.iso8601(3) }), valid_session
+          expect(@notification_1.reload.opened?).to be_truthy
+          expect(@notification_2.reload.opened?).to be_falsey
         end
       end
 
