@@ -37,8 +37,14 @@ module ActivityNotification
     #   @option params [String] :filtered_by_key (nil)                     Key of the subscription for filter
     #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def create
-      @subscription = @target.create_subscription(subscription_params)
-      return_back_or_ajax
+      @subscription = @target.build_subscription(subscription_params)
+      if @subscription.save
+        return_back_or_ajax
+      else
+        set_index_options
+        load_index if params[:reload].to_s.to_boolean(true)
+        render partial: 'errors', locals: { object: @subscription }, status: 442
+      end
     end
 
     # Finds and Shows a subscription from specified key.

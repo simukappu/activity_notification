@@ -1,4 +1,5 @@
 <div class="fields_area">
+  <div class="notice_wrapper"></div>
   <div class="fields_wrapper">
     <%= form_for(ActivityNotification::Subscription.new, as: :subscription, url: subscriptions_url_for(target, option_params), data: { remote: true }) do |f| %>
       <div class="field_wrapper">
