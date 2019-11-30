@@ -213,10 +213,7 @@ module ActivityNotification
       resolve_value(_notification_action_cable_with_devise)
     end
 
-    # :only-rails5-plus#only-rails-with-callback-issue:
-    # :only-rails5-plus#only-rails-without-callback-issue:
-    # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-    # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+    # :nocov:
     if Rails::VERSION::MAJOR >= 5
       # Returns notification ActionCable channel class name from action_cable_with_devise? configuration.
       #
@@ -225,10 +222,7 @@ module ActivityNotification
         notification_action_cable_with_devise? ? "ActivityNotification::NotificationWithDeviseChannel" : "ActivityNotification::NotificationChannel"
       end
     end
-    # :only-rails5-plus#only-rails-with-callback-issue:
-    # :only-rails5-plus#only-rails-without-callback-issue:
-    # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-    # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+    # :nocov:
 
     # Returns Devise resource model associated with this target.
     #
