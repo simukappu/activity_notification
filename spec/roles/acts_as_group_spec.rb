@@ -18,8 +18,6 @@ describe ActivityNotification::ActsAsGroup do
           expect(dummy_model_class.acts_as_group).to eq({})
         end
       end
-
-      #TODO test other options
     end
 
     describe ".available_group_options" do

@@ -10,7 +10,6 @@ describe ActivityNotification::OptionalTarget::Slack do
     end
 
     describe "#initialize_target" do
-      #TODO
       it "does not raise NotImplementedError but URI::InvalidURIError" do
         expect { test_instance.initialize_target }
           .to raise_error(URI::InvalidURIError)
@@ -18,7 +17,6 @@ describe ActivityNotification::OptionalTarget::Slack do
     end
 
     describe "#notify" do
-      #TODO
       it "does not raise NotImplementedError but NoMethodError" do
         expect { test_instance.notify(create(:notification)) }
           .to raise_error(NoMethodError)
