@@ -10,10 +10,7 @@ module ActivityNotification
       # Defines mailer class to send notification
       set_notification_mailer
 
-      # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-      # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
-      # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-      # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+      # :nocov:
       unless ActivityNotification.config.orm == :dynamoid
         # Selects all notification index.
         #   ActivityNotification::Notification.all_index!
@@ -211,10 +208,7 @@ module ActivityNotification
           pluck(:key).uniq
         end
       end
-      # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-      # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
-      # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-      # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+      # :nocov:
     end
 
     class_methods do
@@ -563,10 +557,7 @@ module ActivityNotification
       end
     end
 
-    # :only-rails5-plus#only-rails-with-callback-issue:
-    # :only-rails5-plus#only-rails-without-callback-issue:
-    # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-    # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+    # :nocov:
     if Rails::VERSION::MAJOR >= 5
       # Broadcast to ActionCable subscribers
       # @param [Hash] params Parameters for rendering notifications
@@ -603,14 +594,6 @@ module ActivityNotification
           )
         end
       end
-    # :only-rails5-plus#only-rails-with-callback-issue:
-    # :only-rails5-plus#only-rails-without-callback-issue:
-    # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-    # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
-    # :except-rails5-plus#only-rails-with-callback-issue:
-    # :except-rails5-plus#only-rails-without-callback-issue:
-    # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-    # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
     else
       # Broadcast to ActionCable subscribers
       # Do nothing with Rails < 5.0
@@ -618,10 +601,7 @@ module ActivityNotification
       def broadcast_to_action_cable_channel(params = {})
       end
     end
-    # :except-rails5-plus#only-rails-with-callback-issue:
-    # :except-rails5-plus#only-rails-without-callback-issue:
-    # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-    # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+    # :nocov:
 
     # Publishes notification to the optional targets.
     #
