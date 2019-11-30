@@ -51,6 +51,8 @@ module ActivityNotification
     # @option options [String]         :filtered_by_group_type (nil)       Group type for filter, valid with :filtered_by_group_id
     # @option options [String]         :filtered_by_group_id   (nil)       Group instance id for filter, valid with :filtered_by_group_type
     # @option options [String]         :filtered_by_key        (nil)       Key of the notification for filter
+    # @option options [String]         :later_than             (nil)       ISO 8601 format time to filter notification index later than specified time
+    # @option options [String]         :earlier_than           (nil)       ISO 8601 format time to filter notification index earlier than specified time
     # @option options [Array]          :custom_filter          (nil)       Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [String] Rendered view or text as string
     def render_notification_of(target, options = {})
