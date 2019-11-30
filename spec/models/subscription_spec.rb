@@ -41,19 +41,6 @@ describe ActivityNotification::Subscription, type: :model do
       expect(subscription.errors[:key].size).to eq(1)
     end
 
-    #TODO
-    # it "is invalid with non boolean value of subscribing" do
-      # @subscription.subscribing = 'hoge'
-      # expect(@subscription).to be_invalid
-      # expect(@subscription.errors[:subscribing].size).to eq(1)
-    # end
-# 
-    # it "is invalid with non boolean value of subscribing_to_email" do
-      # @subscription.subscribing_to_email = 'hoge'
-      # expect(@subscription).to be_invalid
-      # expect(@subscription.errors[:subscribing_to_email].size).to eq(1)
-    # end
-
     it "is invalid with true as subscribing_to_email and false as subscribing" do
       subscription.subscribing = false
       subscription.subscribing_to_email = true
