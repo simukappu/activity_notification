@@ -10,7 +10,6 @@ describe ActivityNotification::OptionalTarget::AmazonSNS do
     end
 
     describe "#initialize_target" do
-      #TODO
       it "does not raise NotImplementedError" do
         begin
           test_instance.initialize_target
@@ -21,7 +20,6 @@ describe ActivityNotification::OptionalTarget::AmazonSNS do
     end
 
     describe "#notify" do
-      #TODO
       it "does not raise NotImplementedError but NoMethodError" do
         expect { test_instance.notify(create(:notification)) }
           .to raise_error(NoMethodError)
