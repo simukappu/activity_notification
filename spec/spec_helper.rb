@@ -59,9 +59,9 @@ end
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
-  config.before(:each) do
+  config.before(:all) do
     FactoryBot.reload
     clean_database
-  end # test
+  end
   config.include Devise::Test::ControllerHelpers, type: :controller
 end

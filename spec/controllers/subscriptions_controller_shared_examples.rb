@@ -4,10 +4,13 @@ shared_examples_for :subscriptions_controller do
   include ActivityNotification::ControllerSpec::RequestUtility
 
   let(:target_params) { { target_type: target_type }.merge(extra_params || {}) }
-
-
   let(:subscription) { create(:subscription, target: test_target, key: 'test_subscription_key') }
   let(:notification) { create(:notification, target: test_target, key: 'test_notification_key') }
+
+  after do
+    clean_database
+  end
+
   describe "GET #index" do
     context "with target_type and target_id parameters" do
 
@@ -178,23 +181,29 @@ shared_examples_for :subscriptions_controller do
     end
 
     context "with options filter parameters" do
+
+      let(:subscription1) { create(:subscription, target: test_target, key: 'test_subscription_key_1') }
+      let(:subscription2) { create(:subscription, target: test_target, key: 'test_subscription_key_2') }
+      let(:notification1) { create(:notification, target: test_target, key: 'test_notification_key_1') }
+      let(:notification2) { create(:notification, target: test_target, key: 'test_notification_key_2') }
+
       before do
-        @subscription1 = create(:subscription, target: test_target, key: 'test_subscription_key_1')
-        @subscription2 = create(:subscription, target: test_target, key: 'test_subscription_key_2')
-        @notification1 = create(:notification, target: test_target, key: 'test_notification_key_1')
-        @notification2 = create(:notification, target: test_target, key: 'test_notification_key_2')
+        expect(subscription1).to be_valid
+        expect(subscription2).to be_valid
+        expect(notification1).to be_valid
+        expect(notification2).to be_valid
       end
 
       context 'with filtered_by_key parameter' do
         it "returns filtered subscriptions only" do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filtered_by_key: 'test_subscription_key_2' }), valid_session
-          expect(assigns(:subscriptions)[0]).to eq(@subscription2)
+          expect(assigns(:subscriptions)[0]).to eq(subscription2)
           expect(assigns(:subscriptions).size).to eq(1)
         end
 
         it "returns filtered notification keys only" do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filtered_by_key: 'test_notification_key_2' }), valid_session
-          expect(assigns(:notification_keys)[0]).to eq(@notification2.key)
+          expect(assigns(:notification_keys)[0]).to eq(notification2.key)
           expect(assigns(:notification_keys).size).to eq(1)
         end
       end
