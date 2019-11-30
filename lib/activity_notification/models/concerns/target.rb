@@ -61,6 +61,8 @@ module ActivityNotification
       # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
       # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+      # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+      # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
       # @return [Array<Notificaion>] All notifications for this target type
       def all_notifications(options = {})
@@ -101,6 +103,8 @@ module ActivityNotification
       # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
       # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+      # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+      # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
       # @return [Hash<Target, Notificaion>] All notifications for this target type grouped by targets
       def notification_index_map(options = {})
@@ -123,6 +127,8 @@ module ActivityNotification
       # @option options [String]         :filtered_by_group_type (nil)            Group type for filter, valid with :filtered_by_group_id
       # @option options [String]         :filtered_by_group_id   (nil)            Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]         :filtered_by_key        (nil)            Key of the notification for filter
+      # @option options [String]         :later_than             (nil)            ISO 8601 format time to filter notifications later than specified time
+      # @option options [String]         :earlier_than           (nil)            ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash]     :custom_filter          (nil)            Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
       # @option options [Boolean]        :send_later             (false)          If it sends notification email asynchronously
       # @option options [String, Symbol] :fallback               (:batch_default) Fallback template to use when MissingTemplate is raised
@@ -263,6 +269,8 @@ module ActivityNotification
     # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
     # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
     # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+    # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+    # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Integer] Count of unopened notifications of the target
     def unopened_notification_count(options = {})
@@ -279,6 +287,8 @@ module ActivityNotification
     # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
     # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
     # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+    # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+    # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Boolean] If the target has unopened notifications
     def has_unopened_notifications?(options = {})
@@ -304,6 +314,8 @@ module ActivityNotification
     # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
     # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
     # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+    # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+    # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Array<Notificaion>] Notification index of the target
     def notification_index(options = {})
@@ -327,6 +339,8 @@ module ActivityNotification
     # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
     # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
     # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+    # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+    # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Array<Notificaion>] Unopened notification index of the target
     def unopened_notification_index(options = {})
@@ -348,6 +362,8 @@ module ActivityNotification
     # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
     # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
     # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+    # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+    # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Array<Notificaion>] Opened notification index of the target
     def opened_notification_index(options = {})
@@ -406,6 +422,8 @@ module ActivityNotification
     # @option options [String]   :filtered_by_group_type (nil)          Group type for filter, valid with :filtered_by_group_id
     # @option options [String]   :filtered_by_group_id   (nil)          Group instance id for filter, valid with :filtered_by_group_type
     # @option options [String]   :filtered_by_key        (nil)          Key of the notification for filter
+    # @option options [String]   :later_than             (nil)          ISO 8601 format time to filter notifications later than specified time
+    # @option options [String]   :earlier_than           (nil)          ISO 8601 format time to filter notifications earlier than specified time
     # @return [Array<Notification>] Opened notification records
     def open_all_notifications(options = {})
       Notification.open_all_of(self, options)
@@ -434,6 +452,8 @@ module ActivityNotification
     # @option options [String]         :filtered_by_group_type (nil)           Group type for filter, valid with :filtered_by_group_id
     # @option options [String]         :filtered_by_group_id   (nil)           Group instance id for filter, valid with :filtered_by_group_type
     # @option options [String]         :filtered_by_key        (nil)           Key of the notification for filter
+    # @option options [String]         :later_than             (nil)           ISO 8601 format time to filter notifications later than specified time
+    # @option options [String]         :earlier_than           (nil)           ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash]     :custom_filter          (nil)           Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Array<Notificaion>] Notification index of the target with attributes
     def notification_index_with_attributes(options = {})
@@ -457,6 +477,8 @@ module ActivityNotification
     # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
     # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
     # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+    # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+    # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Array<Notificaion>] Unopened notification index of the target with attributes
     def unopened_notification_index_with_attributes(options = {})
@@ -478,6 +500,8 @@ module ActivityNotification
     # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
     # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
     # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+    # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+    # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
     # @return [Array<Notificaion>] Opened notification index of the target with attributes
     def opened_notification_index_with_attributes(options = {})
@@ -557,6 +581,8 @@ module ActivityNotification
       # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
       # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+      # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+      # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
       # @return [ActiveRecord_AssociationRelation<Notificaion>|Mongoid::Criteria<Notificaion>|Dynamoid::Criteria::Chain] Unopened notification index of the target
       def _unopened_notification_index(options = {})
@@ -577,6 +603,8 @@ module ActivityNotification
       # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
       # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+      # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+      # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
       # @return [ActiveRecord_AssociationRelation<Notificaion>|Mongoid::Criteria<Notificaion>|Dynamoid::Criteria::Chain] Opened notification index of the target
       def _opened_notification_index(options = {})
@@ -617,6 +645,8 @@ module ActivityNotification
       # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
       # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+      # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+      # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
       # @return [Array<Notificaion>] Notification index of the target
       def arrange_single_notification_index(loading_index_method, options = {})
@@ -644,6 +674,8 @@ module ActivityNotification
       # @option options [String]     :filtered_by_group_type (nil)   Group type for filter, valid with :filtered_by_group_id
       # @option options [String]     :filtered_by_group_id   (nil)   Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
+      # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
+      # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
       # @return [Array<Notificaion>] Notification index of the target
       def arrange_notification_index(loading_unopened_index_method, loading_opened_index_method, options = {})

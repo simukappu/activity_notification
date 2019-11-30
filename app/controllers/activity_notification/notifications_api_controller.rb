@@ -22,6 +22,8 @@ module ActivityNotification
     #   @option params [String] :filtered_by_group_type (nil)     Group type to filter notification index, valid with :filtered_by_group_id
     #   @option params [String] :filtered_by_group_id   (nil)     Group instance ID to filter notification index, valid with :filtered_by_group_type
     #   @option params [String] :filtered_by_key        (nil)     Key of notifications to filter notification index
+    #   @option params [String] :later_than             (nil)     ISO 8601 format time to filter notification index later than specified time
+    #   @option params [String] :earlier_than           (nil)     ISO 8601 format time to filter notification index earlier than specified time
     #   @return [JSON] count: number of notification index records, notifications: notification index
     def index
       super
@@ -40,6 +42,8 @@ module ActivityNotification
     #   @option params [String] :filtered_by_group_type (nil)     Group type to filter notification index, valid with :filtered_by_group_id
     #   @option params [String] :filtered_by_group_id   (nil)     Group instance ID to filter notification index, valid with :filtered_by_group_type
     #   @option params [String] :filtered_by_key        (nil)     Key of notifications to filter notification index
+    #   @option params [String] :later_than             (nil)     ISO 8601 format time to filter notification index later than specified time
+    #   @option params [String] :earlier_than           (nil)     ISO 8601 format time to filter notification index earlier than specified time
     #   @return [JSON] count: number of opened notification records, notifications: opened notifications
     def open_all
       super

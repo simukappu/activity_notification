@@ -88,6 +88,22 @@ module ActivityNotification
         # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
         scope :filtered_by_key,                   ->(key) { where(key: key) }
 
+        # Selects filtered notifications later than specified time.
+        # @example Get filtered unopened notificatons of the @user later than @notification
+        #   @notifications = @user.notifications.unopened_only.later_than(@notification.created_at)
+        # @scope class
+        # @param [Time] Created time of the notifications for filter
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :later_than,                        ->(created_time) { where('created_at > ?', created_time) }
+
+        # Selects filtered notifications earlier than specified time.
+        # @example Get filtered unopened notificatons of the @user earlier than @notification
+        #   @notifications = @user.notifications.unopened_only.earlier_than(@notification.created_at)
+        # @scope class
+        # @param [Time] Created time of the notifications for filter
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :earlier_than,                      ->(created_time) { where('created_at < ?', created_time) }
+
         # Selects filtered notifications by notifiable_type, group or key with filter options.
         # @example Get filtered unopened notificatons of the @user for Comment notifiable class
         #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment' })
@@ -108,6 +124,8 @@ module ActivityNotification
         # @option options [String]     :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
         # @option options [String]     :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
         # @option options [String]     :filtered_by_key        (nil) Key of the notification for filter
+        # @option options [String]     :later_than             (nil) ISO 8601 format time to filter notification index later than specified time
+        # @option options [String]     :earlier_than           (nil) ISO 8601 format time to filter notification index earlier than specified time
         # @option options [Array|Hash] :custom_filter          (nil) Custom notification filter (e.g. ["created_at >= ?", time.hour.ago] with ActiveRecord or {:created_at.gt => time.hour.ago} with Mongoid)
         # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
         scope :filtered_by_options,               ->(options = {}) {
@@ -125,6 +143,12 @@ module ActivityNotification
           end
           if options.has_key?(:filtered_by_key)
             filtered_notifications = filtered_notifications.filtered_by_key(options[:filtered_by_key])
+          end
+          if options.has_key?(:later_than)
+            filtered_notifications = filtered_notifications.later_than(Time.iso8601(options[:later_than]))
+          end
+          if options.has_key?(:earlier_than)
+            filtered_notifications = filtered_notifications.earlier_than(Time.iso8601(options[:earlier_than]))
           end
           if options.has_key?(:custom_filter)
             filtered_notifications = filtered_notifications.where(options[:custom_filter])
@@ -426,6 +450,8 @@ module ActivityNotification
       # @option options [String]   :filtered_by_group_type (nil)          Group type for filter, valid with :filtered_by_group_id
       # @option options [String]   :filtered_by_group_id   (nil)          Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]   :filtered_by_key        (nil)          Key of the notification for filter
+      # @option options [String]   :later_than             (nil)          ISO 8601 format time to filter notification index later than specified time
+      # @option options [String]   :earlier_than           (nil)          ISO 8601 format time to filter notification index earlier than specified time
       # @return [Array<Notification>] Opened notification records
       def open_all_of(target, options = {})
         opened_at = options[:opened_at] || Time.current
@@ -558,6 +584,8 @@ module ActivityNotification
       # @option params [String]         :filtered_by_group_type (nil)                     Group type for filter, valid with :filtered_by_group_id
       # @option params [String]         :filtered_by_group_id   (nil)                     Group instance id for filter, valid with :filtered_by_group_type
       # @option params [String]         :filtered_by_key        (nil)                     Key of the notification for filter
+      # @option param [String]          :later_than             (nil)                     ISO 8601 format time to filter notification index later than specified time
+      # @option param [String]          :earlier_than           (nil)                     ISO 8601 format time to filter notification index earlier than specified time
       # @option params [Hash]           others                                            Parameters to be set as locals
       def broadcast_to_action_cable_channel(params = {})
         if target.notification_action_cable_allowed?(notifiable, key) &&
