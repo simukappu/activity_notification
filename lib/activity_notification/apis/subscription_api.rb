@@ -4,10 +4,7 @@ module ActivityNotification
     extend ActiveSupport::Concern
 
     included do
-      # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-      # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
-      # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-      # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+      # :nocov:
       unless ActivityNotification.config.orm == :dynamoid
         # Selects filtered subscriptions by key.
         # @example Get filtered subscriptions of the @user with key 'comment.reply'
@@ -77,10 +74,7 @@ module ActivityNotification
           time
         end
       end
-      # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-      # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
-      # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-      # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+      # :nocov:
     end
 
     class_methods do
