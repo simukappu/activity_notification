@@ -170,16 +170,8 @@ describe ActivityNotification::ViewHelpers, type: :helper do
         @target = target_user
       end
 
-      #TODO make better test using content_for
       it "renders custom notification view for specified target" do
-        # notification_1 = target_user.notifications.first
-        # notification_2 = target_user.notifications.last
-        # notification_1.update(key: 'custom.test')
-        # notification_2.update(key: 'custom.test')
-        expect(render_notification_of target_user, partial: 'custom_index', fallback: :default)
-          .to eq("Custom index: ")
-          # .to eq("Custom index: Custom template root for user target: #{notification_1.id}"\
-                               # "Custom template root for user target: #{notification_2.id}")
+        expect(render_notification_of target_user, partial: 'custom_index', fallback: :default).to eq("Custom index: ")
       end
 
       it "uses layout of layout parameter" do
