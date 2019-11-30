@@ -450,7 +450,8 @@ module ActivityNotification
       # @option options [String]   :filtered_by_group_type (nil)          Group type for filter, valid with :filtered_by_group_id
       # @option options [String]   :filtered_by_group_id   (nil)          Group instance id for filter, valid with :filtered_by_group_type
       # @option options [String]   :filtered_by_key        (nil)          Key of the notification for filter
-      #TODO
+      # @option options [String]   :later_than             (nil)          ISO 8601 format time to filter notification index later than specified time
+      # @option options [String]   :earlier_than           (nil)          ISO 8601 format time to filter notification index earlier than specified time
       # @return [Array<Notification>] Opened notification records
       def open_all_of(target, options = {})
         opened_at = options[:opened_at] || Time.current
@@ -583,6 +584,8 @@ module ActivityNotification
       # @option params [String]         :filtered_by_group_type (nil)                     Group type for filter, valid with :filtered_by_group_id
       # @option params [String]         :filtered_by_group_id   (nil)                     Group instance id for filter, valid with :filtered_by_group_type
       # @option params [String]         :filtered_by_key        (nil)                     Key of the notification for filter
+      # @option param [String]          :later_than             (nil)                     ISO 8601 format time to filter notification index later than specified time
+      # @option param [String]          :earlier_than           (nil)                     ISO 8601 format time to filter notification index earlier than specified time
       # @option params [Hash]           others                                            Parameters to be set as locals
       def broadcast_to_action_cable_channel(params = {})
         if target.notification_action_cable_allowed?(notifiable, key) &&
