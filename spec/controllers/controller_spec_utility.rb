@@ -93,11 +93,35 @@ module ActivityNotification
           @committee_options ||= { schema: Committee::Drivers::load_from_file(schema_path), prefix: root_path, validate_success_only: true }
         end
 
-        def post_with_compatibility path, params
+        def get_with_compatibility path, options = {}
           if Rails::VERSION::MAJOR <= 4
-            post path, params
+            get path, options[:params], options[:headers]
           else
-            post path, params: params
+            get path, options
+          end
+        end
+
+        def post_with_compatibility path, options = {}
+          if Rails::VERSION::MAJOR <= 4
+            post path, options[:params], options[:headers]
+          else
+            post path, options
+          end
+        end
+
+        def put_with_compatibility path, options = {}
+          if Rails::VERSION::MAJOR <= 4
+            put path, options[:params], options[:headers]
+          else
+            put path, options
+          end
+        end
+
+        def delete_with_compatibility path, options = {}
+          if Rails::VERSION::MAJOR <= 4
+            delete path, options[:params], options[:headers]
+          else
+            delete path, options
           end
         end
 

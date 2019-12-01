@@ -37,6 +37,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'yard', '>= 0.9.16'
   s.add_development_dependency 'yard-activesupport-concern', '>= 0.0.1'
   s.add_development_dependency 'devise', '>= 4.5.0'
+  s.add_development_dependency 'devise_token_auth', '>= 1.1.3'
+  s.add_development_dependency 'mongoid-locker', '>=  2.0.0'
   s.add_development_dependency 'aws-sdk-sns', '~> 1'
   s.add_development_dependency 'slack-notifier', '>= 1.5.1'
 end
