@@ -1,6 +1,8 @@
 require 'controllers/subscriptions_controller_shared_examples'
 
 describe ActivityNotification::SubscriptionsWithDeviseController, type: :controller do
+  include ActivityNotification::ControllerSpec::RequestUtility
+
   let(:test_user)            { create(:confirmed_user) }
   let(:unauthenticated_user) { create(:confirmed_user) }
   let(:test_target)          { create(:admin, user: test_user) }
@@ -92,15 +94,4 @@ describe ActivityNotification::SubscriptionsWithDeviseController, type: :control
       end
     end
   end
-
-  private
-
-    def get_with_compatibility action, params, session
-      if Rails::VERSION::MAJOR <= 4
-        get action, params, session
-      else
-        get action, params: params, session: session
-      end
-    end
-
 end

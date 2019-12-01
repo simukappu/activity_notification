@@ -454,52 +454,52 @@ shared_examples_for :notifications_api_request do
 
   describe "GET /{target_type}/{target_id}/notifications", type: :request do
     it "returns response as API references" do
-      get "#{api_path}/notifications"
+      get_with_compatibility "#{api_path}/notifications", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "POST /{target_type}/{target_id}/notifications/open_all", type: :request do
     it "returns response as API references" do
-      post "#{api_path}/notifications/open_all"
+      post_with_compatibility "#{api_path}/notifications/open_all", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "GET /{target_type}/{target_id}/notifications/{id}", type: :request do
     it "returns response as API references" do
-      get "#{api_path}/notifications/#{@notification.id}"
+      get_with_compatibility "#{api_path}/notifications/#{@notification.id}", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
 
     it "returns error response as API references" do
-      get "#{api_path}/notifications/0"
+      get_with_compatibility "#{api_path}/notifications/0", headers: @headers
       assert_all_schema_confirm(response, 404)
     end
   end
 
   describe "DELETE /{target_type}/{target_id}/notifications/{id}", type: :request do
     it "returns response as API references" do
-      delete "#{api_path}/notifications/#{@notification.id}"
+      delete_with_compatibility "#{api_path}/notifications/#{@notification.id}", headers: @headers
       assert_all_schema_confirm(response, 204)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/notifications/{id}/open", type: :request do
     it "returns response as API references" do
-      put "#{api_path}/notifications/#{@notification.id}/open"
+      put_with_compatibility "#{api_path}/notifications/#{@notification.id}/open", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
 
     it "returns response as API references when request parameters have move=true" do
-      put "#{api_path}/notifications/#{@notification.id}/open?move=true"
+      put_with_compatibility "#{api_path}/notifications/#{@notification.id}/open?move=true", headers: @headers
       assert_all_schema_confirm(response, 302)
     end
   end
 
   describe "GET /{target_type}/{target_id}/notifications/{id}/move", type: :request do
     it "returns response as API references" do
-      get "#{api_path}/notifications/#{@notification.id}/move"
+      get_with_compatibility "#{api_path}/notifications/#{@notification.id}/move", headers: @headers
       assert_all_schema_confirm(response, 302)
     end
   end
