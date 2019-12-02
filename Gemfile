@@ -8,6 +8,7 @@ group :production do
   gem 'puma'
   gem 'pg'
   gem 'devise'
+  gem 'devise_token_auth'
 end
 
 group :development do

@@ -229,6 +229,5 @@ module ActivityNotification
       def key_uniqueness
         errors.add(:key, :taken) if target.find_subscription(key).present?
       end
-
   end
 end

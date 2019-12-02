@@ -126,6 +126,22 @@ module ActivityNotification
         # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
         scope :filtered_by_group,                 ->(group) { where(group: group) }
 
+        # Selects filtered notifications later than specified time.
+        # @example Get filtered unopened notificatons of the @user later than @notification
+        #   @notifications = @user.notifications.unopened_only.later_than(@notification.created_at)
+        # @scope class
+        # @param [Time] Created time of the notifications for filter
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :later_than,                        ->(created_time) { where('created_at > ?', created_time) }
+
+        # Selects filtered notifications earlier than specified time.
+        # @example Get filtered unopened notificatons of the @user earlier than @notification
+        #   @notifications = @user.notifications.unopened_only.earlier_than(@notification.created_at)
+        # @scope class
+        # @param [Time] Created time of the notifications for filter
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :earlier_than,                      ->(created_time) { where('created_at < ?', created_time) }
+
         # Includes target instance with query for notifications.
         # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with target
         scope :with_target,                       -> { includes(:target) }
