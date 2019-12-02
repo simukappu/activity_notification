@@ -235,8 +235,6 @@ module ActivityNotification
       # @option options [Boolean]                 :notify_later             (false)                               Whether it generates notifications asynchronously
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
-      # @option options [Boolean]                 :broadcast_action_cable   (true)                                Whether it broadcasts notification to ActionCable channel
-      # @option options [Hash]                    :action_cable_rendering   ({fallback: :default})                Options for rendering params used by ActionCable, e.g. {fallback: :text} or {fallback: :default} etc. See also Renderable#render.
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
       # @option options [Boolean]                 :pass_full_options        (false)                               Whether it passes full options to notifiable.notification_targets, not a key only
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
@@ -275,8 +273,6 @@ module ActivityNotification
       # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
-      # @option options [Boolean]                 :broadcast_action_cable   (true)                                Whether it broadcasts notification to ActionCable channel
-      # @option options [Hash]                    :action_cable_rendering   ({fallback: :default})                Options for rendering params used by ActionCable, e.g. {fallback: :text} or {fallback: :default} etc. See also Renderable#render.
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
       # @option options [Boolean]                 :pass_full_options        (false)                               Whether it passes full options to notifiable.notification_targets, not a key only
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
@@ -303,8 +299,6 @@ module ActivityNotification
       # @option options [Boolean]                 :notify_later             (false)                               Whether it generates notifications asynchronously
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
-      # @option options [Boolean]                 :broadcast_action_cable   (true)                                Whether it broadcasts notification to ActionCable channel
-      # @option options [Hash]                    :action_cable_rendering   ({fallback: :default})                Options for rendering params used by ActionCable, e.g. {fallback: :text} or {fallback: :default} etc. See also Renderable#render.
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Array<Notificaion>] Array of generated notifications
@@ -332,8 +326,6 @@ module ActivityNotification
       # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
-      # @option options [Boolean]                 :broadcast_action_cable   (true)                                Whether it broadcasts notification to ActionCable channel
-      # @option options [Hash]                    :action_cable_rendering   ({fallback: :default})                Options for rendering params used by ActionCable, e.g. {fallback: :text} or {fallback: :default} etc. See also Renderable#render.
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Array<Notificaion>] Array of generated notifications
@@ -358,8 +350,6 @@ module ActivityNotification
       # @option options [Boolean]                 :notify_later             (false)                               Whether it generates notifications asynchronously
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
-      # @option options [Boolean]                 :broadcast_action_cable   (true)                                Whether it broadcasts notification to ActionCable channel
-      # @option options [Hash]                    :action_cable_rendering   ({fallback: :default})                Options for rendering params used by ActionCable, e.g. {fallback: :text} or {fallback: :default} etc. See also Renderable#render.
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Notification] Generated notification instance
@@ -369,19 +359,12 @@ module ActivityNotification
         else
           send_email               = options.has_key?(:send_email)               ? options[:send_email]               : true
           send_later               = options.has_key?(:send_later)               ? options[:send_later]               : true
-          broadcast_action_cable   = options.has_key?(:broadcast_action_cable)   ? options[:broadcast_action_cable]   : true
           publish_optional_targets = options.has_key?(:publish_optional_targets) ? options[:publish_optional_targets] : true
           # Generate notification
           notification = generate_notification(target, notifiable, options)
           # Send notification email
           if notification.present? && send_email
             notification.send_notification_email({ send_later: send_later })
-          end
-          # Broadcast to ActionCable subscribers
-          if notification.present? && broadcast_action_cable
-            action_cable_rendering_options = options[:action_cable_rendering] || {}
-            action_cable_rendering_options[:fallback] = action_cable_rendering_options[:fallback] || :default
-            notification.broadcast_to_action_cable_channel(action_cable_rendering_options)
           end
           # Publish to optional targets
           if notification.present? && publish_optional_targets
@@ -408,8 +391,6 @@ module ActivityNotification
       # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
-      # @option options [Boolean]                 :broadcast_action_cable   (true)                                Whether it broadcast∂s notification to ActionCable channel
-      # @option options [Hash]                    :action_cable_rendering   ({fallback: :default})                Options for rendering params used by ActionCable, e.g. {fallback: :text} or {fallback: :default} etc. See also Renderable#render.
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Notification] Generated notification instance
@@ -556,52 +537,6 @@ module ActivityNotification
           @@notification_mailer.send_notification_email(self, options).deliver_now
       end
     end
-
-    # :nocov:
-    if Rails::VERSION::MAJOR >= 5
-      # Broadcast to ActionCable subscribers
-      # @param [Hash] params Parameters for rendering notifications
-      # @option params [String, Symbol] :target                 (nil)                     Target type name to find template or i18n text
-      # @option params [String]         :partial_root           ("activity_notification/notifications/#{target}", controller.target_view_path, 'activity_notification/notifications/default') Partial template name
-      # @option params [String]         :partial                (self.key.tr('.', '/'))   Root path of partial template
-      # @option params [String]         :layout                 (nil)                     Layout template name
-      # @option params [String]         :layout_root            ('layouts')               Root path of layout template
-      # @option params [String, Symbol] :fallback               (nil)                     Fallback template to use when MissingTemplate is raised. Set :text to use i18n text as fallback.
-      # @option params [String]         :filter                 (nil)                     Filter option to load notification index (Nothing as auto, 'opened' or 'unopened')
-      # @option params [String]         :limit                  (nil)                     Limit to query for notifications
-      # @option params [String]         :without_grouping       ('false')                 If notification index will include group members
-      # @option params [String]         :with_group_members     ('false')                 If notification index will include group members
-      # @option params [String]         :filtered_by_type       (nil)                     Notifiable type for filter
-      # @option params [String]         :filtered_by_group_type (nil)                     Group type for filter, valid with :filtered_by_group_id
-      # @option params [String]         :filtered_by_group_id   (nil)                     Group instance id for filter, valid with :filtered_by_group_type
-      # @option params [String]         :filtered_by_key        (nil)                     Key of the notification for filter
-      # @option param [String]          :later_than             (nil)                     ISO 8601 format time to filter notification index later than specified time
-      # @option param [String]          :earlier_than           (nil)                     ISO 8601 format time to filter notification index earlier than specified time
-      # @option params [Hash]           others                                            Parameters to be set as locals
-      def broadcast_to_action_cable_channel(params = {})
-        if target.notification_action_cable_allowed?(notifiable, key) &&
-          notifiable.notification_action_cable_allowed?(target, key)
-          target_channel_name = "#{ActivityNotification.config.notification_channel_prefix}_#{target_type}#{ActivityNotification.config.composite_key_delimiter}#{target_id}"
-          index_options = params.slice(:filter, :limit, :without_grouping, :with_group_members, :filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key)
-          ActionCable.server.broadcast(target_channel_name,
-            id:                          id,
-            view:                        render(ActivityNotification::NotificationsController.renderer, params),
-            text:                        text(params),
-            notifiable_path:             notifiable_path,
-            group_owner_id:              group_owner_id,
-            group_owner_view:            group_owner? ? nil : group_owner.render(ActivityNotification::NotificationsController.renderer, params),
-            unopened_notification_count: target.unopened_notification_count(index_options)
-          )
-        end
-      end
-    else
-      # Broadcast to ActionCable subscribers
-      # Do nothing with Rails < 5.0
-      # @param [Hash] params Parameters for rendering notifications
-      def broadcast_to_action_cable_channel(params = {})
-      end
-    end
-    # :nocov:
 
     # Publishes notification to the optional targets.
     #
