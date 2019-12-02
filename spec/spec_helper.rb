@@ -14,7 +14,7 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new [
 SimpleCov.start('rails') do
   add_filter '/spec/'
   add_filter '/lib/generators/templates/'
-  add_filter '/lib/activity_notification/version.rb'
+  add_filter '/lib/activity_notification/version'
   if ENV['AN_ORM'] == 'mongoid'
     add_filter '/lib/activity_notification/orm/active_record'
     add_filter '/lib/activity_notification/orm/dynamoid'
@@ -24,6 +24,10 @@ SimpleCov.start('rails') do
   else
     add_filter '/lib/activity_notification/orm/mongoid'
     add_filter '/lib/activity_notification/orm/dynamoid'
+  end
+  if Rails::VERSION::MAJOR < 5
+    add_filter '/app/channels/'
+    add_filter '/lib/activity_notification/optional_targets/action_cable_channel'
   end
 end
 

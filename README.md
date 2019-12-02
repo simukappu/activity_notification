@@ -121,12 +121,15 @@ The deployed demo application is included in this gem's source code as a test ap
     - [Enabling broadcasting notifications to channels](#enabling-broadcasting-notifications-to-channels)
     - [Subscribing notifications from channels](#subscribing-notifications-from-channels)
     - [Subscribing notifications with Devise authentication](#subscribing-notifications-with-devise-authentication)
+    - [Subscription management of Action Cable channels](#subscription-management-of-action-cable-channels)
   - [Optional notification targets](#optional-notification-targets)
     - [Configuring optional targets](#configuring-optional-targets)
     - [Customizing message format](#customizing-message-format)
+    - [Action Cable channels as optional target](#action-cable-channels-as-optional-target)
     - [Amazon SNS as optional target](#amazon-sns-as-optional-target)
     - [Slack as optional target](#slack-as-optional-target)
     - [Developing custom optional targets](#developing-custom-optional-targets)
+    - [Subscription management of optional targets](#subscription-management-of-optional-targets)
 - [Testing](#testing)
   - [Testing your application](#testing-your-application)
   - [Testing gem alone](#testing-gem-alone)
@@ -1152,6 +1155,8 @@ end
 
 Then, you can access *users/1/subscriptions* and use *[ActivityNotification::SubscriptionsController](/app/controllers/activity_notification/subscriptions_controller.rb)* or *[ActivityNotification::SubscriptionsWithDeviseController](/app/controllers/activity_notification/subscriptions_with_devise_controller.rb)* to manage the subscriptions.
 
+You can see sample subscription management view in demo application here: *https://activity-notification-example.herokuapp.com/users/1/subscriptions*
+
 If you would like to customize subscription controllers or views, you can use generators like notifications:
 
 * Customize subscription controllers
@@ -1439,7 +1444,8 @@ You can use default implementaion in Rails or your custom `ApplicationCable::Con
 
 #### Enabling broadcasting notifications to channels
 
-Broadcasting notifications to Action Cable channels is disabled as default. You can configure it to enable Action Cable broadcasting in initializer *activity_notification.rb*.
+Broadcasting notifications to Action Cable channels is provided as [optional notification targets implementation](#action-cable-channels-as-optional-target).
+This optional targets is disabled as default. You can configure it to enable Action Cable broadcasting in initializer *activity_notification.rb*.
 
 ```ruby
 config.action_cable_enabled = true
@@ -1468,7 +1474,7 @@ class Comment < ActiveRecord::Base
 end
 ```
 
-Then, *activity_notification* will broadcast configured notidications to target channels by *[ActivityNotification::NotificationApi](/lib/activity_notification/apis/notification_api.rb)#broadcast_to_action_cable_channel* method.
+Then, *activity_notification* will broadcast configured notifications to target channels by *[ActivityNotification::OptionalTarget::ActionCableChannel](/lib/activity_notification/optional_targets/action_cable_channel.rb)* as optional targets.
 
 #### Subscribing notifications from channels
 
@@ -1580,6 +1586,9 @@ App.activity_notification = App.cable.subscriptions.create(
 
 This script is also implemented in [default notifications index view](/app/views/activity_notification/notifications/default/index.html.erb) of *activity_notification*.
 
+#### Subscription management of Action Cable channels
+Since broadcasting notifications to Action Cable channels is provided as [optional notification targets implementation](#action-cable-channels-as-optional-target), you can manage subscriptions as *:action_cable_channel* optional target. See [subscription management of optional targets](#subscription-management-of-optional-targets) for more details.
+
 
 ### Optional notification targets
 
@@ -1626,6 +1635,22 @@ As default, all optional targets use *app/views/activity_notification/optional_t
 You can customize this template by creating *app/views/activity_notification/optional_targets/<target_class_name>/<optional_target_class_name>/<notification_key>.text.(|erb|haml|slim|something_else)*.
 For example, if you have a notification for *:users* target with *:key* set to *"notification.comment.reply"* and *ActivityNotification::OptionalTarget::AmazonSNS* optional target is configured, the gem will look for a partial in *app/views/activity_notification/optional_targets/users/amazon_sns/comment/_reply.text.erb*.
 The gem will also look for templates whose *<target_class_name>* is *default*, *<optional_target_class_name>* is *base* and *<notification_key>* is *default*, which means *app/views/activity_notification/optional_targets/users/amazon_sns/_default.text.erb*, *app/views/activity_notification/optional_targets/users/base/_default.text.erb*, *app/views/activity_notification/optional_targets/default/amazon_sns/_default.text.erb* and *app/views/activity_notification/optional_targets/default/base/_default.text.erb*.
+
+#### Action Cable channels as optional target
+
+*activity_notification* provides **ActivityNotification::OptionalTarget::ActionCableChannel** as default optional target implementation to broadcast notifications to Action Cable channels.
+
+Simply write `require 'activity_notification/optional_targets/action_cable_channel'` statement in your notifiable model and set *ActivityNotification::OptionalTarget::ActionCableChannel* to *acts_as_notifiable* with initializing parameters. If you don't specify initializing parameters *ActivityNotification::OptionalTarget::ActionCableChannel* uses configuration in *ActivityNotification.config*.
+
+```ruby
+class Comment < ActiveRecord::Base
+  require 'activity_notification/optional_targets/action_cable_channel'
+  acts_as_notifiable :admins, targets: [Admin.first].compact,
+    optional_targets: {
+      ActivityNotification::OptionalTarget::ActionCableChannel => { channel_prefix: 'admin_notification' }
+    }
+end
+```
 
 #### Amazon SNS as optional target
 
@@ -1737,6 +1762,22 @@ end
 ```
 
 *acts_as_notifiable* creates optional target instances and calls *initialize_target* method with initializing parameters.
+
+#### Subscription management of optional targets
+
+*ActivityNotification::Subscription* model provides API to subscribe and unsubscribe optional notification targets. Call these methods with optional target name like this:
+
+```ruby
+# Subscribe Acltion Cable channel for 'comment.reply' notifications
+user.find_or_create_subscription('comment.reply').subscribe_to_optional_target(:action_cable_channel)
+
+# Unsubscribe Slack notification for 'comment.reply' notifications
+user.find_or_create_subscription('comment.reply').unsubscribe_to_optional_target(:slack)
+```
+
+You can also manage subscriptions of optional targets by subscriptions REST API. See [REST API backend](#rest-api-backend) for more details.
+
+You can see sample subscription management view in demo application here: *https://activity-notification-example.herokuapp.com/users/1/subscriptions*
 
 
 ## Testing
