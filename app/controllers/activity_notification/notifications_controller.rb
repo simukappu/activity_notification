@@ -30,7 +30,7 @@ module ActivityNotification
 
     # Opens all notifications of the target.
     #
-    # PUT /:target_type/:target_id/notifications/open_all
+    # POST /:target_type/:target_id/notifications/open_all
     # @overload open_all(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :filter                 (nil)     Filter option to load notification index by their status (Nothing as auto, 'opened' or 'unopened')
