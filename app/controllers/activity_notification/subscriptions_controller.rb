@@ -43,7 +43,7 @@ module ActivityNotification
       else
         set_index_options
         load_index if params[:reload].to_s.to_boolean(true)
-        render partial: 'errors', locals: { object: @subscription }, status: 442
+        render partial: 'errors', locals: { object: @subscription }, status: 422
       end
     end
 

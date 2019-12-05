@@ -40,7 +40,6 @@ module ActivityNotification
         validates  :subscribed_to_email_at,   presence: true, if:     :subscribing_to_email
         validates  :unsubscribed_to_email_at, presence: true, unless: :subscribing_to_email
         validate   :subscribing_to_optional_target_cannot_be_true_when_subscribing_is_false
-        validate   :key_uniqueness
 
         %i[ filtered_by_association filtered_by_target
             filtered_by_target_type filtered_by_key filtered_by_options
