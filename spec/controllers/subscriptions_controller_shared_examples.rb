@@ -324,6 +324,66 @@ shared_examples_for :subscriptions_controller do
         expect(response).to render_template :create, format: :js
       end
     end
+
+    context "Ajax PUT request with duplicated key" do
+      if ActivityNotification.config.orm == :dynamoid
+        before do
+          expect(subscription).to be_valid
+
+          request.env["HTTP_REFERER"] = root_path
+          xhr_with_compatibility :put, :create, target_params.merge({
+                                                                        typed_target_param => test_target,
+                                                                        "subscription"     => { "key"        => subscription.key,
+                                                                                                "subscribing"=> "true",
+                                                                                                "subscribing_to_email"=>"true"
+                                                                        }
+                                                                    }), valid_session
+        end
+
+        it "returns 200 as http status code" do
+          expect(response.status).to eq(200)
+        end
+
+        it "creates new subscription of the target" do
+          expect(test_target.subscriptions.reload.size).to      eq(2)
+          expect(test_target.subscriptions.reload.first.key).to eq(subscription.key)
+        end
+
+        it "renders the :create template as format js" do
+          expect(response).to render_template :create, format: :js
+        end
+      else
+        before do
+          expect(subscription).to be_valid
+
+          request.env["HTTP_REFERER"] = root_path
+          xhr_with_compatibility :put, :create, target_params.merge({
+                                                                        typed_target_param => test_target,
+                                                                        "subscription"     => { "key"        => subscription.key,
+                                                                                                "subscribing"=> "true",
+                                                                                                "subscribing_to_email"=>"true"
+                                                                        }
+                                                                    }), valid_session
+        end
+
+        it "returns 200 as http status code" do
+          expect(response.status).to eq(422)
+        end
+
+        it "assigns subscription index as @subscriptions" do
+          expect(assigns(:subscriptions)).to eq([test_target.subscriptions.reload.first])
+        end
+
+        it "creates new subscription of the target" do
+          expect(test_target.subscriptions.reload.size).to      eq(1)
+          expect(test_target.subscriptions.reload.first.key).to eq(subscription.key)
+        end
+
+        it "renders the :errors template as format js" do
+          expect(response).to render_template partial: '_errors'
+        end
+      end
+    end
   end
 
   describe "GET #find" do
