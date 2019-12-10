@@ -224,6 +224,5 @@ module ActivityNotification
           end
         end
       end
-
   end
 end

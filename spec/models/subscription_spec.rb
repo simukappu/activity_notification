@@ -33,12 +33,14 @@ describe ActivityNotification::Subscription, type: :model do
       expect(subscription.errors[:key].size).to eq(1)
     end
 
-    it "is invalid with duplicated key for same target" do
-      subscription_with_taken_key = create(:subscription)
-      subscription.key = subscription_with_taken_key.key
-      subscription.target = subscription_with_taken_key.target
-      expect(subscription).to be_invalid
-      expect(subscription.errors[:key].size).to eq(1)
+    unless ActivityNotification.config.orm == :dynamoid
+      it "is invalid with duplicated key for same target" do
+        subscription_with_taken_key = create(:subscription)
+        subscription.key = subscription_with_taken_key.key
+        subscription.target = subscription_with_taken_key.target
+        expect(subscription).to be_invalid
+        expect(subscription.errors[:key].size).to eq(1)
+      end
     end
 
     it "is invalid with true as subscribing_to_email and false as subscribing" do

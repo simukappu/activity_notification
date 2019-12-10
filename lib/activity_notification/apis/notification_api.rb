@@ -85,6 +85,22 @@ module ActivityNotification
         # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
         scope :filtered_by_key,                   ->(key) { where(key: key) }
 
+        # Selects filtered notifications later than specified time.
+        # @example Get filtered unopened notificatons of the @user later than @notification
+        #   @notifications = @user.notifications.unopened_only.later_than(@notification.created_at)
+        # @scope class
+        # @param [Time] Created time of the notifications for filter
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :later_than,                        ->(created_time) { where('created_at > ?', created_time) }
+
+        # Selects filtered notifications earlier than specified time.
+        # @example Get filtered unopened notificatons of the @user earlier than @notification
+        #   @notifications = @user.notifications.unopened_only.earlier_than(@notification.created_at)
+        # @scope class
+        # @param [Time] Created time of the notifications for filter
+        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        scope :earlier_than,                      ->(created_time) { where('created_at < ?', created_time) }
+
         # Selects filtered notifications by notifiable_type, group or key with filter options.
         # @example Get filtered unopened notificatons of the @user for Comment notifiable class
         #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment' })
