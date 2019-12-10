@@ -126,6 +126,7 @@ shared_examples_for :subscriptions_controller do
         create(:notification, target: test_target, key: 'test_notification_key_1')
         create(:notification, target: test_target, key: 'test_notification_key_2')
       end
+
       context "with 2 as limit" do
         before do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, limit: 2 }), valid_session
@@ -181,7 +182,6 @@ shared_examples_for :subscriptions_controller do
     end
 
     context "with options filter parameters" do
-
       let(:subscription1) { create(:subscription, target: test_target, key: 'test_subscription_key_1') }
       let(:subscription2) { create(:subscription, target: test_target, key: 'test_subscription_key_2') }
       let(:notification1) { create(:notification, target: test_target, key: 'test_notification_key_1') }

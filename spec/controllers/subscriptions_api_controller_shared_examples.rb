@@ -632,14 +632,14 @@ shared_examples_for :subscriptions_api_request do
 
   describe "GET /{target_type}/{target_id}/subscriptions/find", type: :request do
     it "returns response as API references" do
-      get_with_compatibility "#{api_path}/subscriptions/find?key=#{@subscription.key}", headers: @headers
+      get_with_compatibility "#{api_path}/subscriptions/find?key=#{subscription.key}", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "GET /{target_type}/{target_id}/subscriptions/{id}", type: :request do
     it "returns response as API references" do
-      get_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}", headers: @headers
+      get_with_compatibility "#{api_path}/subscriptions/#{subscription.id}", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
 
@@ -651,49 +651,49 @@ shared_examples_for :subscriptions_api_request do
 
   describe "DELETE /{target_type}/{target_id}/subscriptions/{id}", type: :request do
     it "returns response as API references" do
-      delete_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}", headers: @headers
+      delete_with_compatibility "#{api_path}/subscriptions/#{subscription.id}", headers: @headers
       assert_all_schema_confirm(response, 204)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/subscribe", type: :request do
     it "returns response as API references" do
-      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/subscribe", headers: @headers
+      put_with_compatibility "#{api_path}/subscriptions/#{subscription.id}/subscribe", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/unsubscribe", type: :request do
     it "returns response as API references" do
-      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/unsubscribe", headers: @headers
+      put_with_compatibility "#{api_path}/subscriptions/#{subscription.id}/unsubscribe", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/subscribe_to_email", type: :request do
     it "returns response as API references" do
-      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/subscribe_to_email", headers: @headers
+      put_with_compatibility "#{api_path}/subscriptions/#{subscription.id}/subscribe_to_email", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/unsubscribe_to_email", type: :request do
     it "returns response as API references" do
-      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/unsubscribe_to_email", headers: @headers
+      put_with_compatibility "#{api_path}/subscriptions/#{subscription.id}/unsubscribe_to_email", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/subscribe_to_optional_target", type: :request do
     it "returns response as API references" do
-      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/subscribe_to_optional_target?optional_target_name=slack", headers: @headers
+      put_with_compatibility "#{api_path}/subscriptions/#{subscription.id}/subscribe_to_optional_target?optional_target_name=slack", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/unsubscribe_to_optional_target", type: :request do
     it "returns response as API references" do
-      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/unsubscribe_to_optional_target?optional_target_name=slack", headers: @headers
+      put_with_compatibility "#{api_path}/subscriptions/#{subscription.id}/unsubscribe_to_optional_target?optional_target_name=slack", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
