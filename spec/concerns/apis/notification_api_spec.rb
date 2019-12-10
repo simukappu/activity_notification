@@ -552,6 +552,22 @@ shared_examples_for :notification_api do
           expect(@user_1.notifications.opened_only!.count).to eq(1)
         end
       end
+
+      context 'with later_than options' do
+        it "opens filtered notifications only" do
+          described_class.open_all_of(@user_1, { later_than: (@user_1.notifications.earliest.created_at.in_time_zone + 0.001).iso8601(3) })
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_1.notifications.opened_only!.count).to eq(1)
+        end
+      end
+
+      context 'with earlier_than options' do
+        it "opens filtered notifications only" do
+          described_class.open_all_of(@user_1, { earlier_than: @user_1.notifications.latest.created_at.iso8601(3) })
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_1.notifications.opened_only!.count).to eq(1)
+        end
+      end
     end
 
     describe ".group_member_exists?" do

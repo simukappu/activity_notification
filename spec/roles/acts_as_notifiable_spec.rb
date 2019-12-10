@@ -420,8 +420,6 @@ describe ActivityNotification::ActsAsNotifiable do
           end
         end
       end
-
-      #TODO test other options
     end
 
     describe ".available_notifiable_options" do

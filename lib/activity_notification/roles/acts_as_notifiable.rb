@@ -227,6 +227,18 @@ module ActivityNotification
           configured_params.update(add_destroy_dependency(target_type, options[:dependent_notifications]))
         end
 
+        if options[:action_cable_allowed] || (ActivityNotification.config.action_cable_enabled && options[:action_cable_allowed] != false)
+          options[:optional_targets] ||= {}
+          # :nocov:
+          if Rails::VERSION::MAJOR >= 5
+            require 'activity_notification/optional_targets/action_cable_channel'
+            unless options[:optional_targets].has_key?(ActivityNotification::OptionalTarget::ActionCableChannel)
+              options[:optional_targets][ActivityNotification::OptionalTarget::ActionCableChannel] = {}
+            end
+          end
+          # :nocov:
+        end
+
         if options[:optional_targets].is_a?(Hash)
           options[:optional_targets] = arrange_optional_targets_option(options[:optional_targets])
         end
@@ -299,21 +311,9 @@ module ActivityNotification
         #   https://github.com/rails/rails/issues/30779
         #   https://github.com/rails/rails/pull/32167
 
-        # :only-rails5-plus#only-rails-without-callback-issue:
-        # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
-        # :except-rails5-plus#only-rails-without-callback-issue:
-        # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
+        # :nocov:
         if !(Gem::Version.new("5.1.6") <= Rails.gem_version && Rails.gem_version < Gem::Version.new("5.2.2")) && respond_to?(:after_commit)
           after_commit tracked_proc, on: tracked_action
-        # :only-rails5-plus#only-rails-without-callback-issue:
-        # :only-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
-        # :except-rails5-plus#only-rails-without-callback-issue:
-        # :except-rails5-plus#only-rails-without-callback-issue#except-dynamoid:
-
-        # :only-rails5-plus#only-rails-with-callback-issue:
-        # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-        # :except-rails5-plus#only-rails-with-callback-issue:
-        # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
         else
           case tracked_action
           when :create
@@ -322,10 +322,7 @@ module ActivityNotification
             after_update tracked_proc
           end
         end
-        # :only-rails5-plus#only-rails-with-callback-issue:
-        # :only-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
-        # :except-rails5-plus#only-rails-with-callback-issue:
-        # :except-rails5-plus#only-rails-with-callback-issue#except-dynamoid:
+        # :nocov:
       end
 
       # Adds destroy dependency.

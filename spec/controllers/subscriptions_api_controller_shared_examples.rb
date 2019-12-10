@@ -589,7 +589,7 @@ shared_examples_for :subscriptions_api_request do
     @subscription = create(:subscription, target: test_target, key: "configured_key")
   end
 
-  describe "GET /apidocs" do
+  describe "GET /apidocs to test" do
     it "returns API references as OpenAPI Specification JSON schema" do
       get "#{root_path}/apidocs"
       write_schema_file(response.body)
@@ -599,97 +599,97 @@ shared_examples_for :subscriptions_api_request do
 
   describe "GET /{target_type}/{target_id}/subscriptions", type: :request do
     it "returns response as API references" do
-      get "#{api_path}/subscriptions"
+      get_with_compatibility "#{api_path}/subscriptions", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "POST /{target_type}/{target_id}/subscriptions", type: :request do
     it "returns response as API references" do
-      post_with_compatibility "#{api_path}/subscriptions", {
+      post_with_compatibility "#{api_path}/subscriptions", params: {
         "subscription"  => { "key"        => "new_subscription_key",
                              "subscribing"=> "true",
                              "subscribing_to_email"=>"true"
                            }
-      }
+      }, headers: @headers
       assert_all_schema_confirm(response, 201)
     end
 
     it "returns response as API references when the key is duplicate" do
-      post_with_compatibility "#{api_path}/subscriptions", {
+      post_with_compatibility "#{api_path}/subscriptions", params: {
         "subscription"  => { "key"        => "configured_key",
                              "subscribing"=> "true",
                              "subscribing_to_email"=>"true"
                            }
-      }
+      }, headers: @headers
       assert_all_schema_confirm(response, 409)
     end
   end
 
   describe "GET /{target_type}/{target_id}/subscriptions/find", type: :request do
     it "returns response as API references" do
-      get "#{api_path}/subscriptions/find?key=#{@subscription.key}"
+      get_with_compatibility "#{api_path}/subscriptions/find?key=#{@subscription.key}", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "GET /{target_type}/{target_id}/subscriptions/{id}", type: :request do
     it "returns response as API references" do
-      get "#{api_path}/subscriptions/#{@subscription.id}"
+      get_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
 
     it "returns error response as API references" do
-      get "#{api_path}/subscriptions/0"
+      get_with_compatibility "#{api_path}/subscriptions/0", headers: @headers
       assert_all_schema_confirm(response, 404)
     end
   end
 
   describe "DELETE /{target_type}/{target_id}/subscriptions/{id}", type: :request do
     it "returns response as API references" do
-      delete "#{api_path}/subscriptions/#{@subscription.id}"
+      delete_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}", headers: @headers
       assert_all_schema_confirm(response, 204)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/subscribe", type: :request do
     it "returns response as API references" do
-      put "#{api_path}/subscriptions/#{@subscription.id}/subscribe"
+      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/subscribe", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/unsubscribe", type: :request do
     it "returns response as API references" do
-      put "#{api_path}/subscriptions/#{@subscription.id}/unsubscribe"
+      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/unsubscribe", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/subscribe_to_email", type: :request do
     it "returns response as API references" do
-      put "#{api_path}/subscriptions/#{@subscription.id}/subscribe_to_email"
+      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/subscribe_to_email", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/unsubscribe_to_email", type: :request do
     it "returns response as API references" do
-      put "#{api_path}/subscriptions/#{@subscription.id}/unsubscribe_to_email"
+      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/unsubscribe_to_email", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/subscribe_to_optional_target", type: :request do
     it "returns response as API references" do
-      put "#{api_path}/subscriptions/#{@subscription.id}/subscribe_to_optional_target?optional_target_name=slack"
+      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/subscribe_to_optional_target?optional_target_name=slack", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/subscriptions/{id}/unsubscribe_to_optional_target", type: :request do
     it "returns response as API references" do
-      put "#{api_path}/subscriptions/#{@subscription.id}/unsubscribe_to_optional_target?optional_target_name=slack"
+      put_with_compatibility "#{api_path}/subscriptions/#{@subscription.id}/unsubscribe_to_optional_target?optional_target_name=slack", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end

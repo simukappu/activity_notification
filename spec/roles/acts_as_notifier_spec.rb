@@ -18,8 +18,6 @@ describe ActivityNotification::ActsAsNotifier do
           expect(dummy_model_class.acts_as_notifier).to eq({})
         end
       end
-
-      #TODO test other options
     end
 
     describe ".available_notifier_options" do

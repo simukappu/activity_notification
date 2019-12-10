@@ -19,6 +19,8 @@ module ActivityNotification
     #   @option params [String] :filtered_by_group_type (nil)     Group type to filter notification index, valid with :filtered_by_group_id
     #   @option params [String] :filtered_by_group_id   (nil)     Group instance ID to filter notification index, valid with :filtered_by_group_type
     #   @option params [String] :filtered_by_key        (nil)     Key of notifications to filter notification index
+    #   @option params [String] :later_than             (nil)     ISO 8601 format time to filter notification index later than specified time
+    #   @option params [String] :earlier_than           (nil)     ISO 8601 format time to filter notification index earlier than specified time
     #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
     #   @return [Response] HTML view of notification index
     def index
@@ -28,7 +30,7 @@ module ActivityNotification
 
     # Opens all notifications of the target.
     #
-    # PUT /:target_type/:target_id/notifications/open_all
+    # POST /:target_type/:target_id/notifications/open_all
     # @overload open_all(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :filter                 (nil)     Filter option to load notification index by their status (Nothing as auto, 'opened' or 'unopened')
@@ -39,6 +41,8 @@ module ActivityNotification
     #   @option params [String] :filtered_by_group_type (nil)     Group type to filter notification index, valid with :filtered_by_group_id
     #   @option params [String] :filtered_by_group_id   (nil)     Group instance ID to filter notification index, valid with :filtered_by_group_type
     #   @option params [String] :filtered_by_key        (nil)     Key of notifications to filter notification index
+    #   @option params [String] :later_than             (nil)     ISO 8601 format time to filter notification index later than specified time
+    #   @option params [String] :earlier_than           (nil)     ISO 8601 format time to filter notification index earlier than specified time
     #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
     #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def open_all
@@ -131,7 +135,7 @@ module ActivityNotification
                                params[:reverse].to_s.to_boolean(false) : nil
         with_group_members = params[:with_group_members].present? || params[:without_grouping].present? ?
                                params[:with_group_members].to_s.to_boolean(false) || params[:without_grouping].to_s.to_boolean(false) : nil
-        @index_options     = params.permit(:filter, :filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key, :routing_scope, :devise_default_routes)
+        @index_options     = params.permit(:filter, :filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key, :later_than, :earlier_than, :routing_scope, :devise_default_routes)
                                    .to_h.symbolize_keys
                                    .merge(limit: limit, reverse: reverse, with_group_members: with_group_members)
       end

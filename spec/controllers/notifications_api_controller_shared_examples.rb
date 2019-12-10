@@ -179,6 +179,20 @@ shared_examples_for :notifications_api_controller do
           assert_json_with_object_array(response_json["notifications"], [@notification3])
         end
       end
+
+      context 'with later_than parameter' do
+        it "returns filtered notifications only" do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, later_than: (@notification1.created_at.in_time_zone + 0.001).iso8601(3) }), valid_session
+          assert_json_with_object_array(response_json["notifications"], [@notification3])
+        end
+      end
+
+      context 'with earlier_than parameter' do
+        it "returns filtered notifications only" do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, earlier_than: @notification1.created_at.iso8601(3) }), valid_session
+          assert_json_with_object_array(response_json["notifications"], [@notification2])
+        end
+      end
     end
   end
 
@@ -235,6 +249,22 @@ shared_examples_for :notifications_api_controller do
           post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, 'filtered_by_key' => 'key.2' }), valid_session
           expect(@notification_1.reload.opened?).to be_falsey
           expect(@notification_2.reload.opened?).to be_truthy
+        end
+      end
+
+      context 'with later_than parameter' do
+        it "opens filtered notifications only" do
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, later_than: (@notification_1.created_at.in_time_zone + 0.001).iso8601(3) }), valid_session
+          expect(@notification_1.reload.opened?).to be_falsey
+          expect(@notification_2.reload.opened?).to be_truthy
+        end
+      end
+
+      context 'with earlier_than parameter' do
+        it "opens filtered notifications only" do
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, earlier_than: @notification_2.created_at.iso8601(3) }), valid_session
+          expect(@notification_1.reload.opened?).to be_truthy
+          expect(@notification_2.reload.opened?).to be_falsey
         end
       end
 
@@ -424,52 +454,52 @@ shared_examples_for :notifications_api_request do
 
   describe "GET /{target_type}/{target_id}/notifications", type: :request do
     it "returns response as API references" do
-      get "#{api_path}/notifications"
+      get_with_compatibility "#{api_path}/notifications", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "POST /{target_type}/{target_id}/notifications/open_all", type: :request do
     it "returns response as API references" do
-      post "#{api_path}/notifications/open_all"
+      post_with_compatibility "#{api_path}/notifications/open_all", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
   end
 
   describe "GET /{target_type}/{target_id}/notifications/{id}", type: :request do
     it "returns response as API references" do
-      get "#{api_path}/notifications/#{@notification.id}"
+      get_with_compatibility "#{api_path}/notifications/#{@notification.id}", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
 
     it "returns error response as API references" do
-      get "#{api_path}/notifications/0"
+      get_with_compatibility "#{api_path}/notifications/0", headers: @headers
       assert_all_schema_confirm(response, 404)
     end
   end
 
   describe "DELETE /{target_type}/{target_id}/notifications/{id}", type: :request do
     it "returns response as API references" do
-      delete "#{api_path}/notifications/#{@notification.id}"
+      delete_with_compatibility "#{api_path}/notifications/#{@notification.id}", headers: @headers
       assert_all_schema_confirm(response, 204)
     end
   end
 
   describe "PUT /{target_type}/{target_id}/notifications/{id}/open", type: :request do
     it "returns response as API references" do
-      put "#{api_path}/notifications/#{@notification.id}/open"
+      put_with_compatibility "#{api_path}/notifications/#{@notification.id}/open", headers: @headers
       assert_all_schema_confirm(response, 200)
     end
 
     it "returns response as API references when request parameters have move=true" do
-      put "#{api_path}/notifications/#{@notification.id}/open?move=true"
+      put_with_compatibility "#{api_path}/notifications/#{@notification.id}/open?move=true", headers: @headers
       assert_all_schema_confirm(response, 302)
     end
   end
 
   describe "GET /{target_type}/{target_id}/notifications/{id}/move", type: :request do
     it "returns response as API references" do
-      get "#{api_path}/notifications/#{@notification.id}/move"
+      get_with_compatibility "#{api_path}/notifications/#{@notification.id}/move", headers: @headers
       assert_all_schema_confirm(response, 302)
     end
   end
