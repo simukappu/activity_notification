@@ -35,9 +35,9 @@
 <div class='<%= "notification_#{notification.id}" %>'>
   <% if notification.unopened? %>
     <%= link_to open_notification_path_for(notification, parameters.slice(:routing_scope, :devise_default_routes).merge(reload: false)), method: :put, remote: true, class: "unopened_wrapper" do %>
-      <div class="unopned_circle"></div>
-      <div class="unopned_description_wrapper">
-        <p class="unopned_description">Open</p>
+      <div class="unopened_circle"></div>
+      <div class="unopened_description_wrapper">
+        <p class="unopened_description">Open</p>
       </div>
     <% end %>
     <%= link_to open_notification_path_for(notification, parameters.slice(:routing_scope, :devise_default_routes).merge(move: true)), method: :put do %>
@@ -63,13 +63,13 @@
 </div>
 
 <style>
-  /* unopned_circle */
+  /* unopened_circle */
   .unopened_wrapper{
     position: absolute;
     margin-top: 20px;
     margin-left: 56px;
   }
-  .unopened_wrapper .unopned_circle {
+  .unopened_wrapper .unopened_circle {
     display: block;
     width: 10px;
     height: 10px;
@@ -78,16 +78,16 @@
     background-color: #27a5eb;
     z-index: 2;
   }
-  .unopened_wrapper:hover > .unopned_description_wrapper{
+  .unopened_wrapper:hover > .unopened_description_wrapper{
     display: block;
   }
-  .unopened_wrapper .unopned_description_wrapper {
+  .unopened_wrapper .unopened_description_wrapper {
     display: none;
     position: absolute;
     margin-top: 26px;
     margin-left: -24px;
   }
-  .unopened_wrapper .unopned_description_wrapper .unopned_description {
+  .unopened_wrapper .unopened_description_wrapper .unopened_description {
     position: absolute;
     color: #fff;
     font-size: 12px;
@@ -98,7 +98,7 @@
     padding: 4px 12px;
     z-index: 999;
   }
-  .unopened_wrapper .unopned_description_wrapper .unopned_description:before {
+  .unopened_wrapper .unopened_description_wrapper .unopened_description:before {
      border: solid transparent;
      border-top-width: 0;
      content: "";
