@@ -1,7 +1,11 @@
 <div class="subscription_wrapper">
+  <div class="subscription_header">
+    <h1>Subscriptions for <%= @target.printable_target_name %></h1>
+  </div>
+
   <% unless @subscriptions.nil? %>
     <div class="subscription_header">
-      <h1>Configured subscriptions</h1>
+      <h2>Configured subscriptions</h2>
     </div>
     <div class="subscriptions" id="subscriptions">
       <%= render 'subscriptions', subscriptions: @subscriptions, option_params: @index_options %>
@@ -10,7 +14,7 @@
 
   <% unless @notification_keys.nil? %>
     <div class="subscription_header">
-      <h1>Unconfigured notification keys</h1>
+      <h2>Unconfigured notification keys</h2>
     </div>
     <div class="notification_keys" id="notification_keys">
       <%= render 'notification_keys', target: @target, notification_keys: @notification_keys, option_params: @index_options %>
@@ -18,7 +22,7 @@
   <% end %>
 
   <div class="subscription_header">
-    <h1>Create a new subscription</h1>
+    <h2>Create a new subscription</h2>
   </div>
   <div class="subscription_form" id="subscription_form">
     <%= render 'form', target: @target, option_params: @index_options %>
@@ -26,6 +30,10 @@
 </div>
 
 <style>
+  .subscription_header h1 {
+    margin-bottom: 30px;
+  }
+
   .fields_area {
     border: 1px solid #e5e5e5;
     width: 600px;
@@ -42,10 +50,6 @@
   }
   .fields_area .fields_wrapper.configured {
     background-color: #f8f9fb;
-  }
-
-  .fields_area .fields_wrapper:last-child {
-    border-bottom: none;
   }
 
   .fields_area .fields_wrapper .fields_title_wrapper {

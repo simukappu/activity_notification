@@ -1,6 +1,6 @@
 <div class="fields_area">
   <div class="fields_wrapper">
-    <%= form_for(ActivityNotification::Subscription.new, as: :subscription, url: subscriptions_url_for(target, option_params), data: { remote: true }) do |f| %>
+    <%= form_for(ActivityNotification::Subscription.new, as: :subscription, url: subscriptions_url_for(target, option_params), data: { remote: true }, namespace: :new) do |f| %>
       <div class="field_wrapper">
         <div class="field_label">
           <%= f.label :key, "Notification key" %>
