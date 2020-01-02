@@ -676,6 +676,12 @@ module ActivityNotification
       notifiable.notifiable_path(target_type, key)
     end
 
+    # Returns printable notifiable model name to show in view or email.
+    # @return [String] Printable notifiable model name
+    def printable_notifiable_name
+      notifiable.printable_notifiable_name(target, key)
+    end
+
     # Returns if the target subscribes this notification.
     # @return [Boolean] If the target subscribes the notification
     def subscribed?

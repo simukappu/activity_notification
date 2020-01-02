@@ -122,6 +122,19 @@ module ActivityNotification
                 key :format, :uri
                 key :example, "/articles/11"
               end
+              property :printable_notifiable_name do
+                key :type, :string
+                key :format, :uri
+                key :example, "comment \"This is the first Stephen's comment to Ichiro's article.\""
+              end
+              property :group_member_notifier_count do
+                key :type, :integer
+                key :example, 1
+              end
+              property :group_notification_count do
+                key :type, :integer
+                key :example, 2
+              end
               property :target do
                 key :type, :object
                 key :description, "Associated target model in your application"
@@ -130,7 +143,11 @@ module ActivityNotification
                   "email": "ichiro@example.com",
                   "name": "Ichiro",
                   "created_at": Time.current,
-                  "updated_at": Time.current
+                  "updated_at": Time.current,
+                  "provider": "email",
+                  "uid": "",
+                  "printable_type": "User",
+                  "printable_target_name": "Ichiro"
                 }
               end
               property :notifiable do
@@ -142,7 +159,8 @@ module ActivityNotification
                   "article_id": 11,
                   "body": "This is the first Stephen's comment to Ichiro's article.",
                   "created_at": Time.current,
-                  "updated_at": Time.current
+                  "updated_at": Time.current,
+                  "printable_type": "Comment"
               }
               end
               property :group do
@@ -155,7 +173,9 @@ module ActivityNotification
                   "title": "Ichiro's great article",
                   "body": "This is Ichiro's great article. Please read it!",
                   "created_at": Time.current,
-                  "updated_at": Time.current
+                  "updated_at": Time.current,
+                  "printable_type": "Article",
+                  "printable_group_name": "article \"Ichiro's great article\""
                 }
               end
               property :notifier do
@@ -167,7 +187,11 @@ module ActivityNotification
                   "email": "stephen@example.com",
                   "name": "Stephen",
                   "created_at": Time.current,
-                  "updated_at": Time.current
+                  "updated_at": Time.current,
+                  "provider": "email",
+                  "uid": "",
+                  "printable_type": "User",
+                  "printable_notifier_name": "Stephen"
                 }
               end
               property :group_members do

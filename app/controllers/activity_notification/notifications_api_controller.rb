@@ -29,7 +29,7 @@ module ActivityNotification
       super
       render json: {
         count: @notifications.size, 
-        notifications: @notifications.as_json(include: notification_json_include_option, methods: notification_json_methods_option)
+        notifications: @notifications.as_json(notification_json_options)
       }
     end
 
@@ -49,7 +49,7 @@ module ActivityNotification
       super
       render json: {
         count: @opened_notifications.size,
-        notifications: @opened_notifications.as_json(include: notification_json_include_option, methods: notification_json_methods_option)
+        notifications: @opened_notifications.as_json(notification_json_options)
       }
     end
   
@@ -80,7 +80,7 @@ module ActivityNotification
     # PUT /:target_type/:target_id/notifications/:id/open
     # @overload open(params)
     #   @param [Hash] params Request parameters
-    #   @option params [String] :move               ('false') Whether it redirects to notifiable_path after the notification is opened
+    #   @option params [String] :move ('false') Whether it redirects to notifiable_path after the notification is opened
     #   @return [JSON] count: number of opened notification records, notification: opened notification
     def open
       super
@@ -97,7 +97,7 @@ module ActivityNotification
     # GET /:target_type/:target_id/notifications/:id/move
     # @overload open(params)
     #   @param [Hash] params Request parameters
-    #   @option params [String] :open    ('false') Whether the notification will be opened
+    #   @option params [String] :open ('false') Whether the notification will be opened
     #   @return [JSON] location: notifiable path, count: number of opened notification records, notification: specified notification
     def move
       super
@@ -110,22 +110,25 @@ module ActivityNotification
 
     protected
 
-      # Returns include option for notification JSON
+      # Returns options for notification JSON
       # @api protected
-      def notification_json_include_option
-        [:target, :notifiable, :group, :notifier, :group_members].freeze
-      end
-
-      # Returns methods option for notification JSON
-      # @api protected
-      def notification_json_methods_option
-        [:notifiable_path].freeze
+      def notification_json_options
+        {
+          include: {
+            target: { methods: [:printable_type, :printable_target_name] },
+            notifiable: { methods: [:printable_type] },
+            group: { methods: [:printable_type, :printable_group_name] },
+            notifier: { methods: [:printable_type, :printable_notifier_name] },
+            group_members: {}
+          },
+          methods: [:notifiable_path, :printable_notifiable_name, :group_member_notifier_count, :group_notification_count]
+        }
       end
 
       # Returns JSON of @notification
       # @api protected
       def notification_json
-        @notification.as_json(include: notification_json_include_option, methods: notification_json_methods_option)
+        @notification.as_json(notification_json_options)
       end
 
       # Render associated notifiable record not found error with 500 status

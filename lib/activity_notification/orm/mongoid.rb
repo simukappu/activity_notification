@@ -82,8 +82,12 @@ module Mongoid
     def as_json(options = {})
       json = super(options)
       json["id"] = json["_id"].to_s.start_with?("{\"$oid\"=>") ? self.id.to_s : json["_id"].to_s
-      (options[:include] || []).each do |associated_model|
-        json[associated_model] = self.send(associated_model).as_json
+      if options.has_key?(:include)
+        case options[:include]
+        when Symbol then json[options[:include].to_s] = self.send(options[:include]).as_json
+        when Array  then options[:include].each {|model| json[model.to_s] = self.send(model).as_json }
+        when Hash   then options[:include].each {|model, options| json[model.to_s] = self.send(model).as_json(options) }
+        end
       end
       json
     end

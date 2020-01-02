@@ -56,6 +56,23 @@ describe ActivityNotification::Notification, type: :model do
       notification = create(:notification, notifier: notifier)
       expect(notification.reload.notifier).to eq(notifier)
     end
+
+    context "returns as_json including associated models" do
+      it "returns as_json with include option as Symbol" do
+        notification = create(:notification)
+        expect(notification.as_json(include: :target)["target"]["id"].to_s).to eq(notification.target.id.to_s)
+      end
+
+      it "returns as_json with include option as Array" do
+        notification = create(:notification)
+        expect(notification.as_json(include: [:target])["target"]["id"].to_s).to eq(notification.target.id.to_s)
+      end
+
+      it "returns as_json with include option as Hash" do
+        notification = create(:notification)
+        expect(notification.as_json(include: { target: { methods: [:printable_target_name] } })["target"]["id"].to_s).to eq(notification.target.id.to_s)
+      end
+    end
   end
 
   describe "with serializable column" do
