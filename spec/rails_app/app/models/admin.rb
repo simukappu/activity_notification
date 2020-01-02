@@ -1,5 +1,7 @@
-unless ENV['AN_TEST_DB'] == 'mongodb'
-  class Admin < ActiveRecord::Base
+module AdminModel
+  extend ActiveSupport::Concern
+
+  included do
     belongs_to :user
     validates :user, presence: true
 
@@ -7,9 +9,15 @@ unless ENV['AN_TEST_DB'] == 'mongodb'
       subscription_allowed: true,
       devise_resource: :user,
       current_devise_target: ->(current_user) { current_user.admin },
-      printable_name: ->(admin) { "admin (#{admin.user.name})" },
+      printable_name: ->(admin) { "#{admin.user.name} (admin)" },
       action_cable_allowed: true, action_cable_with_devise: true
-    end
+  end
+end
+
+unless ENV['AN_TEST_DB'] == 'mongodb'
+  class Admin < ActiveRecord::Base
+    include AdminModel
+  end
 else
   require 'mongoid'
   class Admin
@@ -17,18 +25,10 @@ else
     include Mongoid::Timestamps
     include GlobalID::Identification
 
-    belongs_to :user
-    validates :user, presence: true
-
     field :phone_number,   type: String
     field :slack_username, type: String
 
     include ActivityNotification::Models
-    acts_as_notification_target email_allowed: false,
-      subscription_allowed: true,
-      devise_resource: :user,
-      current_devise_target: ->(current_user) { current_user.admin },
-      printable_name: ->(admin) { "admin (#{admin.user.name})" },
-      action_cable_allowed: true, action_cable_with_devise: true
-    end
+    include AdminModel
+  end
 end

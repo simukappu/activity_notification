@@ -30,18 +30,16 @@
         <%#= render_notifications_of current_user, fallback: :default_without_grouping, index_content: :with_attributes, with_group_members: true %>
       <% end %>
     </div>
-    <% if user_signed_in? and current_user.admin? and respond_to?('admins_notifications_path') %>
-      <div class="header_menu_wrapper">
-        <p>
-          <%= link_to "Admin notifications", admins_notifications_path %> /
-          <%= link_to "subscriptions", admins_subscriptions_path %>
-        </p>
-      </div>
-    <% end %>
     <div class="header_menu_wrapper">
       <p>
-        <%= link_to 'Preview email', "/rails/mailers" %>
-        <%= " · " unless user_signed_in? %>
+        <%= link_to 'Preview Email', "/rails/mailers" %>
+        <%= " · " if !user_signed_in? or (current_user.admin? and respond_to?('admins_notifications_path')) %>
+      </p>
+    </div>
+    <div class="header_menu_wrapper">
+      <p>
+        <%= link_to 'SPA', "/spa/" %>
+        <%= " · " %>
       </p>
     </div>
   </div>

@@ -3,4 +3,13 @@
 
 require File.expand_path('../config/application', __FILE__)
 
+# Define dummy module for Webpacker Rake tasks
+require 'devise_token_auth'
+unless defined?(DeviseTokenAuth::Concerns::User)
+  module DeviseTokenAuth::Concerns
+    module User
+    end
+  end
+end
+
 Rails.application.load_tasks

@@ -215,7 +215,7 @@ class Comment < ActiveRecord::Base
 
   acts_as_notifiable :users,
     targets: ->(comment, key) {
-      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+      ([comment.article.user] + comment.article.reload.commented_users.to_a - [comment.user]).uniq
     },
     notifiable_path: :article_notifiable_path
 

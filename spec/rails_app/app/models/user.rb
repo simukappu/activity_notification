@@ -1,19 +1,29 @@
-unless ENV['AN_TEST_DB'] == 'mongodb'
-  class User < ActiveRecord::Base
+module UserModel
+  extend ActiveSupport::Concern
+
+  included do
     devise :database_authenticatable, :confirmable
     include DeviseTokenAuth::Concerns::User
     validates :email, presence: true
-    has_many :articles, dependent: :destroy
     has_one :admin, dependent: :destroy
+    has_many :articles, dependent: :destroy
 
-    acts_as_target email: :email, email_allowed: :confirmed_at, batch_email_allowed: :confirmed_at,
-                   subscription_allowed: true, printable_name: :name,
-                   action_cable_allowed: true, action_cable_with_devise: true
+    acts_as_target email: :email,
+      email_allowed: :confirmed_at, batch_email_allowed: :confirmed_at,
+      subscription_allowed: true, printable_name: :name,
+      action_cable_allowed: true, action_cable_with_devise: true
+
     acts_as_notifier printable_name: :name
+  end
 
-    def admin?
-      admin.present?
-    end
+  def admin?
+    admin.present?
+  end
+end
+
+unless ENV['AN_TEST_DB'] == 'mongodb'
+  class User < ActiveRecord::Base
+    include UserModel
   end
 else
   require 'mongoid'
@@ -24,11 +34,6 @@ else
     include Mongoid::Locker
     include GlobalID::Identification
 
-    devise :database_authenticatable, :confirmable
-    include DeviseTokenAuth::Concerns::User
-    has_many :articles, dependent: :destroy
-    has_one :admin, dependent: :destroy
-    validates :email, presence: true
     # Devise
     ## Database authenticatable
     field :email,                type: String, default: ""
@@ -46,14 +51,7 @@ else
     field :name,                 type: String
 
     include ActivityNotification::Models
-    acts_as_target email: :email, email_allowed: :confirmed_at, batch_email_allowed: :confirmed_at,
-                   subscription_allowed: true, printable_name: :name,
-                   action_cable_allowed: true, action_cable_with_devise: true
-    acts_as_notifier printable_name: :name
-
-    def admin?
-      admin.present?
-    end
+    include UserModel
 
     # To avoid Devise Token Auth issue
     # https://github.com/lynndylanhurley/devise_token_auth/issues/1335

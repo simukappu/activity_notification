@@ -154,8 +154,8 @@ shared_examples_for :notifications_api_controller do
         @group         = create(:article)
         @key           = 'test.key.1'
         @notification2 = create(:notification, target: test_target, notifiable: @notifiable)
-        @notification1 = create(:notification, target: test_target, notifiable: create(:comment), group: @group)
-        @notification3 = create(:notification, target: test_target, notifiable: create(:article), key: @key)
+        @notification1 = create(:notification, target: test_target, notifiable: create(:comment), group: @group, created_at: @notification2.created_at + 10.second)
+        @notification3 = create(:notification, target: test_target, notifiable: create(:article), key: @key, created_at: @notification2.created_at + 20.second)
         @notification3.open!
       end
 
@@ -223,7 +223,7 @@ shared_examples_for :notifications_api_controller do
         @target_1, @notifiable_1, @group_1, @key_1 = create(:confirmed_user), create(:article), nil,           "key.1"
         @target_2, @notifiable_2, @group_2, @key_2 = create(:confirmed_user), create(:comment), @notifiable_1, "key.2"
         @notification_1 = create(:notification, target: test_target, notifiable: @notifiable_1, group: @group_1, key: @key_1)
-        @notification_2 = create(:notification, target: test_target, notifiable: @notifiable_2, group: @group_2, key: @key_2)
+        @notification_2 = create(:notification, target: test_target, notifiable: @notifiable_2, group: @group_2, key: @key_2, created_at: @notification_1.created_at + 10.second)
         expect(@notification_1.opened?).to be_falsey
         expect(@notification_2.opened?).to be_falsey
       end

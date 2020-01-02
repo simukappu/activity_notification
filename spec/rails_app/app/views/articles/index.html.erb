@@ -1,4 +1,26 @@
-<% if @exists_user_notification_routes %>
+<% if @exists_notifications_routes %>
+  <section>
+    <h1>Authentecated User</h1>
+    <div class="list_wrapper">
+      <div class="list_image"></div>
+      <div class="list_description_wrapper">
+        <p class="list_description">
+          <% if user_signed_in? %>
+            <span><%= current_user.name %></span> · <%= current_user.email %> · <%= link_to 'Logout', destroy_user_session_path, method: :delete %><br>
+          <% else %>
+            <span>Not logged in</span> · <%= link_to 'Login', new_user_session_path %><br>
+          <% end %>
+          <%= link_to 'Notifications', notifications_path %> /
+          <% if User.subscription_enabled? %>
+            <%= link_to 'Subscriptions', subscriptions_path %>
+          <% end %>
+        </p>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<% if @exists_user_notifications_routes %>
   <section>
     <h1>Listing Users</h1>
     <% User.all.each do |user| %>
@@ -7,7 +29,7 @@
         <div class="list_description_wrapper">
           <p class="list_description">
             <span><%= user.name %></span> · <%= user.email %><br>
-            <%= link_to 'Notifications', user_notifications_path(user) %>
+            <%= link_to 'Notifications', user_notifications_path(user) %> /
             <% if User.subscription_enabled? %>
               <%= link_to 'Subscriptions', user_subscriptions_path(user) %>
             <% end %>
@@ -18,7 +40,29 @@
   </section>
 <% end %>
 
-<% if @exists_admin_notification_routes %>
+<% if @exists_admins_notifications_routes %>
+  <section>
+    <h1>Authentecated User as Admin</h1>
+    <div class="list_wrapper">
+      <div class="list_image"></div>
+      <div class="list_description_wrapper">
+        <p class="list_description">
+          <% if user_signed_in? %>
+            <span><%= current_user.name %></span> · <%= current_user.email %> <span><%= current_user.admin? ? "(admin)" : "(not admin)" %></span><br>
+          <% else %>
+            <span>Not logged in</span> · <%= link_to 'Login', new_user_session_path %><br>
+          <% end %>
+          <%= link_to 'Notifications', admins_notifications_path %> /
+          <% if User.subscription_enabled? %>
+            <%= link_to 'Subscriptions', admins_subscriptions_path %>
+          <% end %>
+        </p>
+      </div>
+    </div>
+  </section>
+<% end %>
+
+<% if @exists_admin_notifications_routes %>
   <section>
     <h1>Listing Admins</h1>
     <% Admin.all.each do |admin| %>
@@ -27,7 +71,7 @@
         <div class="list_description_wrapper">
           <p class="list_description">
             <span><%= admin.user.name %></span> · <%= admin.user.email %><br>
-            <%= link_to 'Notifications', admin_notifications_path(admin) %>
+            <%= link_to 'Notifications', admin_notifications_path(admin) %> /
             <% if Admin.subscription_enabled? %>
               <%= link_to 'Subscriptions', admin_subscriptions_path(admin) %>
             <% end %>

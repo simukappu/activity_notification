@@ -35,7 +35,7 @@ class Comment < ActiveRecord::Base
 
   acts_as_notifiable :users,
     targets: ->(comment, key) {
-      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+      ([comment.article.user] + comment.article.reload.commented_users.to_a - [comment.user]).uniq
     },
     # Allow notification email
     email_allowed: true,
@@ -80,7 +80,7 @@ class Comment < ActiveRecord::Base
 
   acts_as_notifiable :users,
     targets: ->(comment, key) {
-      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+      ([comment.article.user] + comment.article.reload.commented_users.to_a - [comment.user]).uniq
     },
     notifiable_path: :article_notifiable_path
 
@@ -648,7 +648,7 @@ class Comment < ActiveRecord::Base
 
   acts_as_notifiable :users,
     targets: ->(comment, key) {
-      ([comment.article.user] + comment.article.commented_users.to_a - [comment.user]).uniq
+      ([comment.article.user] + comment.article.reload.commented_users.to_a - [comment.user]).uniq
     },
     # Allow Action Cable broadcasting
     action_cable_allowed: true

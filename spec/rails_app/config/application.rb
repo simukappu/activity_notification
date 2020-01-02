@@ -4,7 +4,7 @@ require File.expand_path('../boot', __FILE__)
 if ENV['AN_ORM'] == 'mongoid'
   require 'mongoid'
   require 'rails'
-  if Rails.env != 'test'
+  unless Rails.env.test?
     Mongoid.load!(File.expand_path("config/mongoid.yml"), :development)
   end
 # Load dynamoid configuration if necessary:

@@ -483,6 +483,7 @@ shared_examples_for :notification_api do
     describe ".open_all_of" do
       before do
         described_class.notify_to(@user_1, @article, group: @article, key: 'key.1')
+        sleep(0.01)
         described_class.notify_to(@user_1, @comment_2, group: @comment_2, key: 'key.2')
         expect(@user_1.notifications.unopened_only.count).to eq(2)
         expect(@user_1.notifications.opened_only!.count).to eq(0)

@@ -4,8 +4,10 @@ class ArticlesController < ApplicationController
 
   # GET /articles
   def index
-    @exists_user_notification_routes  = respond_to?('user_notification_path')
-    @exists_admin_notification_routes = respond_to?('admin_notification_path')
+    @exists_notifications_routes       = respond_to?('notifications_path')
+    @exists_user_notifications_routes  = respond_to?('user_notifications_path')
+    @exists_admins_notifications_routes = respond_to?('admins_notifications_path')
+    @exists_admin_notifications_routes = respond_to?('admin_notifications_path')
     @articles = Article.all.includes(:user)
   end
 
@@ -29,7 +31,7 @@ class ArticlesController < ApplicationController
     @article.user = current_user
 
     if @article.save
-      @article.notify :users
+      @article.notify :users, key: 'article.create'
       redirect_to @article, notice: 'Article was successfully created.'
     else
       render :new
@@ -39,6 +41,7 @@ class ArticlesController < ApplicationController
   # PATCH/PUT /articles/1
   def update
     if @article.update(article_params)
+      @article.notify :users, key: 'article.update'
       redirect_to @article, notice: 'Article was successfully updated.'
     else
       render :edit

@@ -13,11 +13,11 @@ shared_examples_for :renderable do
   let(:group_text_key)             { 'comment.reply' }
   let(:plural_text_key)            { 'comment.post' }
   let(:simple_text_original)       { 'Article has been created' }
-  let(:params_text_original)       { "Article %{article_title} has been updated" }
+  let(:params_text_original)       { 'Article "%{article_title}" has been updated' }
   let(:plural_text_original_one)   { "<p>%{notifier_name} posted a comment on your article %{article_title}</p>" }
   let(:plural_text_original_other) { "<p>%{notifier_name} posted %{count} comments on your article %{article_title}</p>" }
   let(:group_text_original)        { "<p>%{notifier_name} and %{group_member_count} other people replied %{group_notification_count} times to your comment</p>" }
-  let(:params_text_embedded)       { "Article bar has been updated" }
+  let(:params_text_embedded)       { 'Article "bar" has been updated' }
   let(:group_text_embedded)        { "<p>foo and 3 other people replied 4 times to your comment</p>" }
   let(:plural_text_embedded_one)   { "<p>foo posted a comment on your article bar</p>" }
   let(:plural_text_embedded_other) { "<p>foo posted 4 comments on your article bar</p>" }

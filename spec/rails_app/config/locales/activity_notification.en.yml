@@ -7,9 +7,9 @@ en:
         create:
           text: 'Article has been created'
         update:
-          text: 'Article %{article_title} has been updated'
+          text: 'Article "%{article_title}" has been updated'
         destroy:
-          text: 'Some user removed an article!'
+          text: 'The author removed an article "%{article_title}"'
       comment:
         create:
           text: '%{notifier_name} posted a comment on the article "%{article_title}"'

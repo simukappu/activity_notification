@@ -72,9 +72,9 @@ describe ActivityNotification::ViewHelpers, type: :helper do
 
       it "interpolates from parameters" do
         notification.parameters = { "article_title" => "custom title" }
-        notification.key = 'article.update'
+        notification.key = 'article.destroy'
         expect(render_notification notification, fallback: :text)
-          .to eq("Article custom title has been updated")
+          .to eq('The author removed an article "custom title"')
       end
     end
 

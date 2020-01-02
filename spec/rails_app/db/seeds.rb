@@ -68,6 +68,7 @@ puts "* Created #{Article.count} article records"
 notifications = ActivityNotification::Notification.filtered_by_type("Article")
 puts "** Generated #{ActivityNotification::Notification.filtered_by_type("Article").count} notification records for new articles"
 puts "*** #{ActivityNotification::Notification.filtered_by_type("Article").filtered_by_target_type("User").count} notifications as #{ActivityNotification::Notification.filtered_by_type("Article").filtered_by_target_type("User").group_owners_only.count} groups to users"
+puts "*** #{ActivityNotification::Notification.filtered_by_type("Article").filtered_by_target_type("Admin").count} notifications as #{ActivityNotification::Notification.filtered_by_type("Article").filtered_by_target_type("Admin").group_owners_only.count} groups to admins"
 
 Article.all.each do |article|
   User.all.each do |user|
