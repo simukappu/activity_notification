@@ -154,6 +154,48 @@ module ActivityNotification
         end
       end
 
+      swagger_path '/{target_type}/{target_id}/subscriptions/optional_target_names' do
+        operation :get do
+          key :summary, 'Find configured optional_target names'
+          key :description, 'Finds and returns configured optional_target names from specified key.'
+          key :operationId, 'findOptionalTargetNames'
+          key :tags, ['subscriptions']
+
+          extend Swagger::SubscriptionsParameters::TargetParameters
+          parameter do
+            key :name, :key
+            key :in, :query
+            key :description, "Key of the notification and subscription to find"
+            key :required, true
+            key :type, :string
+          end
+
+          response 200 do
+            key :description, "Found configured optional_target names"
+            content 'application/json' do
+              schema do
+                key :type, :object
+                property :configured_count do
+                  key :type, :integer
+                  key :description, "Number of configured optional_target names"
+                  key :example, 1
+                end
+                property :optional_target_names do
+                  key :type, :array
+                  items do
+                    key :type, :string
+                    key :example, "action_cable_channel"
+                  end
+                  key :description, "Configured optional_target names"
+                end
+              end
+            end
+          end
+          extend Swagger::ErrorResponses::InvalidParameterError
+          extend Swagger::ErrorResponses::ResourceNotFoundError
+        end
+      end
+
       swagger_path '/{target_type}/{target_id}/subscriptions/{id}' do
         operation :get do
           key :summary, 'Get subscription'

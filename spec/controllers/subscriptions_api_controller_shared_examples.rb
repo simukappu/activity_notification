@@ -310,6 +310,39 @@ shared_examples_for :subscriptions_api_controller do
     end
   end
 
+  describe "GET #optional_target_names" do
+    context "with key, target_type and (typed_target)_id parameters" do
+      before do
+        @notification = create(:notification, target: test_target, key: 'test_subscription_key')
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        get_with_compatibility :optional_target_names, target_params.merge({ key: 'test_subscription_key', typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 200 as http status code" do
+        expect(response.status).to eq(200)
+      end
+
+      it "returns the blank array since configurured optional targets are not configured" do
+        expect(JSON.parse(response.body)["optional_target_names"].is_a?(Array)).to be_truthy
+      end
+    end
+
+    context "with wrong id and (typed_target)_id parameters" do
+      before do
+        @subscription = create(:subscription, target: create(:user))
+        get_with_compatibility :find, target_params.merge({ key: 'test_subscription_key', typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 404 as http status code" do
+        expect(response.status).to eq(404)
+      end
+
+      it "returns error JSON response" do
+        assert_error_response(404)
+      end
+    end
+  end
+
   describe "GET #show" do
     context "with id, target_type and (typed_target)_id parameters" do
       before do
@@ -609,7 +642,15 @@ shared_examples_for :subscriptions_api_request do
       post_with_compatibility "#{api_path}/subscriptions", params: {
         "subscription"  => { "key"        => "new_subscription_key",
                              "subscribing"=> "true",
-                             "subscribing_to_email"=>"true"
+                             "subscribing_to_email"=>"true",
+                             "optional_targets"=>{
+                               "action_cable_channel"=>{
+                                 "subscribing"=>"true",
+                               },
+                               "slack"=>{
+                                 "subscribing"=>"false"
+                               }
+                             }
                            }
       }, headers: @headers
       assert_all_schema_confirm(response, 201)
@@ -630,6 +671,19 @@ shared_examples_for :subscriptions_api_request do
     it "returns response as API references" do
       get_with_compatibility "#{api_path}/subscriptions/find?key=#{@subscription.key}", headers: @headers
       assert_all_schema_confirm(response, 200)
+    end
+  end
+
+  describe "GET /{target_type}/{target_id}/subscriptions/optional_target_names", type: :request do
+    it "returns response as API references" do
+      create(:notification, target: test_target, key: @subscription.key)
+      get_with_compatibility "#{api_path}/subscriptions/optional_target_names?key=#{@subscription.key}", headers: @headers
+      assert_all_schema_confirm(response, 200)
+    end
+
+    it "returns response as API references when any notification with the key is not found" do
+      get_with_compatibility "#{api_path}/subscriptions/optional_target_names?key=#{@subscription.key}", headers: @headers
+      assert_all_schema_confirm(response, 404)
     end
   end
 

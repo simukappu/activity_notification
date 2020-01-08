@@ -14,6 +14,11 @@ class <%= @target_prefix %>SubscriptionsWithDeviseController < ActivityNotificat
     super
   end
 
+  # GET /:target_type/:target_id/subscriptions/optional_target_names
+  def optional_target_names
+    super
+  end
+
   # GET /:target_type/:target_id/subscriptions/:id
   # def show
   #   super

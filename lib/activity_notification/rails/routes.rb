@@ -293,6 +293,8 @@ module ActionDispatch::Routing
     #       { controller:"activity_notification/subscriptions_api", action:"index", target_type:"users" }
     #     GET    /subscriptions/find(.:format)
     #       { controller:"activity_notification/subscriptions_api", action:"find", target_type:"users" }
+    #     GET    /subscriptions/optional_target_names(.:format)
+    #       { controller:"activity_notification/subscriptions_api", action:"optional_target_names", target_type:"users" }
     #     GET    /subscriptions/:id(.:format)
     #       { controller:"activity_notification/subscriptions_api", action:"show", target_type:"users" }
     #     PUT    /subscriptions(.:format)
@@ -430,6 +432,7 @@ module ActionDispatch::Routing
         self.resources options[:model], resources_options do
           collection do
             get :find                           unless ignore_path?(:find, options)
+            get :optional_target_names          if options[:api_mode] && !ignore_path?(:optional_target_names, options)
           end
           member do
             put :subscribe                      unless ignore_path?(:subscribe, options)

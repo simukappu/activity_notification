@@ -6,6 +6,8 @@ module ActivityNotification
     # Include CommonApiController to select target and define common methods
     include CommonApiController
     protect_from_forgery except: [:create]
+    before_action :set_subscription, except: [:index, :create, :find, :optional_target_names]
+    before_action ->{ validate_param(:key) }, only: [:find, :optional_target_names]
 
     # Returns subscription index of the target.
     #
@@ -44,12 +46,17 @@ module ActivityNotification
           subscription: subscription_json
         }
       else
+        optional_target_names = (params[:subscription][:optional_targets] || {}).keys.select { |key| !key.to_s.start_with?("subscribing_to_") }
+        optional_target_names.each do |optional_target_name|
+          subscribing_param = params[:subscription][:optional_targets][optional_target_name][:subscribing]
+          params[:subscription][:optional_targets]["subscribing_to_#{optional_target_name}"] = subscribing_param unless subscribing_param.nil?
+        end
         super
         render status: 201, location: { action: :show, id: @subscription }, json: subscription_json
       end
     end
 
-    # Finds and Shows a subscription from specified key.
+    # Finds and shows a subscription from specified key.
     #
     # GET /:target_type/:target_id/subscriptions/find
     # @overload index(params)
@@ -59,6 +66,20 @@ module ActivityNotification
     def find
       super
       render json: subscription_json if @subscription
+    end
+
+    # Finds and returns configured optional_target names from specified key.
+    #
+    # GET /:target_type/:target_id/subscriptions/optional_target_names
+    # @overload index(params)
+    #   @param [Hash] params Request parameter options for subscription index
+    #   @option params [required, String] :key (nil) Key of the subscription
+    #   @return [JSON] Configured optional_target names
+    def optional_target_names
+      latest_notification = @target.notifications.filtered_by_key(params[:key]).latest
+      latest_notification ?
+        render(json: { configured_count: latest_notification.optional_target_names.length, optional_target_names: latest_notification.optional_target_names }) :
+        render_resource_not_found("Couldn't find notification with this target and 'key'=#{params[:key]}")
     end
 
     # Shows a subscription.

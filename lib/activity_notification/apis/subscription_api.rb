@@ -100,6 +100,24 @@ module ActivityNotification
       end
     end
 
+    # Override as_json method for optional_targets representation
+    #
+    # @param [Hash] options Options for as_json method
+    # @return [Hash] Hash representing the subscription model
+    def as_json(options = {})
+      json = super(options).with_indifferent_access
+      optional_targets_json = {}
+      optional_target_names.each do |optional_target_name|
+        optional_targets_json[optional_target_name] = {
+          subscribing:   json[:optional_targets][Subscription.to_optional_target_key(optional_target_name)],
+          subscribed_at: json[:optional_targets][Subscription.to_optional_target_subscribed_at_key(optional_target_name)],
+          unsubscribed_at: json[:optional_targets][Subscription.to_optional_target_unsubscribed_at_key(optional_target_name)]
+        }
+      end
+      json[:optional_targets] = optional_targets_json
+      json
+    end
+
     # Subscribes to the notification and notification email.
     #
     # @param [Hash] options Options for subscribing to the notification

@@ -3,7 +3,7 @@ module ActivityNotification
   class SubscriptionsController < ActivityNotification.config.parent_controller.constantize
     # Include CommonController to select target and define common methods
     include CommonController
-    before_action :set_subscription, except: [:index, :find, :create]
+    before_action :set_subscription, except: [:index, :create, :find]
     before_action ->{ validate_param(:key) },                  only: [:find]
     before_action ->{ validate_param(:optional_target_name) }, only: [:subscribe_to_optional_target, :unsubscribe_to_optional_target]
 
@@ -41,7 +41,7 @@ module ActivityNotification
       return_back_or_ajax
     end
 
-    # Finds and Shows a subscription from specified key.
+    # Finds and shows a subscription from specified key.
     #
     # GET /:target_type/:target_id/subscriptions/find
     # @overload index(params)

@@ -80,18 +80,26 @@ module ActivityNotification
                 key :additionalProperties, {
                   type: "object",
                   properties: {
-                    subscribing_to_optional_target_name: {
+                    subscribing: {
                       type: "boolean"
                     },
-                    subscribed_to_optional_target_name_at: {
+                    subscribed_at: {
                       type: "string",
                       format: "date-time"
                     }
                   }
                 }
                 key :example, {
-                  "subscribing_to_slack": true,
-                  "subscribed_to_slack_at": Time.current
+                  "action_cable_channel": {
+                    "subscribing": true,
+                    "subscribed_at": Time.current,
+                    "unsubscribed_at": nil
+                  },
+                  "slack": {
+                    "subscribing": false,
+                    "subscribed_at": nil,
+                    "unsubscribed_at": Time.current
+                  }
                 }
               end
               property :created_at do
@@ -131,13 +139,18 @@ module ActivityNotification
                 key :additionalProperties, {
                   type: "object",
                   properties: {
-                    subscribing_to_optional_target_name: {
+                    subscribing: {
                       type: "boolean"
                     }
                   }
                 }
                 key :example, {
-                  "subscribing_to_slack": true
+                  "action_cable_channel": {
+                    "subscribing": true
+                  },
+                  "slack": {
+                    "subscribing": false
+                  }
                 }
               end
             end
