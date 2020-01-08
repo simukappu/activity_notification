@@ -7,20 +7,20 @@
         <strong><%= notification.notifier.present? ? notification.notifier.printable_notifier_name : 'Someone' %></strong>
         <% if notification.group_member_notifier_exists? %>
           <%= " and #{notification.group_member_notifier_count} other" %>
-          <%= notification.notifier.present? ? notification.notifier.printable_type.pluralize.downcase : 'people' %>
+          <%= notification.notifier.present? ? notification.notifier.printable_type.downcase.pluralize(notification.group_member_notifier_count) : 'people' %>
         <% end %>
         notified you of
         <% if notification.notifiable.present? %>
           <% if notification.group_member_exists? %>
-            <%= " #{notification.group_notification_count} #{notification.notifiable_type.humanize.pluralize.downcase} including" %>
+            <%= " #{notification.group_notification_count} #{notification.notifiable_type.humanize.downcase.pluralize(notification.group_notification_count)} including" %>
           <% end %>
           <%= notification.notifiable.printable_notifiable_name(notification.target) %>
           <%= "in #{notification.group.printable_group_name}" if notification.group.present? %>
         <% else %>
           <% if notification.group_member_exists? %>
-            <%= " #{notification.group_notification_count} #{notification.notifiable_type.humanize.pluralize.downcase}" %>
+            <%= " #{notification.group_notification_count} #{notification.notifiable_type.humanize.downcase.pluralize(notification.group_notification_count)}" %>
           <% else %>
-            <%= " a #{notification.notifiable_type.humanize.singularize.downcase}" %>
+            <%= " a #{notification.notifiable_type.humanize.downcase.singularize}" %>
           <% end %>
           <%= "in #{notification.group.printable_group_name}" if notification.group.present? %>
           but the notifiable is not found. It may have been deleted.
