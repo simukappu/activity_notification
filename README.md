@@ -70,6 +70,11 @@ The deployed demo application is included in this gem's source code as a test ap
 REST API reference as OpenAPI Specification is published in SwaggerHub here:
 * **https://app.swaggerhub.com/apis/simukappu/activity-notification/**
 
+You can see sample single page application using [Vue.js](https://vuejs.org) as a part of example Rails application here:
+* **https://activity-notification-example.herokuapp.com/spa/**
+
+This sample application works with *activity_notification* REST API backend.
+
 
 ## Table of Contents
 

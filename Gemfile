@@ -25,5 +25,6 @@ group :test do
   gem 'coveralls', require: false
 end
 
+gem 'webpacker', groups: [:production, :development]
 gem 'rack-cors', groups: [:production, :development]
 gem 'dotenv-rails', groups: [:development, :test]

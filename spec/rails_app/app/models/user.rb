@@ -19,6 +19,12 @@ module UserModel
   def admin?
     admin.present?
   end
+
+  def as_json(options = {})
+    options[:include] = (options[:include] || {}).merge(admin: { methods: [:printable_target_name] })
+    options[:methods] = (options[:methods] || []).push(:printable_target_name)
+    super(options)
+  end
 end
 
 unless ENV['AN_TEST_DB'] == 'mongodb'

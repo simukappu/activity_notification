@@ -385,6 +385,8 @@ Then, *activity_notification* uses *[ActivityNotification::SubscriptionsApiContr
 
 When you want to use REST API backend integrated with Devise authentication, see [REST API backend with Devise Token Auth](#rest-api-backend-with-devise-token-auth).
 
+You can see [sample single page application](/spec/rails_app/app/javascript/) using [Vue.js](https://vuejs.org) as a part of example Rails application. This sample application works with *activity_notification* REST API backend.
+
 #### API reference as OpenAPI Specification
 
 *activity_notification* provides API reference as [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification).
