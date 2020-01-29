@@ -50,7 +50,7 @@ module ActivityNotification
       # Format message to broadcast
       # @param [Notification] notification Notification instance
       # @param [Hash] options Options for publishing
-      # @return [Hash] Formated message to broadcast
+      # @return [Hash] Formatted message to broadcast
       def format_message(notification, options = {})
         index_options = options.slice(:filter, :limit, :without_grouping, :with_group_members, :filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key, :later_than, :earlier_than)
         {
