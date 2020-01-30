@@ -58,21 +58,28 @@ module ActivityNotification
              @notification.notifiable.overriding_notification_email_key(@target, key).present?
             key = @notification.notifiable.overriding_notification_email_key(@target, key)
           end
-          if @notification.notifiable.respond_to?(:overriding_notification_email_subject) &&
-              @notification.notifiable.overriding_notification_email_subject(@target, key).present?
-            subject = @notification.notifiable.overriding_notification_email_subject(@target, key)
-          else
-            subject = subject_for(key)
-          end
           headers = {
-            subject: subject,
             to: mailer_to(@target),
-            from: mailer_from(key),
-            reply_to: mailer_reply_to(key),
             template_path: template_paths,
             template_name: template_name(key)
           }.merge(options)
-  
+          {
+            subject: :subject_for,
+            from: :mailer_from,
+            reply_to: :mailer_reply_to,
+            message_id: nil
+          }.each do |header_name, default_method|
+            overridding_method_name = "overriding_notification_email_#{header_name.to_s}"
+            header_value = if @notification.notifiable.respond_to?(overridding_method_name) &&
+                @notification.notifiable.send(overridding_method_name, @target, key).present?
+              @notification.notifiable.send(overridding_method_name, @target, key)
+            elsif default_method
+              send(default_method, key)
+            else
+              nil
+            end
+            headers[header_name] = header_value if header_value
+          end
           @email = headers[:to]
           headers
         end
