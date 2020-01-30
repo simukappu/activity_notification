@@ -113,6 +113,7 @@ This sample application works with *activity_notification* REST API backend.
     - [Sender configuration](/docs/Functions.md#sender-configuration)
     - [Email templates](/docs/Functions.md#email-templates)
     - [Email subject](/docs/Functions.md#email-subject)
+    - [Other header fields](/docs/Functions.md#other-header-fields)
     - [i18n for email](/docs/Functions.md#i18n-for-email)
   - [Batch email notification](/docs/Functions.md#batch-email-notification)
     - [Batch mailer setup](/docs/Functions.md#batch-mailer-setup)
