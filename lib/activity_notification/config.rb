@@ -165,6 +165,15 @@ module ActivityNotification
     #   @return [Boolean] Whether WebSocket subscription using ActionCable is enabled.
     attr_accessor :action_cable_enabled
 
+    # @overload action_cable_api_enabled
+    #   Returns whether WebSocket API subscription using ActionCable is enabled
+    #   @return [Boolean] Whether WebSocket API subscription using ActionCable is enabled.
+    # @overload action_cable_api_enabled=(value)
+    #   Sets whether WebSocket API subscription using ActionCable is enabled
+    #   @param [Boolean] action_cable_enabled The new action_cable_api_enabled
+    #   @return [Boolean] Whether WebSocket API subscription using ActionCable is enabled.
+    attr_accessor :action_cable_api_enabled
+
     # @overload action_cable_with_devise
     #   Returns whether activity_notification publishes WebSocket notifications using ActionCable only to authenticated target with Devise
     #   @return [Boolean] Whether activity_notification publishes WebSocket notifications using ActionCable only to authenticated target with Devise.
@@ -183,31 +192,42 @@ module ActivityNotification
     #   @return [String] Notification channel prefix for ActionCable.
     attr_accessor :notification_channel_prefix
 
+    # @overload notification_api_channel_prefix
+    #   Returns notification API channel prefix for ActionCable
+    #   @return [String] Notification API channel prefix for ActionCable.
+    # @overload notification_api_channel_prefix=(value)
+    #   Sets notification API channel prefix for ActionCable
+    #   @param [String] notification_api_channel_prefix The new notification_api_channel_prefix
+    #   @return [String] Notification API channel prefix for ActionCable.
+    attr_accessor :notification_api_channel_prefix
+
     # Initialize configuration for ActivityNotification.
     # These configuration can be overridden in initializer.
     # @return [Config] A new instance of Config
     def initialize
-      @enabled                       = true
-      @orm                           = :active_record
-      @notification_table_name       = 'notifications'
-      @subscription_table_name       = 'subscriptions'
-      @email_enabled                 = false
-      @subscription_enabled          = false
-      @subscribe_as_default          = true
-      @mailer_sender                 = nil
-      @mailer                        = 'ActivityNotification::Mailer'
-      @parent_mailer                 = 'ActionMailer::Base'
-      @parent_job                    = 'ActiveJob::Base'
-      @parent_controller             = 'ApplicationController'
-      @parent_channel                = 'ActionCable::Channel::Base'
-      @mailer_templates_dir          = 'activity_notification/mailer'
-      @opened_index_limit            = 10
-      @active_job_queue              = :activity_notification
-      @composite_key_delimiter       = '#'
-      @store_with_associated_records = false
-      @action_cable_enabled          = false
-      @action_cable_with_devise      = false
-      @notification_channel_prefix   = 'activity_notification_channel'
+      @enabled                         = true
+      @orm                             = :active_record
+      @notification_table_name         = 'notifications'
+      @subscription_table_name         = 'subscriptions'
+      @email_enabled                   = false
+      @subscription_enabled            = false
+      @subscribe_as_default            = true
+      @mailer_sender                   = nil
+      @mailer                          = 'ActivityNotification::Mailer'
+      @parent_mailer                   = 'ActionMailer::Base'
+      @parent_job                      = 'ActiveJob::Base'
+      @parent_controller               = 'ApplicationController'
+      @parent_channel                  = 'ActionCable::Channel::Base'
+      @mailer_templates_dir            = 'activity_notification/mailer'
+      @opened_index_limit              = 10
+      @active_job_queue                = :activity_notification
+      @composite_key_delimiter         = '#'
+      @store_with_associated_records   = false
+      @action_cable_enabled            = false
+      @action_cable_api_enabled        = false
+      @action_cable_with_devise        = false
+      @notification_channel_prefix     = 'activity_notification_channel'
+      @notification_api_channel_prefix = 'activity_notification_api_channel'
     end
 
     # Sets ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)

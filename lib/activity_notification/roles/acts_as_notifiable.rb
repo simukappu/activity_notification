@@ -99,12 +99,24 @@ module ActivityNotification
       #   * Whether activity_notification publishes notifications to ActionCable channel.
       #     Specified method or symbol is expected to return true (not nil) or false (nil).
       #     This parameter is a optional since default value is false.
-      #     To use ActionCable for notifications, action_cable_allowed option must return true (not nil) in both of notifiable and target model.
-      #     This can be also configured default option in initializer.
+      #     To use ActionCable for notifications, action_cable_allowed option of target model must also return true (not nil).
+      #     This can be also configured default option in initializer as action_cable_enabled.
       # @example Enable notification ActionCable for this notifiable model
       #   # app/models/comment.rb
       #   class Comment < ActiveRecord::Base
       #     acts_as_notifiable :users, targets: User.all, action_cable_allowed: true
+      #   end
+      #
+      # * :action_cable_api_allowed
+      #   * Whether activity_notification publishes notifications to ActionCable API channel.
+      #     Specified method or symbol is expected to return true (not nil) or false (nil).
+      #     This parameter is a optional since default value is false.
+      #     To use ActionCable for notifications, action_cable_allowed option of target model must also return true (not nil).
+      #     This can be also configured default option in initializer as action_cable_api_enabled.
+      # @example Enable notification ActionCable for this notifiable model
+      #   # app/models/comment.rb
+      #   class Comment < ActiveRecord::Base
+      #     acts_as_notifiable :users, targets: User.all, action_cable_api_allowed: true
       #   end
       #
       # * :notifiable_path
@@ -227,17 +239,25 @@ module ActivityNotification
           configured_params.update(add_destroy_dependency(target_type, options[:dependent_notifications]))
         end
 
-        if options[:action_cable_allowed] || (ActivityNotification.config.action_cable_enabled && options[:action_cable_allowed] != false)
-          options[:optional_targets] ||= {}
-          # :nocov:
-          if Rails::VERSION::MAJOR >= 5
+        # :nocov:
+        if Rails::VERSION::MAJOR >= 5
+          if options[:action_cable_allowed] || (ActivityNotification.config.action_cable_enabled && options[:action_cable_allowed] != false)
+            options[:optional_targets] ||= {}
             require 'activity_notification/optional_targets/action_cable_channel'
             unless options[:optional_targets].has_key?(ActivityNotification::OptionalTarget::ActionCableChannel)
               options[:optional_targets][ActivityNotification::OptionalTarget::ActionCableChannel] = {}
             end
           end
-          # :nocov:
+
+          if options[:action_cable_api_allowed] || (ActivityNotification.config.action_cable_api_enabled && options[:action_cable_api_allowed] != false)
+            options[:optional_targets] ||= {}
+            require 'activity_notification/optional_targets/action_cable_api_channel'
+            unless options[:optional_targets].has_key?(ActivityNotification::OptionalTarget::ActionCableApiChannel)
+              options[:optional_targets][ActivityNotification::OptionalTarget::ActionCableApiChannel] = {}
+            end
+          end
         end
+        # :nocov:
 
         if options[:optional_targets].is_a?(Hash)
           options[:optional_targets] = arrange_optional_targets_option(options[:optional_targets])
@@ -245,7 +265,7 @@ module ActivityNotification
 
         options[:printable_notifiable_name] ||= options.delete(:printable_name)
         configured_params
-          .merge set_acts_as_parameters_for_target(target_type, [:targets, :group, :group_expiry_delay, :parameters, :email_allowed, :action_cable_allowed], options, "notification_")
+          .merge set_acts_as_parameters_for_target(target_type, [:targets, :group, :group_expiry_delay, :parameters, :email_allowed, :action_cable_allowed, :action_cable_api_allowed], options, "notification_")
           .merge set_acts_as_parameters_for_target(target_type, [:notifier, :notifiable_path, :printable_notifiable_name, :optional_targets], options)
       end
 
@@ -259,6 +279,7 @@ module ActivityNotification
           :parameters,
           :email_allowed,
           :action_cable_allowed,
+          :action_cable_api_allowed,
           :notifiable_path,
           :printable_notifiable_name, :printable_name,
           :dependent_notifications,

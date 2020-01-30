@@ -10,8 +10,9 @@ module UserModel
 
     acts_as_target email: :email,
       email_allowed: :confirmed_at, batch_email_allowed: :confirmed_at,
-      subscription_allowed: true, printable_name: :name,
-      action_cable_allowed: true, action_cable_with_devise: true
+      subscription_allowed: true,
+      action_cable_allowed: true, action_cable_with_devise: true,
+      printable_name: :name
 
     acts_as_notifier printable_name: :name
   end
@@ -21,8 +22,8 @@ module UserModel
   end
 
   def as_json(options = {})
-    options[:include] = (options[:include] || {}).merge(admin: { methods: [:printable_target_name] })
-    options[:methods] = (options[:methods] || []).push(:printable_target_name)
+    options[:include] = (options[:include] || {}).merge(admin: { methods: [:printable_target_name, :notification_action_cable_allowed?, :notification_action_cable_with_devise?] })
+    options[:methods] = (options[:methods] || []).push(:printable_target_name, :notification_action_cable_allowed?, :notification_action_cable_with_devise?)
     super(options)
   end
 end

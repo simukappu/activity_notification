@@ -10,11 +10,11 @@
         </a>
       </h1>
       <h3>
-        <span class="action_cable_status">Disabled</span>
+        <span class="action_cable_status">{{ actionCableStatus }}</span>
       </h3>
     </div>
     <div class="notifications">
-      <div v-for="notification in notifications" :key="`${notification.id}_${notification.opened_at}`">
+      <div v-for="notification in notifications" :key="`${notification.id}_${notification.opened_at}_${notification.group_notification_count}`">
         <notification :targetNotification="notification" :targetApiPath="targetApiPath" @getUnopenedNotificationCount="getUnopenedNotificationCount" />
       </div>
     </div>
@@ -23,6 +23,7 @@
 
 <script>
 import axios from 'axios'
+import Push from 'push.js'
 import Notification from './Notification.vue'
 
 export default {
@@ -32,7 +33,8 @@ export default {
   },
   props: {
     target_type: {
-      type: String
+      type: String,
+      required: true
     },
     target_id: {
       type: [String, Number]
@@ -55,23 +57,58 @@ export default {
     return {
       currentTarget: { printable_target_name: '' },
       unopenedNotificationCount: 0,
-      notifications: []
+      notifications: [],
+      actionCableStatus: "Disabled"
     }
   },
   mounted () {
     if (this.target) {
       this.currentTarget = this.target;
+      this.subscribeActionCable();
     } else {
       this.getCurrentTarget();
     }
     this.getNotifications();
     this.getUnopenedNotificationCount();
   },
+  channels: {
+    'ActivityNotification::NotificationApiChannel': {
+      connected() {
+        this.actionCableStatus = "Online";
+      },
+      disconnected() {
+        this.actionCableStatus = "Offline";
+      },
+      rejected() {
+        this.actionCableStatus = "Offline (unauthorized)";
+      },
+      received(data) {
+        this.notify(data);
+      }
+    },
+    'ActivityNotification::NotificationApiWithDeviseChannel': {
+      connected() {
+        this.actionCableStatus = "Online (authorized)";
+      },
+      disconnected() {
+        this.actionCableStatus = "Offline";
+      },
+      rejected() {
+        this.actionCableStatus = "Offline (unauthorized)";
+      },
+      received(data) {
+        this.notify(data);
+      }
+    }
+  },
   methods: {
     getCurrentTarget () {
       axios
         .get(this.targetApiPath)
-        .then(response => (this.currentTarget = response.data))
+        .then(response => {
+          this.currentTarget = response.data;
+          this.subscribeActionCable();
+        })
     },
     getNotifications () {
       axios
@@ -106,6 +143,44 @@ export default {
             this.getUnopenedNotificationCount();
           }
         })
+    },
+    subscribeActionCable () {
+      if (this.currentTarget['notification_action_cable_allowed?']) {
+        if (!this.currentTarget['notification_action_cable_with_devise?']) {
+          this.$cable.subscribe({
+            channel: 'ActivityNotification::NotificationApiChannel',
+            target_type: this.target_type, target_id: this.currentTarget.id
+          });
+        } else {
+          this.$cable.subscribe({
+            channel: 'ActivityNotification::NotificationApiWithDeviseChannel',
+            target_type: this.target_type, target_id: this.currentTarget.id,
+            'access-token': axios.defaults.headers.common['access-token'],
+            'client': axios.defaults.headers.common['client'],
+            'uid': axios.defaults.headers.common['uid']
+          });
+        }
+      }
+    },
+    notify (data) {
+      // Display notification
+      if (data.group_owner == null) {
+        this.notifications.unshift(data.notification);
+        this.getUnopenedNotificationCount();
+      } else {
+        this.notifications.splice(this.notifications.findIndex(n => n.id === data.group_owner.id), 1);
+        this.notifications.unshift(data.group_owner);
+        this.getUnopenedNotificationCount();
+      }
+      // Push notificaion using Web Notification API by Push.js
+      Push.create('ActivityNotification', {
+        body: data.notification.text,
+        timeout: 5000,
+        onClick: function () {
+          location.href = data.notification.notifiable_path;
+          this.close();
+        }
+      });
     }
   }
 }

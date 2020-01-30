@@ -28,6 +28,7 @@ SimpleCov.start('rails') do
   if Rails::VERSION::MAJOR < 5
     add_filter '/app/channels/'
     add_filter '/lib/activity_notification/optional_targets/action_cable_channel'
+    add_filter '/lib/activity_notification/optional_targets/action_cable_api_channel'
   end
 end
 

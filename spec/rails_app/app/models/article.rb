@@ -8,13 +8,15 @@ module ArticleModel
 
     acts_as_notifiable :users,
       targets: ->(article) { User.all.to_a - [article.user] },
-      notifier: :user, email_allowed: true, action_cable_allowed: true,
+      notifier: :user, email_allowed: true,
+      action_cable_allowed: true, action_cable_api_allowed: true,
       printable_name: ->(article) { "new article \"#{article.title}\"" },
       dependent_notifications: :delete_all
 
     acts_as_notifiable :admins,
       targets: ->(article) { Admin.all.to_a },
-      notifier: :user, action_cable_allowed: true,
+      notifier: :user,
+      action_cable_allowed: true, action_cable_api_allowed: true,
       tracked: Rails.env.test? ? {only: []} : { only: [:create, :update], action_cable_rendering: { fallback: :default } },
       printable_name: ->(article) { "new article \"#{article.title}\"" },
       dependent_notifications: :delete_all

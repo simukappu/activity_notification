@@ -4,13 +4,13 @@ class AdminsController < ApplicationController
   # GET /admins
   def index
     render json: {
-      users: Admin.all.as_json(include: :user)
+      users: Admin.all.as_json(include: :user, methods: [:printable_target_name, :notification_action_cable_allowed?, :notification_action_cable_with_devise?])
     }
   end
 
   # GET /admins/:id
   def show
-    render json: @admin.as_json(include: :user)
+    render json: @admin.as_json(include: :user, methods: [:printable_target_name, :notification_action_cable_allowed?, :notification_action_cable_with_devise?])
   end
 
   private

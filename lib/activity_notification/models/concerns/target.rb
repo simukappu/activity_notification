@@ -41,7 +41,7 @@ module ActivityNotification
         self._notification_email_allowed            = ActivityNotification.config.email_enabled
         self._batch_notification_email_allowed      = ActivityNotification.config.email_enabled
         self._notification_subscription_allowed     = ActivityNotification.config.subscription_enabled
-        self._notification_action_cable_allowed     = ActivityNotification.config.action_cable_enabled
+        self._notification_action_cable_allowed     = ActivityNotification.config.action_cable_enabled || ActivityNotification.config.action_cable_api_enabled
         self._notification_action_cable_with_devise = ActivityNotification.config.action_cable_with_devise
         self._notification_devise_resource          = ->(model) { model }
         self._notification_current_devise_target    = ->(current_resource) { current_resource }

@@ -26,6 +26,7 @@ module ActivityNotification
                       :_notification_parameters,
                       :_notification_email_allowed,
                       :_notification_action_cable_allowed,
+                      :_notification_action_cable_api_allowed,
                       :_notifiable_path,
                       :_printable_notifiable_name,
                       :_optional_targets
@@ -48,16 +49,17 @@ module ActivityNotification
       # Sets default values to notifiable class fields.
       # @return [NilClass] nil
       def set_notifiable_class_defaults
-        self._notification_targets              = {}
-        self._notification_group                = {}
-        self._notification_group_expiry_delay   = {}
-        self._notifier                          = {}
-        self._notification_parameters           = {}
-        self._notification_email_allowed        = {}
-        self._notification_action_cable_allowed = {}
-        self._notifiable_path                   = {}
-        self._printable_notifiable_name         = {}
-        self._optional_targets                  = {}
+        self._notification_targets                  = {}
+        self._notification_group                    = {}
+        self._notification_group_expiry_delay       = {}
+        self._notifier                              = {}
+        self._notification_parameters               = {}
+        self._notification_email_allowed            = {}
+        self._notification_action_cable_allowed     = {}
+        self._notification_action_cable_api_allowed = {}
+        self._notifiable_path                       = {}
+        self._printable_notifiable_name             = {}
+        self._optional_targets                      = {}
         nil
       end
     end
@@ -165,6 +167,20 @@ module ActivityNotification
         "notification_action_cable_allowed_for_#{cast_to_resources_name(target.class)}?",
         _notification_action_cable_allowed[cast_to_resources_sym(target.class)],
         ActivityNotification.config.action_cable_enabled,
+        target, key)
+    end
+
+    # Returns if publishing WebSocket API using ActionCable is allowed for the notifiable from configured field or overridden method.
+    # This method is able to be overridden.
+    #
+    # @param [Object] target Target instance to notify
+    # @param [String] key Key of the notification
+    # @return [Boolean] If publishing WebSocket API using ActionCable is allowed for the notifiable
+    def notification_action_cable_api_allowed?(target, key = nil)
+      resolve_parameter(
+        "notification_action_cable_api_allowed_for_#{cast_to_resources_name(target.class)}?",
+        _notification_action_cable_api_allowed[cast_to_resources_sym(target.class)],
+        ActivityNotification.config.action_cable_api_enabled,
         target, key)
     end
 

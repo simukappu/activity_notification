@@ -631,7 +631,10 @@ Broadcasting notifications to Action Cable channels is provided as [optional not
 This optional targets is disabled as default. You can configure it to enable Action Cable broadcasting in initializer *activity_notification.rb*.
 
 ```ruby
+# Enable Action Cable broadcasting as HTML view
 config.action_cable_enabled = true
+# Enable Action Cable API broadcasting as formatted JSON
+config.action_cable_api_enabled = true
 ```
 
 You can also configure them for each model by *acts_as roles* like these:
@@ -652,16 +655,18 @@ class Comment < ActiveRecord::Base
     targets: ->(comment, key) {
       ([comment.article.user] + comment.article.reload.commented_users.to_a - [comment.user]).uniq
     },
-    # Allow Action Cable broadcasting
-    action_cable_allowed: true
+    # Allow Action Cable broadcasting as HTML view
+    action_cable_allowed: true,
+    # Enable Action Cable API broadcasting as formatted JSON
+    action_cable_api_allowed: true
 end
 ```
 
-Then, *activity_notification* will broadcast configured notifications to target channels by *[ActivityNotification::OptionalTarget::ActionCableChannel](/lib/activity_notification/optional_targets/action_cable_channel.rb)* as optional targets.
+Then, *activity_notification* will broadcast configured notifications to target channels by *[ActivityNotification::OptionalTarget::ActionCableChannel](/lib/activity_notification/optional_targets/action_cable_channel.rb)* and/or *[ActivityNotification::OptionalTarget::ActionCableApiChannel](/lib/activity_notification/optional_targets/action_cable_api_channel.rb)* as optional targets.
 
 #### Subscribing notifications from channels
 
-*activity_notification* provides *[ActivityNotification::NotificationChannel](/app/channels/activity_notification/notification_channel.rb)* to subscribe broadcasted notifications with Action Cable.
+*activity_notification* provides *[ActivityNotification::NotificationChannel](/app/channels/activity_notification/notification_channel.rb)* and *[ActivityNotification::NotificationApiChannel](/app/channels/activity_notification/notification_api_channel.rb)* to subscribe broadcasted notifications with Action Cable.
 
 You can simply create subscriptions for the specified target in your view like this:
 
@@ -688,17 +693,66 @@ You can simply create subscriptions for the specified target in your view like t
 
         // Push notificaion using Web Notification API by Push.js
         Push.create('ActivityNotification', {
-            body: notification.text,
-            timeout: 5000,
-            onClick: function () {
-                location.href = notification.notifiable_path;
-                this.close();
-            }
+          body: notification.text,
+          timeout: 5000,
+          onClick: function () {
+            location.href = notification.notifiable_path;
+            this.close();
+          }
         });
       }
     }
   );
 </script>
+```
+
+or create subscriptions in your single page application with API channels like this:
+
+```js
+// Vue.js implementation with actioncable-vue
+export default {
+  // ...
+  mounted () {
+    this.subscribeActionCable();
+  },
+  channels: {
+    'ActivityNotification::NotificationApiChannel': {
+      connected() {
+        // Connected
+      },
+      disconnected() {
+        // Disconnected
+      },
+      rejected() {
+        // Rejected
+      },
+      received(data) {
+        this.notify(data);
+      }
+    }
+  },
+  methods: {
+    subscribeActionCable () {
+      this.$cable.subscribe({
+        channel: 'ActivityNotification::NotificationApiChannel',
+        target_type: this.target_type, target_id: this.target_id
+      });
+    },
+    notify (data) {
+      // Display notification
+
+      // Push notificaion using Web Notification API by Push.js
+      Push.create('ActivityNotification', {
+        body: data.notification.text,
+        timeout: 5000,
+        onClick: function () {
+          location.href = data.notification.notifiable_path;
+          this.close();
+        }
+      });
+    }
+  }
+}
 ```
 
 Then, *activity_notification* will push desktop notification using Web Notification API.
@@ -715,15 +769,16 @@ You can also configure them for each target model by *acts_as_target* like this:
 
 ```ruby
 class User < ActiveRecord::Base
-  # Allow Action Cable broadcasting and enable subscribing notifications with Devise authentication
-  acts_as_target action_cable_allowed: true, action_cable_with_devise: true
+  acts_as_target action_cable_allowed: true,
+    # Allow Action Cable broadcasting and enable subscribing notifications with Devise authentication
+    action_cable_with_devise: true
 end
 ```
 
-When you set *action_cable_with_devise* option to *true*, `ActivityNotification::NotificationChannel` will reject your subscription requests for the target type.
+When you set *action_cable_with_devise* option to *true*, *ActivityNotification::NotificationChannel* will reject your subscription requests for the target type.
 
 *activity_notification* also provides *[ActivityNotification::NotificationWithDeviseChannel](/app/channels/activity_notification/notification_with_devise_channel.rb)* to create subscriptions integrated with Devise authentication.
-You can simply use `ActivityNotification::NotificationWithDeviseChannel` instead of `ActivityNotification::NotificationChannel`:
+You can simply use *ActivityNotification::NotificationWithDeviseChannel* instead of *ActivityNotification::NotificationChannel*:
 
 ```js
 App.activity_notification = App.cable.subscriptions.create(
@@ -751,7 +806,7 @@ App.activity_notification = App.cable.subscriptions.create(
 );
 ```
 
-`ActivityNotification::NotificationWithDeviseChannel` will confirm subscription requests from authenticated cookies by Devise. If the user has not signed in, the subscription request will be rejected. If the user has signed in as unauthorized user, the subscription request will be also rejected.
+*ActivityNotification::NotificationWithDeviseChannel* will confirm subscription requests from authenticated cookies by Devise. If the user has not signed in, the subscription request will be rejected. If the user has signed in as unauthorized user, the subscription request will be also rejected.
 
 In addtion, you can use `Target#notification_action_cable_channel_class_name` method to select channel class depending on your *action_cable_with_devise* configuration for the target.
 
@@ -769,8 +824,76 @@ App.activity_notification = App.cable.subscriptions.create(
 
 This script is also implemented in [default notifications index view](/app/views/activity_notification/notifications/default/index.html.erb) of *activity_notification*.
 
+#### Subscribing notifications API with Devise Token Auth
+
+To use Devise Token Auth integration, also enable subscribing notifications with Devise authentication in initializer *activity_notification.rb*.
+
+```ruby
+config.action_cable_with_devise = true
+```
+
+You can also configure them for each target model by *acts_as_target* like this:
+
+```ruby
+class User < ActiveRecord::Base
+  acts_as_target action_cable_api_allowed: true,
+    # Allow Action Cable broadcasting and enable subscribing notifications API with Devise Token Auth
+    action_cable_with_devise: true
+end
+```
+
+When you set *action_cable_with_devise* option to *true*, *ActivityNotification::NotificationApiChannel* will reject your subscription requests for the target type.
+
+*activity_notification* also provides *[ActivityNotification::NotificationApiWithDeviseChannel](/app/channels/activity_notification/notification_api_with_devise_channel.rb)* to create subscriptions integrated with Devise Token Auth.
+You can simply use *ActivityNotification::NotificationApiWithDeviseChannel* instead of *ActivityNotification::NotificationApiChannel*. Note that you have to pass authenticated token by Devise Token Auth in subscription requests like this:
+
+```js
+export default {
+  // ...
+  channels: {
+    'ActivityNotification::NotificationApiWithDeviseChannel': {
+      // ...
+    }
+  },
+  methods: {
+    subscribeActionCable () {
+      this.$cable.subscribe({
+        channel: 'ActivityNotification::NotificationApiWithDeviseChannel',
+        target_type: this.target_type, target_id: this.target_id,
+        'access-token': this.authHeaders['access-token'],
+        'client': this.authHeaders['client'],
+        'uid': this.authHeaders['uid']
+      });
+    }
+  }
+}
+```
+
+You can also create these subscriptions with *devise_type* parameter instead of *target_id* parameter like this:
+
+```js
+export default {
+  // ...
+  methods: {
+    subscribeActionCable () {
+      this.$cable.subscribe({
+        channel: 'ActivityNotification::NotificationApiWithDeviseChannel',
+        target_type: "users", devise_type: "users",
+        'access-token': this.authHeaders['access-token'],
+        'client': this.authHeaders['client'],
+        'uid': this.authHeaders['uid']
+      });
+    }
+  }
+}
+```
+
+*ActivityNotification::NotificationWithDeviseChannel* will confirm subscription requests from authenticated token by Devise Token Auth. If the token is invalid, the subscription request will be rejected. If the token of unauthorized user is passed, the subscription request will be also rejected.
+
+This script is also implemented in [notifications index in sample single page application](/spec/rails_app/app/javascript/components/notifications/Index.vue).
+
 #### Subscription management of Action Cable channels
-Since broadcasting notifications to Action Cable channels is provided as [optional notification targets implementation](#action-cable-channels-as-optional-target), you can manage subscriptions as *:action_cable_channel* optional target. See [subscription management of optional targets](#subscription-management-of-optional-targets) for more details.
+Since broadcasting notifications to Action Cable channels is provided as [optional notification targets implementation](#action-cable-channels-as-optional-target), you can manage subscriptions as *:action_cable_channel* and *:action_cable_api_channel* optional target. See [subscription management of optional targets](#subscription-management-of-optional-targets) for more details.
 
 
 ### Optional notification targets
@@ -821,16 +944,28 @@ The gem will also look for templates whose *<target_class_name>* is *default*, *
 
 #### Action Cable channels as optional target
 
-*activity_notification* provides **ActivityNotification::OptionalTarget::ActionCableChannel** as default optional target implementation to broadcast notifications to Action Cable channels.
+*activity_notification* provides **ActivityNotification::OptionalTarget::ActionCableChannel** and **ActivityNotification::OptionalTarget::ActionCableApiChannel** as default optional target implementation to broadcast notifications to Action Cable channels.
 
-Simply write `require 'activity_notification/optional_targets/action_cable_channel'` statement in your notifiable model and set *ActivityNotification::OptionalTarget::ActionCableChannel* to *acts_as_notifiable* with initializing parameters. If you don't specify initializing parameters *ActivityNotification::OptionalTarget::ActionCableChannel* uses configuration in *ActivityNotification.config*.
+Simply write `require 'activity_notification/optional_targets/action_cable_channel'` or `require 'activity_notification/optional_targets/action_cable_api_channel'` statement in your notifiable model and set *ActivityNotification::OptionalTarget::ActionCableChannel* or *ActivityNotification::OptionalTarget::ActionCableApiChannel* to *acts_as_notifiable* with initializing parameters. If you don't specify initializing parameters *ActivityNotification::OptionalTarget::ActionCableChannel* and *ActivityNotification::OptionalTarget::ActionCableApiChannel* uses configuration in *ActivityNotification.config*.
 
 ```ruby
+# Set Action Cable broadcasting as HTML view using optional target
 class Comment < ActiveRecord::Base
   require 'activity_notification/optional_targets/action_cable_channel'
   acts_as_notifiable :admins, targets: [Admin.first].compact,
     optional_targets: {
       ActivityNotification::OptionalTarget::ActionCableChannel => { channel_prefix: 'admin_notification' }
+    }
+end
+```
+
+```ruby
+# Set Action Cable API broadcasting as formatted JSON using optional target
+class Comment < ActiveRecord::Base
+  require 'activity_notification/optional_targets/action_cable_api_channel'
+  acts_as_notifiable :admins, targets: [Admin.first].compact,
+    optional_targets: {
+      ActivityNotification::OptionalTarget::ActionCableApiChannel => { channel_prefix: 'admin_notification_api' }
     }
 end
 ```
@@ -953,6 +1088,9 @@ end
 ```ruby
 # Subscribe Acltion Cable channel for 'comment.reply' notifications
 user.find_or_create_subscription('comment.reply').subscribe_to_optional_target(:action_cable_channel)
+
+# Subscribe Acltion Cable API channel for 'comment.reply' notifications
+user.find_or_create_subscription('comment.reply').subscribe_to_optional_target(:action_cable_api_channel)
 
 # Unsubscribe Slack notification for 'comment.reply' notifications
 user.find_or_create_subscription('comment.reply').unsubscribe_to_optional_target(:slack)

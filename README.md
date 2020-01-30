@@ -137,6 +137,7 @@ This sample application works with *activity_notification* REST API backend.
     - [Enabling broadcasting notifications to channels](/docs/Functions.md#enabling-broadcasting-notifications-to-channels)
     - [Subscribing notifications from channels](/docs/Functions.md#subscribing-notifications-from-channels)
     - [Subscribing notifications with Devise authentication](/docs/Functions.md#subscribing-notifications-with-devise-authentication)
+    - [Subscribing notifications API with Devise Token Auth](/docs/Functions.md#subscribing-notifications-api-with-devise-token-auth)
     - [Subscription management of Action Cable channels](/docs/Functions.md#subscription-management-of-action-cable-channels)
   - [Optional notification targets](/docs/Functions.md#optional-notification-targets)
     - [Configuring optional targets](/docs/Functions.md#configuring-optional-targets)

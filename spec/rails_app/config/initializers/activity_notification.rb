@@ -71,6 +71,11 @@ ActivityNotification.configure do |config|
   # Set true when you want to turn on WebSocket subscription using ActionCable as default.
   config.action_cable_enabled = false
 
+  # Configure if WebSocket API subscription using ActionCable is enabled.
+  # Note that you can configure them for each model by acts_as roles.
+  # Set true when you want to turn on WebSocket API subscription using ActionCable as default.
+  config.action_cable_api_enabled = false
+
   # Configure if ctivity_notification publishes WebSocket notifications using ActionCable only to authenticated target with Devise.
   # Note that you can configure them for each model by acts_as roles.
   # Set true when you want to use Device integration with WebSocket subscription using ActionCable as default.
@@ -78,5 +83,8 @@ ActivityNotification.configure do |config|
 
   # Configure notification channel prefix for ActionCable.
   config.notification_channel_prefix = 'activity_notification_channel'
+
+  # Configure notification API channel prefix for ActionCable.
+  config.notification_api_channel_prefix = 'activity_notification_api_channel'
 
 end

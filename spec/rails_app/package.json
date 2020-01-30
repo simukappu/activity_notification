@@ -12,7 +12,9 @@
     "vue-template-compiler": "^2.6.10",
     "vue-moment": "^4.1.0",
     "vue-moment-tz": "^2.1.1",
-    "vue-pluralize": "^0.0.2"
+    "vue-pluralize": "^0.0.2",
+    "actioncable-vue": "^1.5.1",
+    "push.js": "^1.0.12"
   },
   "devDependencies": {
     "webpack-dev-server": "^3.9.0"
