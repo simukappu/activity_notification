@@ -69,12 +69,12 @@
           }
           // Push notificaion using Web Notification API by Push.js
           Push.create('ActivityNotification', {
-              body: notification.text,
-              timeout: 5000,
-              onClick: function () {
-                  location.href = notification.notifiable_path;
-                  this.close();
-              }
+            body: notification.text,
+            timeout: 5000,
+            onClick: function () {
+              location.href = notification.notifiable_path;
+              this.close();
+            }
           });
         }
       }
