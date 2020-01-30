@@ -31,6 +31,7 @@ end
 unless ENV['AN_TEST_DB'] == 'mongodb'
   class User < ActiveRecord::Base
     include UserModel
+    default_scope { order(:id) }
   end
 else
   require 'mongoid'

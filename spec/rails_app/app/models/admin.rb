@@ -17,6 +17,7 @@ end
 unless ENV['AN_TEST_DB'] == 'mongodb'
   class Admin < ActiveRecord::Base
     include AdminModel
+    default_scope { order(:id) }
   end
 else
   require 'mongoid'
