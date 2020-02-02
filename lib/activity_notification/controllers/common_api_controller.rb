@@ -4,10 +4,9 @@ module ActivityNotification
     extend ActiveSupport::Concern
 
     included do
-      rescue_from ActiveRecord::RecordNotFound,                with: :render_resource_not_found if defined?(ActiveRecord)
-      rescue_from Mongoid::Errors::DocumentNotFound,           with: :render_resource_not_found if ActivityNotification.config.orm == :mongoid
-      rescue_from Dynamoid::Errors::RecordNotFound,            with: :render_resource_not_found if ActivityNotification.config.orm == :dynamoid
-      rescue_from ActivityNotification::InvalidParameterError, with: ->(e){ render_invalid_parameter(e.message) }
+      rescue_from ActiveRecord::RecordNotFound,      with: :render_resource_not_found if defined?(ActiveRecord)
+      rescue_from Mongoid::Errors::DocumentNotFound, with: :render_resource_not_found if ActivityNotification.config.orm == :mongoid
+      rescue_from Dynamoid::Errors::RecordNotFound,  with: :render_resource_not_found if ActivityNotification.config.orm == :dynamoid
     end
 
     protected

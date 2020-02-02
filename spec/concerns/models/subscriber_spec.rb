@@ -74,9 +74,9 @@ shared_examples_for :subscriber do
       end
 
       context "without params" do
-        it "raises ActivityNotification::InvalidParameterError it is invalid" do
+        it "raises ActivityNotification::RecordInvalidError it is invalid" do
           expect { test_instance.create_subscription }
-          .to raise_error(ActivityNotification::InvalidParameterError)
+          .to raise_error(ActivityNotification::RecordInvalidError)
         end
       end
 
@@ -121,11 +121,11 @@ shared_examples_for :subscriber do
       end
 
       context "with false as subscribing and true as subscribing_to_email params" do
-        it "raises ActivityNotification::InvalidParameterError it is invalid" do
+        it "raises ActivityNotification::RecordInvalidError it is invalid" do
           expect {
             params = { key: 'key_1', subscribing: false, subscribing_to_email: true }
             test_instance.create_subscription(params)
-          }.to raise_error(ActivityNotification::InvalidParameterError)
+          }.to raise_error(ActivityNotification::RecordInvalidError)
         end
       end
 
@@ -160,11 +160,11 @@ shared_examples_for :subscriber do
       end
 
       context "with false as subscribing and true as optional_targets params" do
-        it "raises ActivityNotification::InvalidParameterError it is invalid" do
+        it "raises ActivityNotification::RecordInvalidError it is invalid" do
           expect {
             params = { key: 'key_1', subscribing: false, optional_targets: { subscribing_to_console_output: true } }
             test_instance.create_subscription(params)
-          }.to raise_error(ActivityNotification::InvalidParameterError)
+          }.to raise_error(ActivityNotification::RecordInvalidError)
         end
       end
     end

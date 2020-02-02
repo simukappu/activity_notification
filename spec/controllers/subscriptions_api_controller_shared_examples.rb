@@ -256,7 +256,7 @@ shared_examples_for :subscriptions_api_controller do
       end
     end
 
-    context "conflict because of duplicate key" do
+    context "unprocessable entity because of duplicate key" do
       before do
         @duplicate_subscription = create(:subscription, target: test_target, key: 'duplicate_subscription_key')
         put_with_compatibility :create, target_params.merge({
@@ -268,12 +268,12 @@ shared_examples_for :subscriptions_api_controller do
           }), valid_session
       end
 
-      it "returns 409 as http status code" do
-        expect(response.status).to eq(409)
+      it "returns 422 as http status code" do
+        expect(response.status).to eq(422)
       end
 
-      it "returns duplicate subscription" do
-        assert_json_with_object(response_json['subscription'], @duplicate_subscription)
+      it "returns error JSON response" do
+        assert_error_response(422)
       end
     end
   end
@@ -468,8 +468,8 @@ shared_examples_for :subscriptions_api_controller do
         put_with_compatibility :subscribe_to_email, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
       end
 
-      it "returns 400 as http status code" do
-        expect(response.status).to eq(400)
+      it "returns 422 as http status code" do
+        expect(response.status).to eq(422)
       end
 
       it "cannot update subscribing_to_email to true" do
@@ -477,7 +477,7 @@ shared_examples_for :subscriptions_api_controller do
       end
 
       it "returns error JSON response" do
-        assert_error_response(400)
+        assert_error_response(422)
       end
     end
   end
@@ -557,8 +557,8 @@ shared_examples_for :subscriptions_api_controller do
         put_with_compatibility :subscribe_to_optional_target, target_params.merge({ id: @subscription, optional_target_name: 'base', typed_target_param => test_target }), valid_session
       end
 
-      it "returns 400 as http status code" do
-        expect(response.status).to eq(400)
+      it "returns 422 as http status code" do
+        expect(response.status).to eq(422)
       end
 
       it "cannot update subscribing_to_optional_target to true" do
@@ -566,7 +566,7 @@ shared_examples_for :subscriptions_api_controller do
       end
 
       it "returns error JSON response" do
-        assert_error_response(400)
+        assert_error_response(422)
       end
     end
   end
@@ -663,7 +663,7 @@ shared_examples_for :subscriptions_api_request do
                              "subscribing_to_email"=>"true"
                            }
       }, headers: @headers
-      assert_all_schema_confirm(response, 409)
+      assert_all_schema_confirm(response, 422)
     end
   end
 

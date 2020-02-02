@@ -38,5 +38,18 @@ module ActivityNotification
         end
       end
     end
+
+    module UnprocessableEntityError #:nodoc:
+      def self.extended(base)
+        base.response 422 do
+          key :description, "Unprocessable entity"
+          content 'application/json' do
+            schema do
+              key :'$ref', :Error
+            end
+          end
+        end
+      end
+    end
   end
 end

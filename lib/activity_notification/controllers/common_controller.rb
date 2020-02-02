@@ -11,6 +11,7 @@ module ActivityNotification
 
       prepend_before_action :set_target
       before_action :set_view_prefixes
+      rescue_from ActivityNotification::RecordInvalidError, with: ->(e){ render_unprocessable_entity(e.message) }
     end
 
     DEFAULT_VIEW_DIRECTORY = "default"
@@ -110,6 +111,13 @@ module ActivityNotification
       # @return [void]
       def validate_param(param_name)
         render_invalid_parameter("Parameter is missing: #{param_name}") if params[param_name].blank?
+      end
+
+      # Render Invalid Parameter error with 400 status
+      # @api protected
+      # @return [void]
+      def render_unprocessable_entity(message)
+        render status: 422, json: error_response(code: 422, message: "Unprocessable entity", type: message)
       end
 
       # Returns JavaScript view for ajax request or redirects to back as default.

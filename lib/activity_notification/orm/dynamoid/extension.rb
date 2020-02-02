@@ -169,6 +169,78 @@ module Dynamoid # :nodoc: all
   end
 end
 
+# Entend Dynamoid to support uniqueness validator
+# @private
+module Dynamoid # :nodoc: all
+  # https://github.com/Dynamoid/dynamoid/blob/master/lib/dynamoid/validations.rb
+  # @private
+  module Validations
+    # Validates whether or not a field is unique against the records in the database.
+    class UniquenessValidator < ActiveModel::EachValidator
+      # Validate the document for uniqueness violations.
+      # @param [Document] document The document to validate.
+      # @param [Symbol] attribute  The name of the attribute.
+      # @param [Object] value      The value of the object.
+      def validate_each(document, attribute, value)
+        return unless validation_required?(document, attribute)
+        document.errors.add(attribute, :taken, options.except(:scope).merge(value: value)) if not_unique?(document, attribute, value)
+      end
+
+      private
+
+      # Are we required to validate the document?
+      # @api private
+      def validation_required?(document, attribute)
+        document.new_record? ||
+          document.send("attribute_changed?", attribute.to_s) ||
+          scope_value_changed?(document)
+      end
+
+      # Scope reference has changed?
+      # @api private
+      def scope_value_changed?(document)
+        Array.wrap(options[:scope]).any? do |item|
+          document.send("attribute_changed?", item.to_s)
+        end
+      end
+
+      # Check whether a record is uniqueness.
+      # @api private
+      def not_unique?(document, attribute, value)
+        klass = document.class
+        while klass.superclass.respond_to?(:validators) && klass.superclass.validators.include?(self)
+          klass = klass.superclass
+        end
+        criteria = create_criteria(klass, document, attribute, value)
+        criteria.exists?
+      end
+
+      # Create the validation criteria.
+      # @api private
+      def create_criteria(base, document, attribute, value)
+        criteria = scope(base, document)
+        filter_criteria(criteria, document, attribute)
+      end
+
+      # Scope the criteria to the scope options provided.
+      # @api private
+      def scope(criteria, document)
+        Array.wrap(options[:scope]).each do |item|
+          criteria = filter_criteria(criteria, document, item)
+        end
+        criteria
+      end
+
+      # Filter the criteria.
+      # @api private
+      def filter_criteria(criteria, document, attribute)
+        value = document.read_attribute(attribute)
+        value.nil? ? criteria.where("#{attribute}.null" => true) : criteria.where(attribute => value)
+      end
+    end
+  end
+end
+
 module ActivityNotification
   # Dynamoid extension module for ActivityNotification.
   module DynamoidExtension

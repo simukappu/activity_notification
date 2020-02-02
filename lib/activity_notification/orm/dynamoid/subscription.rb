@@ -31,7 +31,7 @@ module ActivityNotification
         global_secondary_index hash_key: :target_key, range_key: :created_at, projected_attributes: :all
 
         validates  :target,               presence: true
-        validates  :key,                  presence: true
+        validates  :key,                  presence: true, uniqueness: { scope: :target_key }
         validates_inclusion_of :subscribing,          in: [true, false]
         validates_inclusion_of :subscribing_to_email, in: [true, false]
         validate   :subscribing_to_email_cannot_be_true_when_subscribing_is_false

@@ -101,27 +101,9 @@ module ActivityNotification
               end
             end
           end
-          response 409 do
-            key :description, "Conflict because of duplicate key"
-            content 'application/json' do
-              schema do
-                key :type, :object
-                property :status do
-                  key :type, :string
-                  key :description, "Conflict status"
-                  key :default, "conflict because of duplicate key"
-                  key :example, "conflict because of duplicate key"
-                end
-                property :subscription do
-                  key :type, :object
-                  key :'$ref', :Subscription
-                  key :description, "Found duplicate subscription"
-                end
-              end
-            end
-          end
           extend Swagger::ErrorResponses::InvalidParameterError
           extend Swagger::ErrorResponses::ResourceNotFoundError
+          extend Swagger::ErrorResponses::UnprocessableEntityError
         end
       end
 
@@ -274,6 +256,7 @@ module ActivityNotification
           extend Swagger::ErrorResponses::InvalidParameterError
           extend Swagger::ErrorResponses::ForbiddenError
           extend Swagger::ErrorResponses::ResourceNotFoundError
+          extend Swagger::ErrorResponses::UnprocessableEntityError
         end
       end
 
@@ -298,6 +281,7 @@ module ActivityNotification
           extend Swagger::ErrorResponses::InvalidParameterError
           extend Swagger::ErrorResponses::ForbiddenError
           extend Swagger::ErrorResponses::ResourceNotFoundError
+          extend Swagger::ErrorResponses::UnprocessableEntityError
         end
       end
 
@@ -322,6 +306,7 @@ module ActivityNotification
           extend Swagger::ErrorResponses::InvalidParameterError
           extend Swagger::ErrorResponses::ForbiddenError
           extend Swagger::ErrorResponses::ResourceNotFoundError
+          extend Swagger::ErrorResponses::UnprocessableEntityError
         end
       end
 
@@ -346,6 +331,7 @@ module ActivityNotification
           extend Swagger::ErrorResponses::InvalidParameterError
           extend Swagger::ErrorResponses::ForbiddenError
           extend Swagger::ErrorResponses::ResourceNotFoundError
+          extend Swagger::ErrorResponses::UnprocessableEntityError
         end
       end
 
@@ -378,6 +364,7 @@ module ActivityNotification
           extend Swagger::ErrorResponses::InvalidParameterError
           extend Swagger::ErrorResponses::ForbiddenError
           extend Swagger::ErrorResponses::ResourceNotFoundError
+          extend Swagger::ErrorResponses::UnprocessableEntityError
         end
       end
 
@@ -410,6 +397,7 @@ module ActivityNotification
           extend Swagger::ErrorResponses::InvalidParameterError
           extend Swagger::ErrorResponses::ForbiddenError
           extend Swagger::ErrorResponses::ResourceNotFoundError
+          extend Swagger::ErrorResponses::UnprocessableEntityError
         end
       end
     end

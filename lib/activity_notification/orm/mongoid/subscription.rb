@@ -28,7 +28,7 @@ module ActivityNotification
         field :optional_targets,          type: Hash,    default: {}
 
         validates  :target,               presence: true
-        validates  :key,                  presence: true
+        validates  :key,                  presence: true, uniqueness: { scope: :target }
         validates_inclusion_of :subscribing,          in: [true, false]
         validates_inclusion_of :subscribing_to_email, in: [true, false]
         validate   :subscribing_to_email_cannot_be_true_when_subscribing_is_false

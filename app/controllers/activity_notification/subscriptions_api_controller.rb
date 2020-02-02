@@ -38,22 +38,13 @@ module ActivityNotification
     #   @return [JSON] Created subscription
     def create
       render_invalid_parameter("Parameter is missing or the value is empty: subscription") and return if params[:subscription].blank?
-      render_invalid_parameter("Parameter is missing or the value is empty: subscription[key]") and return if params[:subscription][:key].blank?
-      @subscription = @target.find_subscription(params[:subscription][:key])
-      if @subscription
-        render status: 409, location: { action: :show, id: @subscription }, json: {
-          status: "conflict because of duplicate key",
-          subscription: subscription_json
-        }
-      else
-        optional_target_names = (params[:subscription][:optional_targets] || {}).keys.select { |key| !key.to_s.start_with?("subscribing_to_") }
-        optional_target_names.each do |optional_target_name|
-          subscribing_param = params[:subscription][:optional_targets][optional_target_name][:subscribing]
-          params[:subscription][:optional_targets]["subscribing_to_#{optional_target_name}"] = subscribing_param unless subscribing_param.nil?
-        end
-        super
-        render status: 201, location: { action: :show, id: @subscription }, json: subscription_json
+      optional_target_names = (params[:subscription][:optional_targets] || {}).keys.select { |key| !key.to_s.start_with?("subscribing_to_") }
+      optional_target_names.each do |optional_target_name|
+        subscribing_param = params[:subscription][:optional_targets][optional_target_name][:subscribing]
+        params[:subscription][:optional_targets]["subscribing_to_#{optional_target_name}"] = subscribing_param unless subscribing_param.nil?
       end
+      super
+      render status: 201, location: { action: :show, id: @subscription }, json: subscription_json
     end
 
     # Finds and shows a subscription from specified key.
@@ -198,7 +189,7 @@ module ActivityNotification
       # Validate @subscription and render JSON of @subscription
       # @api protected
       def validate_and_render_subscription
-        raise InvalidParameterError, @subscription.errors.full_messages.first if @subscription.invalid?
+        raise RecordInvalidError, @subscription.errors.full_messages.first if @subscription.invalid?
         render json: subscription_json
       end
 
