@@ -13,6 +13,8 @@ module ActivityNotification
     # @option options [String]         :layout       (nil)                     Layout template name
     # @option options [String]         :layout_root  ('layouts')               Root path of layout template
     # @option options [String, Symbol] :fallback     (nil)                     Fallback template to use when MissingTemplate is raised. Set :text to use i18n text as fallback.
+    # @option options [Hash]           :assigns      (nil)                     Parameters to be set as assigns
+    # @option options [Hash]           :locals       (nil)                     Parameters to be set as locals
     # @return [String] Rendered view or text as string
     def render_notification(notifications, options = {})
       if notifications.is_a? ActivityNotification::Notification

@@ -143,6 +143,8 @@ module ActivityNotification
     # @option params [String]         :layout       (nil)                     Layout template name
     # @option params [String]         :layout_root  ('layouts')               Root path of layout template
     # @option params [String, Symbol] :fallback     (nil)                     Fallback template to use when MissingTemplate is raised. Set :text to use i18n text as fallback.
+    # @option params [Hash]           :assigns                                Parameters to be set as assigns
+    # @option params [Hash]           :locals                                 Parameters to be set as locals
     # @option params [Hash]           others                                  Parameters to be set as locals
     # @return [String] Rendered view or text as string
     def render(context, params = {})
@@ -150,16 +152,17 @@ module ActivityNotification
 
       partial = partial_path(*params.values_at(:partial, :partial_root, :target))
       layout  = layout_path(*params.values_at(:layout, :layout_root))
+      assigns = prepare_assigns(params)
       locals  = prepare_locals(params)
 
       begin
-        context.render params.merge(partial: partial, layout: layout, locals: locals)
+        context.render params.merge(partial: partial, layout: layout, assigns: assigns, locals: locals)
       rescue ActionView::MissingTemplate => e
         if params[:fallback] == :text
           context.render plain: self.text(params)
         elsif params[:fallback].present?
           partial = partial_path(*params.values_at(:fallback, :partial_root, :target))
-          context.render params.merge(partial: partial, layout: layout, locals: locals)
+          context.render params.merge(partial: partial, layout: layout, assigns: assigns, locals: locals)
         else
           raise e
         end
@@ -194,6 +197,14 @@ module ActivityNotification
       path.nil? and return
       root ||= 'layouts'
       select_path(path, root)
+    end
+
+    # Returns assigns parameter for view
+    #
+    # @param [Hash] params Parameters to add parameters at assigns
+    # @return [Hash] assigns parameter
+    def prepare_assigns(params)
+      params.delete(:assigns) || {}
     end
 
     # Returns locals parameter for view

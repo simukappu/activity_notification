@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'rails', '~> 5.2'
+gem 'rails', '~> 6.0.0'
 
 group :production do
   gem 'puma'
@@ -16,8 +16,9 @@ group :development do
 end
 
 group :test do
+  #TODO https://github.com/rails/rails/issues/35417
+  gem 'rspec-rails', '4.0.0.beta4'
   gem 'rails-controller-testing'
-  gem 'action-cable-testing'
   gem 'ammeter'
   gem 'timecop'
   gem 'committee'

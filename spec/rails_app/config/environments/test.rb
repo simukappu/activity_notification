@@ -54,4 +54,9 @@ Rails.application.configure do
 
   # Set default_url_options for devise and notification email.
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
+
+  # Specifies delivery job for mail
+  if Rails::VERSION::MAJOR >= 6
+    config.action_mailer.delivery_job = "ActionMailer::MailDeliveryJob"
+  end
 end

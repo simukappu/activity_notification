@@ -3,22 +3,11 @@ module ActivityNotification
   module OptionalTarget
     # Abstract optional target class to develop optional notification target class.
     class Base
-      # View context to render notification message
-      # @return View context to render notification message
-      attr_accessor :view_context
-
       # Initialize method to create view context in this OptionalTarget instance
       # @param [Hash] options Options for initializing target
       # @option options [Boolean] :skip_initializing_target (false) Whether skip calling initialize_target method
       # @option options [Hash]    others                            Options for initializing target
       def initialize(options = {})
-        @view_context = ActionView::Base.new(ActionController::Base.view_paths, {})
-        @view_context.class_eval do 
-          include Rails.application.routes.url_helpers
-          def default_url_options
-            ActionMailer::Base.default_url_options
-          end
-        end
         initialize_target(options) unless options.delete(:skip_initializing_target)
       end
 
@@ -64,12 +53,17 @@ module ActivityNotification
               "activity_notification/optional_targets/default/base"
             ]
           options[:fallback] ||= :default
-          @view_context.assign((options[:assignment] || {}).merge(notification: notification, target: notification.target))
 
           message, missing_template = nil, nil
           partial_root_list.each do |partial_root|
             begin
-              message = notification.render(@view_context, options.merge(partial_root: partial_root)).to_str
+              message = notification.render(
+                ActivityNotification::NotificationsController.renderer,
+                options.merge(
+                  partial_root: partial_root,
+                  assigns: (options[:assignment] || {}).merge(notification: notification, target: notification.target)
+                )
+              ).to_s
               break
             rescue ActionView::MissingTemplate => e
               missing_template = e

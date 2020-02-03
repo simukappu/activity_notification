@@ -113,6 +113,7 @@ describe ActivityNotification::ViewHelpers, type: :helper do
         expect(self).to receive(:render).with({
           layout:  'layouts/test',
           partial: 'activity_notification/notifications/default/custom/test',
+          assigns: {},
           locals:  notification.prepare_locals({ layout: 'test' })
         })
         render_notification notification, layout: 'test'

@@ -47,6 +47,11 @@ Rails.application.configure do
   # For notification email preview
   config.action_mailer.preview_path = "#{Rails.root}/lib/mailer_previews"
 
+  # Specifies delivery job for mail
+  if Rails::VERSION::MAJOR >= 6
+    config.action_mailer.delivery_job = "ActionMailer::MailDeliveryJob"
+  end
+
   # Configration for bullet
   config.after_initialize do
     Bullet.enable = true
