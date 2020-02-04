@@ -1,3 +1,25 @@
+## 2.1.0 / 2020-02-04
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.0.0...v2.1.0)
+
+Enhancements:
+
+* Add API mode using notification and subscription API controllers - [#108](https://github.com/simukappu/activity_notification/issues/108) [#113](https://github.com/simukappu/activity_notification/issues/113)
+* Add API controllers integrated with Devise Token Auth - [#108](https://github.com/simukappu/activity_notification/issues/108) [#113](https://github.com/simukappu/activity_notification/issues/113)
+* Add sample single page application working with REST API backend - [#108](https://github.com/simukappu/activity_notification/issues/108) [#113](https://github.com/simukappu/activity_notification/issues/113)
+* Move Action Cable broadcasting to optional targets - [#111](https://github.com/simukappu/activity_notification/issues/111)
+* Add Action Cable API channels publishing formatted JSON - [#111](https://github.com/simukappu/activity_notification/issues/111)
+* Rescue and skip error in optional_targets - [#103](https://github.com/simukappu/activity_notification/issues/103)
+* Add *later_than* and *earlier_than* filter options to notification index API - [#108](https://github.com/simukappu/activity_notification/issues/108)
+* Add key uniqueness validation to subscription model - [#119](https://github.com/simukappu/activity_notification/issues/119)
+* Make mailer headers more configurable to set custom *from*, *reply_to* and *message_id* - [#116](https://github.com/simukappu/activity_notification/pull/116)
+* Allow use and test with Rails 6.0 release - [#102](https://github.com/simukappu/activity_notification/issues/102)
+
+Breaking Changes:
+
+* Change HTTP POST method of open notification and subscription methods into PUT method
+* Make *Target#open_all_notifications* return opened notification records instead of their count
+* Make *Subscriber#create_subscription* raise *ActivityNotification::RecordInvalidError* when the request is invalid - [#119](https://github.com/simukappu/activity_notification/pull/119)
+
 ## 2.0.0 / 2019-08-09
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.7.1...v2.0.0)
 
