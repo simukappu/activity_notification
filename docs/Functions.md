@@ -422,7 +422,7 @@ You can see [sample single page application](/spec/rails_app/app/javascript/) us
 
 OpenAPI Specification in [online demo](https://activity-notification-example.herokuapp.com/) is published here: **https://activity-notification-example.herokuapp.com/api/v2/apidocs**
 
-Public API reference is also hosted in [SwaggerHub](https://swagger.io/tools/swaggerhub/) here: **https://app.swaggerhub.com/apis/simukappu/activity-notification/**
+Public API reference is also hosted in [SwaggerHub](https://swagger.io/tools/swaggerhub/) here: **https://app.swaggerhub.com/apis-docs/simukappu/activity-notification/**
 
 You can also publish OpenAPI Specification in your own application using *[ActivityNotification::ApidocsController](/app/controllers/activity_notification/apidocs_controller.rb)* like this:
 
