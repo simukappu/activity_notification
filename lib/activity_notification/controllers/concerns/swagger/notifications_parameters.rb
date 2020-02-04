@@ -75,7 +75,7 @@ module ActivityNotification
           key :required, false
           key :type, :string
           key :format, :'date-time'
-          key :example, Time.current.iso8601(3)
+          key :example, Time.current.ago(10.years).iso8601(3)
         end
         base.parameter do
           key :name, :earlier_than
@@ -84,7 +84,7 @@ module ActivityNotification
           key :required, false
           key :type, :string
           key :format, :'date-time'
-          key :example, Time.current.iso8601(3)
+          key :example, Time.current.since(10.years).iso8601(3)
         end
       end
     end
