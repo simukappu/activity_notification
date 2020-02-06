@@ -640,7 +640,7 @@ shared_examples_for :notification_api do
     describe ".available_options" do
       it "returns list of available options in notify api" do
         expect(described_class.available_options)
-          .to eq([:key, :group, :group_expiry_delay, :notifier, :parameters, :send_email, :send_later])
+          .to eq([:key, :group, :group_expiry_delay, :notifier, :parameters, :send_email, :send_later, :pass_full_options])
       end
     end
   end

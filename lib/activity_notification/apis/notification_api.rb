@@ -454,7 +454,7 @@ module ActivityNotification
       #
       # @return [Array<Notificaion>] Available options for kinds of notify methods
       def available_options
-        [:key, :group, :group_expiry_delay, :notifier, :parameters, :send_email, :send_later].freeze
+        [:key, :group, :group_expiry_delay, :notifier, :parameters, :send_email, :send_later, :pass_full_options].freeze
       end
 
       # Defines mailer class to send notification
