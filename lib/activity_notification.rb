@@ -16,6 +16,7 @@ module ActivityNotification
   autoload :Common
   autoload :Config
   autoload :Renderable
+  autoload :VERSION
   autoload :GEM_VERSION
 
   module Mailers
