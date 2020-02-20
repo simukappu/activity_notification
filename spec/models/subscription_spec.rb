@@ -118,9 +118,15 @@ describe ActivityNotification::Subscription, type: :model do
         @subscription_3 = create(:subscription, target: @target, key: 'key.3', created_at: @subscription_1.created_at + 20.second)
         @subscription_4 = create(:subscription, target: @target, key: 'key.4', created_at: @subscription_1.created_at + 30.second)
       end
-
+      
       unless ActivityNotification.config.orm == :dynamoid
         context "using ORM other than dynamoid, you can directly call latest/earliest order method from class objects" do
+          
+          it "several targets can subscribe to the same key" do
+            @target2 = FactoryBot.create(:confirmed_user)
+            @subscription_5 = FactoryBot.create(:subscription, target: @target2, key: 'key.4', created_at: @subscription_1.created_at + 40.second)
+            expect(@subscription_5).to be_valid
+          end
 
           it "works with latest_order scope" do
             subscriptions = ActivityNotification::Subscription.latest_order
