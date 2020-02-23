@@ -11,6 +11,14 @@ describe ActivityNotification::Subscription, type: :model do
       subscription = create(:subscription, target: target)
       expect(subscription.reload.target).to eq(target)
     end
+
+    it "several targets can subscribe to the same key" do
+      target = create(:confirmed_user)
+      target2 = create(:confirmed_user)
+      subscription_1 = create(:subscription, target: target, key: 'key.1')
+      subscription_2 = create(:subscription, target: target2, key: 'key.1')
+      expect(subscription_2).to be_valid
+    end
   end
 
   describe "with validation" do
