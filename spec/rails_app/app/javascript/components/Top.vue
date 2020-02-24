@@ -70,14 +70,13 @@
 
 <script>
 import axios from 'axios'
-import authStore from "../store/auth"
 
 export default {
   name: 'Top',
   data () {
     return {
-      userSignedIn: authStore.getters.userSignedIn,
-      currentUser: authStore.getters.currentUser,
+      userSignedIn: this.$store.getters.userSignedIn,
+      currentUser: this.$store.getters.currentUser,
       users: [],
       admins: []
     }

@@ -19,7 +19,6 @@
 
 <script>
 import axios from 'axios'
-import authStore from "../store/auth"
 
 export default {
   name: 'DeviseTokenAuth',
@@ -53,7 +52,7 @@ export default {
               authHeaders[authHeader] = response.headers[authHeader];
               axios.defaults.headers.common[authHeader] = authHeaders[authHeader];
             }
-            authStore.commit('signIn', { user: response.data.data, authHeaders: authHeaders });
+            this.$store.commit('signIn', { user: response.data.data, authHeaders: authHeaders });
             if (this.$route.query.redirect) {
               this.$router.push(this.$route.query.redirect);
             } else {
@@ -69,10 +68,10 @@ export default {
         })
     },
     logout () {
-      for (var authHeader of Object.keys(authStore.getters.authHeaders)) {
+      for (var authHeader of Object.keys(this.$store.getters.authHeaders)) {
         delete axios.defaults.headers.common[authHeader];
       }
-      authStore.commit('signOut');
+      this.$store.commit('signOut');
       this.$router.push('/');
     }
   }

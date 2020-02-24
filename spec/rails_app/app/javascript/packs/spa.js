@@ -1,11 +1,14 @@
 import Vue from 'vue'
-import axios from 'axios'
 import App from '../App.vue'
+import router from '../router'
+import store from '../store'
 
-axios.defaults.baseURL = "/api/v2"
+Vue.config.productionTip = false
 
 document.addEventListener('DOMContentLoaded', () => {
-  const app = new Vue({
+  new Vue({
+    router,
+    store,
     render: h => h(App)
   }).$mount('#spa')
 })
