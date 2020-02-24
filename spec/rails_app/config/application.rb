@@ -44,7 +44,10 @@ module Dummy
       config.middleware.insert_before 0, Rack::Cors do
         allow do
           origins '*'
-          resource '*', :headers => :any, :methods => [:get, :post, :put, :delete]
+          resource '*',
+            headers: :any,
+            expose: ['access-token', 'client', 'uid'],
+            methods: [:get, :post, :put, :delete]
         end
       end
     end
