@@ -1,7 +1,16 @@
+## 2.1.2 / 2020-02-24
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.1.1...v2.1.2)
+
+Bug Fixes:
+
+* Fix scope of uniqueness validation in subscription model with mongoid - [#126](https://github.com/simukappu/activity_notification/issues/126) [#128](https://github.com/simukappu/activity_notification/pull/128)
+* Fix uninitialized constant DeviseTokenAuth when *config.eager_load = true* - [#129](https://github.com/simukappu/activity_notification/issues/129)
+
 ## 2.1.1 / 2020-02-11
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.1.0...v2.1.1)
 
 Bug Fixes:
+
 * Fix eager_load by autoloading VERSION - [#124](https://github.com/simukappu/activity_notification/issues/124) [#125](https://github.com/simukappu/activity_notification/pull/125)
 
 ## 2.1.0 / 2020-02-04
