@@ -13,6 +13,11 @@ class UsersController < ApplicationController
     render json: @user
   end
 
+  # GET /users/find
+  def find
+    render json: User.find_by_email!(params[:email])
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user

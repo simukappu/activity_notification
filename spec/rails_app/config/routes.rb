@@ -29,7 +29,11 @@ Rails.application.routes.draw do
       notify_to :users, api_mode: true, with_subscription: true
       notify_to :users, api_mode: true, with_devise: :users, devise_default_routes: true, with_subscription: true
       resources :apidocs, only: [:index], controller: 'activity_notification/apidocs'
-      resources :users, only: [:index, :show]
+      resources :users, only: [:index, :show] do
+        collection do
+          get :find
+        end
+      end
     end
   end
 
