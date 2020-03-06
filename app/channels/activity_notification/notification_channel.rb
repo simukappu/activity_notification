@@ -22,7 +22,7 @@ if defined?(ActionCable)
         target_class = target_type.to_s.to_model_class
         @target = params[:target_id].present? ?
           target_class.find_by!(id: params[:target_id]) :
-          target_class.find_by!(id: params["#{target_type.to_s.to_resource_name}_id"])
+          target_class.find_by!(id: params["#{target_type.to_s.to_resource_name[/([^\/]+)$/]}_id"])
         rescue
         reject
       end
