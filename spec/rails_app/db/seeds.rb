@@ -2,8 +2,15 @@
 # This file is seed file for test data on development environment.
 
 def clean_database
-  [ActivityNotification::Notification, ActivityNotification::Subscription, Comment, Article, Admin, User].each do |model_class|
-    model_class.delete_all
+  models = [Comment, Article, Admin, User]
+  if ENV['AN_USE_EXISTING_DYNAMODB_TABLE']
+    ActivityNotification::Notification.where('id.not_null': true).delete_all
+    ActivityNotification::Subscription.where('id.not_null': true).delete_all
+  else
+    models.concat([ActivityNotification::Notification, ActivityNotification::Subscription])
+  end
+  models.each do |model|
+    model.delete_all
   end
 end
 

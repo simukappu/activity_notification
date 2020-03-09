@@ -35,38 +35,49 @@ describe ActivityNotification::Config do
   describe "config.store_with_associated_records" do
     let(:target) { create(:confirmed_user) }
 
-    context "false as default" do
-      before do
-        @notification = create(:notification, target: target)
-      end
-
-      it "stores notification without associated records" do
-        expect(@notification.target).to eq(target)
-        expect { @notification.target_record }.to raise_error(NoMethodError)
-      end
-    end
-
     context "when it is configured as true" do
       if ActivityNotification.config.orm == :active_record
         it "raises ActivityNotification::ConfigError when you use active_record ORM" do
           expect { ActivityNotification.config.store_with_associated_records = true }.to raise_error(ActivityNotification::ConfigError)
         end
-
       else
         before do
+          @original = ActivityNotification.config.store_with_associated_records
           ActivityNotification.config.store_with_associated_records = true
           load Rails.root.join("../../lib/activity_notification/orm/#{ActivityNotification.config.orm}/notification.rb").to_s
           @notification = create(:notification, target: target)
         end
 
         after do
-          ActivityNotification.config.store_with_associated_records = false
+          ActivityNotification.config.store_with_associated_records = @original
           load Rails.root.join("../../lib/activity_notification/orm/#{ActivityNotification.config.orm}/notification.rb").to_s
         end
 
-        it "stores notification without associated records" do
+        it "stores notification with associated records" do
           expect(@notification.target).to eq(target)
           expect(@notification.target_record).to eq(target.to_json)
+        end
+      end
+    end
+
+    context "when it is configured as false" do
+      before do
+        @original = ActivityNotification.config.store_with_associated_records
+        ActivityNotification.config.store_with_associated_records = false
+        load Rails.root.join("../../lib/activity_notification/orm/#{ActivityNotification.config.orm}/notification.rb").to_s
+        @notification = create(:notification, target: target)
+      end
+
+      after do
+        ActivityNotification.config.store_with_associated_records = @original
+        load Rails.root.join("../../lib/activity_notification/orm/#{ActivityNotification.config.orm}/notification.rb").to_s
+      end
+
+      it "does not store notification with associated records" do
+        expect(@notification.target).to eq(target)
+        begin
+          expect(@notification.stored_target).to be_nil
+        rescue NoMethodError
         end
       end
     end

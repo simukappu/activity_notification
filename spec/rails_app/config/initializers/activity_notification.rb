@@ -10,10 +10,10 @@ ActivityNotification.configure do |config|
   config.orm = ENV['AN_ORM'].to_sym
 
   # Configure table name to store notification data.
-  config.notification_table_name = "notifications"
+  config.notification_table_name = ENV['AN_NOTIFICATION_TABLE_NAME'] || "notifications"
 
   # Configure table name to store subscription data.
-  config.subscription_table_name = "subscriptions"
+  config.subscription_table_name = ENV['AN_SUBSCRIPTION_TABLE_NAME'] || "subscriptions"
 
   # Configure if email notification is enabled as default.
   # Note that you can configure them for each model by acts_as roles.
@@ -64,7 +64,7 @@ ActivityNotification.configure do |config|
 
   # Configure if activity_notification stores notificaion records including associated records like target and notifiable..
   # This store_with_associated_records option can be set true only when you use mongoid or dynamoid ORM.
-  config.store_with_associated_records = false
+  config.store_with_associated_records = (config.orm != :active_record)
 
   # Configure if WebSocket subscription using ActionCable is enabled.
   # Note that you can configure them for each model by acts_as roles.
