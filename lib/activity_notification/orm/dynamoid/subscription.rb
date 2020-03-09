@@ -28,7 +28,7 @@ module ActivityNotification
         field :unsubscribed_to_email_at,  :datetime
         field :optional_targets,          :raw,     default: {}
 
-        global_secondary_index hash_key: :target_key, range_key: :created_at, projected_attributes: :all
+        global_secondary_index name: :index_target_key_created_at, hash_key: :target_key, range_key: :created_at, projected_attributes: :all
 
         validates  :target,               presence: true
         validates  :key,                  presence: true, uniqueness: { scope: :target_key }

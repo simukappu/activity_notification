@@ -67,11 +67,11 @@ module ActivityNotification
         belongs_to_composite_xdb_record :notifier, store_with_associated_records: true
 
         # Mandatory global secondary index to query effectively
-        global_secondary_index hash_key: :target_key,     range_key: :created_at, projected_attributes: :all
-        global_secondary_index hash_key: :group_owner_id, range_key: :created_at, projected_attributes: :all
+        global_secondary_index name: :index_target_key_created_at,     hash_key: :target_key,     range_key: :created_at, projected_attributes: :all
+        global_secondary_index name: :index_group_owner_id_created_at, hash_key: :group_owner_id, range_key: :created_at, projected_attributes: :all
         # Optional global secondary index to sort by created_at
-        global_secondary_index hash_key: :notifier_key,   range_key: :created_at, projected_attributes: :all
-        global_secondary_index hash_key: :notifiable_key, range_key: :created_at, projected_attributes: :all
+        global_secondary_index name: :index_notifier_key_created_at,   hash_key: :notifier_key,   range_key: :created_at, projected_attributes: :all
+        global_secondary_index name: :index_notifiable_key_created_at, hash_key: :notifiable_key, range_key: :created_at, projected_attributes: :all
 
         validates  :target,     presence: true
         validates  :notifiable, presence: true
