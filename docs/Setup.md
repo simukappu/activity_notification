@@ -109,76 +109,189 @@ When **store_with_associated_records** is set to *false* as default, *activity_n
 
 ```json
 {
-    "id": {
-        "S": "f05756ef-661e-4ef5-9e99-5af51243125c"
-    },
-    "target_key": {
-        "S": "User#1"
-    },
-    "notifiable_key": {
-        "S": "Comment#2"
-    },
-    "key": {
-        "S": "comment.default"
-    },
-    "group_key": {
-        "S": "Article#1"
-    },
-    "notifier_key": {
-        "S": "User#2"
-    },
-    "created_at": {
-        "N": "1560085332.689929"
-    },
-    "updated_at": {
-        "N": "1560085332.695515"
-    },
-    "parameters": {
-        "M": {}
-    }
+  "id": {
+    "S": "f05756ef-661e-4ef5-9e99-5af51243125c"
+  },
+  "target_key": {
+    "S": "User#1"
+  },
+  "notifiable_key": {
+    "S": "Comment#2"
+  },
+  "key": {
+    "S": "comment.default"
+  },
+  "group_key": {
+    "S": "Article#1"
+  },
+  "notifier_key": {
+    "S": "User#2"
+  },
+  "created_at": {
+    "S": "2020-03-08T08:22:53+00:00"
+  },
+  "updated_at": {
+    "S": "2020-03-08T08:22:53+00:00"
+  },
+  "parameters": {
+      "M": {}
+  }
 }
 ```
 
-When you set **store_with_associated_records** to *true*, *activity_notification* stores notificaion records including associated target, notifiable and notifier like this:
+When you set **store_with_associated_records** to *true*, *activity_notification* stores notificaion records including associated target, notifiable, notifier and several instance methods like this:
 
 ```json
 {
-    "id": {
-        "S": "f05756ef-661e-4ef5-9e99-5af51243125c"
-    },
-    "target_key": {
-        "S": "User#1"
-    },
-    "target_record": {
-        "S": "{\"id\":1,\"email\":\"ichiro@example.com\",\"name\":\"Ichiro\",\"created_at\":\"2019-06-09T13:10:44.853Z\",\"updated_at\":\"2019-06-09T13:10:44.853Z\"}"
-    },
-    "notifiable_key": {
-        "S": "Comment#2"
-    },
-    "notifiable_record": {
-        "S": "{\"id\":2,\"user_id\":2,\"article_id\":1,\"body\":\"This is the first Stephen's comment to Ichiro's article.\",\"created_at\":\"2019-06-09T13:10:45.677Z\",\"updated_at\":\"2019-06-09T13:10:45.677Z\"}"
-    },
-    "key": {
-        "S": "comment.default"
-    },
-    "group_key": {
-        "S": "Article#1"
-    },
-    "notifier_key": {
-        "S": "User#2"
-    },
-    "notifier_record": {
-        "S": "{\"id\":2,\"email\":\"stephen@example.com\",\"name\":\"Stephen\",\"created_at\":\"2019-06-09T13:10:45.006Z\",\"updated_at\":\"2019-06-09T13:10:45.006Z\"}"
-    },
-    "created_at": {
-        "N": "1560085332.689929"
-    },
-    "updated_at": {
-        "N": "1560085332.695515"
-    },
-    "parameters": {
-        "M": {}
+  "id": {
+    "S": "f05756ef-661e-4ef5-9e99-5af51243125c"
+  },
+  "target_key": {
+    "S": "User#1"
+  },
+  "notifiable_key": {
+    "S": "Comment#2"
+  },
+  "key": {
+    "S": "comment.default"
+  },
+  "group_key": {
+    "S": "Article#1"
+  },
+  "notifier_key": {
+    "S": "User#2"
+  },
+  "created_at": {
+    "S": "2020-03-08T08:22:53+00:00"
+  },
+  "updated_at": {
+    "S": "2020-03-08T08:22:53+00:00"
+  },
+  "parameters": {
+      "M": {}
+  },
+  "stored_target": {
+    "M": {
+      "id": {
+          "N": "1"
+      },
+      "email": {
+          "S": "ichiro@example.com"
+      },
+      "name": {
+        "S": "Ichiro"
+      },
+      "created_at": {
+        "S": "2020-03-08T08:22:23.451Z"
+      },
+      "updated_at": {
+        "S": "2020-03-08T08:22:23.451Z"
+      },
+      // { ... },
+      "printable_type": {
+          "S": "User"
+      },
+      "printable_target_name": {
+          "S": "Ichiro"
+      },
     }
+  },
+  "stored_notifiable": {
+    "M": {
+      "id": {
+          "N": "2"
+      },
+      "user_id": {
+          "N": "2"
+      },
+      "article_id": {
+          "N": "1"
+      },
+      "body": {
+          "S": "This is the first Stephen's comment to Ichiro's article."
+      },
+      "created_at": {
+          "S": "2020-03-08T08:22:47.683Z"
+      },
+      "updated_at": {
+          "S": "2020-03-08T08:22:47.683Z"
+      },
+      "printable_type": {
+          "S": "Comment"
+      }
+    }
+  },
+  "stored_notifier": {
+    "M": {
+      "id": {
+          "N": "2"
+      },
+      "email": {
+          "S": "stephen@example.com"
+      },
+      "name": {
+          "S": "Stephen"
+      },
+      "created_at": {
+          "S": "2020-03-08T08:22:23.573Z"
+      },
+      "updated_at": {
+        "S": "2020-03-08T08:22:23.573Z"
+      },
+      // { ... },
+      "printable_type": {
+        "S": "User"
+      },
+      "printable_notifier_name": {
+          "S": "Stephen"
+      }
+    }
+  },
+  "stored_group": {
+    "M": {
+      "id": {
+        "N": "1"
+      },
+      "user_id": {
+        "N": "1"
+      },
+      "title": {
+        "S": "Ichiro's first article"
+      },
+      "body": {
+        "S": "This is the first Ichiro's article. Please read it!"
+      },
+      "created_at": {
+        "S": "2020-03-08T08:22:23.952Z"
+      },
+      "updated_at": {
+        "S": "2020-03-08T08:22:23.952Z"
+      },
+      "printable_type": {
+        "S": "Article"
+      },
+      "printable_group_name": {
+        "S": "article \"Ichiro's first article\""
+      }
+    }
+  },
+  "stored_notifiable_path": {
+    "S": "/articles/1"
+  },
+  "stored_printable_notifiable_name": {
+    "S": "comment \"This is the first Stephen's comment to Ichiro's article.\""
+  },
+  "stored_group_member_notifier_count": {
+    "N": "2"
+  },
+  "stored_group_notification_count": {
+    "N": "3"
+  },
+  "stored_group_members": {
+    "L": [
+      // { ... }, { ... }, ...
+    ]
+  }
 }
 ```
 

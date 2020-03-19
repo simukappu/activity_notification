@@ -22,8 +22,8 @@ module ActivityNotification
         association_name     = name.to_s.singularize.underscore
         composite_field = "#{association_name}_key".to_sym
         field composite_field, :string
-        associated_record_field = "#{association_name}_record".to_sym
-        field associated_record_field, :string if ActivityNotification.config.store_with_associated_records && _options[:store_with_associated_records]
+        associated_record_field = "stored_#{association_name}".to_sym
+        field associated_record_field, :raw if ActivityNotification.config.store_with_associated_records && _options[:store_with_associated_records]
 
         self.instance_eval do
           define_method(name) do |reload = false|
@@ -43,7 +43,14 @@ module ActivityNotification
               self.send("#{composite_field}=", nil)
             else
               self.send("#{composite_field}=", "#{new_instance.class.name}#{ActivityNotification.config.composite_key_delimiter}#{new_instance.id}")
-              self.send("#{associated_record_field}=", new_instance.to_json) if ActivityNotification.config.store_with_associated_records && _options[:store_with_associated_records]
+              associated_record_json = new_instance.as_json(_options[:as_json_options] || {})
+              # Cast Time and DateTime field to String to handle Dynamoid unsupported type error
+              if associated_record_json.present?
+                associated_record_json.each do |k, v|
+                  associated_record_json[k] = v.to_s if v.is_a?(Time) || v.is_a?(DateTime)
+                end
+              end
+              self.send("#{associated_record_field}=", associated_record_json) if ActivityNotification.config.store_with_associated_records && _options[:store_with_associated_records]
             end
             self.instance_variable_set("@#{name}", nil)
           end

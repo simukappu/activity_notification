@@ -495,15 +495,22 @@ module ActivityNotification
 
         notification = new({ target: target, notifiable: notifiable, key: key, group: group, parameters: parameters, notifier: notifier, group_owner: group_owner })
         notification.prepare_to_store.save
+        notification.after_store
         notification
       end
     end
 
+    # :nocov:
     # Returns prepared notification object to store
     # @return [Object] prepared notification object to store
     def prepare_to_store
       self
     end
+
+    # Call after store action with stored notification
+    def after_store
+    end
+    # :nocov:
 
     # Sends notification email to the target.
     #

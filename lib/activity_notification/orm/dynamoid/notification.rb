@@ -20,17 +20,17 @@ module ActivityNotification
         # Belongs to target instance of this notification as polymorphic association using composite key.
         # @scope instance
         # @return [Object] Target instance of this notification
-        belongs_to_composite_xdb_record :target, store_with_associated_records: true
+        belongs_to_composite_xdb_record :target, store_with_associated_records: true, as_json_options: { methods: [:printable_type, :printable_target_name] }
 
         # Belongs to notifiable instance of this notification as polymorphic association using composite key.
         # @scope instance
         # @return [Object] Notifiable instance of this notification
-        belongs_to_composite_xdb_record :notifiable, store_with_associated_records: true
+        belongs_to_composite_xdb_record :notifiable, store_with_associated_records: true, as_json_options: { methods: [:printable_type] }
 
         # Belongs to group instance of this notification as polymorphic association using composite key.
         # @scope instance
         # @return [Object] Group instance of this notification
-        belongs_to_composite_xdb_record :group
+        belongs_to_composite_xdb_record :group, store_with_associated_records: true, as_json_options: { methods: [:printable_type, :printable_group_name] }
 
         field :key,            :string
         field :parameters,     :raw,      default: {}
@@ -64,7 +64,47 @@ module ActivityNotification
         # Belongs to :otifier instance of this notification.
         # @scope instance
         # @return [Object] Notifier instance of this notification
-        belongs_to_composite_xdb_record :notifier, store_with_associated_records: true
+        belongs_to_composite_xdb_record :notifier, store_with_associated_records: true, as_json_options: { methods: [:printable_type, :printable_notifier_name] }
+
+        # Additional fields to store from instance method when config.store_with_associated_records is enabled
+        if ActivityNotification.config.store_with_associated_records
+          field :stored_notifiable_path,             :string
+          field :stored_printable_notifiable_name,   :string
+          field :stored_group_member_notifier_count, :integer
+          field :stored_group_notification_count,    :integer
+          field :stored_group_members,               :array
+
+          # Returns prepared notification object to store
+          # @return [Object] prepared notification object to store
+          def prepare_to_store
+            self.stored_notifiable_path           = notifiable_path
+            self.stored_printable_notifiable_name = printable_notifiable_name
+            if group_owner?
+              self.stored_group_notification_count    = 0
+              self.stored_group_member_notifier_count = 0
+              self.stored_group_members               = []
+            end
+            self
+          end
+
+          # Call after store action with stored notification
+          def after_store
+            if group_owner?
+              self.stored_group_notification_count    = group_notification_count
+              self.stored_group_member_notifier_count = group_member_notifier_count
+              self.stored_group_members               = group_members.as_json
+              self.stored_group_members.each do |group_member|
+                # Cast Time and DateTime field to String to handle Dynamoid unsupported type error
+                group_member.each do |k, v|
+                  group_member[k] = v.to_s if v.is_a?(Time) || v.is_a?(DateTime)
+                end
+              end
+              save
+            else
+              group_owner.after_store
+            end
+          end
+        end
 
         # Mandatory global secondary index to query effectively
         global_secondary_index name: :index_target_key_created_at,     hash_key: :target_key,     range_key: :created_at, projected_attributes: :all
@@ -121,11 +161,6 @@ module ActivityNotification
         def self.raise_delete_restriction_error(error_text)
           raise ActivityNotification::DeleteRestrictionError, error_text
         end
-
-        # Returns prepared notification object to store
-        # @return [Object] prepared notification object to store
-        # def prepare_to_store
-        # end
 
         protected
 

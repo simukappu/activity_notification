@@ -21,7 +21,8 @@ module UserModel
     admin.present?
   end
 
-  def as_json(options = {})
+  def as_json(_options = {})
+    options = _options.deep_dup
     options[:include] = (options[:include] || {}).merge(admin: { methods: [:printable_target_name, :notification_action_cable_allowed?, :notification_action_cable_with_devise?] })
     options[:methods] = (options[:methods] || []).push(:printable_target_name, :notification_action_cable_allowed?, :notification_action_cable_with_devise?)
     super(options)

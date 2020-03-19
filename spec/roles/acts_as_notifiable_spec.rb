@@ -54,7 +54,7 @@ describe ActivityNotification::ActsAsNotifiable do
 
         context "true as :tracked" do
           before do
-            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: true
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: true, notifiable_path: -> { "dummy_path" }
             @created_notifiable = dummy_notifiable_class.create
           end
 
@@ -103,7 +103,7 @@ describe ActivityNotification::ActsAsNotifiable do
 
         context "with :only option (creation only)" do
           before do
-            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { only: [:create] }
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { only: [:create] }, notifiable_path: -> { "dummy_path" }
             @created_notifiable = dummy_notifiable_class.create
           end
 
@@ -133,7 +133,7 @@ describe ActivityNotification::ActsAsNotifiable do
 
         context "with :except option (except update)" do
           before do
-            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { except: [:update] }
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { except: [:update] }, notifiable_path: -> { "dummy_path" }
             @created_notifiable = dummy_notifiable_class.create
           end
 
@@ -163,7 +163,7 @@ describe ActivityNotification::ActsAsNotifiable do
 
         context "with :key option" do
           before do
-            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { key: "test.key" }
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { key: "test.key" }, notifiable_path: -> { "dummy_path" }
             @created_notifiable = dummy_notifiable_class.create
           end
 
@@ -199,7 +199,7 @@ describe ActivityNotification::ActsAsNotifiable do
         context "with :notify_later option" do
           before do
             ActiveJob::Base.queue_adapter = :test
-            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { notify_later: true }
+            dummy_notifiable_class.acts_as_notifiable :users, targets: [user_target], tracked: { notify_later: true }, notifiable_path: -> { "dummy_path" }
             @created_notifiable = dummy_notifiable_class.create
           end
 

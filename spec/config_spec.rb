@@ -55,7 +55,7 @@ describe ActivityNotification::Config do
 
         it "stores notification with associated records" do
           expect(@notification.target).to eq(target)
-          expect(@notification.target_record).to eq(target.to_json)
+          expect(@notification.stored_target["id"].to_s).to eq(target.id.to_s)
         end
       end
     end
