@@ -44,7 +44,7 @@ module ActivityNotification
         params[:subscription][:optional_targets]["subscribing_to_#{optional_target_name}"] = subscribing_param unless subscribing_param.nil?
       end
       super
-      render status: 201, location: { action: :show, id: @subscription }, json: subscription_json
+      render status: 201, json: subscription_json if @subscription
     end
 
     # Finds and shows a subscription from specified key.

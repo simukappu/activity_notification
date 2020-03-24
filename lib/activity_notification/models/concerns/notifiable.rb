@@ -482,7 +482,7 @@ module ActivityNotification
       # Casts to symbol of resources name.
       # @api private
       def cast_to_resources_sym(target_type)
-        target_type.to_s.to_resources_name.to_sym
+        cast_to_resources_name(target_type).to_sym
       end
   end
 end
