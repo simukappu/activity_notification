@@ -456,6 +456,20 @@ end
 Then, you can access several pages like */users/1/notifications* and manage open/unopen of notifications using *[ActivityNotification::NotificationsController](/app/controllers/activity_notification/notifications_controller.rb)*.
 If you use Devise integration and you want to configure simple default routes for authenticated users, see [Configuring simple default routes](#configuring-simple-default-routes).
 
+#### Routes with namespaced model
+
+It is possible to configure a target model as a submodule, e.g. if your target is `Entity::User`,
+however by default the **ActivityNotification** controllers will be placed under the same namespace,
+so it is mandatory to explicitly call the controllers this way
+
+```ruby
+Rails.application.routes.draw do
+  notify_to :users, controller: '/activity_notification/notifications', target_type: 'entity/users'
+end
+```
+
+This will generate the necessary routes for the `Entity::User` target with parameters `:user_id`
+
 #### Routes with scope
 
 You can also configure *activity_notification* routes with scope like this:

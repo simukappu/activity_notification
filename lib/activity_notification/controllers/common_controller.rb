@@ -26,7 +26,7 @@ module ActivityNotification
           target_class = target_type.to_model_class
           @target = params[:target_id].present? ?
             target_class.find_by!(id: params[:target_id]) :
-            target_class.find_by!(id: params["#{target_type.to_resource_name}_id"])
+            target_class.find_by!(id: params["#{target_type.to_resource_name[/([^\/]+)$/]}_id"])
         else
           render status: 400, json: error_response(code: 400, message: "Invalid parameter", type: "Parameter is missing or the value is empty: target_type")
         end
