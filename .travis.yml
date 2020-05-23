@@ -5,7 +5,7 @@ branches:
     - images
 
 rvm:
-#  - 2.7.0 # Need to respond to warnings for Ruby 3.0
+  - 2.7.1
   - 2.6.5
 #  - 2.5.7
 #  - 2.4.9
