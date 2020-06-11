@@ -100,7 +100,7 @@ module ActivityNotification
     # Convets to class name.
     # @return [String] Class name
     def to_class_name
-      self.class.name
+      self.class.base_class.to_s
     end
 
     # Convets to singularized model name (resource name).
