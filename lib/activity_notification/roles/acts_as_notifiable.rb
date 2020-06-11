@@ -179,8 +179,9 @@ module ActivityNotification
       # * :dependent_notifications
       #   * Dependency for notifications to delete generated notifications with this notifiable.
       #     This option is used to configure generated_notifications_as_notifiable association.
-      #     You can use :delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all or :update_group_and_destroy for this option.
+      #     You can use :delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all, :update_group_and_destroy or :nullify_notifiable for this option.
       #     When you use :update_group_and_delete_all or :update_group_and_destroy to this parameter, the oldest group member notification becomes a new group owner as `before_destroy` of this Notifiable.
+      #     When you use :nullify_notifiable to this parameter, the notifications won't be destroyed but the notifiable_type and notifiable_id of those dependent notifications will be set to nil.
       #     This parameter is effective for all target and is a optional since no dependent option is used as default.
       # @example Define :delete_all dependency to generated notifications
       #   # app/models/comment.rb
@@ -224,7 +225,7 @@ module ActivityNotification
       # @option options [Symbol, Proc, String]  :notifiable_path         (polymorphic_path(self)) Path to redirect from open or move action of notification controller
       # @option options [Boolean, Hash]         :tracked                 (nil)                    Flag or parameters for automatic tracked notifications
       # @option options [Symbol, Proc, String]  :printable_name          (ActivityNotification::Common.printable_name) Printable notifiable name
-      # @option options [Symbol, Proc]          :dependent_notifications (nil)                    Dependency for notifications to delete generated notifications with this notifiable, [:delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all, :update_group_and_destroy] are available
+      # @option options [Symbol, Proc]          :dependent_notifications (nil)                    Dependency for notifications to delete generated notifications with this notifiable, [:delete_all, :destroy, :restrict_with_error, :restrict_with_exception, :update_group_and_delete_all, :update_group_and_destroy, :nullify_notifiable] are available
       # @option options [Hash<Class, Hash>]     :optional_targets        (nil)                    Optional target configurations with hash of `OptionalTarget` implementation class as key and initializing option parameter as value
       # @return [Hash] Configured parameters as notifiable model
       def acts_as_notifiable(target_type, options = {})
@@ -295,7 +296,8 @@ module ActivityNotification
           :restrict_with_error,
           :restrict_with_exception,
           :update_group_and_delete_all,
-          :update_group_and_destroy
+          :update_group_and_destroy,
+          :nullify_notifiable
         ].freeze
       end
 
@@ -358,6 +360,8 @@ module ActivityNotification
           before_destroy -> { destroy_generated_notifications_with_dependency(:delete_all, target_type, true) }
         when :update_group_and_destroy
           before_destroy -> { destroy_generated_notifications_with_dependency(:destroy, target_type, true) }
+        when :nullify_notifiable
+          before_destroy -> { nullify_notifiable_on_notifications_with_dependency(target_type) }
         end
         { dependent_notifications: dependent_notifications_option }
       end

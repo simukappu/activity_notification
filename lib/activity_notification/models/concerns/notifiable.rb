@@ -465,6 +465,14 @@ module ActivityNotification
         end
       end
 
+      # Update the notifiable_type and notifiable_id from the target to nil
+      # This method is intended to be called before destroy this notifiable as dependent configuration.
+      # @api private
+      # @param [String]  target_type       Target type of generated notifications
+      def nullify_notifiable_on_notifications_with_dependency(target_type)
+        generated_notifications_as_notifiable_for(target_type).update_all(notifiable_id: nil, notifiable_type: nil)
+      end
+
       # Removes generated notifications from notification group to new group owner.
       # This method is intended to be called before destroy this notifiable as dependent configuration.
       # @api private
