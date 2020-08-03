@@ -16,8 +16,6 @@ group :development do
 end
 
 group :test do
-  #TODO https://github.com/rails/rails/issues/35417
-  gem 'rspec-rails', '4.0.0.beta4'
   gem 'rails-controller-testing'
   gem 'ammeter'
   gem 'timecop'
