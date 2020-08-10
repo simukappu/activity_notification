@@ -140,7 +140,9 @@ module ActivityNotification
         scope :filtered_by_group,                 ->(group) {
           group.present? ?
             where(group_id: group.id, group_type: group.class.name) :
-            any_of({ :group_id.exists => false, :group_type.exists => false }, { group_id: nil, group_type: nil })
+            Gem::Version.new(::Mongoid::VERSION) >= Gem::Version.new('7.1.0') ?
+              where(:group_id.exists => false, :group_type.exists => false).or(group_id: nil, group_type: nil) :
+              any_of({ :group_id.exists => false, :group_type.exists => false }, { group_id: nil, group_type: nil })
         }
 
         # Selects filtered notifications later than specified time.
