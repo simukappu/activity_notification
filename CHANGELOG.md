@@ -1,3 +1,14 @@
+## 2.1.3 / 2020-08-1
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.1.2...v2.1.3)
+
+Enhancements:
+
+* Enable to use namespaced model - [#132](https://github.com/simukappu/activity_notification/pull/132)
+
+Bug Fixes:
+
+* Fix mongoid any_of selector error in filtered_by_group scope - [MONGOID-4887](https://jira.mongodb.org/browse/MONGOID-4887)
+
 ## 2.1.2 / 2020-02-24
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.1.1...v2.1.2)
 
