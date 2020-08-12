@@ -11,13 +11,15 @@ group :development do
 end
 
 group :test do
+  gem 'rspec-rails', '< 4.0.0'
   gem 'rails-controller-testing'
   gem 'action-cable-testing'
   gem 'ammeter'
   gem 'timecop'
   gem 'committee'
   gem 'committee-rails'
-  gem 'coveralls', require: false
+  # gem 'coveralls', require: false
+  gem 'coveralls_reborn', require: false
 end
 
 gem 'dotenv-rails', groups: [:development, :test]

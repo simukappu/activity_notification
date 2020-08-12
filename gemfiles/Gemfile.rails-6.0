@@ -10,14 +10,13 @@ group :development do
 end
 
 group :test do
-  #TODO https://github.com/rails/rails/issues/35417
-  gem 'rspec-rails', '4.0.0.beta4'
   gem 'rails-controller-testing'
   gem 'ammeter'
   gem 'timecop'
   gem 'committee'
   gem 'committee-rails'
-  gem 'coveralls', require: false
+  # gem 'coveralls', require: false
+  gem 'coveralls_reborn', require: false
 end
 
 gem 'dotenv-rails', groups: [:development, :test]
