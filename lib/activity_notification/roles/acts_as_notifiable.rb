@@ -265,7 +265,8 @@ module ActivityNotification
 
         options[:printable_notifiable_name] ||= options.delete(:printable_name)
         configured_params
-          .merge set_acts_as_parameters_for_target(target_type, [:targets, :group, :group_expiry_delay, :parameters, :email_allowed, :action_cable_allowed, :action_cable_api_allowed], options, "notification_")
+          .merge set_acts_as_parameters_for_target(target_type, [:targets, :group, :group_expiry_delay, :parameters, :email_allowed], options, "notification_")
+          .merge set_acts_as_parameters_for_target(target_type, [:action_cable_allowed, :action_cable_api_allowed], options, "notifiable_")
           .merge set_acts_as_parameters_for_target(target_type, [:notifier, :notifiable_path, :printable_notifiable_name, :optional_targets], options)
       end
 
