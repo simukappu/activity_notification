@@ -65,9 +65,9 @@ config.mailer_sender = ->(key){ key == 'inquiry.post' ? 'support@example.com' : 
 
 #### Email templates
 
-*activity_notification* will look for email template in a similar way as notification views, but the view file name is not start with an underscore. For example, if you have a notification with *:key* set to *"notification.comment.reply"* and target_type *users*, the gem will look for a partial in *app/views/activity_notification/mailer/users/comment/reply.html.(|erb|haml|slim|something_else)*.
+*activity_notification* will look for email template in a similar way as notification views, but the view file name does not start with an underscore. For example, if you have a notification with *:key* set to *"notification.comment.reply"* and target_type *users*, the gem will look for a partial in *app/views/activity_notification/mailer/users/comment/reply.html.(|erb|haml|slim|something_else)*.
 
-If this template is missing, the gem will look for a partial in *default* as the target type which means *activity_notification/mailer/default/_default.html.(|erb|haml|slim|something_else)*.
+If this template is missing, the gem will use *default* as the target type which means *activity_notification/mailer/default/default.html.(|erb|haml|slim|something_else)*.
 
 #### Email subject
 
