@@ -25,8 +25,8 @@ module ActivityNotification
                       :_notifier,
                       :_notification_parameters,
                       :_notification_email_allowed,
-                      :_notification_action_cable_allowed,
-                      :_notification_action_cable_api_allowed,
+                      :_notifiable_action_cable_allowed,
+                      :_notifiable_action_cable_api_allowed,
                       :_notifiable_path,
                       :_printable_notifiable_name,
                       :_optional_targets
@@ -55,8 +55,8 @@ module ActivityNotification
         self._notifier                              = {}
         self._notification_parameters               = {}
         self._notification_email_allowed            = {}
-        self._notification_action_cable_allowed     = {}
-        self._notification_action_cable_api_allowed = {}
+        self._notifiable_action_cable_allowed       = {}
+        self._notifiable_action_cable_api_allowed   = {}
         self._notifiable_path                       = {}
         self._printable_notifiable_name             = {}
         self._optional_targets                      = {}
@@ -162,10 +162,10 @@ module ActivityNotification
     # @param [Object] target Target instance to notify
     # @param [String] key Key of the notification
     # @return [Boolean] If publishing WebSocket using ActionCable is allowed for the notifiable
-    def notification_action_cable_allowed?(target, key = nil)
+    def notifiable_action_cable_allowed?(target, key = nil)
       resolve_parameter(
-        "notification_action_cable_allowed_for_#{cast_to_resources_name(target.class)}?",
-        _notification_action_cable_allowed[cast_to_resources_sym(target.class)],
+        "notifiable_action_cable_allowed_for_#{cast_to_resources_name(target.class)}?",
+        _notifiable_action_cable_allowed[cast_to_resources_sym(target.class)],
         ActivityNotification.config.action_cable_enabled,
         target, key)
     end
@@ -176,10 +176,10 @@ module ActivityNotification
     # @param [Object] target Target instance to notify
     # @param [String] key Key of the notification
     # @return [Boolean] If publishing WebSocket API using ActionCable is allowed for the notifiable
-    def notification_action_cable_api_allowed?(target, key = nil)
+    def notifiable_action_cable_api_allowed?(target, key = nil)
       resolve_parameter(
-        "notification_action_cable_api_allowed_for_#{cast_to_resources_name(target.class)}?",
-        _notification_action_cable_api_allowed[cast_to_resources_sym(target.class)],
+        "notifiable_action_cable_api_allowed_for_#{cast_to_resources_name(target.class)}?",
+        _notifiable_action_cable_api_allowed[cast_to_resources_sym(target.class)],
         ActivityNotification.config.action_cable_api_enabled,
         target, key)
     end

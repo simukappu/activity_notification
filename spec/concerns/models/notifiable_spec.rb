@@ -21,7 +21,7 @@ shared_examples_for :notifiable do
         expect(described_class._notifier).to                        eq({})
         expect(described_class._notification_parameters).to         eq({})
         expect(described_class._notification_email_allowed).to      eq({})
-        expect(described_class._notification_action_cable_allowed).to      eq({})
+        expect(described_class._notifiable_action_cable_allowed).to eq({})
         expect(described_class._notifiable_path).to                 eq({})
         expect(described_class._printable_notifiable_name).to       eq({})
       end
@@ -410,130 +410,130 @@ shared_examples_for :notifiable do
       end
     end
 
-    describe "#notification_action_cable_allowed?" do
+    describe "#notifiable_action_cable_allowed?" do
       context "without any configuration" do
         it "returns ActivityNotification.config.action_cable_enabled" do
-          expect(test_instance.notification_action_cable_allowed?(test_target, 'dummy_key'))
+          expect(test_instance.notifiable_action_cable_allowed?(test_target, 'dummy_key'))
             .to eq(ActivityNotification.config.action_cable_enabled)
         end
 
         it "returns false as default" do
-          expect(test_instance.notification_action_cable_allowed?(test_target, 'dummy_key')).to be_falsey
+          expect(test_instance.notifiable_action_cable_allowed?(test_target, 'dummy_key')).to be_falsey
         end
       end
 
       context "configured with overridden method" do
         it "returns specified value" do
           module AdditionalMethods
-            def notification_action_cable_allowed_for_users?(target, key)
+            def notifiable_action_cable_allowed_for_users?(target, key)
               true
             end
           end
           test_instance.extend(AdditionalMethods)
-          expect(test_instance.notification_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
+          expect(test_instance.notifiable_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
         end
       end
 
       context "configured with a field" do
         it "returns specified value" do
-          described_class._notification_action_cable_allowed[:users] = true
-          expect(test_instance.notification_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
+          described_class._notifiable_action_cable_allowed[:users] = true
+          expect(test_instance.notifiable_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
         end
 
         it "returns specified symbol without arguments" do
           module AdditionalMethods
-            def custom_notification_action_cable_allowed?
+            def custom_notifiable_action_cable_allowed?
               true
             end
           end
           test_instance.extend(AdditionalMethods)
-          described_class._notification_action_cable_allowed[:users] = :custom_notification_action_cable_allowed?
-          expect(test_instance.notification_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
+          described_class._notifiable_action_cable_allowed[:users] = :custom_notifiable_action_cable_allowed?
+          expect(test_instance.notifiable_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
         end
 
         it "returns specified symbol with target and key arguments" do
           module AdditionalMethods
-            def custom_notification_action_cable_allowed?(target, key)
+            def custom_notifiable_action_cable_allowed?(target, key)
               true
             end
           end
           test_instance.extend(AdditionalMethods)
-          described_class._notification_action_cable_allowed[:users] = :custom_notification_action_cable_allowed?
-          expect(test_instance.notification_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
+          described_class._notifiable_action_cable_allowed[:users] = :custom_notifiable_action_cable_allowed?
+          expect(test_instance.notifiable_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
         end
 
         it "returns specified lambda with single notifiable argument" do
-          described_class._notification_action_cable_allowed[:users] = ->(notifiable){ true }
-          expect(test_instance.notification_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
+          described_class._notifiable_action_cable_allowed[:users] = ->(notifiable){ true }
+          expect(test_instance.notifiable_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
         end
 
         it "returns specified lambda with notifiable, target and key arguments" do
-          described_class._notification_action_cable_allowed[:users] = ->(notifiable, target, key){ true }
-          expect(test_instance.notification_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
+          described_class._notifiable_action_cable_allowed[:users] = ->(notifiable, target, key){ true }
+          expect(test_instance.notifiable_action_cable_allowed?(test_target, 'dummy_key')).to eq(true)
         end
       end
     end
 
-    describe "#notification_action_cable_api_allowed?" do
+    describe "#notifiable_action_cable_api_allowed?" do
       context "without any configuration" do
         it "returns ActivityNotification.config.action_cable_api_enabled" do
-          expect(test_instance.notification_action_cable_api_allowed?(test_target, 'dummy_key'))
+          expect(test_instance.notifiable_action_cable_api_allowed?(test_target, 'dummy_key'))
             .to eq(ActivityNotification.config.action_cable_api_enabled)
         end
 
         it "returns false as default" do
-          expect(test_instance.notification_action_cable_api_allowed?(test_target, 'dummy_key')).to be_falsey
+          expect(test_instance.notifiable_action_cable_api_allowed?(test_target, 'dummy_key')).to be_falsey
         end
       end
 
       context "configured with overridden method" do
         it "returns specified value" do
           module AdditionalMethods
-            def notification_action_cable_api_allowed_for_users?(target, key)
+            def notifiable_action_cable_api_allowed_for_users?(target, key)
               true
             end
           end
           test_instance.extend(AdditionalMethods)
-          expect(test_instance.notification_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
+          expect(test_instance.notifiable_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
         end
       end
 
       context "configured with a field" do
         it "returns specified value" do
-          described_class._notification_action_cable_api_allowed[:users] = true
-          expect(test_instance.notification_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
+          described_class._notifiable_action_cable_api_allowed[:users] = true
+          expect(test_instance.notifiable_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
         end
 
         it "returns specified symbol without arguments" do
           module AdditionalMethods
-            def custom_notification_action_cable_api_allowed?
+            def custom_notifiable_action_cable_api_allowed?
               true
             end
           end
           test_instance.extend(AdditionalMethods)
-          described_class._notification_action_cable_api_allowed[:users] = :custom_notification_action_cable_api_allowed?
-          expect(test_instance.notification_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
+          described_class._notifiable_action_cable_api_allowed[:users] = :custom_notifiable_action_cable_api_allowed?
+          expect(test_instance.notifiable_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
         end
 
         it "returns specified symbol with target and key arguments" do
           module AdditionalMethods
-            def custom_notification_action_cable_api_allowed?(target, key)
+            def custom_notifiable_action_cable_api_allowed?(target, key)
               true
             end
           end
           test_instance.extend(AdditionalMethods)
-          described_class._notification_action_cable_api_allowed[:users] = :custom_notification_action_cable_api_allowed?
-          expect(test_instance.notification_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
+          described_class._notifiable_action_cable_api_allowed[:users] = :custom_notifiable_action_cable_api_allowed?
+          expect(test_instance.notifiable_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
         end
 
         it "returns specified lambda with single notifiable argument" do
-          described_class._notification_action_cable_api_allowed[:users] = ->(notifiable){ true }
-          expect(test_instance.notification_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
+          described_class._notifiable_action_cable_api_allowed[:users] = ->(notifiable){ true }
+          expect(test_instance.notifiable_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
         end
 
         it "returns specified lambda with notifiable, target and key arguments" do
-          described_class._notification_action_cable_api_allowed[:users] = ->(notifiable, target, key){ true }
-          expect(test_instance.notification_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
+          described_class._notifiable_action_cable_api_allowed[:users] = ->(notifiable, target, key){ true }
+          expect(test_instance.notifiable_action_cable_api_allowed?(test_target, 'dummy_key')).to eq(true)
         end
       end
     end

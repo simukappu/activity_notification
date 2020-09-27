@@ -26,7 +26,7 @@ module ActivityNotification
       # @return [Boolean] Whether Action Cable notification API is allowed
       def notification_action_cable_api_allowed?(notification)
         notification.target.notification_action_cable_allowed?(notification.notifiable, notification.key) &&
-          notification.notifiable.notification_action_cable_api_allowed?(notification.target, notification.key)
+          notification.notifiable.notifiable_action_cable_api_allowed?(notification.target, notification.key)
       end
 
       # Format message to broadcast
