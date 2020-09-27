@@ -90,15 +90,15 @@ module ActivityNotification
                   }
                 }
                 key :example, {
-                  "action_cable_channel": {
-                    "subscribing": true,
-                    "subscribed_at": Time.current,
-                    "unsubscribed_at": nil
+                  action_cable_channel:  {
+                    subscribing:  true,
+                    subscribed_at:  Time.current,
+                    unsubscribed_at:  nil
                   },
-                  "slack": {
-                    "subscribing": false,
-                    "subscribed_at": nil,
-                    "unsubscribed_at": Time.current
+                  slack:  {
+                    subscribing:  false,
+                    subscribed_at:  nil,
+                    unsubscribed_at:  Time.current
                   }
                 }
               end
@@ -114,11 +114,11 @@ module ActivityNotification
                 key :type, :object
                 key :description, "Associated target model in your application"
                 key :example, {
-                  "id": 1,
-                  "email": "ichiro@example.com",
-                  "name": "Ichiro",
-                  "created_at": Time.current,
-                  "updated_at": Time.current
+                  id:  1,
+                  email:  "ichiro@example.com",
+                  name:  "Ichiro",
+                  created_at:  Time.current,
+                  updated_at:  Time.current
                 }
               end
             end
@@ -145,11 +145,11 @@ module ActivityNotification
                   }
                 }
                 key :example, {
-                  "action_cable_channel": {
-                    "subscribing": true
+                  action_cable_channel:  {
+                    subscribing:  true
                   },
-                  "slack": {
-                    "subscribing": false
+                  slack:  {
+                    subscribing:  false
                   }
                 }
               end
