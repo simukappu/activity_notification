@@ -90,7 +90,7 @@ module ActivityNotification
               type: :string
             }
             key :example, {
-              "test_default_param": "1"
+              test_default_param: "1"
             }
           end
           property :opened_at do
@@ -139,28 +139,28 @@ module ActivityNotification
                 key :type, :object
                 key :description, "Associated target model in your application"
                 key :example, {
-                  "id": 1,
-                  "email": "ichiro@example.com",
-                  "name": "Ichiro",
-                  "created_at": Time.current,
-                  "updated_at": Time.current,
-                  "provider": "email",
-                  "uid": "",
-                  "printable_type": "User",
-                  "printable_target_name": "Ichiro"
+                  id: 1,
+                  email: "ichiro@example.com",
+                  name: "Ichiro",
+                  created_at: Time.current,
+                  updated_at: Time.current,
+                  provider: "email",
+                  uid: "",
+                  printable_type: "User",
+                  printable_target_name: "Ichiro"
                 }
               end
               property :notifiable do
                 key :type, :object
                 key :description, "Associated notifiable model in your application"
                 key :example, {
-                  "id": 22,
-                  "user_id": 2,
-                  "article_id": 11,
-                  "body": "This is the first Stephen's comment to Ichiro's article.",
-                  "created_at": Time.current,
-                  "updated_at": Time.current,
-                  "printable_type": "Comment"
+                  id: 22,
+                  user_id: 2,
+                  article_id: 11,
+                  body: "This is the first Stephen's comment to Ichiro's article.",
+                  created_at: Time.current,
+                  updated_at: Time.current,
+                  printable_type: "Comment"
               }
               end
               property :group do
@@ -168,14 +168,14 @@ module ActivityNotification
                 key :description, "Associated group model in your application"
                 key :nullable, true
                 key :example, {
-                  "id": 11,
-                  "user_id": 4,
-                  "title": "Ichiro's great article",
-                  "body": "This is Ichiro's great article. Please read it!",
-                  "created_at": Time.current,
-                  "updated_at": Time.current,
-                  "printable_type": "Article",
-                  "printable_group_name": "article \"Ichiro's great article\""
+                  id: 11,
+                  user_id: 4,
+                  title: "Ichiro's great article",
+                  body: "This is Ichiro's great article. Please read it!",
+                  created_at: Time.current,
+                  updated_at: Time.current,
+                  printable_type: "Article",
+                  printable_group_name: "article \"Ichiro's great article\""
                 }
               end
               property :notifier do
@@ -183,15 +183,15 @@ module ActivityNotification
                 key :description, "Associated notifier model in your application"
                 key :nullable, true
                 key :example, {
-                  "id": 2,
-                  "email": "stephen@example.com",
-                  "name": "Stephen",
-                  "created_at": Time.current,
-                  "updated_at": Time.current,
-                  "provider": "email",
-                  "uid": "",
-                  "printable_type": "User",
-                  "printable_notifier_name": "Stephen"
+                  id: 2,
+                  email: "stephen@example.com",
+                  name: "Stephen",
+                  created_at: Time.current,
+                  updated_at: Time.current,
+                  provider: "email",
+                  uid: "",
+                  printable_type: "User",
+                  printable_notifier_name: "Stephen"
                 }
               end
               property :group_members do
