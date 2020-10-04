@@ -29,8 +29,8 @@ module ActivityNotification
       )
 
       # Generate the :default fallback key without using pluralization key :count
-      default = I18n.t(k, attrs)
-      I18n.t(k, attrs.merge(count: group_notification_count, default: default))
+      default = I18n.t(k, **attrs)
+      I18n.t(k, **attrs.merge(count: group_notification_count, default: default))
     end
 
     # Renders notification from views.
