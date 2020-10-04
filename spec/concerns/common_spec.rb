@@ -34,7 +34,7 @@ shared_examples_for :common do
           test_instance.extend(AdditionalMethods)
           expect(ActivityNotification.resolve_value(test_instance, :custom_method)).to eq(1)
         end
-  
+
         it "returns specified symbol with controller and additional arguments" do
           module AdditionalMethods
             def custom_method(controller, key)
@@ -45,6 +45,17 @@ shared_examples_for :common do
           expect(ActivityNotification.resolve_value(test_instance, :custom_method, 'test1.key')).to eq(1)
           expect(ActivityNotification.resolve_value(test_instance, :custom_method, 'test2.key')).to eq(0)
         end
+
+        it "returns specified symbol with controller and additional arguments including hash as last argument" do
+           module AdditionalMethods
+             def custom_method(controller, key, options:)
+               controller == 'StubController' and key == 'test1.key' ? 1 : 0
+             end
+           end
+           test_instance.extend(AdditionalMethods)
+           expect(ActivityNotification.resolve_value(test_instance, :custom_method, 'test1.key', options: 1)).to eq(1)
+           expect(ActivityNotification.resolve_value(test_instance, :custom_method, 'test2.key', options: 1)).to eq(0)
+         end
       end
 
       context "with Proc" do
@@ -62,7 +73,7 @@ shared_examples_for :common do
           test_proc = ->(controller, model){ controller == 'StubController' and model == test_instance ? 1 : 0 }
           expect(ActivityNotification.resolve_value(test_instance, test_proc)).to eq(1)
         end
-  
+
         it "returns specified lambda with controller, context(model) and additional arguments" do
           test_proc = ->(controller, model, key){ controller == 'StubController' and model == test_instance and key == 'test1.key' ? 1 : 0 }
           expect(ActivityNotification.resolve_value(test_instance, test_proc, 'test1.key')).to eq(1)
@@ -117,6 +128,17 @@ shared_examples_for :common do
           test_instance.extend(AdditionalMethods)
           expect(test_instance.resolve_value(:custom_method, 'test1.key')).to eq(1)
           expect(test_instance.resolve_value(:custom_method, 'test2.key')).to eq(0)
+        end
+
+        it "returns specified symbol with additional arguments including hash as last argument" do
+          module AdditionalMethods
+            def custom_method(key, options:)
+              key == 'test1.key' ? 1 : 0
+            end
+          end
+          test_instance.extend(AdditionalMethods)
+          expect(test_instance.resolve_value(:custom_method, 'test1.key', options: 1)).to eq(1)
+          expect(test_instance.resolve_value(:custom_method, 'test2.key', options: 1)).to eq(0)
         end
       end
 

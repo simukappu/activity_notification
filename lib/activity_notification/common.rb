@@ -16,7 +16,11 @@ module ActivityNotification
     when Symbol
       symbol_method = context.method(thing)
       if symbol_method.arity > 1
-        symbol_method.call(ActivityNotification.get_controller, *args)
+        if args.last.kind_of?(Hash)
+          symbol_method.call(ActivityNotification.get_controller, *args[0...-1], **args[-1])
+        else
+          symbol_method.call(ActivityNotification.get_controller, *args)
+        end
       elsif symbol_method.arity > 0
         symbol_method.call(ActivityNotification.get_controller)
       else
@@ -74,7 +78,11 @@ module ActivityNotification
       when Symbol
         symbol_method = method(thing)
         if symbol_method.arity > 0
-          symbol_method.call(*args)
+          if args.last.kind_of?(Hash)
+            symbol_method.call(*args[0...-1], **args[-1])
+          else
+            symbol_method.call(*args)
+          end
         else
           symbol_method.call
         end
