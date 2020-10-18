@@ -1,4 +1,5 @@
 ENV["RAILS_ENV"] ||= "test"
+Warning[:deprecated] = true if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.7.2")
 
 require 'bundler/setup'
 Bundler.setup
