@@ -98,9 +98,12 @@ module ActivityNotification
     end
 
     # Convets to class name.
+    # This function returns base_class name for STI models if the class responds to base_class method.
+    # @see https://github.com/simukappu/activity_notification/issues/89
+    # @see https://github.com/simukappu/activity_notification/pull/139
     # @return [String] Class name
     def to_class_name
-      self.class.name
+      self.class.respond_to?(:base_class) ? self.class.base_class.name : self.class.name
     end
 
     # Convets to singularized model name (resource name).
