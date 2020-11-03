@@ -1,4 +1,4 @@
-## 2.1.3 / 2020-08-1
+## 2.1.3 / 2020-08-11
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.1.2...v2.1.3)
 
 Enhancements:
