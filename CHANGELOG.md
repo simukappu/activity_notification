@@ -1,3 +1,15 @@
+## 2.1.4 / 2020-11-07
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.1.3...v2.1.4)
+
+Enhancements:
+
+* Make *Common#to_class_name* method return base_class name in order to work with STI models - [#89](https://github.com/simukappu/activity_notification/issues/89) [#139](https://github.com/simukappu/activity_notification/pull/139)
+
+Bug Fixes:
+
+* Rename *Notifiable#notification_action_cable_allowed?* to *notifiable_action_cable_allowed?* to fix duplicate method name error - [#138](https://github.com/simukappu/activity_notification/issues/138)
+* Fix hash syntax in swagger schemas - [#146](https://github.com/simukappu/activity_notification/issues/146) [#147](https://github.com/simukappu/activity_notification/pull/147)
+
 ## 2.1.3 / 2020-08-11
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.1.2...v2.1.3)
 
