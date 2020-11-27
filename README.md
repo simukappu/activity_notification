@@ -10,7 +10,7 @@
 
 *activity_notification* provides integrated user activity notifications for [Ruby on Rails](https://rubyonrails.org). You can easily use it to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc.
 
-*activity_notification* supports Rails 4.2+ with [ActiveRecord](https://guides.rubyonrails.org/active_record_basics.html), [Mongoid](https://mongoid.org) and [Dynamoid](https://github.com/Dynamoid/dynamoid) ORM. It is tested for [MySQL](https://www.mysql.com), [PostgreSQL](https://www.postgresql.org), [SQLite3](https://www.sqlite.org) with ActiveRecord, [MongoDB](https://www.mongodb.com) with Mongoid and [Amazon DynamoDB](https://aws.amazon.com/dynamodb) with Dynamoid. The latest *activity_notification* [v2](https://rubygems.org/gems/activity_notification) is almost compatible with [v1](https://rubygems.org/gems/activity_notification/versions/1.7.1).
+*activity_notification* supports Rails 5.0+ with [ActiveRecord](https://guides.rubyonrails.org/active_record_basics.html), [Mongoid](https://mongoid.org) and [Dynamoid](https://github.com/Dynamoid/dynamoid) ORM. It is tested for [MySQL](https://www.mysql.com), [PostgreSQL](https://www.postgresql.org), [SQLite3](https://www.sqlite.org) with ActiveRecord, [MongoDB](https://www.mongodb.com) with Mongoid and [Amazon DynamoDB](https://aws.amazon.com/dynamodb) with Dynamoid. If you are using Rails 4.2, use [v2.1.4](https://rubygems.org/gems/activity_notification/versions/2.1.4) or older version of *activity_notification*.
 
 
 ## About

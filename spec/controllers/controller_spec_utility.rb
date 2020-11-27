@@ -2,43 +2,23 @@ module ActivityNotification
   module ControllerSpec
     module RequestUtility
       def get_with_compatibility action, params, session
-        if Rails::VERSION::MAJOR <= 4
-          get action, params, session
-        else
-          get action, params: params, session: session
-        end
+        get action, params: params, session: session
       end
 
       def post_with_compatibility action, params, session
-        if Rails::VERSION::MAJOR <= 4
-          post action, params, session
-        else
-          post action, params: params, session: session
-        end
+        post action, params: params, session: session
       end
 
       def put_with_compatibility action, params, session
-        if Rails::VERSION::MAJOR <= 4
-          put action, params, session
-        else
-          put action, params: params, session: session
-        end
+        put action, params: params, session: session
       end
 
       def delete_with_compatibility action, params, session
-        if Rails::VERSION::MAJOR <= 4
-          delete action, params, session
-        else
-          delete action, params: params, session: session
-        end
+        delete action, params: params, session: session
       end
 
       def xhr_with_compatibility method, action, params, session
-        if Rails::VERSION::MAJOR <= 4
-          xhr method, action, params, session
-        else
-          send method.to_s, action, xhr: true, params: params, session: session
-        end
+        send method.to_s, action, xhr: true, params: params, session: session
       end
     end
 
@@ -76,53 +56,37 @@ module ActivityNotification
         def api_path
           "/#{root_path}/#{target_type}/#{test_target.id}"
         end
-  
+
         def schema_path
-          Rails.root.join('..', 'openapi.json') 
+          Rails.root.join('..', 'openapi.json')
         end
-  
+
         def write_schema_file(schema_json)
           File.open(schema_path, "w") { |file| file.write(schema_json) }
         end
-  
+
         def read_schema_file
           JSON.parse(File.read(schema_path))
         end
 
         def committee_options
-          @committee_options ||= { schema: Committee::Drivers::load_from_file(schema_path), prefix: root_path, validate_success_only: true }
+          @committee_options ||= { schema: Committee::Drivers::load_from_file(schema_path), prefix: root_path, validate_success_only: true, parse_response_by_content_type: false }
         end
 
         def get_with_compatibility path, options = {}
-          if Rails::VERSION::MAJOR <= 4
-            get path, options[:params], options[:headers]
-          else
-            get path, options
-          end
+          get path, **options
         end
 
         def post_with_compatibility path, options = {}
-          if Rails::VERSION::MAJOR <= 4
-            post path, options[:params], options[:headers]
-          else
-            post path, options
-          end
+          post path, **options
         end
 
         def put_with_compatibility path, options = {}
-          if Rails::VERSION::MAJOR <= 4
-            put path, options[:params], options[:headers]
-          else
-            put path, options
-          end
+          put path, **options
         end
 
         def delete_with_compatibility path, options = {}
-          if Rails::VERSION::MAJOR <= 4
-            delete path, options[:params], options[:headers]
-          else
-            delete path, options
-          end
+          delete path, **options
         end
 
         def assert_all_schema_confirm(response, status)

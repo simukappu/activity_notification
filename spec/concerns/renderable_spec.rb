@@ -32,7 +32,7 @@ shared_examples_for :renderable do
       expect(I18n.t("notification.#{target_type_key}.#{params_text_key}.text"))
         .to eq(params_text_original)
       expect(I18n.t("notification.#{target_type_key}.#{params_text_key}.text",
-        {article_title: article_title}))
+        article_title: article_title))
         .to eq(params_text_embedded)
     end
 
@@ -40,7 +40,7 @@ shared_examples_for :renderable do
       expect(I18n.t("notification.#{target_type_key}.#{group_text_key}.text"))
         .to eq(group_text_original)
       expect(I18n.t("notification.#{target_type_key}.#{group_text_key}.text",
-        {notifier_name: notifier_name, group_member_count: group_member_count, group_notification_count: group_notification_count}))
+        **{ notifier_name: notifier_name, group_member_count: group_member_count, group_notification_count: group_notification_count }))
         .to eq(group_text_embedded)
     end
 
@@ -50,10 +50,10 @@ shared_examples_for :renderable do
       expect(I18n.t("notification.#{target_type_key}.#{plural_text_key}.text")[:other])
         .to eq(plural_text_original_other)
       expect(I18n.t("notification.#{target_type_key}.#{plural_text_key}.text",
-        {article_title: article_title, notifier_name: notifier_name, count: 1}))
+        **{ article_title: article_title, notifier_name: notifier_name, count: 1 }))
         .to eq(plural_text_embedded_one)
       expect(I18n.t("notification.#{target_type_key}.#{plural_text_key}.text",
-        {article_title: article_title, notifier_name: notifier_name, count: group_notification_count}))
+        **{ article_title: article_title, notifier_name: notifier_name, count: group_notification_count }))
         .to eq(plural_text_embedded_other)
     end
   end

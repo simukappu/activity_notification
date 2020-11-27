@@ -6,7 +6,7 @@ module ActivityNotification
       # Defines has_many association with ActivityNotification models.
       # @return [ActiveRecord_AssociationRelation<Object>] Database query of associated model instances
       def has_many_records(name, options = {})
-        has_many name, options
+        has_many name, **options
       end
     end
   end

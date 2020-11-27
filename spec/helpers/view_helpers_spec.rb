@@ -1,5 +1,5 @@
 describe ActivityNotification::ViewHelpers, type: :helper do
-  let(:view_context)         { ActionView::Base.new }
+  let(:view_context)         { ActionView::Base.new(ActionView::LookupContext.new(ActionController::Base.view_paths)) }
   let(:notification)         {
     create(:notification, target: create(:confirmed_user))
   }

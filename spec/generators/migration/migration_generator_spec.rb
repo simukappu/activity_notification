@@ -31,11 +31,7 @@ describe ActivityNotification::Generators::MigrationGenerator, type: :generator 
       describe 'CreateNotifications migration file' do
         subject { file(Dir["tmp/db/migrate/*_create_activity_notification_tables.rb"].first.gsub!('tmp/', '')) }
         it { is_expected.to exist }
-        if Rails::VERSION::MAJOR >= 5
-          it { is_expected.to contain(/class CreateActivityNotificationTables < ActiveRecord::Migration\[\d\.\d\]/) }
-        else
-          it { is_expected.to contain(/class CreateActivityNotificationTables < ActiveRecord::Migration/) }
-        end
+        it { is_expected.to contain(/class CreateActivityNotificationTables < ActiveRecord::Migration\[\d\.\d\]/) }
 
         if ActivityNotification.config.orm == :active_record
           it 'can be executed to migrate scheme' do
@@ -55,11 +51,7 @@ describe ActivityNotification::Generators::MigrationGenerator, type: :generator 
       describe 'CreateCustomNotifications migration file' do
         subject { file(Dir["tmp/db/migrate/*_create_custom_notifications.rb"].first.gsub!('tmp/', '')) }
         it { is_expected.to exist }
-        if Rails::VERSION::MAJOR >= 5
-          it { is_expected.to contain(/class CreateCustomNotifications < ActiveRecord::Migration\[\d\.\d\]/) }
-        else
-          it { is_expected.to contain(/class CreateCustomNotifications < ActiveRecord::Migration/) }
-        end
+        it { is_expected.to contain(/class CreateCustomNotifications < ActiveRecord::Migration\[\d\.\d\]/) }
 
         if ActivityNotification.config.orm == :active_record
           it 'can be executed to migrate scheme' do

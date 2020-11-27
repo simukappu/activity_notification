@@ -130,25 +130,9 @@ module ActivityNotification
             load_index if params[:reload].to_s.to_boolean(true)
             format.js
           else
-            compatibly_redirect_back(@index_options) and return
+            redirect_back(fallback_location: { action: :index }, **@index_options) and return
           end
         end
-      end
-
-      # Redirect to back.
-      # @api protected
-      # @return [Boolean] True
-      def compatibly_redirect_back(request_params = {})
-        # :nocov:
-        if Rails::VERSION::MAJOR >= 5
-          redirect_back fallback_location: { action: :index }, **request_params
-        elsif request.referer
-          redirect_to :back, **request_params
-        else
-          redirect_to action: :index, **request_params
-        end
-        # :nocov:
-        true
       end
   end
 end

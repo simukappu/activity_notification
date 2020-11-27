@@ -213,16 +213,12 @@ module ActivityNotification
       resolve_value(_notification_action_cable_with_devise)
     end
 
-    # :nocov:
-    if Rails::VERSION::MAJOR >= 5
-      # Returns notification ActionCable channel class name from action_cable_with_devise? configuration.
-      #
-      # @return [String] Notification ActionCable channel class name from action_cable_with_devise? configuration
-      def notification_action_cable_channel_class_name
-        notification_action_cable_with_devise? ? "ActivityNotification::NotificationWithDeviseChannel" : "ActivityNotification::NotificationChannel"
-      end
+    # Returns notification ActionCable channel class name from action_cable_with_devise? configuration.
+    #
+    # @return [String] Notification ActionCable channel class name from action_cable_with_devise? configuration
+    def notification_action_cable_channel_class_name
+      notification_action_cable_with_devise? ? "ActivityNotification::NotificationWithDeviseChannel" : "ActivityNotification::NotificationChannel"
     end
-    # :nocov:
 
     # Returns Devise resource model associated with this target.
     #
