@@ -24,18 +24,14 @@ require "action_controller/railtie"
 require "action_mailer/railtie"
 require "action_view/railtie"
 require "sprockets/railtie"
-require 'action_cable/engine' if Rails::VERSION::MAJOR >= 5
+require 'action_cable/engine'
 
 Bundler.require(*Rails.groups)
 require "activity_notification"
 
 module Dummy
   class Application < Rails::Application
-    # Do not swallow errors in after_commit/after_rollback callbacks.
-    if Rails::VERSION::MAJOR == 4 && Rails::VERSION::MINOR >= 2 && ENV['AN_TEST_DB'] != 'mongodb'
-      config.active_record.raise_in_transactional_callbacks = true
-    end
-    if Rails::VERSION::MAJOR >= 5 && Rails::VERSION::MINOR >= 2 && ENV['AN_TEST_DB'] != 'mongodb'
+    if Rails.gem_version >= Gem::Version.new("5.2.0") && ENV['AN_TEST_DB'] != 'mongodb'
       config.active_record.sqlite3.represent_boolean_as_integer = true
     end
 

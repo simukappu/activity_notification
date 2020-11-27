@@ -1,5 +1,5 @@
 # Migration responsible for creating a table with notifications
-class <%= @migration_name %> < ActiveRecord::Migration<%= Rails::VERSION::MAJOR >= 5 ? "[#{Rails.version.to_f}]" : "" %>
+class <%= @migration_name %> < ActiveRecord::Migration<%= "[#{Rails.version.to_f}]" %>
   # Create tables
   def change
     <% if @migration_tables.include?('notifications') %>create_table :notifications do |t|

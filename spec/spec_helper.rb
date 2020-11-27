@@ -26,11 +26,6 @@ SimpleCov.start('rails') do
     add_filter '/lib/activity_notification/orm/mongoid'
     add_filter '/lib/activity_notification/orm/dynamoid'
   end
-  if Rails::VERSION::MAJOR < 5
-    add_filter '/app/channels/'
-    add_filter '/lib/activity_notification/optional_targets/action_cable_channel'
-    add_filter '/lib/activity_notification/optional_targets/action_cable_api_channel'
-  end
 end
 
 # Dummy application

@@ -239,25 +239,21 @@ module ActivityNotification
           configured_params.update(add_destroy_dependency(target_type, options[:dependent_notifications]))
         end
 
-        # :nocov:
-        if Rails::VERSION::MAJOR >= 5
-          if options[:action_cable_allowed] || (ActivityNotification.config.action_cable_enabled && options[:action_cable_allowed] != false)
-            options[:optional_targets] ||= {}
-            require 'activity_notification/optional_targets/action_cable_channel'
-            unless options[:optional_targets].has_key?(ActivityNotification::OptionalTarget::ActionCableChannel)
-              options[:optional_targets][ActivityNotification::OptionalTarget::ActionCableChannel] = {}
-            end
-          end
-
-          if options[:action_cable_api_allowed] || (ActivityNotification.config.action_cable_api_enabled && options[:action_cable_api_allowed] != false)
-            options[:optional_targets] ||= {}
-            require 'activity_notification/optional_targets/action_cable_api_channel'
-            unless options[:optional_targets].has_key?(ActivityNotification::OptionalTarget::ActionCableApiChannel)
-              options[:optional_targets][ActivityNotification::OptionalTarget::ActionCableApiChannel] = {}
-            end
+        if options[:action_cable_allowed] || (ActivityNotification.config.action_cable_enabled && options[:action_cable_allowed] != false)
+          options[:optional_targets] ||= {}
+          require 'activity_notification/optional_targets/action_cable_channel'
+          unless options[:optional_targets].has_key?(ActivityNotification::OptionalTarget::ActionCableChannel)
+            options[:optional_targets][ActivityNotification::OptionalTarget::ActionCableChannel] = {}
           end
         end
-        # :nocov:
+
+        if options[:action_cable_api_allowed] || (ActivityNotification.config.action_cable_api_enabled && options[:action_cable_api_allowed] != false)
+          options[:optional_targets] ||= {}
+          require 'activity_notification/optional_targets/action_cable_api_channel'
+          unless options[:optional_targets].has_key?(ActivityNotification::OptionalTarget::ActionCableApiChannel)
+            options[:optional_targets][ActivityNotification::OptionalTarget::ActionCableApiChannel] = {}
+          end
+        end
 
         if options[:optional_targets].is_a?(Hash)
           options[:optional_targets] = arrange_optional_targets_option(options[:optional_targets])

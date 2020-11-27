@@ -456,7 +456,7 @@ module ActivityNotification
           unless generated_notifications.to_a.empty?
             record = self.class.human_attribute_name("generated_notifications_as_notifiable_for_#{target_type.to_s.pluralize.underscore}").downcase
             self.errors.add(:base, :'restrict_dependent_destroy.has_many', record: record)
-            if Rails::VERSION::MAJOR >= 5 then throw(:abort) else false end
+            throw(:abort)
           end
         when :destroy
           generated_notifications.each { |n| n.destroy }

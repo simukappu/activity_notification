@@ -490,20 +490,18 @@ shared_examples_for :target do
       end
     end
 
-    if Rails::VERSION::MAJOR >= 5
-      describe "#notification_action_cable_channel_class_name" do
-        context "when custom_notification_action_cable_with_devise? returns true" do
-          it "returns ActivityNotification::NotificationWithDeviseChannel" do
-            described_class._notification_action_cable_with_devise = true
-            expect(test_instance.notification_action_cable_channel_class_name).to eq(ActivityNotification::NotificationWithDeviseChannel.name)
-          end
+    describe "#notification_action_cable_channel_class_name" do
+      context "when custom_notification_action_cable_with_devise? returns true" do
+        it "returns ActivityNotification::NotificationWithDeviseChannel" do
+          described_class._notification_action_cable_with_devise = true
+          expect(test_instance.notification_action_cable_channel_class_name).to eq(ActivityNotification::NotificationWithDeviseChannel.name)
         end
+      end
 
-        context "when custom_notification_action_cable_with_devise? returns false" do
-          it "returns ActivityNotification::NotificationChannel" do
-            described_class._notification_action_cable_with_devise = false
-            expect(test_instance.notification_action_cable_channel_class_name).to eq(ActivityNotification::NotificationChannel.name)
-          end
+      context "when custom_notification_action_cable_with_devise? returns false" do
+        it "returns ActivityNotification::NotificationChannel" do
+          described_class._notification_action_cable_with_devise = false
+          expect(test_instance.notification_action_cable_channel_class_name).to eq(ActivityNotification::NotificationChannel.name)
         end
       end
     end

@@ -42,7 +42,7 @@ module ActivityNotification
         # Group owner instance has nil as :group_owner association.
         # @scope instance
         # @return [Notification] Group owner notification instance of this notification
-        belongs_to :group_owner, { class_name: "ActivityNotification::Notification", foreign_key: :group_owner_id }.merge(Rails::VERSION::MAJOR >= 5 ? { optional: true } : {})
+        belongs_to :group_owner, { class_name: "ActivityNotification::Notification", foreign_key: :group_owner_id, optional: true }
 
         # Customized method that belongs to group owner notification instance of this notification.
         # @raise [Errors::RecordNotFound] Record not found error

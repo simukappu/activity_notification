@@ -117,26 +117,6 @@ module ActivityNotification
       super
     end
 
-    # :nocov:
-    if Rails::VERSION::MAJOR == 4
-      # Defines custom renderer class method for Rails 4.2
-      def self.renderer
-        view_context = ActionView::Base.new(ActionController::Base.view_paths, {})
-        view_context.class_eval do 
-          include Rails.application.routes.url_helpers
-          def default_url_options
-            ActionMailer::Base.default_url_options
-          end
-          def render(params = {})
-            assign(params[:assigns])
-            super(params)
-          end
-        end
-        view_context
-      end
-    end
-    # :nocov:
-
     protected
 
       # Sets @notification instance variable from request parameters.

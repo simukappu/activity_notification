@@ -41,7 +41,7 @@ module ActivityNotification
         # Group owner instance has nil as :group_owner association.
         # @scope instance
         # @return [Notification] Group owner notification instance of this notification
-        belongs_to :group_owner, { class_name: "ActivityNotification::Notification" }.merge(Rails::VERSION::MAJOR >= 5 ? { optional: true } : {})
+        belongs_to :group_owner, { class_name: "ActivityNotification::Notification", optional: true }
 
         # Has many group member notification instances of this notification.
         # Only group owner instance has :group_members value.
