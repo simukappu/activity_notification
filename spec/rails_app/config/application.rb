@@ -31,7 +31,7 @@ require "activity_notification"
 
 module Dummy
   class Application < Rails::Application
-    if Rails.gem_version >= Gem::Version.new("5.2.0") && ENV['AN_TEST_DB'] != 'mongodb'
+    if Gem::Version.new("5.2.0") <= Rails.gem_version && Rails.gem_version < Gem::Version.new("6.0.0") && ENV['AN_TEST_DB'] != 'mongodb'
       config.active_record.sqlite3.represent_boolean_as_integer = true
     end
 
