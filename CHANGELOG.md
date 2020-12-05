@@ -1,3 +1,17 @@
+## 2.2.0 / 2020-12-05
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.1.4...v2.2.0)
+
+Enhancements:
+
+* Remove support for Rails 4.2 - [#151](https://github.com/simukappu/activity_notification/issues/151)
+* Turn on deprecation warnings in RSpec testing for Ruby 2.7 - [#122](https://github.com/simukappu/activity_notification/issues/122)
+* Remove Ruby 2.7 deprecation warnings - [#122](https://github.com/simukappu/activity_notification/issues/122)
+
+Breaking Changes:
+
+* Specify DynamoDB global secondary index name
+* Update additional fields to store into DynamoDB when *config.store_with_associated_records* is true
+
 ## 2.1.4 / 2020-11-07
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.1.3...v2.1.4)
 
