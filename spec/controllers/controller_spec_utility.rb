@@ -76,15 +76,15 @@ module ActivityNotification
         def api_path
           "/#{root_path}/#{target_type}/#{test_target.id}"
         end
-  
+
         def schema_path
-          Rails.root.join('..', 'openapi.json') 
+          Rails.root.join('..', 'openapi.json')
         end
-  
+
         def write_schema_file(schema_json)
           File.open(schema_path, "w") { |file| file.write(schema_json) }
         end
-  
+
         def read_schema_file
           JSON.parse(File.read(schema_path))
         end
@@ -97,7 +97,7 @@ module ActivityNotification
           if Rails::VERSION::MAJOR <= 4
             get path, options[:params], options[:headers]
           else
-            get path, options
+            get path, **options
           end
         end
 
@@ -105,7 +105,7 @@ module ActivityNotification
           if Rails::VERSION::MAJOR <= 4
             post path, options[:params], options[:headers]
           else
-            post path, options
+            post path, **options
           end
         end
 
@@ -113,7 +113,7 @@ module ActivityNotification
           if Rails::VERSION::MAJOR <= 4
             put path, options[:params], options[:headers]
           else
-            put path, options
+            put path, **options
           end
         end
 
@@ -121,7 +121,7 @@ module ActivityNotification
           if Rails::VERSION::MAJOR <= 4
             delete path, options[:params], options[:headers]
           else
-            delete path, options
+            delete path, **options
           end
         end
 
