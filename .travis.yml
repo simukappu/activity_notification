@@ -16,6 +16,7 @@ gemfile:
   - gemfiles/Gemfile.rails-5.1
   - gemfiles/Gemfile.rails-5.2
   - gemfiles/Gemfile.rails-6.0
+  - gemfiles/Gemfile.rails-6.1
 
 env:
   - AN_ORM=active_record
@@ -35,6 +36,9 @@ matrix:
       env: AN_ORM=mongoid
     - rvm: ruby-head
       gemfile: Gemfile
+      env: AN_ORM=dynamoid
+  exclude:
+    - gemfile: gemfiles/Gemfile.rails-6.1
       env: AN_ORM=dynamoid
   allow_failures:
     - rvm: ruby-head
