@@ -1,3 +1,10 @@
+## 2.2.1 / 2021-01-24
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.0...v2.2.1)
+
+Enhancements:
+
+* Allow use with Rails 6.1 - [#152](https://github.com/simukappu/activity_notification/issues/152)
+
 ## 2.2.0 / 2020-12-05
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.1.4...v2.2.0)
 
