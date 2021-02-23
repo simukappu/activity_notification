@@ -23,14 +23,14 @@ module ActivityNotification
         # Belongs to group instance of this notification as polymorphic association.
         # @scope instance
         # @return [Object] Group instance of this notification
-        belongs_to :group,         **{ polymorphic: true, optional: true }
+        belongs_to :group,         polymorphic: true, optional: true
 
         # Belongs to group owner notification instance of this notification.
         # Only group member instance has :group_owner value.
         # Group owner instance has nil as :group_owner association.
         # @scope instance
         # @return [Notification] Group owner notification instance of this notification
-        belongs_to :group_owner, **{ class_name: "ActivityNotification::Notification", optional: true }
+        belongs_to :group_owner,   class_name: "ActivityNotification::Notification", optional: true
 
         # Has many group member notification instances of this notification.
         # Only group owner instance has :group_members value.
@@ -42,7 +42,7 @@ module ActivityNotification
         # Belongs to :notifier instance of this notification.
         # @scope instance
         # @return [Object] Notifier instance of this notification
-        belongs_to :notifier,      **{ polymorphic: true, optional: true }
+        belongs_to :notifier,      polymorphic: true, optional: true
 
         # Serialize parameters Hash
         serialize  :parameters, Hash
