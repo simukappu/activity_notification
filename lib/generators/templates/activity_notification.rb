@@ -31,6 +31,16 @@ ActivityNotification.configure do |config|
   # Set false when you want to unsubscribe to any notifications as default.
   config.subscribe_as_default = true
 
+  # Configure default email subscription value to use when the subscription record does not configured.
+  # Note that you can configure them for each method calling as default argument.
+  # Set false when you want to unsubscribe to email notifications as default.
+  # config.subscribe_to_email_as_default = true
+
+  # Configure default optional target subscription value to use when the subscription record does not configured.
+  # Note that you can configure them for each method calling as default argument.
+  # Set false when you want to unsubscribe to optinal target notifications as default.
+  # config.subscribe_to_optional_targets_as_default = true
+
   # Configure the e-mail address which will be shown in ActivityNotification::Mailer,
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
   config.mailer_sender = 'please-change-me-at-config-initializers-activity_notification@example.com'

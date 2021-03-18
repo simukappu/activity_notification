@@ -20,7 +20,7 @@ module ActivityNotification
 
         field :key,                       type: String
         field :subscribing,               type: Boolean, default: ActivityNotification.config.subscribe_as_default
-        field :subscribing_to_email,      type: Boolean, default: ActivityNotification.config.subscribe_as_default
+        field :subscribing_to_email,      type: Boolean, default: ActivityNotification.config.subscribe_to_email_as_default
         field :subscribed_at,             type: DateTime
         field :unsubscribed_at,           type: DateTime
         field :subscribed_to_email_at,    type: DateTime

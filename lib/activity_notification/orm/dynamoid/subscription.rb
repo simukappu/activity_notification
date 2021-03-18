@@ -21,7 +21,7 @@ module ActivityNotification
 
         field :key,                       :string
         field :subscribing,               :boolean, default: ActivityNotification.config.subscribe_as_default
-        field :subscribing_to_email,      :boolean, default: ActivityNotification.config.subscribe_as_default
+        field :subscribing_to_email,      :boolean, default: ActivityNotification.config.subscribe_to_email_as_default
         field :subscribed_at,             :datetime
         field :unsubscribed_at,           :datetime
         field :subscribed_to_email_at,    :datetime

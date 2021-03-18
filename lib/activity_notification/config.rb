@@ -61,6 +61,18 @@ module ActivityNotification
     #   @return [Boolean] Default subscription value to use when the subscription record does not configured.
     attr_accessor :subscribe_as_default
 
+    # @overload subscribe_to_email_as_default=(value)
+    #   Sets default email subscription value to use when the subscription record does not configured
+    #   @param [Boolean] subscribe_to_email_as_default The new subscribe_to_email_as_default
+    #   @return [Boolean] Default email subscription value to use when the subscription record does not configured.
+    attr_writer :subscribe_to_email_as_default
+
+    # @overload subscribe_to_optional_targets_as_default=(value)
+    #   Sets default optional target subscription value to use when the subscription record does not configured
+    #   @param [Boolean] subscribe_to_optional_targets_as_default The new subscribe_to_optional_targets_as_default
+    #   @return [Boolean] Default optional target subscription value to use when the subscription record does not configured.
+    attr_writer :subscribe_to_optional_targets_as_default
+
     # @overload mailer_sender
     #   Returns email address as sender of notification email
     #   @return [String] Email address as sender of notification email.
@@ -205,29 +217,31 @@ module ActivityNotification
     # These configuration can be overridden in initializer.
     # @return [Config] A new instance of Config
     def initialize
-      @enabled                         = true
-      @orm                             = :active_record
-      @notification_table_name         = 'notifications'
-      @subscription_table_name         = 'subscriptions'
-      @email_enabled                   = false
-      @subscription_enabled            = false
-      @subscribe_as_default            = true
-      @mailer_sender                   = nil
-      @mailer                          = 'ActivityNotification::Mailer'
-      @parent_mailer                   = 'ActionMailer::Base'
-      @parent_job                      = 'ActiveJob::Base'
-      @parent_controller               = 'ApplicationController'
-      @parent_channel                  = 'ActionCable::Channel::Base'
-      @mailer_templates_dir            = 'activity_notification/mailer'
-      @opened_index_limit              = 10
-      @active_job_queue                = :activity_notification
-      @composite_key_delimiter         = '#'
-      @store_with_associated_records   = false
-      @action_cable_enabled            = false
-      @action_cable_api_enabled        = false
-      @action_cable_with_devise        = false
-      @notification_channel_prefix     = 'activity_notification_channel'
-      @notification_api_channel_prefix = 'activity_notification_api_channel'
+      @enabled                                  = true
+      @orm                                      = :active_record
+      @notification_table_name                  = 'notifications'
+      @subscription_table_name                  = 'subscriptions'
+      @email_enabled                            = false
+      @subscription_enabled                     = false
+      @subscribe_as_default                     = true
+      @subscribe_to_email_as_default            = nil
+      @subscribe_to_optional_targets_as_default = nil
+      @mailer_sender                            = nil
+      @mailer                                   = 'ActivityNotification::Mailer'
+      @parent_mailer                            = 'ActionMailer::Base'
+      @parent_job                               = 'ActiveJob::Base'
+      @parent_controller                        = 'ApplicationController'
+      @parent_channel                           = 'ActionCable::Channel::Base'
+      @mailer_templates_dir                     = 'activity_notification/mailer'
+      @opened_index_limit                       = 10
+      @active_job_queue                         = :activity_notification
+      @composite_key_delimiter                  = '#'
+      @store_with_associated_records            = false
+      @action_cable_enabled                     = false
+      @action_cable_api_enabled                 = false
+      @action_cable_with_devise                 = false
+      @notification_channel_prefix              = 'activity_notification_channel'
+      @notification_api_channel_prefix          = 'activity_notification_api_channel'
     end
 
     # Sets ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)
@@ -244,6 +258,22 @@ module ActivityNotification
     def store_with_associated_records=(store_with_associated_records)
       if store_with_associated_records && [:mongoid, :dynamoid].exclude?(@orm) then raise ActivityNotification::ConfigError, "config.store_with_associated_records can be set true only when you use mongoid or dynamoid ORM." end
       @store_with_associated_records = store_with_associated_records
+    end
+
+    # Returns default email subscription value to use when the subscription record does not configured
+    # @return [Boolean] Default email subscription value to use when the subscription record does not configured.
+    def subscribe_to_email_as_default
+      return false unless @subscribe_as_default
+
+      @subscribe_to_email_as_default.nil? ? @subscribe_as_default : @subscribe_to_email_as_default
+    end
+
+    # Returns default optional target subscription value to use when the subscription record does not configured
+    # @return [Boolean] Default optinal target subscription value to use when the subscription record does not configured.
+    def subscribe_to_optional_targets_as_default
+      return false unless @subscribe_as_default
+
+      @subscribe_to_optional_targets_as_default.nil? ? @subscribe_as_default : @subscribe_to_optional_targets_as_default
     end
   end
 end
