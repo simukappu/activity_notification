@@ -462,7 +462,7 @@ shared_examples_for :subscriber do
           described_class._notification_subscription_allowed = true
         end
 
-        context "without configured subscpriotion" do
+        context "without configured subscription" do
           context "without subscribe_as_default argument" do
             context "with true as ActivityNotification.config.subscribe_as_default" do
               it "returns true" do
@@ -484,7 +484,7 @@ shared_examples_for :subscriber do
           end
         end
 
-        context "with configured subscpriotion" do
+        context "with configured subscription" do
           context "subscribing to notification" do
             it "returns true" do
               subscription = test_instance.create_subscription(key: @test_key)
@@ -521,7 +521,7 @@ shared_examples_for :subscriber do
           described_class._notification_subscription_allowed = true
         end
 
-        context "without configured subscpriotion" do
+        context "without configured subscription" do
           context "without subscribe_as_default argument" do
             context "with true as ActivityNotification.config.subscribe_as_default" do
               it "returns true" do
@@ -529,6 +529,28 @@ shared_examples_for :subscriber do
                 ActivityNotification.config.subscribe_as_default = true
                 expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_truthy
                 ActivityNotification.config.subscribe_as_default = subscribe_as_default
+              end
+
+              context "with true as ActivityNotification.config.subscribe_to_email_as_default" do
+                it "returns true" do
+                  subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                  ActivityNotification.config.subscribe_as_default = true
+                  ActivityNotification.config.subscribe_to_email_as_default = true
+                  expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_truthy
+                  ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                  ActivityNotification.config.subscribe_to_email_as_default = nil
+                end
+              end
+
+              context "with false as ActivityNotification.config.subscribe_to_email_as_default" do
+                it "returns false" do
+                  subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                  ActivityNotification.config.subscribe_as_default = true
+                  ActivityNotification.config.subscribe_to_email_as_default = false
+                  expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_falsey
+                  ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                  ActivityNotification.config.subscribe_to_email_as_default = nil
+                end
               end
             end
 
@@ -539,11 +561,33 @@ shared_examples_for :subscriber do
                 expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_falsey
                 ActivityNotification.config.subscribe_as_default = subscribe_as_default
               end
+
+              context "with true as ActivityNotification.config.subscribe_to_email_as_default" do
+                it "returns false" do
+                  subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                  ActivityNotification.config.subscribe_as_default = false
+                  ActivityNotification.config.subscribe_to_email_as_default = true
+                  expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_falsey
+                  ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                  ActivityNotification.config.subscribe_to_email_as_default = nil
+                end
+              end
+
+              context "with false as ActivityNotification.config.subscribe_to_email_as_default" do
+                it "returns false" do
+                  subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                  ActivityNotification.config.subscribe_as_default = false
+                  ActivityNotification.config.subscribe_to_email_as_default = false
+                  expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_falsey
+                  ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                  ActivityNotification.config.subscribe_to_email_as_default = nil
+                end
+              end
             end
           end
         end
 
-        context "with configured subscpriotion" do
+        context "with configured subscription" do
           context "subscribing to notification email" do
             it "returns true" do
               subscription = test_instance.create_subscription(key: @test_key)
@@ -581,7 +625,7 @@ shared_examples_for :subscriber do
           described_class._notification_subscription_allowed = true
         end
 
-        context "without configured subscpriotion" do
+        context "without configured subscription" do
           context "without subscribe_as_default argument" do
             context "with true as ActivityNotification.config.subscribe_as_default" do
               it "returns true" do
@@ -589,6 +633,28 @@ shared_examples_for :subscriber do
                 ActivityNotification.config.subscribe_as_default = true
                 expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_truthy
                 ActivityNotification.config.subscribe_as_default = subscribe_as_default
+              end
+
+              context "with true as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+                it "returns true" do
+                  subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                  ActivityNotification.config.subscribe_as_default = true
+                  ActivityNotification.config.subscribe_to_optional_targets_as_default = true
+                  expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_truthy
+                  ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                  ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+                end
+              end
+
+              context "with false as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+                it "returns false" do
+                  subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                  ActivityNotification.config.subscribe_as_default = true
+                  ActivityNotification.config.subscribe_to_optional_targets_as_default = false
+                  expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_falsey
+                  ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                  ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+                end
               end
             end
 
@@ -599,11 +665,33 @@ shared_examples_for :subscriber do
                 expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_falsey
                 ActivityNotification.config.subscribe_as_default = subscribe_as_default
               end
+
+              context "with true as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+                it "returns false" do
+                  subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                  ActivityNotification.config.subscribe_as_default = false
+                  ActivityNotification.config.subscribe_to_optional_targets_as_default = true
+                  expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_falsey
+                  ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                  ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+                end
+              end
+
+              context "with false as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+                it "returns false" do
+                  subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                  ActivityNotification.config.subscribe_as_default = false
+                  ActivityNotification.config.subscribe_to_optional_targets_as_default = false
+                  expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_falsey
+                  ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                  ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+                end
+              end
             end
           end
         end
 
-        context "with configured subscpriotion" do
+        context "with configured subscription" do
           context "subscribing to the specified optional target" do
             it "returns true" do
               subscription = test_instance.create_subscription(key: @test_key, optional_targets: { ActivityNotification::Subscription.to_optional_target_key(@optional_target_name) => true })
