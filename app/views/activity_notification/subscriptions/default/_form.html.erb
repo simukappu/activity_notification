@@ -37,7 +37,7 @@
         <div class="field">
           <div class="ui checkbox">
             <label>
-              <%= f.check_box :subscribing_to_email, { checked: ActivityNotification.config.subscribe_as_default }, 'true', 'false' %>
+              <%= f.check_box :subscribing_to_email, { checked: ActivityNotification.config.subscribe_to_email_as_default }, 'true', 'false' %>
               <div class="slider"></div>
             </label>
           </div>
