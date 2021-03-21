@@ -91,8 +91,8 @@ module ActivityNotification
     #   @option params [String] :filtered_by_key         (nil)     Key of the subscription for filter
     #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def subscribe
-      @subscription.subscribe(with_email_subscription: params[:with_email_subscription].to_s.to_boolean(true),
-                              with_optional_targets:   params[:with_optional_targets].to_s.to_boolean(true))
+      @subscription.subscribe(with_email_subscription: params[:with_email_subscription].to_s.to_boolean(ActivityNotification.config.subscribe_to_email_as_default),
+                              with_optional_targets:   params[:with_optional_targets].to_s.to_boolean(ActivityNotification.config.subscribe_to_optional_targets_as_default))
       return_back_or_ajax
     end
 
