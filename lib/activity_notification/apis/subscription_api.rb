@@ -127,8 +127,8 @@ module ActivityNotification
     # @return [Boolean] If successfully updated subscription instance
     def subscribe(options = {})
       subscribed_at = options[:subscribed_at] || Time.current
-      with_email_subscription = options.has_key?(:with_email_subscription) ? options[:with_email_subscription] : true
-      with_optional_targets   = options.has_key?(:with_optional_targets) ? options[:with_optional_targets] : true
+      with_email_subscription = options.has_key?(:with_email_subscription) ? options[:with_email_subscription] : ActivityNotification.config.subscribe_to_email_as_default
+      with_optional_targets   = options.has_key?(:with_optional_targets) ? options[:with_optional_targets] : ActivityNotification.config.subscribe_to_optional_targets_as_default
       new_attributes = { subscribing: true, subscribed_at: subscribed_at, optional_targets: optional_targets }
       new_attributes = new_attributes.merge(subscribing_to_email: true, subscribed_to_email_at: subscribed_at) if with_email_subscription
       if with_optional_targets

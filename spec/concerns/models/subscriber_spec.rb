@@ -86,7 +86,64 @@ shared_examples_for :subscriber do
           new_subscription = test_instance.create_subscription(params)
           expect(new_subscription.subscribing?).to           be_truthy
           expect(new_subscription.subscribing_to_email?).to  be_truthy
+          expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_truthy
           expect(test_instance.subscriptions.reload.size).to eq(1)
+        end
+
+        context "with true as ActivityNotification.config.subscribe_to_email_as_default" do
+          it "creates a new subscription" do
+            ActivityNotification.config.subscribe_to_email_as_default = true
+
+            params = { key: 'key_1' }
+            new_subscription = test_instance.create_subscription(params)
+            expect(new_subscription.subscribing?).to           be_truthy
+            expect(new_subscription.subscribing_to_email?).to  be_truthy
+            expect(test_instance.subscriptions.reload.size).to eq(1)
+
+            ActivityNotification.config.subscribe_to_email_as_default = nil
+          end
+        end
+
+        context "with false as ActivityNotification.config.subscribe_to_email_as_default" do
+          it "creates a new subscription" do
+            ActivityNotification.config.subscribe_to_email_as_default = false
+
+            params = { key: 'key_1' }
+            new_subscription = test_instance.create_subscription(params)
+            expect(new_subscription.subscribing?).to           be_truthy
+            expect(new_subscription.subscribing_to_email?).to  be_falsey
+            expect(test_instance.subscriptions.reload.size).to eq(1)
+
+            ActivityNotification.config.subscribe_to_email_as_default = nil
+          end
+        end
+
+        context "with true as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+          it "creates a new subscription" do
+            ActivityNotification.config.subscribe_to_optional_targets_as_default = true
+
+            params = { key: 'key_1' }
+            new_subscription = test_instance.create_subscription(params)
+            expect(new_subscription.subscribing?).to           be_truthy
+            expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_truthy
+            expect(test_instance.subscriptions.reload.size).to eq(1)
+
+            ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+          end
+        end
+
+        context "with false as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+          it "creates a new subscription" do
+            ActivityNotification.config.subscribe_to_optional_targets_as_default = false
+
+            params = { key: 'key_1' }
+            new_subscription = test_instance.create_subscription(params)
+            expect(new_subscription.subscribing?).to           be_truthy
+            expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_falsey
+            expect(test_instance.subscriptions.reload.size).to eq(1)
+
+            ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+          end
         end
       end
 
@@ -97,6 +154,34 @@ shared_examples_for :subscriber do
           expect(new_subscription.subscribing?).to           be_falsey
           expect(new_subscription.subscribing_to_email?).to  be_falsey
           expect(test_instance.subscriptions.reload.size).to eq(1)
+        end
+
+        context "with true as ActivityNotification.config.subscribe_to_email_as_default" do
+          it "creates a new subscription" do
+            ActivityNotification.config.subscribe_to_email_as_default = true
+
+            params = { key: 'key_1', subscribing: false }
+            new_subscription = test_instance.create_subscription(params)
+            expect(new_subscription.subscribing?).to           be_falsey
+            expect(new_subscription.subscribing_to_email?).to  be_falsey
+            expect(test_instance.subscriptions.reload.size).to eq(1)
+
+            ActivityNotification.config.subscribe_to_email_as_default = nil
+          end
+        end
+
+        context "with false as ActivityNotification.config.subscribe_to_email_as_default" do
+          it "creates a new subscription" do
+            ActivityNotification.config.subscribe_to_email_as_default = false
+
+            params = { key: 'key_1', subscribing: false }
+            new_subscription = test_instance.create_subscription(params)
+            expect(new_subscription.subscribing?).to           be_falsey
+            expect(new_subscription.subscribing_to_email?).to  be_falsey
+            expect(test_instance.subscriptions.reload.size).to eq(1)
+
+            ActivityNotification.config.subscribe_to_email_as_default = nil
+          end
         end
       end
 

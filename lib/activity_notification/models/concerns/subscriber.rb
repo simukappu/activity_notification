@@ -62,6 +62,8 @@ module ActivityNotification
       created_at = Time.current
       if subscription_params[:subscribing] == false && subscription_params[:subscribing_to_email].nil?
         subscription_params[:subscribing_to_email] = subscription_params[:subscribing]
+      elsif subscription_params[:subscribing_to_email].nil?
+        subscription_params[:subscribing_to_email] = ActivityNotification.config.subscribe_to_email_as_default
       end
       subscription = Subscription.new(subscription_params)
       subscription.assign_attributes(target: self)
