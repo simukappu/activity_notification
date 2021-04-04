@@ -1,6 +1,6 @@
 # ActivityNotification
 
-[![Build Status](https://travis-ci.org/simukappu/activity_notification.svg?branch=master)](https://travis-ci.org/simukappu/activity_notification)
+[![Build Status](https://travis-ci.com/simukappu/activity_notification.svg?branch=master)](https://travis-ci.com/simukappu/activity_notification)
 [![Coverage Status](https://coveralls.io/repos/github/simukappu/activity_notification/badge.svg?branch=master)](https://coveralls.io/github/simukappu/activity_notification?branch=master)
 [![Dependency](https://img.shields.io/depfu/simukappu/activity_notification.svg)](https://depfu.com/repos/simukappu/activity_notification)
 [![Inline docs](http://inch-ci.org/github/simukappu/activity_notification.svg?branch=master)](http://inch-ci.org/github/simukappu/activity_notification)
