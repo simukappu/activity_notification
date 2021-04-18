@@ -1,3 +1,11 @@
+## 2.2.2 / 2021-04-18
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.1...v2.2.2)
+
+Enhancements:
+
+* Configure default subscriptions for emails and optional targets - [#159](https://github.com/simukappu/activity_notification/issues/159) [#160](https://github.com/simukappu/activity_notification/pull/160)
+* Upgrade gem dependency in tests with Rails 6.1 - [#152](https://github.com/simukappu/activity_notification/issues/152)
+
 ## 2.2.1 / 2021-01-24
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.0...v2.2.1)
 
