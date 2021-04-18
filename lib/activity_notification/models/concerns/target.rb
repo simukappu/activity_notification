@@ -541,7 +541,7 @@ module ActivityNotification
     # @param [String]  key                  Key of the notification
     # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
     # @return [Boolean] If the target subscribes the notification email or the subscription management is not allowed for the target
-    def subscribes_to_notification_email?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
+    def subscribes_to_notification_email?(key, subscribe_as_default = ActivityNotification.config.subscribe_to_email_as_default)
       !subscription_allowed?(key) || _subscribes_to_notification_email?(key, subscribe_as_default)
     end
     alias_method :subscribes_to_email?, :subscribes_to_notification_email?
@@ -553,7 +553,7 @@ module ActivityNotification
     # @param [String, Symbol] optional_target_name Class name of the optional target implementation (e.g. :amazon_sns, :slack)
     # @param [Boolean]        subscribe_as_default Default subscription value to use when the subscription record does not configured
     # @return [Boolean] If the target subscribes the notification email or the subscription management is not allowed for the target
-    def subscribes_to_optional_target?(key, optional_target_name, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
+    def subscribes_to_optional_target?(key, optional_target_name, subscribe_as_default = ActivityNotification.config.subscribe_to_optional_targets_as_default)
       !subscription_allowed?(key) || _subscribes_to_optional_target?(key, optional_target_name, subscribe_as_default)
     end
 

@@ -45,6 +45,41 @@ shared_examples_for :subscription_api do
           expect(test_instance.subscribed_to_email_at).to         eq(Time.current)
           Timecop.return
         end
+
+        context "with true as ActivityNotification.config.subscribe_to_email_as_default" do
+          it "subscribe with current time" do
+            ActivityNotification.config.subscribe_to_email_as_default = true
+
+            expect(test_instance.subscribing?).to                   eq(false)
+            expect(test_instance.subscribing_to_email?).to          eq(false)
+            Timecop.freeze(Time.at(Time.now.to_i))
+            test_instance.subscribe
+            expect(test_instance.subscribing?).to                   eq(true)
+            expect(test_instance.subscribing_to_email?).to          eq(true)
+            expect(test_instance.subscribed_at).to                  eq(Time.current)
+            expect(test_instance.subscribed_to_email_at).to         eq(Time.current)
+            Timecop.return
+
+            ActivityNotification.config.subscribe_to_email_as_default = nil
+          end
+        end
+
+        context "with false as ActivityNotification.config.subscribe_to_email_as_default" do
+          it "subscribe with current time" do
+            ActivityNotification.config.subscribe_to_email_as_default = false
+
+            expect(test_instance.subscribing?).to                   eq(false)
+            expect(test_instance.subscribing_to_email?).to          eq(false)
+            Timecop.freeze(Time.at(Time.now.to_i))
+            test_instance.subscribe
+            expect(test_instance.subscribing?).to                   eq(true)
+            expect(test_instance.subscribing_to_email?).to          eq(false)
+            expect(test_instance.subscribed_at).to                  eq(Time.current)
+            Timecop.return
+
+            ActivityNotification.config.subscribe_to_email_as_default = nil
+          end
+        end
       end
 
       context "with subscribed_at option" do
@@ -57,6 +92,39 @@ shared_examples_for :subscription_api do
           expect(test_instance.subscribing_to_email?).to          eq(true)
           expect(test_instance.subscribed_at.to_i).to             eq(subscribed_at.to_i)
           expect(test_instance.subscribed_to_email_at.to_i).to    eq(subscribed_at.to_i)
+        end
+
+        context "with true as ActivityNotification.config.subscribe_to_email_as_default" do
+          it "subscribe with current time" do
+            ActivityNotification.config.subscribe_to_email_as_default = true
+
+            expect(test_instance.subscribing?).to                   eq(false)
+            expect(test_instance.subscribing_to_email?).to          eq(false)
+            subscribed_at = Time.current - 1.months
+            test_instance.subscribe(subscribed_at: subscribed_at)
+            expect(test_instance.subscribing?).to                   eq(true)
+            expect(test_instance.subscribing_to_email?).to          eq(true)
+            expect(test_instance.subscribed_at.to_i).to             eq(subscribed_at.to_i)
+            expect(test_instance.subscribed_to_email_at.to_i).to    eq(subscribed_at.to_i)
+
+            ActivityNotification.config.subscribe_to_email_as_default = nil
+          end
+        end
+
+        context "with false as ActivityNotification.config.subscribe_to_email_as_default" do
+          it "subscribe with current time" do
+            ActivityNotification.config.subscribe_to_email_as_default = false
+
+            expect(test_instance.subscribing?).to                   eq(false)
+            expect(test_instance.subscribing_to_email?).to          eq(false)
+            subscribed_at = Time.current - 1.months
+            test_instance.subscribe(subscribed_at: subscribed_at)
+            expect(test_instance.subscribing?).to                   eq(true)
+            expect(test_instance.subscribing_to_email?).to          eq(false)
+            expect(test_instance.subscribed_at.to_i).to             eq(subscribed_at.to_i)
+
+            ActivityNotification.config.subscribe_to_email_as_default = nil
+          end
         end
       end
 
@@ -78,6 +146,36 @@ shared_examples_for :subscription_api do
           test_instance.subscribe
           expect(test_instance.subscribing?).to                                     eq(true)
           expect(test_instance.subscribing_to_optional_target?(:console_output)).to eq(true)
+        end
+
+        context "with true as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+          it "also subscribes to optional targets" do
+            ActivityNotification.config.subscribe_to_optional_targets_as_default = true
+
+            test_instance.unsubscribe_to_optional_target(:console_output)
+            expect(test_instance.subscribing?).to                                     eq(false)
+            expect(test_instance.subscribing_to_optional_target?(:console_output)).to eq(false)
+            test_instance.subscribe
+            expect(test_instance.subscribing?).to                                     eq(true)
+            expect(test_instance.subscribing_to_optional_target?(:console_output)).to eq(true)
+
+            ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+          end
+        end
+
+        context "with false as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+          it "does not subscribe to optional targets" do
+            ActivityNotification.config.subscribe_to_optional_targets_as_default = false
+
+            test_instance.unsubscribe_to_optional_target(:console_output)
+            expect(test_instance.subscribing?).to                                     eq(false)
+            expect(test_instance.subscribing_to_optional_target?(:console_output)).to eq(false)
+            test_instance.subscribe
+            expect(test_instance.subscribing?).to                                     eq(true)
+            expect(test_instance.subscribing_to_optional_target?(:console_output)).to eq(false)
+
+            ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+          end
         end
       end
 
@@ -210,7 +308,7 @@ shared_examples_for :subscription_api do
         test_instance.update(optional_targets: {})
       end
 
-      context "without configured optional target subscpriotion" do
+      context "without configured optional target subscription" do
         context "without subscribe_as_default argument" do
           context "with true as ActivityNotification.config.subscribe_as_default" do
             it "returns true" do
@@ -218,6 +316,28 @@ shared_examples_for :subscription_api do
               ActivityNotification.config.subscribe_as_default = true
               expect(test_instance.subscribing_to_optional_target?(:console_output)).to be_truthy
               ActivityNotification.config.subscribe_as_default = subscribe_as_default
+            end
+
+            context "with true as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+              it "returns true" do
+                subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                ActivityNotification.config.subscribe_as_default = true
+                ActivityNotification.config.subscribe_to_optional_targets_as_default = true
+                expect(test_instance.subscribing_to_optional_target?(:console_output)).to be_truthy
+                ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+              end
+            end
+
+            context "with false as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+              it "returns false" do
+                subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                ActivityNotification.config.subscribe_as_default = true
+                ActivityNotification.config.subscribe_to_optional_targets_as_default = false
+                expect(test_instance.subscribing_to_optional_target?(:console_output)).to be_falsey
+                ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+              end
             end
           end
 
@@ -228,11 +348,33 @@ shared_examples_for :subscription_api do
               expect(test_instance.subscribing_to_optional_target?(:console_output)).to be_falsey
               ActivityNotification.config.subscribe_as_default = subscribe_as_default
             end
+
+            context "with true as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+              it "returns false" do
+                subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                ActivityNotification.config.subscribe_as_default = false
+                ActivityNotification.config.subscribe_to_optional_targets_as_default = true
+                expect(test_instance.subscribing_to_optional_target?(:console_output)).to be_falsey
+                ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+              end
+            end
+
+            context "with false as ActivityNotification.config.subscribe_to_optional_targets_as_default" do
+              it "returns false" do
+                subscribe_as_default = ActivityNotification.config.subscribe_as_default
+                ActivityNotification.config.subscribe_as_default = false
+                ActivityNotification.config.subscribe_to_optional_targets_as_default = false
+                expect(test_instance.subscribing_to_optional_target?(:console_output)).to be_falsey
+                ActivityNotification.config.subscribe_as_default = subscribe_as_default
+                ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
+              end
+            end
           end
         end
       end
 
-      context "with configured subscpriotion" do
+      context "with configured subscription" do
         context "subscribing to optional target" do
           it "returns true" do
             test_instance.subscribe_to_optional_target(:console_output)

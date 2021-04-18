@@ -21,7 +21,7 @@ module ActivityNotification
         #   @subscriptions = @user.subscriptions.filtered_by_options({ custom_filter: ["created_at >= ?", time.hour.ago] })
         # @scope class
         # @param [Hash] options Options for filter
-        # @option options [String]     :filtered_by_key        (nil) Key of the subscription for filter 
+        # @option options [String]     :filtered_by_key        (nil) Key of the subscription for filter
         # @option options [Array|Hash] :custom_filter          (nil) Custom subscription filter (e.g. ["created_at >= ?", time.hour.ago] or ['created_at.gt': time.hour.ago])
         # @return [ActiveRecord_AssociationRelation<Subscription>, Mongoid::Criteria<Notificaion>] Database query of filtered subscriptions
         scope :filtered_by_options, ->(options = {}) {
@@ -127,8 +127,8 @@ module ActivityNotification
     # @return [Boolean] If successfully updated subscription instance
     def subscribe(options = {})
       subscribed_at = options[:subscribed_at] || Time.current
-      with_email_subscription = options.has_key?(:with_email_subscription) ? options[:with_email_subscription] : true
-      with_optional_targets   = options.has_key?(:with_optional_targets) ? options[:with_optional_targets] : true
+      with_email_subscription = options.has_key?(:with_email_subscription) ? options[:with_email_subscription] : ActivityNotification.config.subscribe_to_email_as_default
+      with_optional_targets   = options.has_key?(:with_optional_targets) ? options[:with_optional_targets] : ActivityNotification.config.subscribe_to_optional_targets_as_default
       new_attributes = { subscribing: true, subscribed_at: subscribed_at, optional_targets: optional_targets }
       new_attributes = new_attributes.merge(subscribing_to_email: true, subscribed_to_email_at: subscribed_at) if with_email_subscription
       if with_optional_targets
@@ -184,7 +184,7 @@ module ActivityNotification
     # @param [Symbol]  optional_target_name Symbol class name of the optional target implementation (e.g. :amazon_sns, :slack)
     # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
     # @return [Boolean] If the target subscribes to the specified optional target
-    def subscribing_to_optional_target?(optional_target_name, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
+    def subscribing_to_optional_target?(optional_target_name, subscribe_as_default = ActivityNotification.config.subscribe_to_optional_targets_as_default)
       optional_target_key = Subscription.to_optional_target_key(optional_target_name)
       subscribe_as_default ?
         !optional_targets.has_key?(optional_target_key) || optional_targets[optional_target_key] :

@@ -308,6 +308,8 @@ Subscriptions are managed by instances of **ActivityNotification::Subscription**
 *true* means the target will receive the notification email with this key including batch notification email with this *batch_key*.
 *false* means the target will not receive these notification email.
 
+##### Subscription defaults
+
 As default, all target subscribes to notification and notification email when subscription record does not exist in your database.
 You can change this **subscribe_as_default** parameter in initializer *activity_notification.rb*.
 
@@ -316,6 +318,20 @@ config.subscribe_as_default = false
 ```
 
 Then, all target does not subscribe to notification and notification email and will not receive any notifications as default.
+
+As default, email and optional target subscriptions will use the same default subscription value as defined in **subscribe_as_default**.
+You can disable them by providing **subscribe_to_email_as_default** or **subscribe_to_optional_targets_as_default** parameter(s) in initializer *activity_notification.rb*.
+
+```ruby
+# Enable subscribe as default, but disable it for emails
+config.subscribe_as_default = true
+config.subscribe_to_email_as_default = false
+config.subscribe_to_optional_targets_as_default = true
+```
+
+However if **subscribe_as_default** is not enabled, **subscribe_to_email_as_default** and **subscribe_to_optional_targets_as_default** won't change anything.
+
+##### Creating and updating subscriptions
 
 You can create subscription record from subscription API in your target model like this:
 
@@ -574,7 +590,7 @@ To sign in and get *access-token* from Devise Token Auth, call *sign_in* API whi
 ```console
 $ curl -X POST -H "Content-Type: application/json" -D - -d '{"email": "ichiro@example.com","password": "changeit"}' https://activity-notification-example.herokuapp.com/api/v2/auth/sign_in
 
- 
+
 HTTP/1.1 200 OK
 ...
 Content-Type: application/json; charset=utf-8

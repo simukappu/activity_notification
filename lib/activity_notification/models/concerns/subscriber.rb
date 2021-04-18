@@ -61,7 +61,9 @@ module ActivityNotification
     def build_subscription(subscription_params = {})
       created_at = Time.current
       if subscription_params[:subscribing] == false && subscription_params[:subscribing_to_email].nil?
-        subscription_params[:subscribing_to_email] = subscription_params[:subscribing] 
+        subscription_params[:subscribing_to_email] = subscription_params[:subscribing]
+      elsif subscription_params[:subscribing_to_email].nil?
+        subscription_params[:subscribing_to_email] = ActivityNotification.config.subscribe_to_email_as_default
       end
       subscription = Subscription.new(subscription_params)
       subscription.assign_attributes(target: self)
@@ -157,7 +159,7 @@ module ActivityNotification
       # @param [String]  key                  Key of the notification
       # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
       # @return [Boolean] If the target subscribes to the notification
-      def _subscribes_to_notification_email?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
+      def _subscribes_to_notification_email?(key, subscribe_as_default = ActivityNotification.config.subscribe_to_email_as_default)
         evaluate_subscription(subscriptions.where(key: key).first, :subscribing_to_email?, subscribe_as_default)
       end
       alias_method :_subscribes_to_email?, :_subscribes_to_notification_email?
@@ -170,7 +172,7 @@ module ActivityNotification
       # @param [String, Symbol] optional_target_name Class name of the optional target implementation (e.g. :amazon_sns, :slack)
       # @param [Boolean]        subscribe_as_default Default subscription value to use when the subscription record does not configured
       # @return [Boolean] If the target subscribes to the specified optional target
-      def _subscribes_to_optional_target?(key, optional_target_name, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
+      def _subscribes_to_optional_target?(key, optional_target_name, subscribe_as_default = ActivityNotification.config.subscribe_to_optional_targets_as_default)
         _subscribes_to_notification?(key, subscribe_as_default) &&
           evaluate_subscription(subscriptions.where(key: key).first, :subscribing_to_optional_target?, subscribe_as_default, optional_target_name, subscribe_as_default)
       end
