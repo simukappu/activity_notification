@@ -17,6 +17,17 @@ shared_examples_for :subscriber do
       expect(test_instance.subscriptions.latest_order.first).to   eq(subscription_2)
       expect(test_instance.subscriptions.latest_order.to_a).to    eq(ActivityNotification::Subscription.filtered_by_target(test_instance).latest_order.to_a)
     end
+
+    it "has many subscriptions with custom association name" do
+      ActivityNotification.config.subscription_table_name = 'notifications_subscriptions'
+
+      subscription_1 = create(:subscription, target: test_instance, key: 'subscription_key_1')
+      subscription_2 = create(:subscription, target: test_instance, key: 'subscription_key_2', created_at: subscription_1.created_at + 10.second)
+      expect(test_instance.notifications_subscriptions.count).to                eq(2)
+      expect(test_instance.notifications_subscriptions.earliest_order.first).to eq(subscription_1)
+      expect(test_instance.notifications_subscriptions.latest_order.first).to   eq(subscription_2)
+      expect(test_instance.notifications_subscriptions.latest_order.to_a).to    eq(ActivityNotification::Subscription.filtered_by_target(test_instance).latest_order.to_a)
+    end
   end    
 
   describe "as public class methods" do
