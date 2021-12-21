@@ -695,7 +695,7 @@ shared_examples_for :notification_api do
 
       context "subscribed by target" do
         before do
-          test_instance.target.create_subscription(key: test_instance.key, optional_targets: { subscribing_to_console_output: true })
+          test_instance.target.create_notification_subscription(key: test_instance.key, optional_targets: { subscribing_to_console_output: true })
           expect(test_instance.optional_target_subscribed?(:console_output)).to be_truthy
         end
 
@@ -711,7 +711,7 @@ shared_examples_for :notification_api do
 
       context "unsubscribed by target" do
         before do
-          test_instance.target.create_subscription(key: test_instance.key, optional_targets: { subscribing_to_console_output: false })
+          test_instance.target.create_notification_subscription(key: test_instance.key, optional_targets: { subscribing_to_console_output: false })
           expect(test_instance.optional_target_subscribed?(:console_output)).to be_falsey
         end
 
@@ -1378,7 +1378,7 @@ shared_examples_for :notification_api do
 
     describe "#optional_target_subscribed?" do
       it "returns target.subscribes_to_optional_target?" do
-        test_instance.target.create_subscription(key: test_instance.key, optional_targets: { subscribing_to_console_output: false })
+        test_instance.target.create_notification_subscription(key: test_instance.key, optional_targets: { subscribing_to_console_output: false })
         expect(test_instance.optional_target_subscribed?(:console_output)).to be_falsey
         expect(test_instance.optional_target_subscribed?(:console_output))
           .to eq(test_instance.target.subscribes_to_optional_target?(test_instance.key, :console_output))

@@ -2,23 +2,23 @@
 
 ### Email notification
 
-*activity_notification* provides email notification to the notification targets.
+_activity_notification_ provides email notification to the notification targets.
 
 #### Mailer setup
 
-Set up SMTP server configuration for *ActionMailer*. Then, you need to set up the default URL options for the *activity_notification* mailer in each environment. Here is a possible configuration for *config/environments/development.rb*:
+Set up SMTP server configuration for _ActionMailer_. Then, you need to set up the default URL options for the _activity_notification_ mailer in each environment. Here is a possible configuration for _config/environments/development.rb_:
 
 ```ruby
 config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 ```
 
-Email notification is disabled as default. You can configure it to enable email notification in initializer *activity_notification.rb*.
+Email notification is disabled as default. You can configure it to enable email notification in initializer _activity_notification.rb_.
 
 ```ruby
 config.email_enabled = true
 ```
 
-You can also configure them for each model by *acts_as roles* like these:
+You can also configure them for each model by _acts_as roles_ like these:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -49,15 +49,15 @@ end
 
 #### Sender configuration
 
-You can configure the notification *"from"* address inside of *activity_notification.rb* in two ways.
+You can configure the notification _"from"_ address inside of _activity_notification.rb_ in two ways.
 
-Using a simple email address as *String*:
+Using a simple email address as _String_:
 
 ```ruby
 config.mailer_sender = 'your_notification_sender@example.com'
 ```
 
-Using a *Proc* to configure the sender based on the *notification.key*:
+Using a _Proc_ to configure the sender based on the _notification.key_:
 
 ```ruby
 config.mailer_sender = ->(key){ key == 'inquiry.post' ? 'support@example.com' : 'noreply@example.com' }
@@ -65,13 +65,13 @@ config.mailer_sender = ->(key){ key == 'inquiry.post' ? 'support@example.com' : 
 
 #### Email templates
 
-*activity_notification* will look for email template in a similar way as notification views, but the view file name does not start with an underscore. For example, if you have a notification with *:key* set to *"notification.comment.reply"* and target_type *users*, the gem will look for a partial in *app/views/activity_notification/mailer/users/comment/reply.html.(|erb|haml|slim|something_else)*.
+_activity_notification_ will look for email template in a similar way as notification views, but the view file name does not start with an underscore. For example, if you have a notification with _:key_ set to _"notification.comment.reply"_ and target_type _users_, the gem will look for a partial in _app/views/activity_notification/mailer/users/comment/reply.html.(|erb|haml|slim|something_else)_.
 
-If this template is missing, the gem will use *default* as the target type which means *activity_notification/mailer/default/default.html.(|erb|haml|slim|something_else)*.
+If this template is missing, the gem will use _default_ as the target type which means _activity_notification/mailer/default/default.html.(|erb|haml|slim|something_else)_.
 
 #### Email subject
 
-*activity_notification* will use `"Notification of #{@notification.notifiable.printable_type.downcase}"` as default email subject. If it is defined, *activity_notification* will resolve email subject from *overriding_notification_email_subject* method in notifiable models. You can customize email subject like this:
+_activity_notification_ will use `"Notification of #{@notification.notifiable.printable_type.downcase}"` as default email subject. If it is defined, _activity_notification_ will resolve email subject from _overriding_notification_email_subject_ method in notifiable models. You can customize email subject like this:
 
 ```ruby
 class Comment < ActiveRecord::Base
@@ -128,7 +128,7 @@ end
 
 #### i18n for email
 
-The subject of notification email can be put in your locale *.yml* files as **mail_subject** field:
+The subject of notification email can be put in your locale _.yml_ files as **mail_subject** field:
 
 ```yaml
 notification:
@@ -136,24 +136,24 @@ notification:
     comment:
       post:
         text: "<p>Someone posted comments to your article</p>"
-        mail_subject: 'New comment to your article'
+        mail_subject: "New comment to your article"
 ```
 
 ### Batch email notification
 
-*activity_notification* provides batch email notification to the notification targets. You can send notification email daily, hourly or weekly and so on with a scheduler like *whenever*.
+_activity_notification_ provides batch email notification to the notification targets. You can send notification email daily, hourly or weekly and so on with a scheduler like _whenever_.
 
 #### Batch mailer setup
 
-Set up SMTP server configuration for *ActionMailer* and the default URL options for the *activity_notification* mailer in each environment.
+Set up SMTP server configuration for _ActionMailer_ and the default URL options for the _activity_notification_ mailer in each environment.
 
-Batch email notification is disabled as default. You can configure it to enable email notification in initializer *activity_notification.rb* like single email notification.
+Batch email notification is disabled as default. You can configure it to enable email notification in initializer _activity_notification.rb_ like single email notification.
 
 ```ruby
 config.email_enabled = true
 ```
 
-You can also configure them for each target model by *acts_as_target* role like this.
+You can also configure them for each target model by _acts_as_target_ role like this.
 
 ```ruby
 class User < ActiveRecord::Base
@@ -163,7 +163,7 @@ class User < ActiveRecord::Base
 end
 ```
 
-Then, you can send batch notification email for unopened notifications only to the all specified targets with *batch_key*.
+Then, you can send batch notification email for unopened notifications only to the all specified targets with _batch_key_.
 
 ```ruby
 # Send batch notification email to the users with unopened notifications
@@ -179,28 +179,28 @@ User.send_batch_unopened_notification_email(batch_key: 'batch.comment.post', fil
 
 #### Batch sender configuration
 
-*activity_notification* uses same sender configuration of real-time email notification as batch email sender.
-You can configure *config.mailer_sender* as simply *String* or *Proc* based on the *batch_key*:
+_activity_notification_ uses same sender configuration of real-time email notification as batch email sender.
+You can configure _config.mailer_sender_ as simply _String_ or _Proc_ based on the _batch_key_:
 
 ```ruby
 config.mailer_sender = ->(batch_key){ batch_key == 'batch.inquiry.post' ? 'support@example.com' : 'noreply@example.com' }
 ```
 
-*batch_key* is specified by **:batch_key** option. If this option is not specified, the key of the first notification will be used as *batch_key*.
+_batch_key_ is specified by **:batch_key** option. If this option is not specified, the key of the first notification will be used as _batch_key_.
 
 #### Batch email templates
 
-*activity_notification* will look for batch email template in the same way as email notification using *batch_key*.
+_activity_notification_ will look for batch email template in the same way as email notification using _batch_key_.
 
 #### Batch email subject
 
-*activity_notification* will resolve batch email subject as the same way as [email subject](#email-subject) with *batch_key*.
+_activity_notification_ will resolve batch email subject as the same way as [email subject](#email-subject) with _batch_key_.
 
 If you use i18n for batch email, you can configure batch email subject in your locale files. See [i18n for batch email](#i18n-for-batch-email).
 
 #### i18n for batch email
 
-The subject of batch notification email also can be put in your locale *.yml* files as **mail_subject** field for *batch_key*.
+The subject of batch notification email also can be put in your locale _.yml_ files as **mail_subject** field for _batch_key_.
 
 ```yaml
 notification:
@@ -208,18 +208,18 @@ notification:
     batch:
       comment:
         post:
-          mail_subject: 'New comments to your article'
+          mail_subject: "New comments to your article"
 ```
 
 ### Grouping notifications
 
-*activity_notification* provides the function for automatically grouping notifications. When you created a notification like this, all *unopened* notifications to the same target will be grouped by *article* set as **:group** options:
+_activity_notification_ provides the function for automatically grouping notifications. When you created a notification like this, all _unopened_ notifications to the same target will be grouped by _article_ set as **:group** options:
 
 ```ruby
 @comment.notify :users key: 'comment.post', group: @comment.article
 ```
 
-When you use default notification view, it is helpful to configure **acts_as_notification_group** (or *acts_as_group*) with *:printable_name* option to render group instance.
+When you use default notification view, it is helpful to configure **acts_as_notification_group** (or _acts_as_group_) with _:printable_name_ option to render group instance.
 
 ```ruby
 class Article < ActiveRecord::Base
@@ -236,9 +236,11 @@ def index
   @notifications = @target.notifications.group_owners_only
 end
 ```
-*notification_index* and *notification_index_with_attributes* methods also use *group_owners_only* scope internally.
+
+_notification_index_ and _notification_index_with_attributes_ methods also use _group_owners_only_ scope internally.
 
 And you can render them in a view like this:
+
 ```erb
 <% if notification.group_member_exists? %>
   <%= "#{notification.notifier.name} and #{notification.group_member_count} other users" %>
@@ -248,7 +250,7 @@ And you can render them in a view like this:
 <%= "posted comments to your article \"#{notification.group.title}\"" %>
 ```
 
-This presentation will be shown to target users as *Kevin and 7 other users posted comments to your article "Let's use Ruby"*.
+This presentation will be shown to target users as _Kevin and 7 other users posted comments to your article "Let's use Ruby"_.
 
 You can also use `%{group_member_count}`, `%{group_notification_count}`, `%{group_member_notifier_count}` and `%{group_notifier_count}` in i18n text as a field:
 
@@ -258,25 +260,24 @@ notification:
     comment:
       post:
         text: "<p>%{notifier_name} and %{group_member_notifier_count} other users posted %{group_notification_count} comments to your article</p>"
-        mail_subject: 'New comment to your article'
+        mail_subject: "New comment to your article"
 ```
 
-Then, you will see *"Kevin and 7 other users posted 10 comments to your article"*.
-
+Then, you will see _"Kevin and 7 other users posted 10 comments to your article"_.
 
 ### Subscription management
 
-*activity_notification* provides the function for subscription management of notifications and notification email.
+_activity_notification_ provides the function for subscription management of notifications and notification email.
 
 #### Configuring subscriptions
 
-Subscription management is disabled as default. You can configure it to enable subscription management in initializer *activity_notification.rb*.
+Subscription management is disabled as default. You can configure it to enable subscription management in initializer _activity_notification.rb_.
 
 ```ruby
 config.subscription_enabled = true
 ```
 
-This makes all target model subscribers. You can also configure them for each target model by *acts_as_target* role like this:
+This makes all target model subscribers. You can also configure them for each target model by _acts_as_target_ role like this:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -292,6 +293,7 @@ If you do not have a subscriptions table in you database, create a migration for
 $ bin/rails generate activity_notification:migration CreateSubscriptions -t subscriptions
 $ bin/rake db:migrate
 ```
+
 If you are using a different table name than the default "subscriptions", change the settings in your config/initializers/activity_notification.rb file, e.g, if you use the table name "notifications_subscription" instead:
 
 ```
@@ -300,18 +302,18 @@ config.subscription_table_name = "notifications_subscriptions"
 
 #### Managing subscriptions
 
-Subscriptions are managed by instances of **ActivityNotification::Subscription** model which belongs to *target* and *key* of the notification.
-*Subscription#subscribing* manages subscription of notifications.
-*true* means the target will receive the notifications with this key.
-*false* means the target will not receive these notifications.
-*Subscription#subscribing_to_email* manages subscription of notification email.
-*true* means the target will receive the notification email with this key including batch notification email with this *batch_key*.
-*false* means the target will not receive these notification email.
+Subscriptions are managed by instances of **ActivityNotification::Subscription** model which belongs to _target_ and _key_ of the notification.
+_Subscription#subscribing_ manages subscription of notifications.
+_true_ means the target will receive the notifications with this key.
+_false_ means the target will not receive these notifications.
+_Subscription#subscribing_to_email_ manages subscription of notification email.
+_true_ means the target will receive the notification email with this key including batch notification email with this _batch_key_.
+_false_ means the target will not receive these notification email.
 
 ##### Subscription defaults
 
 As default, all target subscribes to notification and notification email when subscription record does not exist in your database.
-You can change this **subscribe_as_default** parameter in initializer *activity_notification.rb*.
+You can change this **subscribe_as_default** parameter in initializer _activity_notification.rb_.
 
 ```ruby
 config.subscribe_as_default = false
@@ -320,7 +322,7 @@ config.subscribe_as_default = false
 Then, all target does not subscribe to notification and notification email and will not receive any notifications as default.
 
 As default, email and optional target subscriptions will use the same default subscription value as defined in **subscribe_as_default**.
-You can disable them by providing **subscribe_to_email_as_default** or **subscribe_to_optional_targets_as_default** parameter(s) in initializer *activity_notification.rb*.
+You can disable them by providing **subscribe_to_email_as_default** or **subscribe_to_optional_targets_as_default** parameter(s) in initializer _activity_notification.rb_.
 
 ```ruby
 # Enable subscribe as default, but disable it for emails
@@ -337,33 +339,33 @@ You can create subscription record from subscription API in your target model li
 
 ```ruby
 # Subscribe 'comment.reply' notifications and notification email
-user.create_subscription(key: 'comment.reply')
+user.create_notification_subscription(key: 'comment.reply')
 
 # Subscribe 'comment.reply' notifications but does not subscribe notification email
-user.create_subscription(key: 'comment.reply', subscribing_to_email: false)
+user.create_notification_subscription(key: 'comment.reply', subscribing_to_email: false)
 
 # Unsubscribe 'comment.reply' notifications and notification email
-user.create_subscription(key: 'comment.reply', subscribing: false)
+user.create_notification_subscription(key: 'comment.reply', subscribing: false)
 ```
 
 You can also update subscriptions like this:
 
 ```ruby
 # Subscribe 'comment.reply' notifications and notification email
-user.find_or_create_subscription('comment.reply').subscribe
+user.find_or_create_notification_subscription('comment.reply').subscribe
 
 # Unsubscribe 'comment.reply' notifications and notification email
-user.find_or_create_subscription('comment.reply').unsubscribe
+user.find_or_create_notification_subscription('comment.reply').unsubscribe
 
 # Unsubscribe 'comment.reply' notification email
-user.find_or_create_subscription('comment.reply').unsubscribe_to_email
+user.find_or_create_notification_subscription('comment.reply').unsubscribe_to_email
 ```
 
 #### Customizing subscriptions
 
-*activity_notification* provides basic controllers and views to manage the subscriptions.
+_activity_notification_ provides basic controllers and views to manage the subscriptions.
 
-Add subscription routing to *config/routes.rb* for the target (e.g. *:users*):
+Add subscription routing to _config/routes.rb_ for the target (e.g. _:users_):
 
 ```ruby
 Rails.application.routes.draw do
@@ -379,42 +381,41 @@ Rails.application.routes.draw do
 end
 ```
 
-Then, you can access *users/1/subscriptions* and use *[ActivityNotification::SubscriptionsController](/app/controllers/activity_notification/subscriptions_controller.rb)* or *[ActivityNotification::SubscriptionsWithDeviseController](/app/controllers/activity_notification/subscriptions_with_devise_controller.rb)* to manage the subscriptions.
+Then, you can access _users/1/subscriptions_ and use _[ActivityNotification::SubscriptionsController](/app/controllers/activity_notification/subscriptions_controller.rb)_ or _[ActivityNotification::SubscriptionsWithDeviseController](/app/controllers/activity_notification/subscriptions_with_devise_controller.rb)_ to manage the subscriptions.
 
 You can see sample subscription management view in demo application here: *https://activity-notification-example.herokuapp.com/users/1/subscriptions*
 
 If you would like to customize subscription controllers or views, you can use generators like notifications:
 
-* Customize subscription controllers
+- Customize subscription controllers
 
-    1. Create your custom controllers using controller generator with a target:
+  1. Create your custom controllers using controller generator with a target:
 
-        ```console
-        $ bin/rails generate activity_notification:controllers users -c subscriptions subscriptions_with_devise
-        ```
+     ```console
+     $ bin/rails generate activity_notification:controllers users -c subscriptions subscriptions_with_devise
+     ```
 
-    2. Tell the router to use this controller:
+  2. Tell the router to use this controller:
 
-        ```ruby
-        notify_to :users, with_subscription: { controller: 'users/subscriptions' }
-        ```
+     ```ruby
+     notify_to :users, with_subscription: { controller: 'users/subscriptions' }
+     ```
 
-* Customize subscription views
+- Customize subscription views
 
-    ```console
-    $ bin/rails generate activity_notification:views users -v subscriptions
-    ```
-
+  ```console
+  $ bin/rails generate activity_notification:views users -v subscriptions
+  ```
 
 ### REST API backend
 
-*activity_notification* provides REST API backend to operate notifications and subscriptions.
+_activity_notification_ provides REST API backend to operate notifications and subscriptions.
 
 #### Configuring REST API backend
 
-You can configure *activity_notification* routes as REST API backend with **:api_mode** option of *notify_to* method. See [Routes as REST API backend](#routes-as-rest-api-backend) for more details. With *:api_mode* option, *activity_notification* uses *[ActivityNotification::NotificationsApiController](/app/controllers/activity_notification/notifications_api_controller.rb)* instead of *[ActivityNotification::NotificationsController](/app/controllers/activity_notification/notifications_controller.rb)*.
+You can configure _activity_notification_ routes as REST API backend with **:api_mode** option of _notify_to_ method. See [Routes as REST API backend](#routes-as-rest-api-backend) for more details. With _:api_mode_ option, _activity_notification_ uses _[ActivityNotification::NotificationsApiController](/app/controllers/activity_notification/notifications_api_controller.rb)_ instead of _[ActivityNotification::NotificationsController](/app/controllers/activity_notification/notifications_controller.rb)_.
 
-In addition, you can use *:with_subscription* option with *:api_mode* to enable subscription management like this:
+In addition, you can use _:with_subscription_ option with _:api_mode_ to enable subscription management like this:
 
 ```ruby
 Rails.application.routes.draw do
@@ -426,21 +427,21 @@ Rails.application.routes.draw do
 end
 ```
 
-Then, *activity_notification* uses *[ActivityNotification::SubscriptionsApiController](/app/controllers/activity_notification/subscriptions_api_controller.rb)* instead of *[ActivityNotification::SubscriptionsController](/app/controllers/activity_notification/subscriptions_controller.rb)*, and you can call *activity_notification* REST API as */api/v2/notifications* and */api/v2/subscriptions* from your frontend application.
+Then, _activity_notification_ uses _[ActivityNotification::SubscriptionsApiController](/app/controllers/activity_notification/subscriptions_api_controller.rb)_ instead of _[ActivityNotification::SubscriptionsController](/app/controllers/activity_notification/subscriptions_controller.rb)_, and you can call _activity_notification_ REST API as _/api/v2/notifications_ and _/api/v2/subscriptions_ from your frontend application.
 
 When you want to use REST API backend integrated with Devise authentication, see [REST API backend with Devise Token Auth](#rest-api-backend-with-devise-token-auth).
 
-You can see [sample single page application](/spec/rails_app/app/javascript/) using [Vue.js](https://vuejs.org) as a part of example Rails application. This sample application works with *activity_notification* REST API backend.
+You can see [sample single page application](/spec/rails_app/app/javascript/) using [Vue.js](https://vuejs.org) as a part of example Rails application. This sample application works with _activity_notification_ REST API backend.
 
 #### API reference as OpenAPI Specification
 
-*activity_notification* provides API reference as [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification).
+_activity_notification_ provides API reference as [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification).
 
 OpenAPI Specification in [online demo](https://activity-notification-example.herokuapp.com/) is published here: **https://activity-notification-example.herokuapp.com/api/v2/apidocs**
 
 Public API reference is also hosted in [SwaggerHub](https://swagger.io/tools/swaggerhub/) here: **https://app.swaggerhub.com/apis-docs/simukappu/activity-notification/**
 
-You can also publish OpenAPI Specification in your own application using *[ActivityNotification::ApidocsController](/app/controllers/activity_notification/apidocs_controller.rb)* like this:
+You can also publish OpenAPI Specification in your own application using _[ActivityNotification::ApidocsController](/app/controllers/activity_notification/apidocs_controller.rb)_ like this:
 
 ```ruby
 Rails.application.routes.draw do
@@ -452,16 +453,15 @@ Rails.application.routes.draw do
 end
 ```
 
-You can use [Swagger UI](https://swagger.io/tools/swagger-ui/) with this OpenAPI Specification to visualize and interact with *activity_notification* API’s resources.
-
+You can use [Swagger UI](https://swagger.io/tools/swagger-ui/) with this OpenAPI Specification to visualize and interact with _activity_notification_ API’s resources.
 
 ### Integration with Devise
 
-*activity_notification* supports to integrate with devise authentication.
+_activity_notification_ supports to integrate with devise authentication.
 
 #### Configuring integration with Devise authentication
 
-Add **:with_devise** option in notification routing to *config/routes.rb* for the target:
+Add **:with_devise** option in notification routing to _config/routes.rb_ for the target:
 
 ```ruby
 Rails.application.routes.draw do
@@ -471,13 +471,13 @@ Rails.application.routes.draw do
 end
 ```
 
-Then *activity_notification* will use *[ActivityNotification::NotificationsWithDeviseController](/app/controllers/activity_notification/notifications_with_devise_controller.rb)* as a notifications controller. The controller actions automatically call *authenticate_user!* and the user will be restricted to access and operate own notifications only, not others'.
+Then _activity_notification_ will use _[ActivityNotification::NotificationsWithDeviseController](/app/controllers/activity_notification/notifications_with_devise_controller.rb)_ as a notifications controller. The controller actions automatically call _authenticate_user!_ and the user will be restricted to access and operate own notifications only, not others'.
 
-*Hint*: HTTP 403 Forbidden will be returned for unauthorized notifications.
+_Hint_: HTTP 403 Forbidden will be returned for unauthorized notifications.
 
 #### Using different model as target
 
-You can also use different model from Devise resource as a target. When you will add this to *config/routes.rb*:
+You can also use different model from Devise resource as a target. When you will add this to _config/routes.rb_:
 
 ```ruby
 Rails.application.routes.draw do
@@ -487,7 +487,7 @@ Rails.application.routes.draw do
 end
 ```
 
-and add **:devise_resource** option to *acts_as_target* in the target model:
+and add **:devise_resource** option to _acts_as_target_ in the target model:
 
 ```ruby
 class Admin < ActiveRecord::Base
@@ -496,12 +496,12 @@ class Admin < ActiveRecord::Base
 end
 ```
 
-*activity_notification* will authenticate *:admins* notifications with devise authentication for *:users*.
-In this example, *activity_notification* will confirm *admin* belonging to authenticated *user* by Devise.
+_activity_notification_ will authenticate _:admins_ notifications with devise authentication for _:users_.
+In this example, _activity_notification_ will confirm _admin_ belonging to authenticated _user_ by Devise.
 
 #### Configuring simple default routes
 
-You can configure simple default routes for authenticated users, like */notifications* instead of */users/1/notifications*. Use **:devise_default_routes** option like this:
+You can configure simple default routes for authenticated users, like _/notifications_ instead of _/users/1/notifications_. Use **:devise_default_routes** option like this:
 
 ```ruby
 Rails.application.routes.draw do
@@ -522,12 +522,12 @@ Rails.application.routes.draw do
 end
 ```
 
-Then, you can access */admins/notifications* instead of */admins/1/notifications*.
+Then, you can access _/admins/notifications_ instead of _/admins/1/notifications_.
 
 #### REST API backend with Devise Token Auth
 
 We can also integrate [REST API backend](#rest-api-backend) with [Devise Token Auth](https://github.com/lynndylanhurley/devise_token_auth).
-Use **:with_devise** option with **:api_mode** option *config/routes.rb* for the target like this:
+Use **:with_devise** option with **:api_mode** option _config/routes.rb_ for the target like this:
 
 ```ruby
 Rails.application.routes.draw do
@@ -569,7 +569,7 @@ Rails.application.routes.draw do
 end
 ```
 
-Then *activity_notification* will use *[ActivityNotification::NotificationsApiWithDeviseController](/app/controllers/activity_notification/notifications_api_with_devise_controller.rb)* as a notifications controller. The controller actions automatically call *authenticate_user!* and the user will be restricted to access and operate own notifications only, not others'.
+Then _activity_notification_ will use _[ActivityNotification::NotificationsApiWithDeviseController](/app/controllers/activity_notification/notifications_api_with_devise_controller.rb)_ as a notifications controller. The controller actions automatically call _authenticate_user!_ and the user will be restricted to access and operate own notifications only, not others'.
 
 ##### Configuring Devise Token Auth
 
@@ -585,7 +585,7 @@ end
 
 ##### Using REST API backend with Devise Token Auth
 
-To sign in and get *access-token* from Devise Token Auth, call *sign_in* API which you configured by *mount_devise_token_auth_for* method:
+To sign in and get _access-token_ from Devise Token Auth, call _sign_in_ API which you configured by _mount_devise_token_auth_for_ method:
 
 ```console
 $ curl -X POST -H "Content-Type: application/json" -D - -d '{"email": "ichiro@example.com","password": "changeit"}' https://activity-notification-example.herokuapp.com/api/v2/auth/sign_in
@@ -612,7 +612,7 @@ uid: ichiro@example.com
 }
 ```
 
-Then, call *activity_notification* API with returned *access-token*, *client* and *uid* as HTTP headers:
+Then, call _activity_notification_ API with returned _access-token_, _client_ and _uid_ as HTTP headers:
 
 ```console
 $ curl -X GET -H "Content-Type: application/json" -H "access-token: ZiDvw8vJGtbESy5Qpw32Kw" -H "client: W0NkGrTS88xeOx4VDOS-Xg" -H "uid: ichiro@example.com" -D - https://activity-notification-example.herokuapp.com/api/v2/notifications
@@ -628,7 +628,7 @@ HTTP/1.1 200 OK
 }
 ```
 
-Without valid *access-token*, API returns *401 Unauthorized*:
+Without valid _access-token_, API returns _401 Unauthorized_:
 
 ```console
 $ curl -X GET -H "Content-Type: application/json" -D - https://activity-notification-example.herokuapp.com/api/v2/notifications
@@ -643,7 +643,7 @@ HTTP/1.1 401 Unauthorized
 }
 ```
 
-When you request restricted resources of unauthorized targets, *activity_notification* API returns *403 Forbidden*:
+When you request restricted resources of unauthorized targets, _activity_notification_ API returns _403 Forbidden_:
 
 ```console
 $ curl -X GET -H "Content-Type: application/json" -H "access-token: ZiDvw8vJGtbESy5Qpw32Kw" -H "client: W0NkGrTS88xeOx4VDOS-Xg" -H "uid: ichiro@example.com" -D - https://activity-notification-example.herokuapp.com/api/v2/notifications/1
@@ -663,17 +663,16 @@ HTTP/1.1 403 Forbidden
 
 See [Devise Token Auth documents](https://devise-token-auth.gitbook.io/devise-token-auth/) for more details.
 
-
 ### Push notification with Action Cable
 
-*activity_notification* supports push notification with Action Cable by WebSocket.
-*activity_notification* only provides Action Cable channels implementation, does not connections.
+_activity_notification_ supports push notification with Action Cable by WebSocket.
+_activity_notification_ only provides Action Cable channels implementation, does not connections.
 You can use default implementaion in Rails or your custom `ApplicationCable::Connection` for Action Cable connections.
 
 #### Enabling broadcasting notifications to channels
 
 Broadcasting notifications to Action Cable channels is provided as [optional notification targets implementation](#action-cable-channels-as-optional-target).
-This optional targets is disabled as default. You can configure it to enable Action Cable broadcasting in initializer *activity_notification.rb*.
+This optional targets is disabled as default. You can configure it to enable Action Cable broadcasting in initializer _activity_notification.rb_.
 
 ```ruby
 # Enable Action Cable broadcasting as HTML view
@@ -682,7 +681,7 @@ config.action_cable_enabled = true
 config.action_cable_api_enabled = true
 ```
 
-You can also configure them for each model by *acts_as roles* like these:
+You can also configure them for each model by _acts_as roles_ like these:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -707,11 +706,11 @@ class Comment < ActiveRecord::Base
 end
 ```
 
-Then, *activity_notification* will broadcast configured notifications to target channels by *[ActivityNotification::OptionalTarget::ActionCableChannel](/lib/activity_notification/optional_targets/action_cable_channel.rb)* and/or *[ActivityNotification::OptionalTarget::ActionCableApiChannel](/lib/activity_notification/optional_targets/action_cable_api_channel.rb)* as optional targets.
+Then, _activity_notification_ will broadcast configured notifications to target channels by _[ActivityNotification::OptionalTarget::ActionCableChannel](/lib/activity_notification/optional_targets/action_cable_channel.rb)_ and/or _[ActivityNotification::OptionalTarget::ActionCableApiChannel](/lib/activity_notification/optional_targets/action_cable_api_channel.rb)_ as optional targets.
 
 #### Subscribing notifications from channels
 
-*activity_notification* provides *[ActivityNotification::NotificationChannel](/app/channels/activity_notification/notification_channel.rb)* and *[ActivityNotification::NotificationApiChannel](/app/channels/activity_notification/notification_api_channel.rb)* to subscribe broadcasted notifications with Action Cable.
+_activity_notification_ provides _[ActivityNotification::NotificationChannel](/app/channels/activity_notification/notification_channel.rb)_ and _[ActivityNotification::NotificationApiChannel](/app/channels/activity_notification/notification_api_channel.rb)_ to subscribe broadcasted notifications with Action Cable.
 
 You can simply create subscriptions for the specified target in your view like this:
 
@@ -757,11 +756,11 @@ or create subscriptions in your single page application with API channels like t
 // Vue.js implementation with actioncable-vue
 export default {
   // ...
-  mounted () {
+  mounted() {
     this.subscribeActionCable();
   },
   channels: {
-    'ActivityNotification::NotificationApiChannel': {
+    "ActivityNotification::NotificationApiChannel": {
       connected() {
         // Connected
       },
@@ -773,44 +772,45 @@ export default {
       },
       received(data) {
         this.notify(data);
-      }
-    }
+      },
+    },
   },
   methods: {
-    subscribeActionCable () {
+    subscribeActionCable() {
       this.$cable.subscribe({
-        channel: 'ActivityNotification::NotificationApiChannel',
-        target_type: this.target_type, target_id: this.target_id
+        channel: "ActivityNotification::NotificationApiChannel",
+        target_type: this.target_type,
+        target_id: this.target_id,
       });
     },
-    notify (data) {
+    notify(data) {
       // Display notification
 
       // Push notificaion using Web Notification API by Push.js
-      Push.create('ActivityNotification', {
+      Push.create("ActivityNotification", {
         body: data.notification.text,
         timeout: 5000,
         onClick: function () {
           location.href = data.notification.notifiable_path;
           this.close();
-        }
+        },
       });
-    }
-  }
-}
+    },
+  },
+};
 ```
 
-Then, *activity_notification* will push desktop notification using Web Notification API.
+Then, _activity_notification_ will push desktop notification using Web Notification API.
 
 #### Subscribing notifications with Devise authentication
 
-To use Devise integration, enable subscribing notifications with Devise authentication in initializer *activity_notification.rb*.
+To use Devise integration, enable subscribing notifications with Devise authentication in initializer _activity_notification.rb_.
 
 ```ruby
 config.action_cable_with_devise = true
 ```
 
-You can also configure them for each target model by *acts_as_target* like this:
+You can also configure them for each target model by _acts_as_target_ like this:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -820,16 +820,17 @@ class User < ActiveRecord::Base
 end
 ```
 
-When you set *action_cable_with_devise* option to *true*, *ActivityNotification::NotificationChannel* will reject your subscription requests for the target type.
+When you set _action_cable_with_devise_ option to _true_, _ActivityNotification::NotificationChannel_ will reject your subscription requests for the target type.
 
-*activity_notification* also provides *[ActivityNotification::NotificationWithDeviseChannel](/app/channels/activity_notification/notification_with_devise_channel.rb)* to create subscriptions integrated with Devise authentication.
-You can simply use *ActivityNotification::NotificationWithDeviseChannel* instead of *ActivityNotification::NotificationChannel*:
+_activity_notification_ also provides _[ActivityNotification::NotificationWithDeviseChannel](/app/channels/activity_notification/notification_with_devise_channel.rb)_ to create subscriptions integrated with Devise authentication.
+You can simply use _ActivityNotification::NotificationWithDeviseChannel_ instead of _ActivityNotification::NotificationChannel_:
 
 ```js
 App.activity_notification = App.cable.subscriptions.create(
   {
     channel: "ActivityNotification::NotificationWithDeviseChannel",
-    target_type: "<%= @target.to_class_name %>", target_id: "<%= @target.id %>"
+    target_type: "<%= @target.to_class_name %>",
+    target_id: "<%= @target.id %>",
   },
   {
     // ...
@@ -837,13 +838,14 @@ App.activity_notification = App.cable.subscriptions.create(
 );
 ```
 
-You can also create these subscriptions with *devise_type* parameter instead of *target_id* parameter like this:
+You can also create these subscriptions with _devise_type_ parameter instead of _target_id_ parameter like this:
 
 ```js
 App.activity_notification = App.cable.subscriptions.create(
   {
     channel: "ActivityNotification::NotificationWithDeviseChannel",
-    target_type: "users", devise_type: "users"
+    target_type: "users",
+    devise_type: "users",
   },
   {
     // ...
@@ -851,15 +853,16 @@ App.activity_notification = App.cable.subscriptions.create(
 );
 ```
 
-*ActivityNotification::NotificationWithDeviseChannel* will confirm subscription requests from authenticated cookies by Devise. If the user has not signed in, the subscription request will be rejected. If the user has signed in as unauthorized user, the subscription request will be also rejected.
+_ActivityNotification::NotificationWithDeviseChannel_ will confirm subscription requests from authenticated cookies by Devise. If the user has not signed in, the subscription request will be rejected. If the user has signed in as unauthorized user, the subscription request will be also rejected.
 
-In addtion, you can use `Target#notification_action_cable_channel_class_name` method to select channel class depending on your *action_cable_with_devise* configuration for the target.
+In addtion, you can use `Target#notification_action_cable_channel_class_name` method to select channel class depending on your _action_cable_with_devise_ configuration for the target.
 
 ```js
 App.activity_notification = App.cable.subscriptions.create(
   {
     channel: "<%= @target.notification_action_cable_channel_class_name %>",
-    target_type: "<%= @target.to_class_name %>", target_id: "<%= @target.id %>"
+    target_type: "<%= @target.to_class_name %>",
+    target_id: "<%= @target.id %>",
   },
   {
     // ...
@@ -867,17 +870,17 @@ App.activity_notification = App.cable.subscriptions.create(
 );
 ```
 
-This script is also implemented in [default notifications index view](/app/views/activity_notification/notifications/default/index.html.erb) of *activity_notification*.
+This script is also implemented in [default notifications index view](/app/views/activity_notification/notifications/default/index.html.erb) of _activity_notification_.
 
 #### Subscribing notifications API with Devise Token Auth
 
-To use Devise Token Auth integration, also enable subscribing notifications with Devise authentication in initializer *activity_notification.rb*.
+To use Devise Token Auth integration, also enable subscribing notifications with Devise authentication in initializer _activity_notification.rb_.
 
 ```ruby
 config.action_cable_with_devise = true
 ```
 
-You can also configure them for each target model by *acts_as_target* like this:
+You can also configure them for each target model by _acts_as_target_ like this:
 
 ```ruby
 class User < ActiveRecord::Base
@@ -887,68 +890,70 @@ class User < ActiveRecord::Base
 end
 ```
 
-When you set *action_cable_with_devise* option to *true*, *ActivityNotification::NotificationApiChannel* will reject your subscription requests for the target type.
+When you set _action_cable_with_devise_ option to _true_, _ActivityNotification::NotificationApiChannel_ will reject your subscription requests for the target type.
 
-*activity_notification* also provides *[ActivityNotification::NotificationApiWithDeviseChannel](/app/channels/activity_notification/notification_api_with_devise_channel.rb)* to create subscriptions integrated with Devise Token Auth.
-You can simply use *ActivityNotification::NotificationApiWithDeviseChannel* instead of *ActivityNotification::NotificationApiChannel*. Note that you have to pass authenticated token by Devise Token Auth in subscription requests like this:
+_activity_notification_ also provides _[ActivityNotification::NotificationApiWithDeviseChannel](/app/channels/activity_notification/notification_api_with_devise_channel.rb)_ to create subscriptions integrated with Devise Token Auth.
+You can simply use _ActivityNotification::NotificationApiWithDeviseChannel_ instead of _ActivityNotification::NotificationApiChannel_. Note that you have to pass authenticated token by Devise Token Auth in subscription requests like this:
 
 ```js
 export default {
   // ...
   channels: {
-    'ActivityNotification::NotificationApiWithDeviseChannel': {
+    "ActivityNotification::NotificationApiWithDeviseChannel": {
       // ...
-    }
+    },
   },
   methods: {
-    subscribeActionCable () {
+    subscribeActionCable() {
       this.$cable.subscribe({
-        channel: 'ActivityNotification::NotificationApiWithDeviseChannel',
-        target_type: this.target_type, target_id: this.target_id,
-        'access-token': this.authHeaders['access-token'],
-        'client': this.authHeaders['client'],
-        'uid': this.authHeaders['uid']
+        channel: "ActivityNotification::NotificationApiWithDeviseChannel",
+        target_type: this.target_type,
+        target_id: this.target_id,
+        "access-token": this.authHeaders["access-token"],
+        client: this.authHeaders["client"],
+        uid: this.authHeaders["uid"],
       });
-    }
-  }
-}
+    },
+  },
+};
 ```
 
-You can also create these subscriptions with *devise_type* parameter instead of *target_id* parameter like this:
+You can also create these subscriptions with _devise_type_ parameter instead of _target_id_ parameter like this:
 
 ```js
 export default {
   // ...
   methods: {
-    subscribeActionCable () {
+    subscribeActionCable() {
       this.$cable.subscribe({
-        channel: 'ActivityNotification::NotificationApiWithDeviseChannel',
-        target_type: "users", devise_type: "users",
-        'access-token': this.authHeaders['access-token'],
-        'client': this.authHeaders['client'],
-        'uid': this.authHeaders['uid']
+        channel: "ActivityNotification::NotificationApiWithDeviseChannel",
+        target_type: "users",
+        devise_type: "users",
+        "access-token": this.authHeaders["access-token"],
+        client: this.authHeaders["client"],
+        uid: this.authHeaders["uid"],
       });
-    }
-  }
-}
+    },
+  },
+};
 ```
 
-*ActivityNotification::NotificationWithDeviseChannel* will confirm subscription requests from authenticated token by Devise Token Auth. If the token is invalid, the subscription request will be rejected. If the token of unauthorized user is passed, the subscription request will be also rejected.
+_ActivityNotification::NotificationWithDeviseChannel_ will confirm subscription requests from authenticated token by Devise Token Auth. If the token is invalid, the subscription request will be rejected. If the token of unauthorized user is passed, the subscription request will be also rejected.
 
 This script is also implemented in [notifications index in sample single page application](/spec/rails_app/app/javascript/components/notifications/Index.vue).
 
 #### Subscription management of Action Cable channels
-Since broadcasting notifications to Action Cable channels is provided as [optional notification targets implementation](#action-cable-channels-as-optional-target), you can manage subscriptions as *:action_cable_channel* and *:action_cable_api_channel* optional target. See [subscription management of optional targets](#subscription-management-of-optional-targets) for more details.
 
+Since broadcasting notifications to Action Cable channels is provided as [optional notification targets implementation](#action-cable-channels-as-optional-target), you can manage subscriptions as _:action_cable_channel_ and _:action_cable_api_channel_ optional target. See [subscription management of optional targets](#subscription-management-of-optional-targets) for more details.
 
 ### Optional notification targets
 
-*activity_notification* supports configurable optional notification targets like Amazon SNS, Slack, SMS and so on.
+_activity_notification_ supports configurable optional notification targets like Amazon SNS, Slack, SMS and so on.
 
 #### Configuring optional targets
 
-*activity_notification* provides default optional target implementation for Amazon SNS and Slack.
-You can develop any optional target classes which extends *ActivityNotification::OptionalTarget::Base*, and configure them to notifiable model by *acts_as_notifiable* like this:
+_activity_notification_ provides default optional target implementation for Amazon SNS and Slack.
+You can develop any optional target classes which extends _ActivityNotification::OptionalTarget::Base_, and configure them to notifiable model by _acts_as_notifiable_ like this:
 
 ```ruby
 class Comment < ActiveRecord::Base
@@ -976,22 +981,22 @@ class Comment < ActiveRecord::Base
 end
 ```
 
-Write *require* statement for optional target implementation classes and set them with initializing parameters to *acts_as_notifiable*.
-*activity_notification* will publish all notifications of those targets and notifiables to optional targets.
+Write _require_ statement for optional target implementation classes and set them with initializing parameters to _acts_as_notifiable_.
+_activity_notification_ will publish all notifications of those targets and notifiables to optional targets.
 
 #### Customizing message format
 
 Optional targets prepare publishing messages from notification instance using view template like rendering notifications.
-As default, all optional targets use *app/views/activity_notification/optional_targets/default/base/_default.text.erb*.
-You can customize this template by creating *app/views/activity_notification/optional_targets/<target_class_name>/<optional_target_class_name>/<notification_key>.text.(|erb|haml|slim|something_else)*.
-For example, if you have a notification for *:users* target with *:key* set to *"notification.comment.reply"* and *ActivityNotification::OptionalTarget::AmazonSNS* optional target is configured, the gem will look for a partial in *app/views/activity_notification/optional_targets/users/amazon_sns/comment/_reply.text.erb*.
-The gem will also look for templates whose *<target_class_name>* is *default*, *<optional_target_class_name>* is *base* and *<notification_key>* is *default*, which means *app/views/activity_notification/optional_targets/users/amazon_sns/_default.text.erb*, *app/views/activity_notification/optional_targets/users/base/_default.text.erb*, *app/views/activity_notification/optional_targets/default/amazon_sns/_default.text.erb* and *app/views/activity_notification/optional_targets/default/base/_default.text.erb*.
+As default, all optional targets use _app/views/activity_notification/optional_targets/default/base/\_default.text.erb_.
+You can customize this template by creating _app/views/activity_notification/optional_targets/<target_class_name>/<optional_target_class_name>/<notification_key>.text.(|erb|haml|slim|something_else)_.
+For example, if you have a notification for _:users_ target with _:key_ set to _"notification.comment.reply"_ and _ActivityNotification::OptionalTarget::AmazonSNS_ optional target is configured, the gem will look for a partial in _app/views/activity_notification/optional_targets/users/amazon_sns/comment/\_reply.text.erb_.
+The gem will also look for templates whose _<target_class_name>_ is _default_, _<optional_target_class_name>_ is _base_ and _<notification_key>_ is _default_, which means _app/views/activity_notification/optional_targets/users/amazon_sns/\_default.text.erb_, _app/views/activity_notification/optional_targets/users/base/\_default.text.erb_, _app/views/activity_notification/optional_targets/default/amazon_sns/\_default.text.erb_ and _app/views/activity_notification/optional_targets/default/base/\_default.text.erb_.
 
 #### Action Cable channels as optional target
 
-*activity_notification* provides **ActivityNotification::OptionalTarget::ActionCableChannel** and **ActivityNotification::OptionalTarget::ActionCableApiChannel** as default optional target implementation to broadcast notifications to Action Cable channels.
+_activity_notification_ provides **ActivityNotification::OptionalTarget::ActionCableChannel** and **ActivityNotification::OptionalTarget::ActionCableApiChannel** as default optional target implementation to broadcast notifications to Action Cable channels.
 
-Simply write `require 'activity_notification/optional_targets/action_cable_channel'` or `require 'activity_notification/optional_targets/action_cable_api_channel'` statement in your notifiable model and set *ActivityNotification::OptionalTarget::ActionCableChannel* or *ActivityNotification::OptionalTarget::ActionCableApiChannel* to *acts_as_notifiable* with initializing parameters. If you don't specify initializing parameters *ActivityNotification::OptionalTarget::ActionCableChannel* and *ActivityNotification::OptionalTarget::ActionCableApiChannel* uses configuration in *ActivityNotification.config*.
+Simply write `require 'activity_notification/optional_targets/action_cable_channel'` or `require 'activity_notification/optional_targets/action_cable_api_channel'` statement in your notifiable model and set _ActivityNotification::OptionalTarget::ActionCableChannel_ or _ActivityNotification::OptionalTarget::ActionCableApiChannel_ to _acts_as_notifiable_ with initializing parameters. If you don't specify initializing parameters _ActivityNotification::OptionalTarget::ActionCableChannel_ and _ActivityNotification::OptionalTarget::ActionCableApiChannel_ uses configuration in _ActivityNotification.config_.
 
 ```ruby
 # Set Action Cable broadcasting as HTML view using optional target
@@ -1017,7 +1022,7 @@ end
 
 #### Amazon SNS as optional target
 
-*activity_notification* provides **ActivityNotification::OptionalTarget::AmazonSNS** as default optional target implementation for Amazon SNS.
+_activity_notification_ provides **ActivityNotification::OptionalTarget::AmazonSNS** as default optional target implementation for Amazon SNS.
 
 First, add **aws-sdk** or **aws-sdk-sns** (>= AWS SDK for Ruby v3) gem to your Gemfile and set AWS Credentials for SDK (See [Configuring the AWS SDK for Ruby](https://docs.aws.amazon.com/sdk-for-ruby/v3/developer-guide/setup-config.html)).
 
@@ -1038,7 +1043,7 @@ Aws.config.update(
 )
 ```
 
-Then, write `require 'activity_notification/optional_targets/amazon_sns'` statement in your notifiable model and set *ActivityNotification::OptionalTarget::AmazonSNS* to *acts_as_notifiable* with *:topic_arn*, *:target_arn* or *:phone_number* initializing parameters.
+Then, write `require 'activity_notification/optional_targets/amazon_sns'` statement in your notifiable model and set _ActivityNotification::OptionalTarget::AmazonSNS_ to _acts_as_notifiable_ with _:topic_arn_, _:target_arn_ or _:phone_number_ initializing parameters.
 Any other options for `Aws::SNS::Client.new` are available as initializing parameters. See [API Reference of Class: Aws::SNS::Client](http://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SNS/Client.html) for more details.
 
 ```ruby
@@ -1053,7 +1058,7 @@ end
 
 #### Slack as optional target
 
-*activity_notification* provides **ActivityNotification::OptionalTarget::Slack** as default optional target implementation for Slack.
+_activity_notification_ provides **ActivityNotification::OptionalTarget::Slack** as default optional target implementation for Slack.
 
 First, add **slack-notifier** gem to your Gemfile and create Incoming WebHooks in Slack (See [Incoming WebHooks](https://wemakejp.slack.com/apps/A0F7XDUAZ-incoming-webhooks)).
 
@@ -1061,7 +1066,7 @@ First, add **slack-notifier** gem to your Gemfile and create Incoming WebHooks i
 gem 'slack-notifier'
 ```
 
-Then, write `require 'activity_notification/optional_targets/slack'` statement in your notifiable model and set *ActivityNotification::OptionalTarget::Slack* to *acts_as_notifiable* with *:webhook_url* and *:target_username* initializing parameters. *:webhook_url* is created WebHook URL and required, *:target_username* is target's slack user name as String value, symbol method name or lambda function and is optional.
+Then, write `require 'activity_notification/optional_targets/slack'` statement in your notifiable model and set _ActivityNotification::OptionalTarget::Slack_ to _acts_as_notifiable_ with _:webhook_url_ and _:target_username_ initializing parameters. _:webhook_url_ is created WebHook URL and required, _:target_username_ is target's slack user name as String value, symbol method name or lambda function and is optional.
 Any other options for `Slack::Notifier.new` are available as initializing parameters. See [Github slack-notifier](https://github.com/stevenosloan/slack-notifier) and [API Reference of Class: Slack::Notifier](http://www.rubydoc.info/gems/slack-notifier/1.5.1/Slack/Notifier) for more details.
 
 ```ruby
@@ -1083,7 +1088,7 @@ You can develop any custom optional targets.
 Custom optional target class must extend **ActivityNotification::OptionalTarget::Base** and override **initialize_target** and **notify** method.
 You can use **render_notification_message** method to prepare message from notification instance using view template.
 
-For example, create *lib/custom_optional_targets/amazon_sns.rb* as follows:
+For example, create _lib/custom_optional_targets/amazon_sns.rb_ as follows:
 
 ```ruby
 module CustomOptionalTarget
@@ -1112,7 +1117,7 @@ module CustomOptionalTarget
 end
 ```
 
-Then, you can configure them to notifiable model by *acts_as_notifiable* like this:
+Then, you can configure them to notifiable model by _acts_as_notifiable_ like this:
 
 ```ruby
 class Comment < ActiveRecord::Base
@@ -1124,21 +1129,21 @@ class Comment < ActiveRecord::Base
 end
 ```
 
-*acts_as_notifiable* creates optional target instances and calls *initialize_target* method with initializing parameters.
+_acts_as_notifiable_ creates optional target instances and calls _initialize_target_ method with initializing parameters.
 
 #### Subscription management of optional targets
 
-*ActivityNotification::Subscription* model provides API to subscribe and unsubscribe optional notification targets. Call these methods with optional target name like this:
+_ActivityNotification::Subscription_ model provides API to subscribe and unsubscribe optional notification targets. Call these methods with optional target name like this:
 
 ```ruby
 # Subscribe Acltion Cable channel for 'comment.reply' notifications
-user.find_or_create_subscription('comment.reply').subscribe_to_optional_target(:action_cable_channel)
+user.find_or_create_notification_subscription('comment.reply').subscribe_to_optional_target(:action_cable_channel)
 
 # Subscribe Acltion Cable API channel for 'comment.reply' notifications
-user.find_or_create_subscription('comment.reply').subscribe_to_optional_target(:action_cable_api_channel)
+user.find_or_create_notification_subscription('comment.reply').subscribe_to_optional_target(:action_cable_api_channel)
 
 # Unsubscribe Slack notification for 'comment.reply' notifications
-user.find_or_create_subscription('comment.reply').unsubscribe_to_optional_target(:slack)
+user.find_or_create_notification_subscription('comment.reply').unsubscribe_to_optional_target(:slack)
 ```
 
 You can also manage subscriptions of optional targets by subscriptions REST API. See [REST API backend](#rest-api-backend) for more details.
