@@ -8,7 +8,7 @@ module ActivityNotification
       unless ActivityNotification.config.orm == :dynamoid
         # Selects filtered subscriptions by key.
         # @example Get filtered subscriptions of the @user with key 'comment.reply'
-        #   @subscriptions = @user.subscriptions.filtered_by_key('comment.reply')
+        #   @subscriptions = @user.notification_subscriptions.filtered_by_key('comment.reply')
         # @scope class
         # @param [String] key Key of the subscription for filter
         # @return [ActiveRecord_AssociationRelation<Subscription>, Mongoid::Criteria<Notificaion>] Database query of filtered subscriptions
@@ -16,9 +16,9 @@ module ActivityNotification
 
         # Selects filtered subscriptions by key with filter options.
         # @example Get filtered subscriptions of the @user with key 'comment.reply'
-        #   @subscriptions = @user.subscriptions.filtered_by_key('comment.reply')
+        #   @subscriptions = @user.notification_subscriptions.filtered_by_key('comment.reply')
         # @example Get custom filtered subscriptions of the @user
-        #   @subscriptions = @user.subscriptions.filtered_by_options({ custom_filter: ["created_at >= ?", time.hour.ago] })
+        #   @subscriptions = @user.notification_subscriptions.filtered_by_options({ custom_filter: ["created_at >= ?", time.hour.ago] })
         # @scope class
         # @param [Hash] options Options for filter
         # @option options [String]     :filtered_by_key        (nil) Key of the subscription for filter

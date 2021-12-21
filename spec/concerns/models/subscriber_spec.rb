@@ -12,10 +12,10 @@ shared_examples_for :subscriber do
     it "has many subscriptions" do
       subscription_1 = create(:subscription, target: test_instance, key: 'subscription_key_1')
       subscription_2 = create(:subscription, target: test_instance, key: 'subscription_key_2', created_at: subscription_1.created_at + 10.second)
-      expect(test_instance.subscriptions.count).to                eq(2)
-      expect(test_instance.subscriptions.earliest_order.first).to eq(subscription_1)
-      expect(test_instance.subscriptions.latest_order.first).to   eq(subscription_2)
-      expect(test_instance.subscriptions.latest_order.to_a).to    eq(ActivityNotification::Subscription.filtered_by_target(test_instance).latest_order.to_a)
+      expect(test_instance.notification_subscriptions.count).to                eq(2)
+      expect(test_instance.notification_subscriptions.earliest_order.first).to eq(subscription_1)
+      expect(test_instance.notification_subscriptions.latest_order.first).to   eq(subscription_2)
+      expect(test_instance.notification_subscriptions.latest_order.to_a).to    eq(ActivityNotification::Subscription.filtered_by_target(test_instance).latest_order.to_a)
     end
 
     it "has many subscriptions with custom association name" do
@@ -23,70 +23,70 @@ shared_examples_for :subscriber do
 
       subscription_1 = create(:subscription, target: test_instance, key: 'subscription_key_1')
       subscription_2 = create(:subscription, target: test_instance, key: 'subscription_key_2', created_at: subscription_1.created_at + 10.second)
-      expect(test_instance.notifications_subscriptions.count).to                eq(2)
-      expect(test_instance.notifications_subscriptions.earliest_order.first).to eq(subscription_1)
-      expect(test_instance.notifications_subscriptions.latest_order.first).to   eq(subscription_2)
-      expect(test_instance.notifications_subscriptions.latest_order.to_a).to    eq(ActivityNotification::Subscription.filtered_by_target(test_instance).latest_order.to_a)
+      expect(test_instance.notification_subscriptions.count).to                eq(2)
+      expect(test_instance.notification_subscriptions.earliest_order.first).to eq(subscription_1)
+      expect(test_instance.notification_subscriptions.latest_order.first).to   eq(subscription_2)
+      expect(test_instance.notification_subscriptions.latest_order.to_a).to    eq(ActivityNotification::Subscription.filtered_by_target(test_instance).latest_order.to_a)
     end
   end    
 
   describe "as public class methods" do
-    describe ".available_as_subscriber?" do
+    describe ".available_as_notification_subscriber?" do
       it "returns true" do
-        expect(described_class.available_as_subscriber?).to be_truthy
+        expect(described_class.available_as_notification_subscriber?).to be_truthy
       end
     end
   end
 
   describe "as public instance methods" do
-    describe "#find_subscription" do
+    describe "#find_notification_subscription" do
       before do
-        expect(test_instance.subscriptions.to_a).to be_empty
+        expect(test_instance.notification_subscriptions.to_a).to be_empty
       end
 
       context "when the cofigured subscription exists" do
         it "returns subscription record" do
-          subscription = test_instance.create_subscription(key: 'test_key')
-          expect(test_instance.subscriptions.reload.to_a).not_to be_empty
-          expect(test_instance.find_subscription('test_key')).to eq(subscription)
+          subscription = test_instance.create_notification_subscription(key: 'test_key')
+          expect(test_instance.notification_subscriptions.reload.to_a).not_to be_empty
+          expect(test_instance.find_notification_subscription('test_key')).to eq(subscription)
         end
       end
 
       context "when the cofigured subscription does not exist" do
         it "returns nil" do
-          expect(test_instance.find_subscription('test_key')).to be_nil
+          expect(test_instance.find_notification_subscription('test_key')).to be_nil
         end
       end
     end
 
-    describe "#find_or_create_subscription" do
+    describe "#find_or_create_notification_subscription" do
       before do
-        expect(test_instance.subscriptions.to_a).to be_empty
+        expect(test_instance.notification_subscriptions.to_a).to be_empty
       end
 
       context "when the cofigured subscription exists" do
         it "returns subscription record" do
-          subscription = test_instance.create_subscription(key: 'test_key')
-          expect(test_instance.subscriptions.reload.to_a).not_to be_empty
-          expect(test_instance.find_or_create_subscription('test_key')).to eq(subscription)
+          subscription = test_instance.create_notification_subscription(key: 'test_key')
+          expect(test_instance.notification_subscriptions.reload.to_a).not_to be_empty
+          expect(test_instance.find_or_create_notification_subscription('test_key')).to eq(subscription)
         end
       end
 
       context "when the cofigured subscription does not exist" do
         it "returns created subscription record" do
-          expect(test_instance.find_or_create_subscription('test_key').target).to eq(test_instance)
+          expect(test_instance.find_or_create_notification_subscription('test_key').target).to eq(test_instance)
         end
       end
     end
 
-    describe "#create_subscription" do
+    describe "#create_notification_subscription" do
       before do
-        expect(test_instance.subscriptions.to_a).to be_empty
+        expect(test_instance.notification_subscriptions.to_a).to be_empty
       end
 
       context "without params" do
         it "raises ActivityNotification::RecordInvalidError it is invalid" do
-          expect { test_instance.create_subscription }
+          expect { test_instance.create_notification_subscription }
           .to raise_error(ActivityNotification::RecordInvalidError)
         end
       end
@@ -94,11 +94,11 @@ shared_examples_for :subscriber do
       context "with only key params" do
         it "creates a new subscription" do
           params = { key: 'key_1' }
-          new_subscription = test_instance.create_subscription(params)
+          new_subscription = test_instance.create_notification_subscription(params)
           expect(new_subscription.subscribing?).to           be_truthy
           expect(new_subscription.subscribing_to_email?).to  be_truthy
           expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_truthy
-          expect(test_instance.subscriptions.reload.size).to eq(1)
+          expect(test_instance.notification_subscriptions.reload.size).to eq(1)
         end
 
         context "with true as ActivityNotification.config.subscribe_to_email_as_default" do
@@ -106,10 +106,10 @@ shared_examples_for :subscriber do
             ActivityNotification.config.subscribe_to_email_as_default = true
 
             params = { key: 'key_1' }
-            new_subscription = test_instance.create_subscription(params)
+            new_subscription = test_instance.create_notification_subscription(params)
             expect(new_subscription.subscribing?).to           be_truthy
             expect(new_subscription.subscribing_to_email?).to  be_truthy
-            expect(test_instance.subscriptions.reload.size).to eq(1)
+            expect(test_instance.notification_subscriptions.reload.size).to eq(1)
 
             ActivityNotification.config.subscribe_to_email_as_default = nil
           end
@@ -120,10 +120,10 @@ shared_examples_for :subscriber do
             ActivityNotification.config.subscribe_to_email_as_default = false
 
             params = { key: 'key_1' }
-            new_subscription = test_instance.create_subscription(params)
+            new_subscription = test_instance.create_notification_subscription(params)
             expect(new_subscription.subscribing?).to           be_truthy
             expect(new_subscription.subscribing_to_email?).to  be_falsey
-            expect(test_instance.subscriptions.reload.size).to eq(1)
+            expect(test_instance.notification_subscriptions.reload.size).to eq(1)
 
             ActivityNotification.config.subscribe_to_email_as_default = nil
           end
@@ -134,10 +134,10 @@ shared_examples_for :subscriber do
             ActivityNotification.config.subscribe_to_optional_targets_as_default = true
 
             params = { key: 'key_1' }
-            new_subscription = test_instance.create_subscription(params)
+            new_subscription = test_instance.create_notification_subscription(params)
             expect(new_subscription.subscribing?).to           be_truthy
             expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_truthy
-            expect(test_instance.subscriptions.reload.size).to eq(1)
+            expect(test_instance.notification_subscriptions.reload.size).to eq(1)
 
             ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
           end
@@ -148,10 +148,10 @@ shared_examples_for :subscriber do
             ActivityNotification.config.subscribe_to_optional_targets_as_default = false
 
             params = { key: 'key_1' }
-            new_subscription = test_instance.create_subscription(params)
+            new_subscription = test_instance.create_notification_subscription(params)
             expect(new_subscription.subscribing?).to           be_truthy
             expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_falsey
-            expect(test_instance.subscriptions.reload.size).to eq(1)
+            expect(test_instance.notification_subscriptions.reload.size).to eq(1)
 
             ActivityNotification.config.subscribe_to_optional_targets_as_default = nil
           end
@@ -161,10 +161,10 @@ shared_examples_for :subscriber do
       context "with false as subscribing params" do
         it "creates a new subscription" do
           params = { key: 'key_1', subscribing: false }
-          new_subscription = test_instance.create_subscription(params)
+          new_subscription = test_instance.create_notification_subscription(params)
           expect(new_subscription.subscribing?).to           be_falsey
           expect(new_subscription.subscribing_to_email?).to  be_falsey
-          expect(test_instance.subscriptions.reload.size).to eq(1)
+          expect(test_instance.notification_subscriptions.reload.size).to eq(1)
         end
 
         context "with true as ActivityNotification.config.subscribe_to_email_as_default" do
@@ -172,10 +172,10 @@ shared_examples_for :subscriber do
             ActivityNotification.config.subscribe_to_email_as_default = true
 
             params = { key: 'key_1', subscribing: false }
-            new_subscription = test_instance.create_subscription(params)
+            new_subscription = test_instance.create_notification_subscription(params)
             expect(new_subscription.subscribing?).to           be_falsey
             expect(new_subscription.subscribing_to_email?).to  be_falsey
-            expect(test_instance.subscriptions.reload.size).to eq(1)
+            expect(test_instance.notification_subscriptions.reload.size).to eq(1)
 
             ActivityNotification.config.subscribe_to_email_as_default = nil
           end
@@ -186,10 +186,10 @@ shared_examples_for :subscriber do
             ActivityNotification.config.subscribe_to_email_as_default = false
 
             params = { key: 'key_1', subscribing: false }
-            new_subscription = test_instance.create_subscription(params)
+            new_subscription = test_instance.create_notification_subscription(params)
             expect(new_subscription.subscribing?).to           be_falsey
             expect(new_subscription.subscribing_to_email?).to  be_falsey
-            expect(test_instance.subscriptions.reload.size).to eq(1)
+            expect(test_instance.notification_subscriptions.reload.size).to eq(1)
 
             ActivityNotification.config.subscribe_to_email_as_default = nil
           end
@@ -199,20 +199,20 @@ shared_examples_for :subscriber do
       context "with false as subscribing_to_email params" do
         it "creates a new subscription" do
           params = { key: 'key_1', subscribing_to_email: false }
-          new_subscription = test_instance.create_subscription(params)
+          new_subscription = test_instance.create_notification_subscription(params)
           expect(new_subscription.subscribing?).to           be_truthy
           expect(new_subscription.subscribing_to_email?).to  be_falsey
-          expect(test_instance.subscriptions.reload.size).to eq(1)
+          expect(test_instance.notification_subscriptions.reload.size).to eq(1)
         end
       end
 
       context "with true as subscribing and false as subscribing_to_email params" do
         it "creates a new subscription" do
           params = { key: 'key_1', subscribing: true, subscribing_to_email: false }
-          new_subscription = test_instance.create_subscription(params)
+          new_subscription = test_instance.create_notification_subscription(params)
           expect(new_subscription.subscribing?).to           be_truthy
           expect(new_subscription.subscribing_to_email?).to  be_falsey
-          expect(test_instance.subscriptions.reload.size).to eq(1)
+          expect(test_instance.notification_subscriptions.reload.size).to eq(1)
         end
       end
 
@@ -220,7 +220,7 @@ shared_examples_for :subscriber do
         it "raises ActivityNotification::RecordInvalidError it is invalid" do
           expect {
             params = { key: 'key_1', subscribing: false, subscribing_to_email: true }
-            test_instance.create_subscription(params)
+            test_instance.create_notification_subscription(params)
           }.to raise_error(ActivityNotification::RecordInvalidError)
         end
       end
@@ -228,30 +228,30 @@ shared_examples_for :subscriber do
       context "with true as optional_targets params" do
         it "creates a new subscription" do
           params = { key: 'key_1', optional_targets: { subscribing_to_console_output: true } }
-          new_subscription = test_instance.create_subscription(params)
+          new_subscription = test_instance.create_notification_subscription(params)
           expect(new_subscription.subscribing?).to                                     be_truthy
           expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_truthy
-          expect(test_instance.subscriptions.reload.size).to eq(1)
+          expect(test_instance.notification_subscriptions.reload.size).to eq(1)
         end
       end
 
       context "with false as optional_targets params" do
         it "creates a new subscription" do
           params = { key: 'key_1', optional_targets: { subscribing_to_console_output: false } }
-          new_subscription = test_instance.create_subscription(params)
+          new_subscription = test_instance.create_notification_subscription(params)
           expect(new_subscription.subscribing?).to                                     be_truthy
           expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_falsey
-          expect(test_instance.subscriptions.reload.size).to eq(1)
+          expect(test_instance.notification_subscriptions.reload.size).to eq(1)
         end
       end
 
       context "with true as subscribing and false as optional_targets params" do
         it "creates a new subscription" do
           params = { key: 'key_1', subscribing: true, optional_targets: { subscribing_to_console_output: false } }
-          new_subscription = test_instance.create_subscription(params)
+          new_subscription = test_instance.create_notification_subscription(params)
           expect(new_subscription.subscribing?).to                                     be_truthy
           expect(new_subscription.subscribing_to_optional_target?(:console_output)).to be_falsey
-          expect(test_instance.subscriptions.reload.size).to eq(1)
+          expect(test_instance.notification_subscriptions.reload.size).to eq(1)
         end
       end
 
@@ -259,16 +259,16 @@ shared_examples_for :subscriber do
         it "raises ActivityNotification::RecordInvalidError it is invalid" do
           expect {
             params = { key: 'key_1', subscribing: false, optional_targets: { subscribing_to_console_output: true } }
-            test_instance.create_subscription(params)
+            test_instance.create_notification_subscription(params)
           }.to raise_error(ActivityNotification::RecordInvalidError)
         end
       end
     end
 
-    describe "#subscription_index" do
+    describe "#notification_subscription_index" do
       context "when the target has no subscriptions" do
         it "returns empty records" do
-          expect(test_instance.subscription_index).to be_empty
+          expect(test_instance.notification_subscription_index).to be_empty
         end
       end
 
@@ -280,42 +280,42 @@ shared_examples_for :subscriber do
 
         context "without any options" do
           it "returns the array of subscriptions" do
-            expect(test_instance.subscription_index[0]).to   eq(@subscription1)
-            expect(test_instance.subscription_index[1]).to   eq(@subscription2)
-            expect(test_instance.subscription_index.size).to eq(2)
+            expect(test_instance.notification_subscription_index[0]).to   eq(@subscription1)
+            expect(test_instance.notification_subscription_index[1]).to   eq(@subscription2)
+            expect(test_instance.notification_subscription_index.size).to eq(2)
           end
         end
 
         context "with limit" do
           it "returns the same as subscriptions with limit" do
             options = { limit: 1 }
-            expect(test_instance.subscription_index(options)[0]).to   eq(@subscription1)
-            expect(test_instance.subscription_index(options).size).to eq(1)
+            expect(test_instance.notification_subscription_index(options)[0]).to   eq(@subscription1)
+            expect(test_instance.notification_subscription_index(options).size).to eq(1)
           end
         end
 
         context "with reverse" do
           it "returns the earliest order" do
             options = { reverse: true }
-            expect(test_instance.subscription_index(options)[0]).to   eq(@subscription2)
-            expect(test_instance.subscription_index(options)[1]).to   eq(@subscription1)
-            expect(test_instance.subscription_index(options).size).to eq(2)
+            expect(test_instance.notification_subscription_index(options)[0]).to   eq(@subscription2)
+            expect(test_instance.notification_subscription_index(options)[1]).to   eq(@subscription1)
+            expect(test_instance.notification_subscription_index(options).size).to eq(2)
           end
         end
 
         context 'with filtered_by_key options' do
           it "returns filtered notifications only" do
             options = { filtered_by_key: 'subscription_key_2' }
-            expect(test_instance.subscription_index(options)[0]).to   eq(@subscription2)
-            expect(test_instance.subscription_index(options).size).to eq(1)
+            expect(test_instance.notification_subscription_index(options)[0]).to   eq(@subscription2)
+            expect(test_instance.notification_subscription_index(options).size).to eq(1)
           end
         end
 
         context 'with custom_filter options' do
           it "returns filtered subscriptions only" do
             options = { custom_filter: { key: 'subscription_key_1' } }
-            expect(test_instance.subscription_index(options)[0]).to   eq(@subscription1)
-            expect(test_instance.subscription_index(options).size).to eq(1)
+            expect(test_instance.notification_subscription_index(options)[0]).to   eq(@subscription1)
+            expect(test_instance.notification_subscription_index(options).size).to eq(1)
           end
 
           it "returns filtered subscriptions only with filter depending on ORM" do
@@ -325,8 +325,8 @@ shared_examples_for :subscriber do
               when :mongoid       then { custom_filter: { key: {'$eq': 'subscription_key_2'} } }
               when :dynamoid      then { custom_filter: {'key.begins_with': 'subscription_key_2'} }
               end
-            expect(test_instance.subscription_index(options)[0]).to   eq(@subscription2)
-            expect(test_instance.subscription_index(options).size).to eq(1)
+            expect(test_instance.notification_subscription_index(options)[0]).to   eq(@subscription2)
+            expect(test_instance.notification_subscription_index(options).size).to eq(1)
           end
         end
 
@@ -334,7 +334,7 @@ shared_examples_for :subscriber do
           context 'with with_target options' do
             it "calls with_target" do
               expect(ActivityNotification::Subscription).to receive_message_chain(:with_target)
-              test_instance.subscription_index(with_target: true)
+              test_instance.notification_subscription_index(with_target: true)
             end
           end
         end
@@ -445,7 +445,7 @@ shared_examples_for :subscriber do
 
       context "subscribing to notification" do
         before do
-          test_instance.create_subscription(key: @test_key)
+          test_instance.create_notification_subscription(key: @test_key)
           expect(test_instance.subscribes_to_notification?(@test_key)).to be_truthy
         end
 
@@ -463,7 +463,7 @@ shared_examples_for :subscriber do
 
       context "subscribing to notification email" do
         before do
-          test_instance.create_subscription(key: @test_key)
+          test_instance.create_notification_subscription(key: @test_key)
           expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_truthy
         end
 
@@ -494,7 +494,7 @@ shared_examples_for :subscriber do
 
       context "unsubscribed to notification" do
         before do
-          test_instance.create_subscription(key: @test_key, subscribing: false)
+          test_instance.create_notification_subscription(key: @test_key, subscribing: false)
           expect(test_instance.subscribes_to_notification?(@test_key)).to be_falsey
         end
 
@@ -511,7 +511,7 @@ shared_examples_for :subscriber do
 
       context "unsubscribed to notification email" do
         before do
-          test_instance.create_subscription(key: @test_key, subscribing: true, subscribing_to_email: false)
+          test_instance.create_notification_subscription(key: @test_key, subscribing: true, subscribing_to_email: false)
           expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_falsey
         end
 
@@ -583,7 +583,7 @@ shared_examples_for :subscriber do
         context "with configured subscription" do
           context "subscribing to notification" do
             it "returns true" do
-              subscription = test_instance.create_subscription(key: @test_key)
+              subscription = test_instance.create_notification_subscription(key: @test_key)
               expect(subscription.subscribing?).to be_truthy
               expect(test_instance.subscribes_to_notification?(@test_key)).to be_truthy
             end
@@ -591,7 +591,7 @@ shared_examples_for :subscriber do
 
           context "unsubscribed to notification" do
             it "returns false" do
-              subscription = test_instance.create_subscription(key: @test_key, subscribing: false)
+              subscription = test_instance.create_notification_subscription(key: @test_key, subscribing: false)
               expect(subscription.subscribing?).to be_falsey
               expect(test_instance.subscribes_to_notification?(@test_key)).to be_falsey
             end
@@ -686,7 +686,7 @@ shared_examples_for :subscriber do
         context "with configured subscription" do
           context "subscribing to notification email" do
             it "returns true" do
-              subscription = test_instance.create_subscription(key: @test_key)
+              subscription = test_instance.create_notification_subscription(key: @test_key)
               expect(subscription.subscribing_to_email?).to be_truthy
               expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_truthy
             end
@@ -694,7 +694,7 @@ shared_examples_for :subscriber do
 
           context "unsubscribed to notification email" do
             it "returns false" do
-              subscription = test_instance.create_subscription(key: @test_key, subscribing: true, subscribing_to_email: false)
+              subscription = test_instance.create_notification_subscription(key: @test_key, subscribing: true, subscribing_to_email: false)
               expect(subscription.subscribing_to_email?).to be_falsey
               expect(test_instance.subscribes_to_notification_email?(@test_key)).to be_falsey
             end
@@ -790,7 +790,7 @@ shared_examples_for :subscriber do
         context "with configured subscription" do
           context "subscribing to the specified optional target" do
             it "returns true" do
-              subscription = test_instance.create_subscription(key: @test_key, optional_targets: { ActivityNotification::Subscription.to_optional_target_key(@optional_target_name) => true })
+              subscription = test_instance.create_notification_subscription(key: @test_key, optional_targets: { ActivityNotification::Subscription.to_optional_target_key(@optional_target_name) => true })
               expect(subscription.subscribing_to_optional_target?(@optional_target_name)).to be_truthy
               expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_truthy
             end
@@ -798,7 +798,7 @@ shared_examples_for :subscriber do
 
           context "unsubscribed to the specified optional target" do
             it "returns false" do
-              subscription = test_instance.create_subscription(key: @test_key, subscribing: true, optional_targets: { ActivityNotification::Subscription.to_optional_target_key(@optional_target_name) => false })
+              subscription = test_instance.create_notification_subscription(key: @test_key, subscribing: true, optional_targets: { ActivityNotification::Subscription.to_optional_target_key(@optional_target_name) => false })
               expect(subscription.subscribing_to_optional_target?(@optional_target_name)).to be_falsey
               expect(test_instance.subscribes_to_optional_target?(@test_key, @optional_target_name)).to be_falsey
             end

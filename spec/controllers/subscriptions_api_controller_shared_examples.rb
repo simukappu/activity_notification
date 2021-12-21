@@ -181,7 +181,7 @@ shared_examples_for :subscriptions_api_controller do
 
   describe "POST #create" do
     before do
-      expect(test_target.subscriptions.size).to eq(0)
+      expect(test_target.notification_subscriptions.size).to eq(0)
     end
 
     context "http POST request without optional targets" do
@@ -200,12 +200,12 @@ shared_examples_for :subscriptions_api_controller do
       end
 
       it "creates new subscription of the target" do
-        expect(test_target.subscriptions.reload.size).to      eq(1)
-        expect(test_target.subscriptions.reload.first.key).to eq("new_subscription_key")
+        expect(test_target.notification_subscriptions.reload.size).to      eq(1)
+        expect(test_target.notification_subscriptions.reload.first.key).to eq("new_subscription_key")
       end
 
       it "returns created subscription" do
-        created_subscription = test_target.subscriptions.reload.first
+        created_subscription = test_target.notification_subscriptions.reload.first
         assert_json_with_object(response_json, created_subscription)
       end
     end
@@ -227,15 +227,15 @@ shared_examples_for :subscriptions_api_controller do
       end
 
       it "creates new subscription of the target" do
-        expect(test_target.subscriptions.reload.size).to eq(1)
-        created_subscription = test_target.subscriptions.reload.first
+        expect(test_target.notification_subscriptions.reload.size).to eq(1)
+        created_subscription = test_target.notification_subscriptions.reload.first
         expect(created_subscription.key).to eq("new_subscription_key")
         expect(created_subscription.subscribing_to_optional_target?("base1")).to be_truthy
         expect(created_subscription.subscribing_to_optional_target?("base2")).to be_falsey
       end
 
       it "returns created subscription" do
-        created_subscription = test_target.subscriptions.reload.first
+        created_subscription = test_target.notification_subscriptions.reload.first
         assert_json_with_object(response_json, created_subscription)
       end
     end
@@ -387,7 +387,7 @@ shared_examples_for :subscriptions_api_controller do
       end
 
       it "deletes the subscription" do
-        expect(test_target.subscriptions.where(id: @subscription.id).exists?).to be_falsey
+        expect(test_target.notification_subscriptions.where(id: @subscription.id).exists?).to be_falsey
       end
     end
   end
