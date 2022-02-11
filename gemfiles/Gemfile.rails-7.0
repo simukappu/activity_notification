@@ -1,0 +1,28 @@
+source 'https://rubygems.org'
+
+gemspec path: '../'
+
+gem 'rails', '~> 7.0.0'
+# https://github.com/lynndylanhurley/devise_token_auth/pull/1517
+gem 'devise_token_auth', git: 'https://github.com/lynndylanhurley/devise_token_auth.git'
+# https://jira.mongodb.org/browse/MONGOID-5193
+gem 'mongoid', git: 'https://github.com/mongodb/mongoid.git'
+
+gem 'sprockets-rails'
+
+group :development do
+  gem 'bullet'
+  gem 'rack-cors'
+end
+
+group :test do
+  gem 'rails-controller-testing'
+  gem 'ammeter'
+  gem 'timecop'
+  gem 'committee'
+  gem 'committee-rails'
+  # gem 'coveralls', require: false
+  gem 'coveralls_reborn', require: false
+end
+
+gem 'dotenv-rails', groups: [:development, :test]
