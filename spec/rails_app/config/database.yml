@@ -23,7 +23,7 @@ mongodb: &mongodb
 default: &default
   pool: 5
   timeout: 5000
-  host: localhost
+  host: 127.0.0.1
   <<: *<%= ENV['AN_TEST_DB'].blank? ? "sqlite" : ENV['AN_TEST_DB'] %>
 
 development:
