@@ -213,6 +213,15 @@ module ActivityNotification
     #   @return [String] Notification API channel prefix for ActionCable.
     attr_accessor :notification_api_channel_prefix
 
+    # @overload rescue_optional_target_errors
+    #   Returns whether activity_notification internally rescues optional target errors
+    #   @return [Boolean] Whether activity_notification internally rescues optional target errors.
+    # @overload rescue_optional_target_errors=(value)
+    #   Sets whether activity_notification internally rescues optional target errors
+    #   @param [Boolean] rescue_optional_target_errors The new rescue_optional_target_errors
+    #   @return [Boolean] Whether activity_notification internally rescues optional target errors.
+    attr_accessor :rescue_optional_target_errors
+
     # Initialize configuration for ActivityNotification.
     # These configuration can be overridden in initializer.
     # @return [Config] A new instance of Config
@@ -242,6 +251,7 @@ module ActivityNotification
       @action_cable_with_devise                 = false
       @notification_channel_prefix              = 'activity_notification_channel'
       @notification_api_channel_prefix          = 'activity_notification_api_channel'
+      @rescue_optional_target_errors            = true
     end
 
     # Sets ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)
