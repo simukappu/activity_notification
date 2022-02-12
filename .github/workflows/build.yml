@@ -106,10 +106,6 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
-      - name: Install dependencies
-        run: |
-          bundle install
-          bundle update
       - name: Setup Amazon DynamoDB Local
         if: matrix.orm == 'dynamoid'
         run: |
