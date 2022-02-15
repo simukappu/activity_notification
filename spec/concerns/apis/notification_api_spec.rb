@@ -136,9 +136,32 @@ shared_examples_for :notification_api do
           Comment._optional_targets[:users] = @current_optional_target
         end
 
-        it "generates notifications even if some optional targets raise error" do
-          notifications = described_class.notify(:users, @comment_2)
-          expect(notifications.size).to eq(2)  
+        context "with true as ActivityNotification.config.rescue_optional_target_errors" do
+          it "generates notifications even if some optional targets raise error" do
+            rescue_optional_target_errors = ActivityNotification.config.rescue_optional_target_errors
+            ActivityNotification.config.rescue_optional_target_errors = true
+            notifications = described_class.notify(:users, @comment_2)
+            expect(notifications.size).to eq(2)
+            ActivityNotification.config.rescue_optional_target_errors = rescue_optional_target_errors
+          end
+        end
+
+        context "with false as ActivityNotification.config.rescue_optional_target_errors" do
+          it "raises an capturable exception" do
+            rescue_optional_target_errors = ActivityNotification.config.rescue_optional_target_errors
+            ActivityNotification.config.rescue_optional_target_errors = false
+            expect { described_class.notify(:users, @comment_2) }.to raise_error(RuntimeError)
+            ActivityNotification.config.rescue_optional_target_errors = rescue_optional_target_errors
+          end
+        end
+
+        it "allows an exception to be captured to continue" do
+          begin
+            notifications = described_class.notify(:users, @comment_2)
+            expect(notifications.size).to eq(2)
+          rescue => e
+            next
+          end
         end
       end
     end

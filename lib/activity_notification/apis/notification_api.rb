@@ -542,7 +542,11 @@ module ActivityNotification
             [optional_target_name, true]
           rescue => e
             Rails.logger.error(e)
-            [optional_target_name, e]
+            if ActivityNotification.config.rescue_optional_target_errors
+              [optional_target_name, e]
+            else
+              raise e
+            end
           end
         else
           [optional_target_name, false]

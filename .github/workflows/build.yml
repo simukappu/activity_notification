@@ -1,0 +1,116 @@
+name: build
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!images'
+  pull_request:
+    branches:
+      - '**'
+      - '!images'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        gemfile:
+          - gemfiles/Gemfile.rails-5.0
+          - gemfiles/Gemfile.rails-5.1
+          - gemfiles/Gemfile.rails-5.2
+          - gemfiles/Gemfile.rails-6.0
+          - gemfiles/Gemfile.rails-6.1
+          - gemfiles/Gemfile.rails-7.0
+        orm:
+          - active_record
+          - mongoid
+          - dynamoid
+        include:
+          # https://www.ruby-lang.org/en/downloads
+          - gemfile: gemfiles/Gemfile.rails-5.0
+            ruby-version: 2.7.5
+          - gemfile: gemfiles/Gemfile.rails-5.1
+            ruby-version: 2.7.5
+          - gemfile: gemfiles/Gemfile.rails-5.2
+            ruby-version: 2.7.5
+          - gemfile: gemfiles/Gemfile.rails-6.0
+            ruby-version: 3.0.3
+          - gemfile: gemfiles/Gemfile.rails-6.1
+            ruby-version: 3.0.3
+          - gemfile: gemfiles/Gemfile.rails-7.0
+            ruby-version: 3.0.3
+          - gemfile: Gemfile
+            ruby-version: 3.0.3
+            orm: active_record
+            test-db: mysql
+          - gemfile: Gemfile
+            ruby-version: 3.0.3
+            orm: active_record
+            test-db: postgresql
+          - gemfile: Gemfile
+            ruby-version: 3.0.3
+            orm: mongoid
+            test-db: mongodb
+          - gemfile: Gemfile
+            ruby-version: head
+            orm: active_record
+            allow_failures: 'true'
+        exclude:
+          - gemfile: gemfiles/Gemfile.rails-6.0
+            orm: dynamoid
+          - gemfile: gemfiles/Gemfile.rails-6.1
+            orm: dynamoid
+          - gemfile: gemfiles/Gemfile.rails-7.0
+            orm: dynamoid
+
+    env:
+      RAILS_ENV: test
+      BUNDLE_GEMFILE: ${{ github.workspace }}/${{ matrix.gemfile }}
+      AN_ORM: ${{ matrix.orm }}
+      AN_TEST_DB: ${{ matrix.test-db }}
+      AWS_DEFAULT_REGION: ap-northeast-1
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
+
+    services:
+      mysql:
+        image: mysql
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: activity_notification_test
+        options: --health-cmd "mysqladmin ping -h 127.0.0.1" --health-interval 10s --health-timeout 5s --health-retries 5
+      postgres:
+        image: postgres
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+          POSTGRES_DB: activity_notification_test
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_DATABASE: activity_notification_test
+        options: --health-cmd mongo --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+      - name: Setup Amazon DynamoDB Local
+        if: matrix.orm == 'dynamoid'
+        run: |
+          bin/install_dynamodblocal.sh
+          bin/start_dynamodblocal.sh
+      - name: Run tests with RSpec
+        run: bundle exec rspec
+        continue-on-error: ${{ matrix.allow_failures == 'true' }}

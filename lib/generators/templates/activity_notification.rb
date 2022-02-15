@@ -97,4 +97,8 @@ ActivityNotification.configure do |config|
   # Configure notification API channel prefix for ActionCable.
   config.notification_api_channel_prefix = 'activity_notification_api_channel'
 
+  # Configure if activity_notification internally rescues optional target errors. Default value is true.
+  # See https://github.com/simukappu/activity_notification/issues/155 for more details.
+  config.rescue_optional_target_errors = true
+
 end

@@ -49,22 +49,22 @@ module ActivityNotification
             key :example, "Article"
           end
           property :group_id do
-            key :oneOf, [
-              { type: :integer },
-              { type: :string },
-              { nullable: true }
-            ]
+            # key :oneOf, [
+            #   { type: :integer },
+            #   { type: :string },
+            #   { nullable: true }
+            # ]
             key :description, "This parameter type is integer with ActiveRecord, but will be string with Mongoid or Dynamoid ORMs."
             key :nullable, true
             key :example, 11
           end
           property :group_owner_id do
-            key :oneOf, [
-              { type: :integer },
-              { type: :string },
-              { type: :object },
-              { nullable: true }
-            ]
+            # key :oneOf, [
+            #   { type: :integer },
+            #   { type: :string },
+            #   { type: :object },
+            #   { nullable: true }
+            # ]
             key :description, "This parameter type is integer with ActiveRecord, but will be string or object including $oid with Mongoid or Dynamoid ORMs."
             key :nullable, true
             key :example, 123
@@ -75,11 +75,11 @@ module ActivityNotification
             key :example, "User"
           end
           property :notifier_id do
-            key :oneOf, [
-              { type: :integer },
-              { type: :string },
-              { nullable: true }
-            ]
+            # key :oneOf, [
+            #   { type: :integer },
+            #   { type: :string },
+            #   { nullable: true }
+            # ]
             key :description, "This parameter type is integer with ActiveRecord, but will be string with Mongoid or Dynamoid ORMs."
             key :nullable, true
             key :example, 2

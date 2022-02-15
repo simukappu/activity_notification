@@ -1,3 +1,12 @@
+## 2.2.3 / 2022-02-12
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.2...v2.2.3)
+
+Enhancements:
+
+* Allow use with Rails 7.0 - [#164](https://github.com/simukappu/activity_notification/issues/164) [#165](https://github.com/simukappu/activity_notification/pull/165)
+* Add *rescue_optional_target_errors* config option to capture errors on optional targets - [#155](https://github.com/simukappu/activity_notification/issues/155) [#156](https://github.com/simukappu/activity_notification/pull/156)
+* Remove type definition from several columns with nullable and multiple type in OpenAPI schema
+
 ## 2.2.2 / 2021-04-18
 
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.1...v2.2.2)
