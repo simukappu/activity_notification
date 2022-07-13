@@ -30,7 +30,7 @@ module ActivityNotification
         # Selects filtered subscriptions by target instance.
         #   ActivityNotification::Subscription.filtered_by_target(@user)
         # is the same as
-        #   @user.subscriptions
+        #   @user.notification_subscriptions
         # @scope class
         # @param [Object] target Target instance for filter
         # @return [ActiveRecord_AssociationRelation<Subscription>] Database query of filtered subscriptions

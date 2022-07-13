@@ -37,7 +37,7 @@ module ActivityNotification
     #   @option params [String] :filtered_by_key (nil)                     Key of the subscription for filter
     #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def create
-      @subscription = @target.create_subscription(subscription_params)
+      @subscription = @target.create_notification_subscription(subscription_params)
       return_back_or_ajax
     end
 
@@ -49,7 +49,7 @@ module ActivityNotification
     #   @option params [required, String] :key (nil) Key of the subscription
     #   @return [Response] HTML view as default or JSON of subscription index with json format parameter
     def find
-      @subscription = @target.find_subscription(params[:key])
+      @subscription = @target.find_notification_subscription(params[:key])
       @subscription ? redirect_to_subscription_path : render_resource_not_found("Couldn't find subscription with this target and 'key'=#{params[:key]}")
     end
 
@@ -211,13 +211,13 @@ module ActivityNotification
       def load_index
         case @index_options[:filter]
         when :configured, 'configured'
-          @subscriptions = @target.subscription_index(@index_options.merge(with_target: true))
+          @subscriptions = @target.notification_subscription_index(@index_options.merge(with_target: true))
           @notification_keys = nil
         when :unconfigured, 'unconfigured'
           @subscriptions = nil
           @notification_keys = @target.notification_keys(@index_options.merge(filter: :unconfigured))
         else
-          @subscriptions = @target.subscription_index(@index_options.merge(with_target: true))
+          @subscriptions = @target.notification_subscription_index(@index_options.merge(with_target: true))
           @notification_keys = @target.notification_keys(@index_options.merge(filter: :unconfigured))
         end
       end
