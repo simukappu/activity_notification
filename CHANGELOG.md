@@ -1,3 +1,10 @@
+## 2.2.4 / 2023-03-20
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.3...v2.2.4)
+
+Bug Fixes:
+
+* Fix broken serialization with Rails security patch - [#166](https://github.com/simukappu/activity_notification/issues/166) [#167](https://github.com/simukappu/activity_notification/pull/167)
+
 ## 2.2.3 / 2022-02-12
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.2...v2.2.3)
 
