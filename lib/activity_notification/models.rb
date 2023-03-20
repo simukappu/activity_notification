@@ -20,9 +20,11 @@ end
 if defined?(ActiveRecord::Base)
   ActiveRecord::Base.class_eval { include ActivityNotification::Models }
 
-  if (Gem::Version.new("5.2.8.1") <= Rails.gem_version && Gem::Version.new("6.0") > Rails.gem_version) ||
-    (Gem::Version.new("6.0.5.1") <= Rails.gem_version && Gem::Version.new("6.1") > Rails.gem_version) ||
-    (Gem::Version.new("6.1.6.1") <= Rails.gem_version && Gem::Version.new("7.0") > Rails.gem_version)
+  # https://github.com/simukappu/activity_notification/issues/166
+  # https://discuss.rubyonrails.org/t/cve-2022-32224-possible-rce-escalation-bug-with-serialized-columns-in-active-record/81017
+  if (Gem::Version.new("5.2.8.1") <= Rails.gem_version && Rails.gem_version < Gem::Version.new("6.0")) ||
+    (Gem::Version.new("6.0.5.1") <= Rails.gem_version && Rails.gem_version < Gem::Version.new("6.1")) ||
+    (Gem::Version.new("6.1.6.1") <= Rails.gem_version && Rails.gem_version < Gem::Version.new("7.0"))
     ActiveRecord::Base.yaml_column_permitted_classes ||= []
     ActiveRecord::Base.yaml_column_permitted_classes << ActiveSupport::HashWithIndifferentAccess
     ActiveRecord::Base.yaml_column_permitted_classes << ActiveSupport::TimeWithZone

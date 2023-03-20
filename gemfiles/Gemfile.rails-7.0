@@ -3,10 +3,9 @@ source 'https://rubygems.org'
 gemspec path: '../'
 
 gem 'rails', '~> 7.0.0'
+gem 'sprockets-rails'
 # https://github.com/lynndylanhurley/devise_token_auth/pull/1517
 gem 'devise_token_auth', git: 'https://github.com/lynndylanhurley/devise_token_auth.git'
-
-gem 'sprockets-rails'
 
 group :development do
   gem 'bullet'
@@ -18,7 +17,7 @@ group :test do
   gem 'ammeter'
   gem 'timecop'
   gem 'committee'
-  gem 'committee-rails', '0.5.1'
+  gem 'committee-rails', '< 0.6'
   # gem 'coveralls', require: false
   gem 'coveralls_reborn', require: false
 end
