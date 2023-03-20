@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gemspec path: '../'
 
 gem 'rails', '~> 6.0.0'
+gem 'psych', '< 4'
 
 group :development do
   gem 'bullet'
@@ -14,7 +15,7 @@ group :test do
   gem 'ammeter'
   gem 'timecop'
   gem 'committee'
-  gem 'committee-rails'
+  gem 'committee-rails', '< 0.6'
   # gem 'coveralls', require: false
   gem 'coveralls_reborn', require: false
 end
