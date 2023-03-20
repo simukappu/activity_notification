@@ -17,4 +17,24 @@ module ActivityNotification
   end
 end
 
-ActiveRecord::Base.class_eval { include ActivityNotification::Models } if defined?(ActiveRecord::Base)
+if defined?(ActiveRecord::Base)
+  ActiveRecord::Base.class_eval { include ActivityNotification::Models }
+
+  if (Gem::Version.new("5.2.8.1") <= Rails.gem_version && Gem::Version.new("6.0") > Rails.gem_version) ||
+    (Gem::Version.new("6.0.5.1") <= Rails.gem_version && Gem::Version.new("6.1") > Rails.gem_version) ||
+    (Gem::Version.new("6.1.6.1") <= Rails.gem_version && Gem::Version.new("7.0") > Rails.gem_version)
+    ActiveRecord::Base.yaml_column_permitted_classes ||= []
+    ActiveRecord::Base.yaml_column_permitted_classes << ActiveSupport::HashWithIndifferentAccess
+    ActiveRecord::Base.yaml_column_permitted_classes << ActiveSupport::TimeWithZone
+    ActiveRecord::Base.yaml_column_permitted_classes << ActiveSupport::TimeZone
+    ActiveRecord::Base.yaml_column_permitted_classes << Symbol
+    ActiveRecord::Base.yaml_column_permitted_classes << Time
+  elsif Gem::Version.new("7.0.3.1") <= Rails.gem_version
+    ActiveRecord.yaml_column_permitted_classes ||= []
+    ActiveRecord.yaml_column_permitted_classes << ActiveSupport::HashWithIndifferentAccess
+    ActiveRecord.yaml_column_permitted_classes << ActiveSupport::TimeWithZone
+    ActiveRecord.yaml_column_permitted_classes << ActiveSupport::TimeZone
+    ActiveRecord.yaml_column_permitted_classes << Symbol
+    ActiveRecord.yaml_column_permitted_classes << Time
+  end
+end
