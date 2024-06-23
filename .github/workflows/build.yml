@@ -3,7 +3,7 @@ name: build
 on:
   push:
     branches:
-      - '**'
+      - 'master'
       - '!images'
   pull_request:
     branches:
@@ -23,6 +23,7 @@ jobs:
           - gemfiles/Gemfile.rails-6.0
           - gemfiles/Gemfile.rails-6.1
           - gemfiles/Gemfile.rails-7.0
+          - gemfiles/Gemfile.rails-7.1
         orm:
           - active_record
           - mongoid
@@ -36,21 +37,23 @@ jobs:
           - gemfile: gemfiles/Gemfile.rails-5.2
             ruby-version: 2.7.7
           - gemfile: gemfiles/Gemfile.rails-6.0
-            ruby-version: 3.2.1
+            ruby-version: 2.7.7
           - gemfile: gemfiles/Gemfile.rails-6.1
-            ruby-version: 3.2.1
+            ruby-version: 2.7.7
           - gemfile: gemfiles/Gemfile.rails-7.0
-            ruby-version: 3.2.1
+            ruby-version: 3.1.6
+          - gemfile: gemfiles/Gemfile.rails-7.1
+            ruby-version: 3.2.4
           - gemfile: Gemfile
-            ruby-version: 3.2.1
+            ruby-version: 3.3.3
             orm: active_record
             test-db: mysql
           - gemfile: Gemfile
-            ruby-version: 3.2.1
+            ruby-version: 3.3.3
             orm: active_record
             test-db: postgresql
           - gemfile: Gemfile
-            ruby-version: 3.2.1
+            ruby-version: 3.3.3
             orm: mongoid
             test-db: mongodb
           - gemfile: Gemfile
@@ -63,6 +66,8 @@ jobs:
           - gemfile: gemfiles/Gemfile.rails-6.1
             orm: dynamoid
           - gemfile: gemfiles/Gemfile.rails-7.0
+            orm: dynamoid
+          - gemfile: gemfiles/Gemfile.rails-7.1
             orm: dynamoid
 
     env:
@@ -100,7 +105,7 @@ jobs:
         options: --health-cmd mongosh --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
