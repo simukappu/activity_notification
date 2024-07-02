@@ -4,8 +4,6 @@ gemspec path: '../'
 
 gem 'rails', '~> 7.0.0'
 gem 'sprockets-rails'
-# https://github.com/lynndylanhurley/devise_token_auth/pull/1517
-gem 'devise_token_auth', git: 'https://github.com/lynndylanhurley/devise_token_auth.git'
 
 group :development do
   gem 'bullet'
