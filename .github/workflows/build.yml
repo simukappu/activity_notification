@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - 'master'
-      - '!images'
+      - 'development'
   pull_request:
     branches:
       - '**'
