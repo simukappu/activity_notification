@@ -46,6 +46,7 @@ def clean_database
 end
 
 RSpec.configure do |config|
+  config.expect_with  :minitest, :rspec
   config.include FactoryBot::Syntax::Methods
   config.before(:each) do
     FactoryBot.reload
