@@ -14,11 +14,13 @@ module ActivityNotification
         belongs_to :target,               polymorphic: true
 
         # Serialize parameters Hash
+        # :nocov:
         if Rails.gem_version >= Gem::Version.new('7.1')
           serialize  :optional_targets, type: Hash, coder: YAML
         else
           serialize  :optional_targets, Hash
         end
+        # :nocov:
 
         validates  :target,               presence: true
         validates  :key,                  presence: true, uniqueness: { scope: :target }
