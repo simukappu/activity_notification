@@ -1,3 +1,10 @@
+## 2.3.1 / 2024-07-23
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.0...v2.3.1)
+
+Bug Fixes:
+
+* Fix serialize arguments for Rails 7.1 - [#178](https://github.com/simukappu/activity_notification/issues/178) [#179](https://github.com/simukappu/activity_notification/pull/179)
+
 ## 2.3.0 / 2024-06-02
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.4...v2.3.0)
 
