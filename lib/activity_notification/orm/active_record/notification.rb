@@ -45,7 +45,11 @@ module ActivityNotification
         belongs_to :notifier,      polymorphic: true, optional: true
 
         # Serialize parameters Hash
-        serialize  :parameters, Hash
+        if Rails.gem_version >= Gem::Version.new('7.1')
+          serialize  :parameters, type: Hash, coder: YAML
+        else
+          serialize  :parameters, Hash
+        end
 
         validates  :target,        presence: true
         validates  :notifiable,    presence: true
