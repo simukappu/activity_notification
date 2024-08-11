@@ -3,12 +3,12 @@ name: build
 on:
   push:
     branches:
-      - 'master'
-      - 'development'
+      - "master"
+      - "development"
   pull_request:
     branches:
-      - '**'
-      - '!images'
+      - "**"
+      - "!images"
 
 jobs:
   build:
@@ -24,6 +24,7 @@ jobs:
           - gemfiles/Gemfile.rails-6.1
           - gemfiles/Gemfile.rails-7.0
           - gemfiles/Gemfile.rails-7.1
+          - gemfiles/Gemfile.rails-7.2
         orm:
           - active_record
           - mongoid
@@ -44,22 +45,24 @@ jobs:
             ruby-version: 3.1.6
           - gemfile: gemfiles/Gemfile.rails-7.1
             ruby-version: 3.2.4
+          - gemfile: gemfiles/Gemfile.rails-7.2
+            ruby-version: 3.3.4
           - gemfile: Gemfile
-            ruby-version: 3.3.3
+            ruby-version: 3.3.4
             orm: active_record
             test-db: mysql
           - gemfile: Gemfile
-            ruby-version: 3.3.3
+            ruby-version: 3.3.4
             orm: active_record
             test-db: postgresql
           - gemfile: Gemfile
-            ruby-version: 3.3.3
+            ruby-version: 3.3.4
             orm: mongoid
             test-db: mongodb
           - gemfile: Gemfile
             ruby-version: head
             orm: active_record
-            allow_failures: 'true'
+            allow_failures: "true"
         exclude:
           - gemfile: gemfiles/Gemfile.rails-6.0
             orm: dynamoid
@@ -68,6 +71,8 @@ jobs:
           - gemfile: gemfiles/Gemfile.rails-7.0
             orm: dynamoid
           - gemfile: gemfiles/Gemfile.rails-7.1
+            orm: dynamoid
+          - gemfile: gemfiles/Gemfile.rails-7.2
             orm: dynamoid
 
     env:

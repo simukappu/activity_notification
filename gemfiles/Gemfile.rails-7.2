@@ -1,21 +1,18 @@
 source 'https://rubygems.org'
 
-gemspec
+gemspec path: '../'
 
 gem 'rails', '~> 7.2.0'
+gem 'sprockets-rails'
 
 group :production do
-  gem 'sprockets-rails'
-  gem 'puma'
-  gem 'pg'
-  gem 'devise'
-  # gem 'devise_token_auth'
   # https://github.com/lynndylanhurley/devise_token_auth/pull/1632
   gem 'devise_token_auth', git: 'https://github.com/lynndylanhurley/devise_token_auth.git'
 end
 
 group :development do
   gem 'bullet'
+  gem 'rack-cors'
 end
 
 group :test do
@@ -28,6 +25,4 @@ group :test do
   gem 'coveralls_reborn', require: false
 end
 
-gem 'webpacker', groups: [:production, :development]
-gem 'rack-cors', groups: [:production, :development]
 gem 'dotenv-rails', groups: [:development, :test]
