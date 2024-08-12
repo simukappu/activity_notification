@@ -119,3 +119,5 @@ jobs:
       - name: Run tests with RSpec
         run: bundle exec rspec
         continue-on-error: ${{ matrix.allow_failures == 'true' }}
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
