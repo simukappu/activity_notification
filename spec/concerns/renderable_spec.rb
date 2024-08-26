@@ -77,7 +77,7 @@ shared_examples_for :renderable do
               test_instance.target = create(:admin)
               test_instance.key = "notification.#{simple_text_key}"
               expect(test_instance.text)
-                .to eq("translation missing: en.notification.admin.#{simple_text_key}.text")
+                .to eq("Translation missing: en.notification.admin.#{simple_text_key}.text")
             end
           end
 

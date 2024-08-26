@@ -16,9 +16,10 @@ group :test do
   gem 'ammeter'
   gem 'timecop'
   gem 'committee'
-  gem 'committee-rails'
+  gem 'committee-rails', '< 0.6'
   # gem 'coveralls', require: false
   gem 'coveralls_reborn', require: false
+  gem 'mongoid', '>= 4.0.0', '< 8.0'
 end
 
 gem 'dotenv-rails', groups: [:development, :test]

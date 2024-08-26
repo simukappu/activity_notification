@@ -1,3 +1,24 @@
+## 2.3.1 / 2024-07-23
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.0...v2.3.1)
+
+Bug Fixes:
+
+* Fix serialize arguments for Rails 7.1 - [#178](https://github.com/simukappu/activity_notification/issues/178) [#179](https://github.com/simukappu/activity_notification/pull/179)
+
+## 2.3.0 / 2024-06-02
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.4...v2.3.0)
+
+Enhancements:
+
+* Allow use with Rails 7.1 - [#173](https://github.com/simukappu/activity_notification/issues/173) [#177](https://github.com/simukappu/activity_notification/pull/177)
+
+## 2.2.4 / 2023-03-20
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.3...v2.2.4)
+
+Bug Fixes:
+
+* Fix broken serialization with Rails security patch - [#166](https://github.com/simukappu/activity_notification/issues/166) [#167](https://github.com/simukappu/activity_notification/pull/167)
+
 ## 2.2.3 / 2022-02-12
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.2.2...v2.2.3)
 

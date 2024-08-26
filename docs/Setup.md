@@ -46,6 +46,22 @@ The same can be done for the subscription table name, e.g., if you're using the 
 config.subscription_table_name = "notifications_subscriptions"
 ```
 
+If you're redefining `yaml_column_permitted_classes` in *config/application.rb*, then you need to add a few classes to the whitelist to make sure *activity_notification* still works as expected.
+
+```ruby
+config.active_record.yaml_column_permitted_classes ||= []
+
+# your override(s), e.g: MyWhitelistedClass
+config.active_record.yaml_column_permitted_classes << MyWhitelistedClass
+
+# overrides required for activity_notification to work
+config.yaml_column_permitted_classes << ActiveSupport::HashWithIndifferentAccess
+config.yaml_column_permitted_classes << ActiveSupport::TimeWithZone
+config.yaml_column_permitted_classes << ActiveSupport::TimeZone
+config.yaml_column_permitted_classes << Symbol
+config.yaml_column_permitted_classes << Time
+```
+
 #### Using Mongoid ORM
 
 When you use *activity_notification* with [Mongoid](http://mongoid.org) ORM, set **AN_ORM** environment variable to **mongoid**:

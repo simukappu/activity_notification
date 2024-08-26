@@ -2,9 +2,10 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'rails', '~> 6.0.0'
+gem 'rails', '~> 7.1.0'
 
 group :production do
+  gem 'sprockets-rails'
   gem 'puma'
   gem 'pg'
   gem 'devise'
@@ -20,7 +21,7 @@ group :test do
   gem 'ammeter'
   gem 'timecop'
   gem 'committee'
-  gem 'committee-rails'
+  gem 'committee-rails', '< 0.6'
   # gem 'coveralls', require: false
   gem 'coveralls_reborn', require: false
 end
