@@ -207,7 +207,7 @@ shared_examples_for :subscriptions_controller do
 
   describe "PUT #create" do
     before do
-      expect(test_target.subscriptions.size).to       eq(0)
+      expect(test_target.notification_subscriptions.size).to       eq(0)
     end
 
     context "http direct PUT request without optional targets" do
@@ -226,8 +226,8 @@ shared_examples_for :subscriptions_controller do
       end
 
       it "creates new subscription of the target" do
-        expect(test_target.subscriptions.reload.size).to      eq(1)
-        expect(test_target.subscriptions.reload.first.key).to eq("new_subscription_key")
+        expect(test_target.notification_subscriptions.reload.size).to      eq(1)
+        expect(test_target.notification_subscriptions.reload.first.key).to eq("new_subscription_key")
       end
 
       it "redirects to :index" do
@@ -252,8 +252,8 @@ shared_examples_for :subscriptions_controller do
       end
 
       it "creates new subscription of the target" do
-        expect(test_target.subscriptions.reload.size).to      eq(1)
-        created_subscription = test_target.subscriptions.reload.first
+        expect(test_target.notification_subscriptions.reload.size).to      eq(1)
+        created_subscription = test_target.notification_subscriptions.reload.first
         expect(created_subscription.key).to eq("new_subscription_key")
         expect(created_subscription.subscribing_to_optional_target?("base1")).to be_truthy
         expect(created_subscription.subscribing_to_optional_target?("base2")).to be_falsey
@@ -281,8 +281,8 @@ shared_examples_for :subscriptions_controller do
       end
 
       it "creates new subscription of the target" do
-        expect(test_target.subscriptions.reload.size).to      eq(1)
-        expect(test_target.subscriptions.reload.first.key).to eq("new_subscription_key")
+        expect(test_target.notification_subscriptions.reload.size).to      eq(1)
+        expect(test_target.notification_subscriptions.reload.first.key).to eq("new_subscription_key")
       end
 
       it "redirects to root_path as request.referer" do
@@ -307,12 +307,12 @@ shared_examples_for :subscriptions_controller do
       end
 
       it "assigns subscription index as @subscriptions" do
-        expect(assigns(:subscriptions)).to eq([test_target.subscriptions.reload.first])
+        expect(assigns(:subscriptions)).to eq([test_target.notification_subscriptions.reload.first])
       end
 
       it "creates new subscription of the target" do
-        expect(test_target.subscriptions.reload.size).to      eq(1)
-        expect(test_target.subscriptions.reload.first.key).to eq("new_subscription_key")
+        expect(test_target.notification_subscriptions.reload.size).to      eq(1)
+        expect(test_target.notification_subscriptions.reload.first.key).to eq("new_subscription_key")
       end
 
       it "renders the :create template as format js" do
@@ -397,7 +397,7 @@ shared_examples_for :subscriptions_controller do
       end
 
       it "deletes the subscription" do
-        expect(test_target.subscriptions.where(id: @subscription.id).exists?).to be_falsey
+        expect(test_target.notification_subscriptions.where(id: @subscription.id).exists?).to be_falsey
       end
 
       it "redirects to :index" do
@@ -417,7 +417,7 @@ shared_examples_for :subscriptions_controller do
       end
 
       it "deletes the subscription" do
-        expect(assigns(test_target.subscriptions.where(id: @subscription.id).exists?)).to be_falsey
+        expect(assigns(test_target.notification_subscriptions.where(id: @subscription.id).exists?)).to be_falsey
       end
 
       it "redirects to root_path as request.referer" do
@@ -435,12 +435,12 @@ shared_examples_for :subscriptions_controller do
         expect(response.status).to eq(200)
       end
 
-      it "assigns subscription index as @subscriptions" do
+      it "assigns subscription index as @notification_subscriptions" do
         expect(assigns(:subscriptions)).to eq([])
       end
 
       it "deletes the subscription" do
-        expect(assigns(test_target.subscriptions.where(id: @subscription.id).exists?)).to be_falsey
+        expect(assigns(test_target.notification_subscriptions.where(id: @subscription.id).exists?)).to be_falsey
       end
 
       it "renders the :destroy template as format js" do

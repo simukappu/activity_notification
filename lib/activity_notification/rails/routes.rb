@@ -346,10 +346,10 @@ module ActionDispatch::Routing
         options[:defaults] = { target_type: target.to_s }.merge(options[:devise_defaults])
         resources_options = options.select { |key, _| [:api_mode, :with_devise, :devise_default_routes, :model, :devise_defaults].exclude? key }
         if options[:with_devise].present? && options[:devise_default_routes].present?
-          create_subscription_routes options, resources_options
+          create_notification_subscription_routes options, resources_options
         else
           self.resources target, only: :none do
-            create_subscription_routes options, resources_options
+            create_notification_subscription_routes options, resources_options
           end
         end
       end
@@ -428,7 +428,7 @@ module ActionDispatch::Routing
       # @param [Symbol] resource Name of the resource model
       # @param [Hash] options Passed options from subscribed_by
       # @param [Hash] resources_options Options to send resources method
-      def create_subscription_routes(options = {}, resources_options = [])
+      def create_notification_subscription_routes(options = {}, resources_options = [])
         self.resources options[:model], resources_options do
           collection do
             get :find                           unless ignore_path?(:find, options)
