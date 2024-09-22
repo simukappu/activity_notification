@@ -24,6 +24,7 @@ jobs:
           - gemfiles/Gemfile.rails-6.1
           - gemfiles/Gemfile.rails-7.0
           - gemfiles/Gemfile.rails-7.1
+          - gemfiles/Gemfile.rails-7.2
         orm:
           - active_record
           - mongoid
@@ -44,6 +45,8 @@ jobs:
             ruby-version: 3.1.6
           - gemfile: gemfiles/Gemfile.rails-7.1
             ruby-version: 3.2.4
+          - gemfile: gemfiles/Gemfile.rails-7.2
+            ruby-version: 3.3.4
           - gemfile: Gemfile
             ruby-version: 3.3.3
             orm: active_record
@@ -68,6 +71,8 @@ jobs:
           - gemfile: gemfiles/Gemfile.rails-7.0
             orm: dynamoid
           - gemfile: gemfiles/Gemfile.rails-7.1
+            orm: dynamoid
+          - gemfile: gemfiles/Gemfile.rails-7.2
             orm: dynamoid
 
     env:
