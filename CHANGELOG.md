@@ -1,3 +1,10 @@
+## 2.3.2 / 2024-09-23
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.0...v2.3.1)
+
+Enhancements:
+
+* Allow use with Rails 7.2 - [#180](https://github.com/simukappu/activity_notification/pull/180) [#181](https://github.com/simukappu/activity_notification/issues/181)
+
 ## 2.3.1 / 2024-07-23
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.0...v2.3.1)
 
