@@ -153,7 +153,7 @@ module ActionDispatch::Routing
         if options[:with_devise].present? && options[:devise_default_routes].present?
           create_notification_routes options, resources_options
         else
-          self.resources target, only: :none do
+          self.resources target, only: [] do
             create_notification_routes options, resources_options
           end
         end
@@ -348,7 +348,7 @@ module ActionDispatch::Routing
         if options[:with_devise].present? && options[:devise_default_routes].present?
           create_subscription_routes options, resources_options
         else
-          self.resources target, only: :none do
+          self.resources target, only: [] do
             create_subscription_routes options, resources_options
           end
         end
