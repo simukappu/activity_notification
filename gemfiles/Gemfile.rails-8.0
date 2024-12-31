@@ -2,12 +2,15 @@ source 'https://rubygems.org'
 
 gemspec path: '../'
 
-gem 'rails', '~> 7.2.0'
+gem 'rails', '~> 8.0.0'
 gem 'sprockets-rails'
+# https://github.com/lynndylanhurley/devise_token_auth/pull/1639
+gem 'devise_token_auth', git: 'https://github.com/lynndylanhurley/devise_token_auth.git'
 
 group :development do
   gem 'bullet'
   gem 'rack-cors'
+  gem 'sqlite3'
 end
 
 group :test do

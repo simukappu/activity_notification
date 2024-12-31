@@ -2,14 +2,16 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'rails', '~> 7.1.0'
+gem 'rails', '~> 8.0.0'
 
 group :production do
   gem 'sprockets-rails'
   gem 'puma'
   gem 'pg'
   gem 'devise'
-  gem 'devise_token_auth'
+  # https://github.com/lynndylanhurley/devise_token_auth/pull/1639
+  gem 'devise_token_auth', git: 'https://github.com/lynndylanhurley/devise_token_auth.git'
+  gem 'sqlite3', ">= 2.1"
 end
 
 group :development do
