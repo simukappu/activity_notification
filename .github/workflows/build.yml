@@ -45,9 +45,9 @@ jobs:
           - gemfile: gemfiles/Gemfile.rails-7.0
             ruby-version: 3.1.6
           - gemfile: gemfiles/Gemfile.rails-7.1
-            ruby-version: 3.2.4
+            ruby-version: 3.2.6
           - gemfile: gemfiles/Gemfile.rails-7.2
-            ruby-version: 3.3.4
+            ruby-version: 3.3.6
           - gemfile: gemfiles/Gemfile.rails-8.0
             ruby-version: 3.3.6
           - gemfile: Gemfile
