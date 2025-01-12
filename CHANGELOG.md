@@ -1,5 +1,12 @@
+## 2.3.3 / 2025-01-13
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.2...v2.3.3)
+
+Enhancements:
+
+* Allow use with Rails 8.0 - [#182](https://github.com/simukappu/activity_notification/pull/182) [#183](https://github.com/simukappu/activity_notification/issues/183)
+
 ## 2.3.2 / 2024-09-23
-[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.0...v2.3.1)
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.1...v2.3.2)
 
 Enhancements:
 
