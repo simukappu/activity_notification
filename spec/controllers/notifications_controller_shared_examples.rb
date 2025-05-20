@@ -589,5 +589,122 @@ shared_examples_for :notifications_controller do
         end
       end
     end
+  describe "DELETE #bulk_destroy" do
+    context "http direct DELETE request" do
+      before do
+        @notification_1 = create(:notification, target: test_target)
+        @notification_2 = create(:notification, target: test_target)
+        delete_with_compatibility :bulk_destroy, target_params.merge({ typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "deletes all notifications" do
+        expect(test_target.notifications.count).to eq(0)
+      end
+
+      it "redirects to :index" do
+        expect(response).to redirect_to action: :index
+      end
+    end
+
+    context "http DELETE request from root_path" do
+      before do
+        @notification_1 = create(:notification, target: test_target)
+        @notification_2 = create(:notification, target: test_target)
+        request.env["HTTP_REFERER"] = root_path
+        delete_with_compatibility :bulk_destroy, target_params.merge({ typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "deletes all notifications" do
+        expect(test_target.notifications.count).to eq(0)
+      end
+
+      it "redirects to root_path as request.referer" do
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context "Ajax DELETE request" do
+      before do
+        @notification_1 = create(:notification, target: test_target)
+        @notification_2 = create(:notification, target: test_target)
+        xhr_with_compatibility :delete, :bulk_destroy, target_params.merge({ typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 200 as http status code" do
+        expect(response.status).to eq(200)
+      end
+
+      it "deletes all notifications" do
+        expect(test_target.notifications.count).to eq(0)
+      end
+
+      it "renders the :bulk_destroy template as format js" do
+        expect(response).to render_template :bulk_destroy, format: :js
+      end
+    end
+
+    context "with filter request parameters" do
+      before do
+        @target_1, @notifiable_1, @group_1, @key_1 = create(:confirmed_user), create(:article), nil,           "key.1"
+        @target_2, @notifiable_2, @group_2, @key_2 = create(:confirmed_user), create(:comment), @notifiable_1, "key.2"
+        @notification_1 = create(:notification, target: test_target, notifiable: @notifiable_1, group: @group_1, key: @key_1)
+        @notification_2 = create(:notification, target: test_target, notifiable: @notifiable_2, group: @group_2, key: @key_2, created_at: @notification_1.created_at + 10.second)
+      end
+
+      context "with filtered_by_type request parameters" do
+        it "destroys filtered notifications only" do
+          delete_with_compatibility :bulk_destroy, target_params.merge({ typed_target_param => test_target, 'filtered_by_type' => @notifiable_2.to_class_name }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_1)
+        end
+      end
+  
+      context 'with filtered_by_group_type and :filtered_by_group_id request parameters' do
+        it "destroys filtered notifications only" do
+          delete_with_compatibility :bulk_destroy, target_params.merge({ typed_target_param => test_target, 'filtered_by_group_type' => 'Article', 'filtered_by_group_id' => @group_2.id.to_s }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_1)
+        end
+      end
+
+      context 'with filtered_by_key request parameters' do
+        it "destroys filtered notifications only" do
+          delete_with_compatibility :bulk_destroy, target_params.merge({ typed_target_param => test_target, 'filtered_by_key' => 'key.2' }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_1)
+        end
+      end
+
+      context 'with later_than parameter' do
+        it "destroys filtered notifications only" do
+          delete_with_compatibility :bulk_destroy, target_params.merge({ typed_target_param => test_target, later_than: (@notification_1.created_at.in_time_zone + 0.001).iso8601(3) }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_1)
+        end
+      end
+
+      context 'with earlier_than parameter' do
+        it "destroys filtered notifications only" do
+          delete_with_compatibility :bulk_destroy, target_params.merge({ typed_target_param => test_target, earlier_than: @notification_2.created_at.iso8601(3) }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_2)
+        end
+      end
+
+      context "with no filter request parameters" do
+        it "destroys all notifications of the target" do
+          delete_with_compatibility :bulk_destroy, target_params.merge({ typed_target_param => test_target}), valid_session
+          expect(test_target.notifications.count).to eq(0)
+        end
+      end
+    end
   end
 end

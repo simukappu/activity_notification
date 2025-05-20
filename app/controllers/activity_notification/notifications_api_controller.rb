@@ -5,7 +5,7 @@ module ActivityNotification
     include Swagger::NotificationsApi
     # Include CommonApiController to select target and define common methods
     include CommonApiController
-    protect_from_forgery except: [:open_all]
+    protect_from_forgery except: [:open_all, :bulk_destroy]
     rescue_from ActivityNotification::NotifiableNotFoundError, with: :render_notifiable_not_found
 
     # Returns notification index of the target.
@@ -50,6 +50,27 @@ module ActivityNotification
       render json: {
         count: @opened_notifications.size,
         notifications: @opened_notifications.as_json(notification_json_options)
+      }
+    end
+    
+    # Destroys multiple notifications of the target.
+    #
+    # DELETE /:target_type/:target_id/notifications/bulk_destroy
+    # @overload bulk_destroy(params)
+    #   @param [Hash] params Request parameters
+    #   @option params [String] :filter                 (nil)     Filter option to load notification index by their status (Nothing as auto, 'opened' or 'unopened')
+    #   @option params [String] :filtered_by_type       (nil)     Notifiable type to filter notification index
+    #   @option params [String] :filtered_by_group_type (nil)     Group type to filter notification index, valid with :filtered_by_group_id
+    #   @option params [String] :filtered_by_group_id   (nil)     Group instance ID to filter notification index, valid with :filtered_by_group_type
+    #   @option params [String] :filtered_by_key        (nil)     Key of notifications to filter notification index
+    #   @option params [String] :later_than             (nil)     ISO 8601 format time to filter notification index later than specified time
+    #   @option params [String] :earlier_than           (nil)     ISO 8601 format time to filter notification index earlier than specified time
+    #   @return [JSON] count: number of destroyed notification records, notifications: destroyed notifications
+    def bulk_destroy
+      super
+      render json: {
+        count: @destroyed_notifications.size,
+        notifications: @destroyed_notifications.as_json(notification_json_options)
       }
     end
   

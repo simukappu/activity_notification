@@ -1,0 +1,7 @@
+$("#notification_index").html("<%= escape_javascript( render 'notifications', target: @target, notifications: @target.notification_index_with_attributes(params), with_target_activities: true ) %>");
+$("#notification_count").html("<%= @target.unopened_notification_count %>");
+<% if @target.has_unopened_notifications? %>
+  $("#notification_count").show();
+<% else %>
+  $("#notification_count").hide();
+<% end %>

@@ -3,7 +3,7 @@ module ActivityNotification
   class NotificationsController < ActivityNotification.config.parent_controller.constantize
     # Include CommonController to select target and define common methods
     include CommonController
-    before_action :set_notification, except: [:index, :open_all]
+    before_action :set_notification, except: [:index, :open_all, :bulk_destroy]
 
     # Shows notification index of the target.
     #
@@ -47,6 +47,28 @@ module ActivityNotification
     #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def open_all
       @opened_notifications = @target.open_all_notifications(params)
+      return_back_or_ajax
+    end
+    
+    # Destroys multiple notifications of the target.
+    #
+    # DELETE /:target_type/:target_id/notifications/bulk_destroy
+    # @overload bulk_destroy(params)
+    #   @param [Hash] params Request parameters
+    #   @option params [String] :filter                 (nil)     Filter option to load notification index by their status (Nothing as auto, 'opened' or 'unopened')
+    #   @option params [String] :limit                  (nil)     Maximum number of notifications to return
+    #   @option params [String] :without_grouping       ('false') Whether notification index will include group members
+    #   @option params [String] :with_group_members     ('false') Whether notification index will include group members
+    #   @option params [String] :filtered_by_type       (nil)     Notifiable type to filter notification index
+    #   @option params [String] :filtered_by_group_type (nil)     Group type to filter notification index, valid with :filtered_by_group_id
+    #   @option params [String] :filtered_by_group_id   (nil)     Group instance ID to filter notification index, valid with :filtered_by_group_type
+    #   @option params [String] :filtered_by_key        (nil)     Key of notifications to filter notification index
+    #   @option params [String] :later_than             (nil)     ISO 8601 format time to filter notification index later than specified time
+    #   @option params [String] :earlier_than           (nil)     ISO 8601 format time to filter notification index earlier than specified time
+    #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
+    #   @return [Response] JavaScript view for ajax request or redirects to back as default
+    def bulk_destroy
+      @destroyed_notifications = @target.bulk_destroy_notifications(params.merge(filtered_by_status: params[:filter]))
       return_back_or_ajax
     end
   

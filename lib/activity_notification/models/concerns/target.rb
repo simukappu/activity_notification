@@ -419,6 +419,24 @@ module ActivityNotification
       Notification.open_all_of(self, options)
     end
 
+    # Destroys multiple notifications of this target.
+    # This method calls NotificationApi#bulk_destroy_of internally with self target instance.
+    # @see NotificationApi#bulk_destroy_of
+    #
+    # @param [Hash] options Options for destroying notifications
+    # @option options [String]   :filtered_by_type       (nil)          Notifiable type for filter
+    # @option options [Object]   :filtered_by_group      (nil)          Group instance for filter
+    # @option options [String]   :filtered_by_group_type (nil)          Group type for filter, valid with :filtered_by_group_id
+    # @option options [String]   :filtered_by_group_id   (nil)          Group instance id for filter, valid with :filtered_by_group_type
+    # @option options [String]   :filtered_by_key        (nil)          Key of the notification for filter
+    # @option options [String]   :later_than             (nil)          ISO 8601 format time to filter notifications later than specified time
+    # @option options [String]   :earlier_than           (nil)          ISO 8601 format time to filter notifications earlier than specified time
+    # @option options [String]   :filtered_by_status     (:all)         Status for filter, :all, :opened and :unopened are available
+    # @return [Array<Notification>] Destroyed notification records
+    def bulk_destroy_notifications(options = {})
+      Notification.bulk_destroy_of(self, options)
+    end
+
 
     # Gets automatically arranged notification index of the target with included attributes like target, notifiable, group and notifier.
     # This method is the typical way to get notifications index from controller of view.

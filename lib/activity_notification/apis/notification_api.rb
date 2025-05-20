@@ -419,6 +419,32 @@ module ActivityNotification
         target_unopened_notifications.update_all(opened_at: opened_at)
         opened_notifications
       end
+      
+      # Destroys multiple notifications of the target.
+      #
+      # @param [Object] target Target of the notifications to destroy
+      # @param [Hash] options Options for destroying notifications
+      # @option options [String]   :filtered_by_type       (nil)          Notifiable type for filter
+      # @option options [Object]   :filtered_by_group      (nil)          Group instance for filter
+      # @option options [String]   :filtered_by_group_type (nil)          Group type for filter, valid with :filtered_by_group_id
+      # @option options [String]   :filtered_by_group_id   (nil)          Group instance id for filter, valid with :filtered_by_group_type
+      # @option options [String]   :filtered_by_key        (nil)          Key of the notification for filter
+      # @option options [String]   :later_than             (nil)          ISO 8601 format time to filter notification index later than specified time
+      # @option options [String]   :earlier_than           (nil)          ISO 8601 format time to filter notification index earlier than specified time
+      # @option options [String]   :filtered_by_status     (:all)         Status for filter, :all, :opened and :unopened are available
+      # @return [Array<Notification>] Destroyed notification records
+      def bulk_destroy_of(target, options = {})
+        target_notifications = target.notifications.filtered_by_options(options)
+        case options[:filtered_by_status]
+        when :opened, 'opened'
+          target_notifications = target_notifications.opened_only!
+        when :unopened, 'unopened'
+          target_notifications = target_notifications.unopened_only
+        end
+        destroyed_notifications = target_notifications.to_a
+        target_notifications.destroy_all
+        destroyed_notifications
+      end
 
       # Returns if group member of the notifications exists.
       # This method is designed to be called from controllers or views to avoid N+1.
