@@ -143,6 +143,24 @@ describe ActivityNotification::Mailer do
             .to eq("https://www.example.com/test@example.com/")
         end
       end
+      context "with destroyed notification" do
+        it "gracefully handles destroyed notification" do
+          notification_id = notification.id
+          notification.destroy
+          expect {
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          }.not_to raise_error
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
+        end
+
+        it "gracefully handles nil notification" do
+          expect {
+            ActivityNotification::Mailer.send_notification_email(nil).deliver_now
+          }.not_to raise_error
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
+        end
+      end
+      
       context "when fallback option is :none and the template is missing" do
         it "raise ActionView::MissingTemplate" do
           expect { ActivityNotification::Mailer.send_notification_email(notification, fallback: :none).deliver_now }
@@ -186,6 +204,39 @@ describe ActivityNotification::Mailer do
   
       end
 
+      context "with destroyed notifications" do
+        it "gracefully handles destroyed notifications" do
+          notifications.each(&:destroy)
+          expect {
+            ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_now
+          }.not_to raise_error
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
+        end
+
+        it "gracefully handles nil notifications" do
+          expect {
+            ActivityNotification::Mailer.send_batch_notification_email(test_target, nil, batch_key).deliver_now
+          }.not_to raise_error
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
+        end
+
+        it "gracefully handles empty notifications" do
+          expect {
+            ActivityNotification::Mailer.send_batch_notification_email(test_target, [], batch_key).deliver_now
+          }.not_to raise_error
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(0)
+        end
+        
+        it "gracefully handles partially destroyed notifications" do
+          valid_notification = notifications.first
+          notifications.last.destroy
+          expect {
+            ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_now
+          }.not_to raise_error
+          expect(ActivityNotification::Mailer.deliveries.size).to eq(1)
+        end
+      end
+      
       context "when fallback option is :none and the template is missing" do
         it "raise ActionView::MissingTemplate" do
           expect { ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key, fallback: :none).deliver_now }
