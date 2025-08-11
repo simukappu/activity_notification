@@ -17,11 +17,6 @@ jobs:
       fail-fast: false
       matrix:
         gemfile:
-          - gemfiles/Gemfile.rails-5.0
-          - gemfiles/Gemfile.rails-5.1
-          - gemfiles/Gemfile.rails-5.2
-          - gemfiles/Gemfile.rails-6.0
-          - gemfiles/Gemfile.rails-6.1
           - gemfiles/Gemfile.rails-7.0
           - gemfiles/Gemfile.rails-7.1
           - gemfiles/Gemfile.rails-7.2
@@ -32,16 +27,6 @@ jobs:
           - dynamoid
         include:
           # https://www.ruby-lang.org/en/downloads
-          - gemfile: gemfiles/Gemfile.rails-5.0
-            ruby-version: 2.7.7
-          - gemfile: gemfiles/Gemfile.rails-5.1
-            ruby-version: 2.7.7
-          - gemfile: gemfiles/Gemfile.rails-5.2
-            ruby-version: 2.7.7
-          - gemfile: gemfiles/Gemfile.rails-6.0
-            ruby-version: 2.7.7
-          - gemfile: gemfiles/Gemfile.rails-6.1
-            ruby-version: 2.7.7
           - gemfile: gemfiles/Gemfile.rails-7.0
             ruby-version: 3.1.6
           - gemfile: gemfiles/Gemfile.rails-7.1
@@ -62,15 +47,7 @@ jobs:
             ruby-version: 3.3.6
             orm: mongoid
             test-db: mongodb
-          - gemfile: Gemfile
-            ruby-version: head
-            orm: active_record
-            allow_failures: 'true'
         exclude:
-          - gemfile: gemfiles/Gemfile.rails-6.0
-            orm: dynamoid
-          - gemfile: gemfiles/Gemfile.rails-6.1
-            orm: dynamoid
           - gemfile: gemfiles/Gemfile.rails-7.0
             orm: dynamoid
           - gemfile: gemfiles/Gemfile.rails-7.1
