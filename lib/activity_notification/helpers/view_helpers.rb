@@ -145,6 +145,20 @@ module ActivityNotification
         send("open_all_#{routing_scope(options)}#{target.to_resource_name}_notifications_path", target, options)
     end
 
+    # Returns destroy_all_notifications_path for the target
+    #
+    # @param [Object] target Target instance
+    # @param [Hash] params Request parameters
+    # @return [String] destroy_all_notifications_path for the target
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
+    def destroy_all_notifications_path_for(target, params = {})
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("destroy_all_#{routing_scope(options)}notifications_path", options) :
+        send("destroy_all_#{routing_scope(options)}#{target.to_resource_name}_notifications_path", target, options)
+    end
+
     # Returns notifications_url for the target
     #
     # @param [Object] target Target instance
@@ -213,6 +227,20 @@ module ActivityNotification
       options.delete(:devise_default_routes) ?
         send("open_all_#{routing_scope(options)}notifications_url", options) :
         send("open_all_#{routing_scope(options)}#{target.to_resource_name}_notifications_url", target, options)
+    end
+
+    # Returns destroy_all_notifications_url for the target
+    #
+    # @param [Object] target Target instance
+    # @param [Hash] params Request parameters
+    # @return [String] destroy_all_notifications_url for the target
+    # @todo Needs any other better implementation
+    # @todo Must handle devise namespace
+    def destroy_all_notifications_url_for(target, params = {})
+      options = params.dup
+      options.delete(:devise_default_routes) ?
+        send("destroy_all_#{routing_scope(options)}notifications_url", options) :
+        send("destroy_all_#{routing_scope(options)}#{target.to_resource_name}_notifications_url", target, options)
     end
 
     # Returns subscriptions_path for the target

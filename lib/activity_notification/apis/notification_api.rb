@@ -420,6 +420,40 @@ module ActivityNotification
         opened_notifications
       end
 
+      # Destroys all notifications of the target matching the filter criteria.
+      #
+      # @param [Object] target Target of the notifications to destroy
+      # @param [Hash] options Options for filtering notifications to destroy
+      # @option options [String]   :filtered_by_type       (nil) Notifiable type for filter
+      # @option options [Object]   :filtered_by_group      (nil) Group instance for filter  
+      # @option options [String]   :filtered_by_group_type (nil) Group type for filter, valid with :filtered_by_group_id
+      # @option options [String]   :filtered_by_group_id   (nil) Group instance id for filter, valid with :filtered_by_group_type
+      # @option options [String]   :filtered_by_key        (nil) Key of the notification for filter
+      # @option options [String]   :later_than             (nil) ISO 8601 format time to filter notifications later than specified time
+      # @option options [String]   :earlier_than           (nil) ISO 8601 format time to filter notifications earlier than specified time
+      # @option options [Array]    :ids                    (nil) Array of specific notification IDs to destroy
+      # @return [Array<Notification>] Destroyed notification records
+      def destroy_all_of(target, options = {})
+        target_notifications = target.notifications.filtered_by_options(options)
+        # If specific IDs are provided, filter by them
+        if options[:ids].present?
+          # :nocov:
+          case ActivityNotification.config.orm
+          when :mongoid
+            target_notifications = target_notifications.where(id: { '$in' => options[:ids] })
+          when :dynamoid
+            target_notifications = target_notifications.where('id.in': options[:ids])
+          else # :active_record
+            target_notifications = target_notifications.where(id: options[:ids])
+          end
+          # :nocov:
+        end
+        # Get the notifications before destroying them for return value
+        destroyed_notifications = target_notifications.to_a
+        target_notifications.destroy_all
+        destroyed_notifications
+      end
+
       # Returns if group member of the notifications exists.
       # This method is designed to be called from controllers or views to avoid N+1.
       #

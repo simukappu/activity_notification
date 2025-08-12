@@ -594,6 +594,98 @@ shared_examples_for :notification_api do
       end
     end
 
+    describe ".destroy_all_of" do
+      before do
+        described_class.notify_to(@user_1, @article, group: @article, key: 'key.1')
+        described_class.notify_to(@user_1, @comment_2, group: @comment_2, key: 'key.2')
+        expect(@user_1.notifications.count).to eq(2)
+        expect(@user_2.notifications.count).to eq(0)
+      end
+
+      it "returns array of destroyed notification records" do
+        destroyed_notifications = described_class.destroy_all_of(@user_1)
+        expect(destroyed_notifications).to be_a Array
+        expect(destroyed_notifications.size).to eq(2)
+      end
+
+      it "destroys all notifications of the target" do
+        described_class.destroy_all_of(@user_1)
+        expect(@user_1.notifications.count).to eq(0)
+      end
+
+      it "does not destroy any notifications of the other targets" do
+        described_class.destroy_all_of(@user_2)
+        expect(@user_1.notifications.count).to eq(2)
+        expect(@user_2.notifications.count).to eq(0)
+      end
+
+      context 'with filtered_by_type options' do
+        it "destroys filtered notifications only" do
+          described_class.destroy_all_of(@user_1, { filtered_by_type: @comment_2.to_class_name })
+          expect(@user_1.notifications.count).to eq(1)
+          expect(@user_1.notifications.first.notifiable).to eq(@article)
+        end
+      end
+
+      context 'with filtered_by_group options' do
+        it "destroys filtered notifications only" do
+          described_class.destroy_all_of(@user_1, { filtered_by_group: @comment_2 })
+          expect(@user_1.notifications.count).to eq(1)
+          expect(@user_1.notifications.first.notifiable).to eq(@article)
+        end
+      end
+
+      context 'with filtered_by_group_type and :filtered_by_group_id options' do
+        it "destroys filtered notifications only" do
+          described_class.destroy_all_of(@user_1, { filtered_by_group_type: 'Comment', filtered_by_group_id: @comment_2.id.to_s })
+          expect(@user_1.notifications.count).to eq(1)
+          expect(@user_1.notifications.first.notifiable).to eq(@article)
+        end
+      end
+
+      context 'with filtered_by_key options' do
+        it "destroys filtered notifications only" do
+          described_class.destroy_all_of(@user_1, { filtered_by_key: 'key.2' })
+          expect(@user_1.notifications.count).to eq(1)
+          expect(@user_1.notifications.first.notifiable).to eq(@article)
+        end
+      end
+
+      context 'with later_than options' do
+        it "destroys filtered notifications only" do
+          described_class.destroy_all_of(@user_1, { later_than: (@user_1.notifications.earliest.created_at.in_time_zone + 0.001).iso8601(3) })
+          expect(@user_1.notifications.count).to eq(1)
+          expect(@user_1.notifications.first).to eq(@user_1.notifications.earliest)
+        end
+      end
+
+      context 'with earlier_than options' do
+        it "destroys filtered notifications only" do
+          described_class.destroy_all_of(@user_1, { earlier_than: @user_1.notifications.latest.created_at.iso8601(3) })
+          expect(@user_1.notifications.count).to eq(1)
+          expect(@user_1.notifications.first).to eq(@user_1.notifications.latest)
+        end
+      end
+
+      context 'with ids options' do
+        it "destroys notifications with specified IDs only" do
+          notification_to_destroy = @user_1.notifications.first
+          described_class.destroy_all_of(@user_1, { ids: [notification_to_destroy.id] })
+          expect(@user_1.notifications.count).to eq(1)
+          expect(@user_1.notifications.first).not_to eq(notification_to_destroy)
+        end
+
+        it "applies other filter options when ids are specified" do
+          notification_to_destroy = @user_1.notifications.first
+          described_class.destroy_all_of(@user_1, { 
+            ids: [notification_to_destroy.id], 
+            filtered_by_key: 'non_existent_key' 
+          })
+          expect(@user_1.notifications.count).to eq(2)
+        end
+      end
+    end
+
     describe ".group_member_exists?" do
       context "when specified notifications have any group members" do
         let(:owner_notifications) do

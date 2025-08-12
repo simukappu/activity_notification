@@ -414,6 +414,7 @@ module ActionDispatch::Routing
         self.resources options[:model], resources_options do
           collection do
             post :open_all unless ignore_path?(:open_all, options)
+            post :destroy_all unless ignore_path?(:destroy_all, options)
           end
           member do
             get  :move     unless ignore_path?(:move, options)

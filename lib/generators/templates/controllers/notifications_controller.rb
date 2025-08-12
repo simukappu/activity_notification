@@ -9,6 +9,11 @@ class <%= @target_prefix %>NotificationsController < ActivityNotification::Notif
   #   super
   # end
 
+  # POST /:target_type/:target_id/notifications/destroy_all
+  # def destroy_all
+  #   super
+  # end
+
   # GET /:target_type/:target_id/notifications/:id
   # def show
   #   super

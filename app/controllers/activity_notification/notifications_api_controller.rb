@@ -52,6 +52,27 @@ module ActivityNotification
         notifications: @opened_notifications.as_json(notification_json_options)
       }
     end
+
+    # Destroys all notifications of the target matching filter criteria.
+    #
+    # POST /:target_type/:target_id/notifications/destroy_all
+    # @overload destroy_all(params)
+    #   @param [Hash] params Request parameters
+    #   @option params [String] :filtered_by_type       (nil) Notifiable type to filter notifications
+    #   @option params [String] :filtered_by_group_type (nil) Group type to filter notifications, valid with :filtered_by_group_id
+    #   @option params [String] :filtered_by_group_id   (nil) Group instance ID to filter notifications, valid with :filtered_by_group_type
+    #   @option params [String] :filtered_by_key        (nil) Key of notifications to filter
+    #   @option params [String] :later_than             (nil) ISO 8601 format time to filter notifications later than specified time
+    #   @option params [String] :earlier_than           (nil) ISO 8601 format time to filter notifications earlier than specified time
+    #   @option params [Array]  :ids                    (nil) Array of specific notification IDs to destroy
+    #   @return [JSON] count: number of destroyed notification records, notifications: destroyed notifications
+    def destroy_all
+      super
+      render json: {
+        count: @destroyed_notifications.size,
+        notifications: @destroyed_notifications.as_json(notification_json_options)
+      }
+    end
   
     # Returns a single notification.
     #

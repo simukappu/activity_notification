@@ -362,6 +362,138 @@ shared_examples_for :notifications_controller do
     end
   end
 
+  describe "POST #destroy_all" do
+    context "http direct POST request" do
+      before do
+        @notification = create(:notification, target: test_target)
+        expect(test_target.notifications.count).to eq(1)
+        post_with_compatibility :destroy_all, target_params.merge({ typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "destroys all notifications of the target" do
+        expect(test_target.notifications.count).to eq(0)
+      end
+
+      it "redirects to :index" do
+        expect(response).to redirect_to action: :index
+      end
+    end
+
+    context "http POST request from root_path" do
+      before do
+        @notification = create(:notification, target: test_target)
+        expect(test_target.notifications.count).to eq(1)
+        request.env["HTTP_REFERER"] = root_path
+        post_with_compatibility :destroy_all, target_params.merge({ typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 302 as http status code" do
+        expect(response.status).to eq(302)
+      end
+
+      it "destroys all notifications of the target" do
+        expect(test_target.notifications.count).to eq(0)
+      end
+
+      it "redirects to root_path as request.referer" do
+        expect(response).to redirect_to root_path
+      end
+    end
+
+    context "Ajax POST request" do
+      before do
+        @notification = create(:notification, target: test_target)
+        expect(test_target.notifications.count).to eq(1)
+        xhr_with_compatibility :post, :destroy_all, target_params.merge({ typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 200 as http status code" do
+        expect(response.status).to eq(200)
+      end
+
+      it "assigns notification index as @notifications" do
+        expect(assigns(:notifications)).to eq([])
+      end
+
+      it "destroys all notifications of the target" do
+        expect(test_target.notifications.count).to eq(0)
+      end
+
+      it "renders the :destroy_all template as format js" do
+        expect(response).to render_template :destroy_all, format: :js
+      end
+    end
+
+    context "with filter request parameters" do
+      before do
+        @target_1, @notifiable_1, @group_1, @key_1 = create(:confirmed_user), create(:article), nil,           "key.1"
+        @target_2, @notifiable_2, @group_2, @key_2 = create(:confirmed_user), create(:comment), @notifiable_1, "key.2"
+        @notification_1 = create(:notification, target: test_target, notifiable: @notifiable_1, group: @group_1, key: @key_1)
+        @notification_2 = create(:notification, target: test_target, notifiable: @notifiable_2, group: @group_2, key: @key_2, created_at: @notification_1.created_at + 10.second)
+        expect(test_target.notifications.count).to eq(2)
+      end
+
+      context "with filtered_by_type request parameters" do
+        it "destroys filtered notifications only" do
+          post_with_compatibility :destroy_all, target_params.merge({ typed_target_param => test_target, 'filtered_by_type' => @notifiable_2.to_class_name }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_1)
+        end
+      end
+
+      context "with filtered_by_group request parameters" do
+        it "destroys filtered notifications only" do
+          post_with_compatibility :destroy_all, target_params.merge({ typed_target_param => test_target, 'filtered_by_group_type' => @group_2.to_class_name, 'filtered_by_group_id' => @group_2.id.to_s }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_1)
+        end
+      end
+
+      context "with filtered_by_key request parameters" do
+        it "destroys filtered notifications only" do
+          post_with_compatibility :destroy_all, target_params.merge({ typed_target_param => test_target, 'filtered_by_key' => @key_2 }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_1)
+        end
+      end
+
+      context "with later_than request parameters" do
+        it "destroys filtered notifications only" do
+          post_with_compatibility :destroy_all, target_params.merge({ typed_target_param => test_target, 'later_than' => (@notification_1.created_at.in_time_zone + 5.second).iso8601(3) }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_1)
+        end
+      end
+
+      context "with earlier_than request parameters" do
+        it "destroys filtered notifications only" do
+          post_with_compatibility :destroy_all, target_params.merge({ typed_target_param => test_target, 'earlier_than' => (@notification_2.created_at.in_time_zone - 5.second).iso8601(3) }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_2)
+        end
+      end
+
+      context "with ids request parameters" do
+        it "destroys notifications with specified IDs only" do
+          post_with_compatibility :destroy_all, target_params.merge({ typed_target_param => test_target, 'ids' => [@notification_2.id.to_s] }), valid_session
+          expect(test_target.notifications.count).to eq(1)
+          expect(test_target.notifications.first).to eq(@notification_1)
+        end
+      end
+
+      context "with no filter request parameters" do
+        it "destroys all notifications of the target" do
+          post_with_compatibility :destroy_all, target_params.merge({ typed_target_param => test_target}), valid_session
+          expect(test_target.notifications.count).to eq(0)
+        end
+      end
+    end
+  end
+
   describe "GET #show" do
     context "with id, target_type and (typed_target)_id parameters" do
       before do

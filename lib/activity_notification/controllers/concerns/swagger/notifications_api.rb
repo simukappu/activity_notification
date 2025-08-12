@@ -117,6 +117,53 @@ module ActivityNotification
         end
       end
 
+      swagger_path '/{target_type}/{target_id}/notifications/destroy_all' do
+        operation :post do
+          key :summary, 'Destroy all notifications'
+          key :description, 'Destroys all notifications of the target matching filter criteria.'
+          key :operationId, 'destroyAllNotifications'
+          key :tags, ['notifications']
+
+          extend Swagger::NotificationsParameters::TargetParameters
+          extend Swagger::NotificationsParameters::FilterByParameters
+
+          parameter do
+            key :name, :ids
+            key :in, :query
+            key :description, "Array of specific notification IDs to destroy"
+            key :required, false
+            key :type, :array
+            items do
+              key :type, :string
+            end
+            key :example, ["1", "2", "3"]
+          end
+
+          response 200 do
+            key :description, "Destroyed notifications"
+            content 'application/json' do
+              schema do
+                key :type, :object
+                property :count do
+                  key :type, :integer
+                  key :description, "Number of destroyed notification records"
+                  key :example, 3
+                end
+                property :notifications do
+                  key :type, :array
+                  items do
+                    key :'$ref', :Notification
+                  end
+                  key :description, "Destroyed notifications"
+                end
+              end
+            end
+          end
+          extend Swagger::ErrorResponses::InvalidParameterError
+          extend Swagger::ErrorResponses::ResourceNotFoundError
+        end
+      end
+
       swagger_path '/{target_type}/{target_id}/notifications/{id}' do
         operation :get do
           key :summary, 'Get notification'

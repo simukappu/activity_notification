@@ -935,6 +935,13 @@ shared_examples_for :target do
       end
     end
 
+    describe "#destroy_all_notifications" do
+      it "is an alias of ActivityNotification::Notification.destroy_all_of" do
+        expect(ActivityNotification::Notification).to receive(:destroy_all_of)
+        test_instance.destroy_all_notifications
+      end
+    end
+
 
     # Methods to be overridden
 
