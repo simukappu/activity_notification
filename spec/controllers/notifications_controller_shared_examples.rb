@@ -359,6 +359,24 @@ shared_examples_for :notifications_controller do
           expect(@notification_2.reload.opened?).to be_truthy
         end
       end
+
+      context 'with ids parameter' do
+        it "opens only specified notifications" do
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, ids: [@notification_1.id] }), valid_session
+          expect(@notification_1.reload.opened?).to be_truthy
+          expect(@notification_2.reload.opened?).to be_falsey
+        end
+
+        it "applies other filter options when ids are specified" do
+          post_with_compatibility :open_all, target_params.merge({ 
+            typed_target_param => test_target, 
+            ids: [@notification_1.id], 
+            filtered_by_key: 'non_existent_key' 
+          }), valid_session
+          expect(@notification_1.reload.opened?).to be_falsey
+          expect(@notification_2.reload.opened?).to be_falsey
+        end
+      end
     end
   end
 

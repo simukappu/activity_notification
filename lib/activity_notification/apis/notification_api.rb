@@ -411,10 +411,24 @@ module ActivityNotification
       # @option options [String]   :filtered_by_key        (nil)          Key of the notification for filter
       # @option options [String]   :later_than             (nil)          ISO 8601 format time to filter notification index later than specified time
       # @option options [String]   :earlier_than           (nil)          ISO 8601 format time to filter notification index earlier than specified time
+      # @option options [Array]    :ids                    (nil)          Array of specific notification IDs to open
       # @return [Array<Notification>] Opened notification records
       def open_all_of(target, options = {})
         opened_at = options[:opened_at] || Time.current
         target_unopened_notifications = target.notifications.unopened_only.filtered_by_options(options)
+        # If specific IDs are provided, filter by them
+        if options[:ids].present?
+          # :nocov:
+          case ActivityNotification.config.orm
+          when :mongoid
+            target_unopened_notifications = target_unopened_notifications.where(id: { '$in' => options[:ids] })
+          when :dynamoid
+            target_unopened_notifications = target_unopened_notifications.where('id.in': options[:ids])
+          else # :active_record
+            target_unopened_notifications = target_unopened_notifications.where(id: options[:ids])
+          end
+          # :nocov:
+        end
         opened_notifications = target_unopened_notifications.to_a.map { |n| n.opened_at = opened_at; n }
         target_unopened_notifications.update_all(opened_at: opened_at)
         opened_notifications

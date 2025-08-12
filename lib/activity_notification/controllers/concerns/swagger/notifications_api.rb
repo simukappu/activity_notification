@@ -92,6 +92,18 @@ module ActivityNotification
           extend Swagger::NotificationsParameters::TargetParameters
           extend Swagger::NotificationsParameters::FilterByParameters
 
+          parameter do
+            key :name, :ids
+            key :in, :query
+            key :description, "Array of specific notification IDs to open"
+            key :required, false
+            key :type, :array
+            items do
+              key :type, :string
+            end
+            key :example, ["1", "2", "3"]
+          end
+
           response 200 do
             key :description, "Opened notifications"
             content 'application/json' do

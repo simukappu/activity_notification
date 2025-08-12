@@ -592,6 +592,39 @@ shared_examples_for :notification_api do
           expect(@user_1.notifications.opened_only!.count).to eq(1)
         end
       end
+
+      context 'with ids options' do
+        it "opens notifications with specified IDs only" do
+          notification_to_open = @user_1.notifications.first
+          described_class.open_all_of(@user_1, { ids: [notification_to_open.id] })
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_1.notifications.opened_only!.count).to eq(1)
+          expect(@user_1.notifications.opened_only!.first).to eq(notification_to_open)
+        end
+
+        it "applies other filter options when ids are specified" do
+          notification_to_open = @user_1.notifications.first
+          described_class.open_all_of(@user_1, { 
+            ids: [notification_to_open.id], 
+            filtered_by_key: 'non_existent_key' 
+          })
+          expect(@user_1.notifications.unopened_only.count).to eq(2)
+          expect(@user_1.notifications.opened_only!.count).to eq(0)
+        end
+
+        it "only opens unopened notifications even when opened notification IDs are provided" do
+          # First open one notification
+          notification_to_open = @user_1.notifications.first
+          notification_to_open.open!
+          
+          # Try to open it again using ids parameter
+          described_class.open_all_of(@user_1, { ids: [notification_to_open.id] })
+          
+          # Should not affect the count since it was already opened
+          expect(@user_1.notifications.unopened_only.count).to eq(1)
+          expect(@user_1.notifications.opened_only!.count).to eq(1)
+        end
+      end
     end
 
     describe ".destroy_all_of" do
