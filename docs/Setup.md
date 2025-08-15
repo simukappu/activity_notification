@@ -80,12 +80,6 @@ You need to configure Mongoid in your Rails application for your MongoDB environ
 
 #### Using Dynamoid ORM
 
-Currently, *activity_notification* only works with Dynamoid 3.1.0.
-
-```ruby
-gem 'dynamoid', '3.1.0'
-```
-
 When you use *activity_notification* with [Dynamoid](https://github.com/Dynamoid/dynamoid) ORM, set **AN_ORM** environment variable to **dynamoid**:
 
 ```console

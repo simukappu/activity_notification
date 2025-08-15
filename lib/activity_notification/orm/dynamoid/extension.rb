@@ -83,92 +83,6 @@ module Dynamoid # :nodoc: all
   end
 end
 
-# Entend Dynamoid to support query and scan with 'null' and 'not_null' conditions
-# @private
-module Dynamoid # :nodoc: all
-  # @private
-  module Criteria
-    # https://github.com/Dynamoid/dynamoid/blob/master/lib/dynamoid/criteria/chain.rb
-    # @private
-    module NullOperatorExtension
-      # @private
-      def field_hash(key)
-        name, operation = key.to_s.split('.')
-        val = type_cast_condition_parameter(name, query[key])
-
-        hash = case operation
-               when 'null'
-                 { null: val }
-               when 'not_null'
-                 { not_null: val }
-               else
-                 return super(key)
-               end
-
-        { name.to_sym => hash }
-      end
-    end
-
-    # https://github.com/Dynamoid/dynamoid/blob/master/lib/dynamoid/criteria/chain.rb
-    # @private
-    class Chain
-      prepend NullOperatorExtension
-    end
-  end
-
-  # @private
-  module AdapterPlugin
-    # @private
-    class AwsSdkV3
-
-      NULL_OPERATOR_FIELD_MAP = {
-        null:         'NULL',
-        not_null:     'NOT_NULL'
-      }.freeze
-
-      # https://github.com/Dynamoid/dynamoid/blob/master/lib/dynamoid/adapter_plugin/aws_sdk_v3/query.rb
-      # @private
-      class Query < ::Dynamoid::AdapterPlugin::Query
-        # @private
-        def query_filter
-          conditions.except(*AwsSdkV3::RANGE_MAP.keys).reduce({}) do |result, (attr, cond)|
-            if AwsSdkV3::NULL_OPERATOR_FIELD_MAP.has_key?(cond.keys[0])
-              condition = { comparison_operator: AwsSdkV3::NULL_OPERATOR_FIELD_MAP[cond.keys[0]] }
-            else
-              condition = {
-                comparison_operator: AwsSdkV3::FIELD_MAP[cond.keys[0]],
-                attribute_value_list: AwsSdkV3.attribute_value_list(AwsSdkV3::FIELD_MAP[cond.keys[0]], cond.values[0].freeze)
-              }
-            end
-            result[attr] = condition
-            result
-          end
-        end
-      end
-
-      # https://github.com/Dynamoid/dynamoid/blob/master/lib/dynamoid/adapter_plugin/aws_sdk_v3/scan.rb
-      # @private
-      class Scan < ::Dynamoid::AdapterPlugin::Scan
-        # @private
-        def scan_filter
-          conditions.reduce({}) do |result, (attr, cond)|
-            if AwsSdkV3::NULL_OPERATOR_FIELD_MAP.has_key?(cond.keys[0])
-              condition = { comparison_operator: AwsSdkV3::NULL_OPERATOR_FIELD_MAP[cond.keys[0]] }
-            else
-              condition = {
-                comparison_operator: AwsSdkV3::FIELD_MAP[cond.keys[0]],
-                attribute_value_list: AwsSdkV3.attribute_value_list(AwsSdkV3::FIELD_MAP[cond.keys[0]], cond.values[0].freeze)
-              }
-            end
-            result[attr] = condition
-            result
-          end
-        end
-      end
-    end
-  end
-end
-
 # Entend Dynamoid to support uniqueness validator
 # @private
 module Dynamoid # :nodoc: all
@@ -183,7 +97,10 @@ module Dynamoid # :nodoc: all
       # @param [Object] value      The value of the object.
       def validate_each(document, attribute, value)
         return unless validation_required?(document, attribute)
-        document.errors.add(attribute, :taken, options.except(:scope).merge(value: value)) if not_unique?(document, attribute, value)
+        if not_unique?(document, attribute, value)
+          error_options = options.except(:scope).merge(value: value)
+          document.errors.add(attribute, :taken, **error_options)
+        end
       end
 
       private

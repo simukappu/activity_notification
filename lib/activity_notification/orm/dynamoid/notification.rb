@@ -42,13 +42,30 @@ module ActivityNotification
         # Group owner instance has nil as :group_owner association.
         # @scope instance
         # @return [Notification] Group owner notification instance of this notification
-        belongs_to :group_owner, { class_name: "ActivityNotification::Notification", foreign_key: :group_owner_id, optional: true }
+        # Note: Dynamoid doesn't support belongs_to, so we implement it manually
 
         # Customized method that belongs to group owner notification instance of this notification.
         # @raise [Errors::RecordNotFound] Record not found error
         # @return [Notification] Group owner notification instance of this notification
         def group_owner
-          group_owner_id.nil? ? nil : Notification.find(group_owner_id)
+          group_owner_id.nil? ? nil : Notification.find(group_owner_id, raise_error: false)
+        end
+
+        # Setter method for group_owner association
+        # @param [Notification, nil] notification Group owner notification instance
+        def group_owner=(notification)
+          self.group_owner_id = notification.nil? ? nil : notification.id
+        end
+
+        # Override reload method to refresh the record from database
+        def reload
+          fresh_record = self.class.find(id)
+          if fresh_record
+            # Update specific attributes we care about
+            self.group_owner_id = fresh_record.group_owner_id
+            self.opened_at = fresh_record.opened_at
+          end
+          self
         end
 
         # Has many group member notification instances of this notification.

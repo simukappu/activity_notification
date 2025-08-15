@@ -98,7 +98,15 @@ module ActivityNotification
           ["#{attribute}_key".to_sym, value.nil? ? nil : "#{value.class.name}#{ActivityNotification.config.composite_key_delimiter}#{value.id}"] :
           [attribute, value]
       }.to_h
-      update_attributes(attributes_with_association)
+      
+      # Use update_attributes if available, otherwise use the manual approach
+      if respond_to?(:update_attributes)
+        update_attributes(attributes_with_association)
+      else
+        # Manual update for models that don't have update_attributes
+        attributes_with_association.each { |attribute, value| write_attribute(attribute, value) }
+        save
+      end
     end
   end
 end
@@ -179,10 +187,12 @@ module Dynamoid # :nodoc: all
       # Selects filtered notifications or subscriptions by association type.
       # @scope class
       # @param [String] name     Association name
-      # @param [Object] type     Association type
+      # @param [Object] type     Association type (can be class name string or object instance)
       # @return [Dynamoid::Criteria::Chain] Database query of filtered notifications or subscriptions
       def filtered_by_association_type(name, type)
-        type.present? ? where("#{name}_key.begins_with" => "#{type}#{ActivityNotification.config.composite_key_delimiter}") : none
+        # Handle both string class names and object instances
+        type_name = type.is_a?(String) ? type : type.class.name
+        where("#{name}_key.begins_with" => "#{type_name}#{ActivityNotification.config.composite_key_delimiter}")
       end
 
       # Selects filtered notifications or subscriptions by association type and id.
@@ -391,14 +401,32 @@ module Dynamoid # :nodoc: all
       # @scope class
       # @return [Dynamoid::Criteria::Chain] Database query of filtered notifications
       def group_members_only
-        where('group_owner_id.not_null': true)
+        # Create a new chain to avoid state issues
+        new_chain = @source.where('group_owner_id.not_null': true)
+        # Apply existing conditions from current chain
+        if instance_variable_defined?(:@where_conditions) && @where_conditions
+          @where_conditions.instance_variable_get(:@hash_conditions).each do |condition|
+            # Skip conflicting group_owner_id conditions
+            next if condition.key?(:"group_owner_id.null") || condition.key?(:"group_owner_id.not_null")
+            new_chain = new_chain.where(condition)
+          end
+        end
+        new_chain
       end
 
       # Selects unopened notifications only.
       # @scope class
       # @return [Dynamoid::Criteria::Chain] Database query of filtered notifications
       def unopened_only
-        where('opened_at.null': true)
+        # Create a new chain to avoid state issues
+        new_chain = @source.where('opened_at.null': true)
+        # Apply existing conditions from current chain
+        if instance_variable_defined?(:@where_conditions) && @where_conditions
+          @where_conditions.instance_variable_get(:@hash_conditions).each do |condition|
+            new_chain = new_chain.where(condition)
+          end
+        end
+        new_chain
       end
 
       # Selects opened notifications only without limit.
@@ -406,7 +434,15 @@ module Dynamoid # :nodoc: all
       # @scope class
       # @return [Dynamoid::Criteria::Chain] Database query of filtered notifications
       def opened_only!
-        where('opened_at.not_null': true)
+        # Create a new chain to avoid state issues
+        new_chain = @source.where('opened_at.not_null': true)
+        # Apply existing conditions from current chain
+        if instance_variable_defined?(:@where_conditions) && @where_conditions
+          @where_conditions.instance_variable_get(:@hash_conditions).each do |condition|
+            new_chain = new_chain.where(condition)
+          end
+        end
+        new_chain
       end
 
       # Selects opened notifications only with limit.

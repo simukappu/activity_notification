@@ -47,15 +47,6 @@ jobs:
             ruby-version: 3.3.6
             orm: mongoid
             test-db: mongodb
-        exclude:
-          - gemfile: gemfiles/Gemfile.rails-7.0
-            orm: dynamoid
-          - gemfile: gemfiles/Gemfile.rails-7.1
-            orm: dynamoid
-          - gemfile: gemfiles/Gemfile.rails-7.2
-            orm: dynamoid
-          - gemfile: gemfiles/Gemfile.rails-8.0
-            orm: dynamoid
 
     env:
       RAILS_ENV: test

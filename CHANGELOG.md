@@ -1,3 +1,13 @@
+## [Unreleased]
+
+Enhancements:
+
+* Support for Dynamoid v3.11.0+ (upgraded from v3.1.0)
+
+Dependency:
+
+* Update Dynamoid dependency from development to runtime dependency
+
 ## 2.3.3 / 2025-01-13
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.2...v2.3.3)
 
