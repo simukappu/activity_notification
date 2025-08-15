@@ -756,6 +756,49 @@ notification:
 
 This structure is valid for notifications with keys *"notification.comment.reply"* or *"comment.reply"*. As mentioned before, *"notification."* part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record. Pluralization is supported (but optional) for grouped notifications using the `%{group_notification_count}` value.
 
+#### Managing notifications
+
+*activity_notification* provides several methods to manage notifications programmatically. The most common operation is opening notifications to mark them as read.
+
+##### Opening notifications
+
+You can mark individual notifications as opened (read) using the **open!** method:
+
+```ruby
+# Open a single notification
+notification = current_user.notifications.first
+notification.open!
+
+# Open notification with specific timestamp
+notification.open!(opened_at: 1.hour.ago)
+
+# Open notification with opening group members
+notification.open!(with_members: true)
+
+# Open notification skipping validations when the associated notifiable record may have been deleted
+notification.open!(skip_validation: true)
+```
+
+The **open!** method accepts the following options:
+
+* **:opened_at** (Time) - Time to set as the opened timestamp (defaults to `Time.current`)
+* **:with_members** (Boolean) - Whether to open group member notifications as well (defaults to `false`)
+* **:skip_validation** (Boolean) - Whether to skip ActiveRecord validations when updating (defaults to `false`). Useful when the associated notifiable record may have been deleted but the notification still exists.
+
+You can also open all notifications for a target:
+
+```ruby
+# Open all unopened notifications for a user
+ActivityNotification::Notification.open_all_of(current_user)
+
+# Open notifications with filters
+ActivityNotification::Notification.open_all_of(
+  current_user,
+  filtered_by_type: 'Comment',
+  opened_at: 1.hour.ago
+)
+```
+
 ### Customizing controllers (optional)
 
 If the customization at the views level is not enough, you can customize each controller by following these steps:

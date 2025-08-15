@@ -607,6 +607,7 @@ module ActivityNotification
     # @param [Hash] options Options for opening notifications
     # @option options [DateTime] :opened_at   (Time.current) Time to set to opened_at of the notification record
     # @option options [Boolean] :with_members (true)         If it opens notifications including group members
+    # @option options [Boolean] :skip_validation (true)      If it skips validation of the notification record
     # @return [Integer] Number of opened notification records
     def open!(options = {})
       opened? and return 0
@@ -614,7 +615,7 @@ module ActivityNotification
       with_members = options.has_key?(:with_members) ? options[:with_members] : true
       unopened_member_count = with_members ? group_members.unopened_only.count : 0
       group_members.update_all(opened_at: opened_at) if with_members
-      update(opened_at: opened_at)
+      options[:skip_validation] ? update_column(:opened_at, opened_at) : update(opened_at: opened_at)
       unopened_member_count + 1
     end
 
