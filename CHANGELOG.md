@@ -2,10 +2,12 @@
 
 Enhancements:
 
+* Support for Mongoid v9
 * Support for Dynamoid v3.11.0+ (upgraded from v3.1.0)
 
 Dependency:
 
+* Update Mongoid dependency from development to runtime dependency
 * Update Dynamoid dependency from development to runtime dependency
 
 ## 2.3.3 / 2025-01-13
