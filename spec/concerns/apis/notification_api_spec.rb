@@ -54,7 +54,7 @@ shared_examples_for :notification_api do
           expect(ActivityNotification::Mailer.deliveries.first.to[0]).to eq(@author_user.email)
           expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(@user_1.email)
         end
-  
+
         it "sends notification email with active job queue" do
           expect {
             described_class.notify(:users, @comment_2)
@@ -318,7 +318,7 @@ shared_examples_for :notification_api do
 
       context "with options" do
         context "as default" do
-          let(:created_notification) { 
+          let(:created_notification) {
             described_class.notify_to(@user_1, @comment_2)
             @user_1.notifications.latest
           }
@@ -360,7 +360,7 @@ shared_examples_for :notification_api do
         end
 
         context "as specified default value" do
-          let(:created_notification) { 
+          let(:created_notification) {
             described_class.notify_to(@user_1, @comment_2)
           }
 
@@ -382,7 +382,7 @@ shared_examples_for :notification_api do
         end
 
         context "as api options" do
-          let(:created_notification) { 
+          let(:created_notification) {
             described_class.notify_to(
               @user_1, @comment_2,
               key: 'custom_test_key',
@@ -817,6 +817,32 @@ shared_examples_for :notification_api do
           expect(test_instance.open!(with_members: false)).to eq(1)
         end
       end
+
+      context "when the associated notifiable record has been deleted" do
+        let(:notifiable_id) { test_instance.notifiable.id }
+
+        before do
+          notifiable_class.where(id: notifiable_id).delete_all
+          test_instance.reload
+        end
+
+        it "ensures the notifiable is gone and the notification is still persisted" do
+          expect { notifiable_class.find(notifiable_id) }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(test_instance).to be_persisted
+        end
+
+        it "opens the notification when skip_validation is true" do
+          test_instance.open!(skip_validation: true)
+          test_instance.reload
+          expect(test_instance.opened_at).to be_present
+        end
+
+        it "does not open the notification when skip_validation is false" do
+          test_instance.open!(skip_validation: false)
+          test_instance.reload
+          expect(test_instance.opened_at).to be_blank
+        end
+      end
     end
 
     describe "#unopened?" do
@@ -833,7 +859,7 @@ shared_examples_for :notification_api do
         end
       end
     end
-      
+
     describe "#opened?" do
       context "when opened_at is blank" do
         it "returns false" do
