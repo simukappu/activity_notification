@@ -295,7 +295,7 @@ notification.open!
 
 # Open with options for better performance or specific behavior
 notification.open!(skip_validation: true)  # Skip validations for better performance
-notification.open!(with_members: true)    # Open including group members
+notification.open!(with_members: true)     # Open including group members
 notification.open!(opened_at: 1.hour.ago)  # Set specific timestamp
 
 # Open all notifications for a user

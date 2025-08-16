@@ -615,7 +615,7 @@ module ActivityNotification
       with_members = options.has_key?(:with_members) ? options[:with_members] : true
       unopened_member_count = with_members ? group_members.unopened_only.count : 0
       group_members.update_all(opened_at: opened_at) if with_members
-      options[:skip_validation] ? update_column(:opened_at, opened_at) : update(opened_at: opened_at)
+      options[:skip_validation] ? update_attribute(:opened_at, opened_at) : update(opened_at: opened_at)
       unopened_member_count + 1
     end
 

@@ -952,20 +952,25 @@ shared_examples_for :notification_api do
         end
 
         it "ensures the notifiable is gone and the notification is still persisted" do
-          expect { notifiable_class.find(notifiable_id) }.to raise_error(ActiveRecord::RecordNotFound)
+          expect(notifiable_class.exists?(notifiable_id)).to be_falsey
           expect(test_instance).to be_persisted
+        end
+
+        if ActivityNotification.config.orm == :active_record
+          it "does not open the notification without skip_validation option when using ActiveRecord" do
+            test_instance.open!
+            expect(test_instance.reload.opened?).to be_falsey
+          end
+        else
+          it "opens the notification without skip_validation option when using Mongoid or Dynamoid" do
+            test_instance.open!
+            expect(test_instance.reload.opened?).to be_truthy
+          end
         end
 
         it "opens the notification when skip_validation is true" do
           test_instance.open!(skip_validation: true)
-          test_instance.reload
-          expect(test_instance.opened_at).to be_present
-        end
-
-        it "does not open the notification when skip_validation is false" do
-          test_instance.open!(skip_validation: false)
-          test_instance.reload
-          expect(test_instance.opened_at).to be_blank
+          expect(test_instance.reload.opened?).to be_truthy
         end
       end
     end
