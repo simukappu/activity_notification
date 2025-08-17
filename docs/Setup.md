@@ -756,11 +756,11 @@ notification:
 
 This structure is valid for notifications with keys *"notification.comment.reply"* or *"comment.reply"*. As mentioned before, *"notification."* part of the key is optional. In addition for above example, `%{notifier_name}` and `%{article_title}` are used from parameter field in the notification record. Pluralization is supported (but optional) for grouped notifications using the `%{group_notification_count}` value.
 
-#### Managing notifications
+### Managing notifications
 
 *activity_notification* provides several methods to manage notifications programmatically. The most common operation is opening notifications to mark them as read.
 
-##### Opening notifications
+#### Opening notifications
 
 You can mark individual notifications as opened (read) using the **open!** method:
 

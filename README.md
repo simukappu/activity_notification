@@ -107,6 +107,7 @@ This sample application works with *activity_notification* REST API backend.
     - [Notification views](/docs/Setup.md#notification-views)
     - [i18n for notifications](/docs/Setup.md#i18n-for-notifications)
     - [Managing notifications](/docs/Setup.md#managing-notifications)
+  - [Managing notifications](/docs/Setup.md#managing-notifications)
   - [Customizing controllers (optional)](/docs/Setup.md#customizing-controllers-optional)
 - [Functions](/docs/Functions.md#Functions)
   - [Email notification](/docs/Functions.md#email-notification)
@@ -287,20 +288,7 @@ See [Displaying notifications](/docs/Setup.md#displaying-notifications) for more
 
 ### Managing notifications
 
-*activity_notification* provides APIs to manage notifications programmatically. You can mark notifications as opened (read), filter them, and perform bulk operations:
-
-```ruby
-# Mark a notification as opened
-notification.open!
-
-# Open with options for better performance or specific behavior
-notification.open!(skip_validation: true)  # Skip validations for better performance
-notification.open!(with_members: true)    # Open including group members
-notification.open!(opened_at: 1.hour.ago)  # Set specific timestamp
-
-# Open all notifications for a user
-ActivityNotification::Notification.open_all_of(current_user)
-```
+*activity_notification* provides APIs to manage notifications programmatically. You can mark notifications as opened (read), filter them, and perform bulk operations.
 
 See [Managing notifications](/docs/Setup.md#managing-notifications) for more details.
 
