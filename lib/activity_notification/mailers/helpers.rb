@@ -5,6 +5,7 @@ module ActivityNotification
     # Use to resolve parameters from email configuration and send notification email.
     module Helpers
       extend ActiveSupport::Concern
+      include ActivityNotification::NotificationResilience
 
       protected
 
@@ -13,10 +14,13 @@ module ActivityNotification
         # @param [Notification] notification Notification instance to send email
         # @param [Hash]         options      Options for notification email
         # @option options [String, Symbol] :fallback (:default) Fallback template to use when MissingTemplate is raised
+        # @return [Mail::Message, nil] Email message or nil if notification was not found
         def notification_mail(notification, options = {})
-          initialize_from_notification(notification)
-          headers = headers_for(notification.key, options)
-          send_mail(headers, options[:fallback])
+          with_notification_resilience(notification&.id, { target: 'unknown' }) do
+            initialize_from_notification(notification)
+            headers = headers_for(notification.key, options)
+            send_mail(headers, options[:fallback])
+          end
         end
 
         # Send batch notification email with configured options.
@@ -26,11 +30,14 @@ module ActivityNotification
         # @param [String]              batch_key     Key of the batch notification email
         # @param [Hash]                options       Options for notification email
         # @option options [String, Symbol] :fallback (:batch_default) Fallback template to use when MissingTemplate is raised
+        # @return [Mail::Message, nil] Email message or nil if notifications were not found
         def batch_notification_mail(target, notifications, batch_key, options = {})
-          initialize_from_notifications(target, notifications)
-          headers = headers_for(batch_key, options)
-          @notification = nil
-          send_mail(headers, options[:fallback])
+          with_notification_resilience(notifications&.first&.id, { target: target&.class&.name, batch: true }) do
+            initialize_from_notifications(target, notifications)
+            headers = headers_for(batch_key, options)
+            @notification = nil
+            send_mail(headers, options[:fallback])
+          end
         end
 
         # Initialize instance variables from notification.

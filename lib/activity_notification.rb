@@ -16,6 +16,7 @@ module ActivityNotification
   autoload :Common
   autoload :Config
   autoload :Renderable
+  autoload :NotificationResilience
   autoload :VERSION
   autoload :GEM_VERSION
 

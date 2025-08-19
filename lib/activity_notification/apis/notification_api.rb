@@ -565,7 +565,7 @@ module ActivityNotification
     # @param [Hash] options Options for notification email
     # @option options [Boolean]        :send_later            If it sends notification email asynchronously
     # @option options [String, Symbol] :fallback   (:default) Fallback template to use when MissingTemplate is raised
-    # @return [Mail::Message, ActionMailer::DeliveryJob] Email message or its delivery job
+    # @return [Mail::Message, ActionMailer::DeliveryJob, NilClass] Email message, its delivery job, or nil if notification not found
     def send_notification_email(options = {})
       if target.notification_email_allowed?(notifiable, key) &&
          notifiable.notification_email_allowed?(target, key) &&
