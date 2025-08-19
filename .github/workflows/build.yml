@@ -28,23 +28,23 @@ jobs:
         include:
           # https://www.ruby-lang.org/en/downloads
           - gemfile: gemfiles/Gemfile.rails-7.0
-            ruby-version: 3.1.6
+            ruby-version: 3.2.9
           - gemfile: gemfiles/Gemfile.rails-7.1
-            ruby-version: 3.2.6
+            ruby-version: 3.2.9
           - gemfile: gemfiles/Gemfile.rails-7.2
-            ruby-version: 3.3.6
+            ruby-version: 3.3.9
           - gemfile: gemfiles/Gemfile.rails-8.0
-            ruby-version: 3.3.6
+            ruby-version: 3.4.5
           - gemfile: Gemfile
-            ruby-version: 3.3.6
+            ruby-version: 3.4.5
             orm: active_record
             test-db: mysql
           - gemfile: Gemfile
-            ruby-version: 3.3.6
+            ruby-version: 3.4.5
             orm: active_record
             test-db: postgresql
           - gemfile: Gemfile
-            ruby-version: 3.3.6
+            ruby-version: 3.4.5
             orm: mongoid
             test-db: mongodb
 

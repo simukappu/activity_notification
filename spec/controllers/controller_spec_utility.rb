@@ -92,7 +92,7 @@ module ActivityNotification
         def assert_all_schema_confirm(response, status)
           expect(response).to have_http_status(status)
           assert_request_schema_confirm
-          assert_response_schema_confirm
+          assert_response_schema_confirm(status)
         end
       end
     end

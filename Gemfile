@@ -9,9 +9,7 @@ group :production do
   gem 'puma'
   gem 'pg'
   gem 'devise'
-  # https://github.com/lynndylanhurley/devise_token_auth/pull/1639
-  gem 'devise_token_auth', git: 'https://github.com/lynndylanhurley/devise_token_auth.git'
-  gem 'sqlite3', ">= 2.1"
+  gem 'devise_token_auth'
 end
 
 group :development do

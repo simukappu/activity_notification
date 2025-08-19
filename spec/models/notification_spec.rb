@@ -90,7 +90,7 @@ describe ActivityNotification::Notification, type: :model do
   end
 
   describe "with validation" do
-    before { @notification = build(:notification) }
+    before { @notification = create(:notification) }
 
     it "is valid with target, notifiable and key" do
       expect(@notification).to be_valid

@@ -22,7 +22,7 @@ describe ActivityNotification::Subscription, type: :model do
   end
 
   describe "with validation" do
-    before { @subscription = build(:subscription) }
+    before { @subscription = create(:subscription) }
 
     it "is valid with target and key" do
       expect(@subscription).to be_valid
