@@ -1,14 +1,20 @@
-## [Unreleased]
+## 2.4.0 / 2025-08-20
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.3...v2.4.0)
 
 Enhancements:
 
-* Support for Mongoid v9
-* Support for Dynamoid v3.11.0+ (upgraded from v3.1.0)
+* Support for Mongoid v9 - [#189](https://github.com/simukappu/activity_notification/issues/189)
+* Support for Dynamoid v3.11.0+ (upgraded from v3.1.0) - [#188](https://github.com/simukappu/activity_notification/issues/188)
+* Add bulk destroy notifications API - [#172](https://github.com/simukappu/activity_notification/issues/172)
+* Add ids parameter to open_all notifications API - [#172](https://github.com/simukappu/activity_notification/issues/172)
+* Add skip_validation option to open! method for notification handling - [#186](https://github.com/simukappu/activity_notification/issues/186) [#187](https://github.com/simukappu/activity_notification/pull/187)
+* Add exception handling to Mailer jobs for missing notification - [#50](https://github.com/simukappu/activity_notification/issues/50)
 
 Dependency:
 
-* Update Mongoid dependency from development to runtime dependency
-* Update Dynamoid dependency from development to runtime dependency
+* Remove support for Rails 5 and 6
+* Update Mongoid dependency from development to runtime dependency - [#189](https://github.com/simukappu/activity_notification/issues/189)
+* Update Dynamoid dependency from development to runtime dependency - [#188](https://github.com/simukappu/activity_notification/issues/188)
 
 ## 2.3.3 / 2025-01-13
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.2...v2.3.3)
