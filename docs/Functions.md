@@ -381,8 +381,6 @@ end
 
 Then, you can access *users/1/subscriptions* and use *[ActivityNotification::SubscriptionsController](/app/controllers/activity_notification/subscriptions_controller.rb)* or *[ActivityNotification::SubscriptionsWithDeviseController](/app/controllers/activity_notification/subscriptions_with_devise_controller.rb)* to manage the subscriptions.
 
-You can see sample subscription management view in demo application here: *https://activity-notification-example.herokuapp.com/users/1/subscriptions*
-
 If you would like to customize subscription controllers or views, you can use generators like notifications:
 
 * Customize subscription controllers
@@ -435,8 +433,6 @@ You can see [sample single page application](/spec/rails_app/app/javascript/) us
 #### API reference as OpenAPI Specification
 
 *activity_notification* provides API reference as [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification).
-
-OpenAPI Specification in [online demo](https://activity-notification-example.herokuapp.com/) is published here: **https://activity-notification-example.herokuapp.com/api/v2/apidocs**
 
 Public API reference is also hosted in [SwaggerHub](https://swagger.io/tools/swaggerhub/) here: **https://app.swaggerhub.com/apis-docs/simukappu/activity-notification/**
 
@@ -588,7 +584,7 @@ end
 To sign in and get *access-token* from Devise Token Auth, call *sign_in* API which you configured by *mount_devise_token_auth_for* method:
 
 ```console
-$ curl -X POST -H "Content-Type: application/json" -D - -d '{"email": "ichiro@example.com","password": "changeit"}' https://activity-notification-example.herokuapp.com/api/v2/auth/sign_in
+$ curl -X POST -H "Content-Type: application/json" -D - -d '{"email": "ichiro@example.com","password": "changeit"}' https://localhost:3000/api/v2/auth/sign_in
 
 
 HTTP/1.1 200 OK
@@ -615,7 +611,7 @@ uid: ichiro@example.com
 Then, call *activity_notification* API with returned *access-token*, *client* and *uid* as HTTP headers:
 
 ```console
-$ curl -X GET -H "Content-Type: application/json" -H "access-token: ZiDvw8vJGtbESy5Qpw32Kw" -H "client: W0NkGrTS88xeOx4VDOS-Xg" -H "uid: ichiro@example.com" -D - https://activity-notification-example.herokuapp.com/api/v2/notifications
+$ curl -X GET -H "Content-Type: application/json" -H "access-token: ZiDvw8vJGtbESy5Qpw32Kw" -H "client: W0NkGrTS88xeOx4VDOS-Xg" -H "uid: ichiro@example.com" -D - https://localhost:3000/api/v2/notifications
 
 HTTP/1.1 200 OK
 ...
@@ -631,7 +627,7 @@ HTTP/1.1 200 OK
 Without valid *access-token*, API returns *401 Unauthorized*:
 
 ```console
-$ curl -X GET -H "Content-Type: application/json" -D - https://activity-notification-example.herokuapp.com/api/v2/notifications
+$ curl -X GET -H "Content-Type: application/json" -D - https://localhost:3000/api/v2/notifications
 
 HTTP/1.1 401 Unauthorized
 ...
@@ -646,7 +642,7 @@ HTTP/1.1 401 Unauthorized
 When you request restricted resources of unauthorized targets, *activity_notification* API returns *403 Forbidden*:
 
 ```console
-$ curl -X GET -H "Content-Type: application/json" -H "access-token: ZiDvw8vJGtbESy5Qpw32Kw" -H "client: W0NkGrTS88xeOx4VDOS-Xg" -H "uid: ichiro@example.com" -D - https://activity-notification-example.herokuapp.com/api/v2/notifications/1
+$ curl -X GET -H "Content-Type: application/json" -H "access-token: ZiDvw8vJGtbESy5Qpw32Kw" -H "client: W0NkGrTS88xeOx4VDOS-Xg" -H "uid: ichiro@example.com" -D - https://localhost:3000/api/v2/notifications/1
 
 HTTP/1.1 403 Forbidden
 ...
@@ -1142,5 +1138,3 @@ user.find_or_create_subscription('comment.reply').unsubscribe_to_optional_target
 ```
 
 You can also manage subscriptions of optional targets by subscriptions REST API. See [REST API backend](#rest-api-backend) for more details.
-
-You can see sample subscription management view in demo application here: *https://activity-notification-example.herokuapp.com/users/1/subscriptions*

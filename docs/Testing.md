@@ -104,6 +104,17 @@ $ bin/rails server
 ```
 Then, you can access <http://localhost:3000> for the example application.
 
+##### Default test users
+
+Login as the following test users to experience user activity notifications:
+
+| Email | Password | Admin? |
+|:---:|:---:|:---:|
+| ichiro@example.com  | changeit | Yes |
+| stephen@example.com | changeit |     |
+| klay@example.com    | changeit |     |
+| kevin@example.com   | changeit |     |
+
 ##### Run with your local database
 As default, example Rails application runs with local SQLite database in *spec/rails_app/db/development.sqlite3*.
 This application supports to run with your local MySQL, PostgreSQL, MongoDB.
@@ -144,5 +155,5 @@ $ cd spec/rails_app
 $ # You don't need migration when you use MongoDB only (AN_ORM=mongoid and AN_TEST_DB=mongodb)
 $ bin/rake db:migrate
 $ bin/rake db:seed
-$ bin/rails server Puma
+$ bin/rails server
 ```

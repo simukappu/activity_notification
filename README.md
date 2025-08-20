@@ -31,22 +31,6 @@
 * Activity notifications stream integrated into cloud computing using [Amazon DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)
 * Optional notification targets (Configurable optional notification targets like [Amazon SNS](https://aws.amazon.com/sns), [Slack](https://slack.com), SMS and so on)
 
-### Online Demo
-
-You can see an actual application using this gem here:
-* **https://activity-notification-example.herokuapp.com/**
-
-Login as the following test users to experience user activity notifications:
-
-| Email | Password | Admin? |
-|:---:|:---:|:---:|
-| ichiro@example.com  | changeit | Yes |
-| stephen@example.com | changeit |     |
-| klay@example.com    | changeit |     |
-| kevin@example.com   | changeit |     |
-
-The deployed demo application is included in this gem's source code as a test application here: *[/spec/rails_app](/spec/rails_app/)*
-
 ### Notification index and plugin notifications
 
 <kbd>![plugin-notifications-image](https://raw.githubusercontent.com/simukappu/activity_notification/images/activity_notification_plugin_focus_with_subscription.png)</kbd>
@@ -70,16 +54,12 @@ The deployed demo application is included in this gem's source code as a test ap
 REST API reference as OpenAPI Specification is published in SwaggerHub here:
 * **https://app.swaggerhub.com/apis-docs/simukappu/activity-notification/**
 
-You can see sample single page application using [Vue.js](https://vuejs.org) as a part of example Rails application here:
-* **https://activity-notification-example.herokuapp.com/spa/**
-
-This sample application works with *activity_notification* REST API backend.
+You can see sample single page application using [Vue.js](https://vuejs.org) as a part of example Rails application in *[/spec/rails_app](/spec/rails_app/)*. This sample application works with *activity_notification* REST API backend.
 
 
 ## Table of Contents
 
 - [About](#about)
-  - [Online Demo](#online-demo)
   - [Public REST API reference as OpenAPI Specification](#public-rest-apu-reference-as-openapi-specification)
 - [Getting Started](#getting-started)
 - [Setup](/docs/Setup.md#Setup)
@@ -155,6 +135,7 @@ This sample application works with *activity_notification* REST API backend.
   - [Testing gem alone](/docs/Testing.md#testing-gem-alone)
 - [Documentation](#documentation)
 - [Common Examples](#common-examples)
+  - [Example Rails application](/docs/Testing.md#example-rails-application)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -342,12 +323,7 @@ Then you can see the documents at <http://localhost:8808/docs/index>.
 
 ## Common Examples
 
-See example Rails application in *[/spec/rails_app](/spec/rails_app)*.
-
-You can also try this example Rails application as Online Demo here:
-* **https://activity-notification-example.herokuapp.com/**
-
-You can login as test users to experience user activity notifications. For more details, see [Online Demo](#online-demo).
+See example Rails application in *[/spec/rails_app](/spec/rails_app)*. You can login as test users to experience user activity notifications. For more details, see [Example Rails application](/docs/Testing.md#example-rails-application).
 
 
 ## Contributing
