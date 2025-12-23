@@ -108,10 +108,13 @@ module ActivityNotification
       json = super(options).with_indifferent_access
       optional_targets_json = {}
       optional_target_names.each do |optional_target_name|
+        subscribed_at_value = json[:optional_targets][Subscription.to_optional_target_subscribed_at_key(optional_target_name)]
+        unsubscribed_at_value = json[:optional_targets][Subscription.to_optional_target_unsubscribed_at_key(optional_target_name)]
+        
         optional_targets_json[optional_target_name] = {
-          subscribing:   json[:optional_targets][Subscription.to_optional_target_key(optional_target_name)],
-          subscribed_at: json[:optional_targets][Subscription.to_optional_target_subscribed_at_key(optional_target_name)],
-          unsubscribed_at: json[:optional_targets][Subscription.to_optional_target_unsubscribed_at_key(optional_target_name)]
+          subscribing:     json[:optional_targets][Subscription.to_optional_target_key(optional_target_name)],
+          subscribed_at:   format_timestamp_as_iso8601(subscribed_at_value),
+          unsubscribed_at: format_timestamp_as_iso8601(unsubscribed_at_value)
         }
       end
       json[:optional_targets] = optional_targets_json
@@ -226,6 +229,55 @@ module ActivityNotification
     end
 
     protected
+
+      # Formats timestamp value as ISO8601 string for JSON serialization.
+      # @param [Time, Numeric, String, nil] timestamp Timestamp value to format
+      # @return [String, nil] ISO8601 formatted timestamp or nil
+      def format_timestamp_as_iso8601(timestamp)
+        return nil if timestamp.nil?
+        
+        # Handle Time objects
+        if timestamp.is_a?(Time)
+          return timestamp.utc.iso8601
+        end
+        
+        # Handle DateTime objects
+        if defined?(DateTime) && timestamp.is_a?(DateTime)
+          return timestamp.to_time.utc.iso8601
+        end
+        
+        # Handle numeric timestamps (Unix timestamp with nanoseconds)
+        if timestamp.is_a?(Numeric)
+          return Time.at(timestamp).utc.iso8601
+        end
+        
+        # Handle string timestamps that might be numeric
+        if timestamp.is_a?(String)
+          begin
+            numeric_timestamp = Float(timestamp)
+            return Time.at(numeric_timestamp).utc.iso8601
+          rescue ArgumentError
+            # If it's not a numeric string, try parsing it as a time string
+            begin
+              return Time.parse(timestamp).utc.iso8601
+            rescue ArgumentError
+              # Return the original timestamp if parsing fails
+              return timestamp
+            end
+          end
+        end
+        
+        # Fallback: try to convert to time if possible
+        begin
+          if timestamp.respond_to?(:to_time)
+            return timestamp.to_time.utc.iso8601
+          end
+        rescue
+          # If conversion fails, return the original value
+        end
+        
+        timestamp
+      end
 
       # Validates subscribing_to_email cannot be true when subscribing is false.
       def subscribing_to_email_cannot_be_true_when_subscribing_is_false
