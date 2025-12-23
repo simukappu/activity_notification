@@ -19,7 +19,9 @@ group :test do
   gem 'committee-rails', '< 0.6'
   # gem 'coveralls', require: false
   gem 'coveralls_reborn', require: false
+  # Optional ORM dependencies for testing
   gem 'mongoid', '>= 4.0.0', '< 8.0'
+  gem 'dynamoid', '>= 3.11.0', '< 4.0'
 end
 
 gem 'dotenv-rails', groups: [:development, :test]

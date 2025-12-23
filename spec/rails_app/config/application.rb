@@ -2,16 +2,24 @@ require File.expand_path('../boot', __FILE__)
 
 # Load mongoid configuration if necessary:
 if ENV['AN_ORM'] == 'mongoid'
-  require 'mongoid'
-  require 'rails'
-  unless Rails.env.test?
-    Mongoid.load!(File.expand_path("config/mongoid.yml"), :development)
+  begin
+    require 'mongoid'
+    require 'rails'
+    unless Rails.env.test?
+      Mongoid.load!(File.expand_path("config/mongoid.yml"), :development)
+    end
+  rescue LoadError => e
+    raise LoadError, "Cannot load mongoid gem. Please ensure 'mongoid' is in your Gemfile when using AN_ORM=mongoid. Error: #{e.message}"
   end
 # Load dynamoid configuration if necessary:
 elsif ENV['AN_ORM'] == 'dynamoid'
-  require 'dynamoid'
-  require 'rails'
-  require File.expand_path('../dynamoid', __FILE__)
+  begin
+    require 'dynamoid'
+    require 'rails'
+    require File.expand_path('../dynamoid', __FILE__)
+  rescue LoadError => e
+    raise LoadError, "Cannot load dynamoid gem. Please ensure 'dynamoid' is in your Gemfile when using AN_ORM=dynamoid. Error: #{e.message}"
+  end
 end
 
 # Pick the frameworks you want:

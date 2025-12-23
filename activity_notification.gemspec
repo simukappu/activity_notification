@@ -21,8 +21,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.1.0'
 
   s.add_dependency 'railties', '>= 7.0.0', '< 8.1'
-  s.add_dependency 'mongoid', '>= 4.0.0', '< 10.0'
-  s.add_dependency 'dynamoid', '>= 3.11.0', '< 4.0'
   s.add_dependency 'i18n', '>= 0.5.0'
   s.add_dependency 'jquery-rails', '>= 3.1.1'
   s.add_dependency 'swagger-blocks', '>= 3.0.0'
@@ -31,6 +29,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'sqlite3', '>= 1.3.13'
   s.add_development_dependency 'mysql2', '>= 0.5.2'
   s.add_development_dependency 'pg', '>= 1.0.0'
+  s.add_development_dependency 'mongoid', '>= 4.0.0', '< 10.0'
+  s.add_development_dependency 'dynamoid', '>= 3.11.0', '< 4.0'
   s.add_development_dependency 'rspec-rails', '>= 3.8.0'
   s.add_development_dependency 'factory_bot_rails', '>= 4.11.0'
   s.add_development_dependency 'simplecov', '~> 0'
