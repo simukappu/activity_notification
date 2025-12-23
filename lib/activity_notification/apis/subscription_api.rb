@@ -108,10 +108,13 @@ module ActivityNotification
       json = super(options).with_indifferent_access
       optional_targets_json = {}
       optional_target_names.each do |optional_target_name|
+        subscribed_at_value = json[:optional_targets][Subscription.to_optional_target_subscribed_at_key(optional_target_name)]
+        unsubscribed_at_value = json[:optional_targets][Subscription.to_optional_target_unsubscribed_at_key(optional_target_name)]
+        
         optional_targets_json[optional_target_name] = {
-          subscribing:   json[:optional_targets][Subscription.to_optional_target_key(optional_target_name)],
-          subscribed_at: json[:optional_targets][Subscription.to_optional_target_subscribed_at_key(optional_target_name)],
-          unsubscribed_at: json[:optional_targets][Subscription.to_optional_target_unsubscribed_at_key(optional_target_name)]
+          subscribing:     json[:optional_targets][Subscription.to_optional_target_key(optional_target_name)],
+          subscribed_at:   format_time_value(subscribed_at_value),
+          unsubscribed_at: format_time_value(unsubscribed_at_value)
         }
       end
       json[:optional_targets] = optional_targets_json
@@ -154,7 +157,7 @@ module ActivityNotification
       optional_target_names.each do |optional_target_name|
         new_attributes[:optional_targets] = new_attributes[:optional_targets].merge(
           Subscription.to_optional_target_key(optional_target_name) => false,
-          Subscription.to_optional_target_unsubscribed_at_key(optional_target_name) => Subscription.convert_time_as_hash(subscribed_at))
+          Subscription.to_optional_target_unsubscribed_at_key(optional_target_name) => Subscription.convert_time_as_hash(unsubscribed_at))
       end
       update(new_attributes)
     end
@@ -226,6 +229,31 @@ module ActivityNotification
     end
 
     protected
+
+      # Formats a time value to ISO8601/RFC3339 format for JSON serialization
+      # @param [Time, Integer, Float, String, nil] value Time value in various formats
+      # @return [String, nil] ISO8601 formatted time string or nil
+      def format_time_value(value)
+        return nil if value.nil?
+        
+        # If it's already a Time object, convert to ISO8601
+        return value.iso8601 if value.is_a?(Time) || value.is_a?(DateTime) || value.is_a?(ActiveSupport::TimeWithZone)
+        
+        # If it's a numeric timestamp (Unix timestamp with or without nanoseconds)
+        if value.is_a?(Numeric)
+          Time.at(value).utc.iso8601
+        # If it's a string that looks like a numeric timestamp
+        elsif value.is_a?(String) && value.match?(/^\d+(\.\d+)?$/)
+          Time.at(value.to_f).utc.iso8601
+        # Otherwise, try to parse it as a time string
+        else
+          begin
+            Time.parse(value.to_s).iso8601
+          rescue ArgumentError
+            value
+          end
+        end
+      end
 
       # Validates subscribing_to_email cannot be true when subscribing is false.
       def subscribing_to_email_cannot_be_true_when_subscribing_is_false

@@ -85,7 +85,13 @@ module ActivityNotification
                     },
                     subscribed_at: {
                       type: "string",
-                      format: "date-time"
+                      format: "date-time",
+                      nullable: true
+                    },
+                    unsubscribed_at: {
+                      type: "string",
+                      format: "date-time",
+                      nullable: true
                     }
                   }
                 }
