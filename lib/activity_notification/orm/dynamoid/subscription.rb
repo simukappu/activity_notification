@@ -76,6 +76,31 @@ module ActivityNotification
         def self.convert_time_as_hash(time)
           @@date_time_dumper.process(time)
         end
+
+        # Override as_json to properly format datetime values in optional_targets
+        # @param [Hash] options Options for as_json
+        # @return [Hash] Hash representation with properly formatted datetime values
+        def as_json(options = {})
+          json = super(options)
+          
+          # Convert datetime values in optional_targets to ISO8601 format for API responses
+          if json['optional_targets'].is_a?(Hash)
+            json['optional_targets'].each do |key, value|
+              if value.is_a?(Hash)
+                value.each do |k, v|
+                  # Convert numeric timestamps to ISO8601 datetime strings
+                  if (k.to_s.end_with?('_at') || k.to_s.include?('subscribed')) && v.is_a?(Numeric)
+                    json['optional_targets'][key][k] = Time.at(v).utc.iso8601
+                  elsif v.is_a?(Time) || v.is_a?(DateTime)
+                    json['optional_targets'][key][k] = v.utc.iso8601
+                  end
+                end
+              end
+            end
+          end
+          
+          json
+        end
       end
     end
   end

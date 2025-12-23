@@ -167,6 +167,24 @@ The generator will install an initializer which describes all configuration opti
 
 ### Database setup
 
+#### ORM dependencies
+
+By default, *activity_notification* uses **ActiveRecord** ORM and no additional ORM gems are required.
+
+If you intend to use **Mongoid** support, you need to add the `mongoid` gem separately to your Gemfile:
+
+```ruby
+gem 'mongoid', '>= 4.0.0', '< 10.0'
+```
+
+If you intend to use **Dynamoid** support, you need to add the `dynamoid` gem separately to your Gemfile:
+
+```ruby
+gem 'dynamoid', '>= 3.11.0', '< 4.0'
+```
+
+#### ActiveRecord setup
+
 When you use *activity_notification* with ActiveRecord ORM as default configuration,
 create migration for notifications and migrate the database in your Rails project:
 

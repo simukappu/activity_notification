@@ -26,6 +26,8 @@ It also generates a i18n based translation file which we can configure the prese
 
 #### Using ActiveRecord ORM
 
+By default, *activity_notification* uses **ActiveRecord** ORM and no additional ORM gems are required.
+
 When you use *activity_notification* with ActiveRecord ORM as default configuration,
 create migration for notifications and migrate the database in your Rails project:
 
@@ -64,7 +66,13 @@ config.yaml_column_permitted_classes << Time
 
 #### Using Mongoid ORM
 
-When you use *activity_notification* with [Mongoid](http://mongoid.org) ORM, set **AN_ORM** environment variable to **mongoid**:
+When you use *activity_notification* with [Mongoid](http://mongoid.org) ORM, you need to add the `mongoid` gem to your Gemfile:
+
+```ruby
+gem 'mongoid', '>= 4.0.0', '< 10.0'
+```
+
+Then, set **AN_ORM** environment variable to **mongoid**:
 
 ```console
 $ export AN_ORM=mongoid
@@ -80,7 +88,13 @@ You need to configure Mongoid in your Rails application for your MongoDB environ
 
 #### Using Dynamoid ORM
 
-When you use *activity_notification* with [Dynamoid](https://github.com/Dynamoid/dynamoid) ORM, set **AN_ORM** environment variable to **dynamoid**:
+When you use *activity_notification* with [Dynamoid](https://github.com/Dynamoid/dynamoid) ORM, you need to add the `dynamoid` gem to your Gemfile:
+
+```ruby
+gem 'dynamoid', '>= 3.11.0', '< 4.0'
+```
+
+Then, set **AN_ORM** environment variable to **dynamoid**:
 
 ```console
 $ export AN_ORM=dynamoid
