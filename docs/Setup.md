@@ -22,6 +22,24 @@ $ bin/rails generate activity_notification:install
 The generator will install an initializer which describes all configuration options of *activity_notification*.
 It also generates a i18n based translation file which we can configure the presentation of notifications.
 
+#### ORM Dependencies
+
+By default, *activity_notification* uses **ActiveRecord** as the ORM and no additional ORM gems are required.
+
+If you intend to use **Mongoid** support, you need to add the `mongoid` gem separately to your Gemfile:
+
+```ruby
+gem 'activity_notification'
+gem 'mongoid', '>= 4.0.0', '< 10.0'
+```
+
+If you intend to use **Dynamoid** support for Amazon DynamoDB, you need to add the `dynamoid` gem separately to your Gemfile:
+
+```ruby
+gem 'activity_notification'
+gem 'dynamoid', '>= 3.11.0', '< 4.0'
+```
+
 ### Database setup
 
 #### Using ActiveRecord ORM
@@ -64,7 +82,14 @@ config.yaml_column_permitted_classes << Time
 
 #### Using Mongoid ORM
 
-When you use *activity_notification* with [Mongoid](http://mongoid.org) ORM, set **AN_ORM** environment variable to **mongoid**:
+When you use *activity_notification* with [Mongoid](http://mongoid.org) ORM, you first need to add the `mongoid` gem to your Gemfile:
+
+```ruby
+gem 'activity_notification'
+gem 'mongoid', '>= 4.0.0', '< 10.0'
+```
+
+Then set **AN_ORM** environment variable to **mongoid**:
 
 ```console
 $ export AN_ORM=mongoid
@@ -80,7 +105,14 @@ You need to configure Mongoid in your Rails application for your MongoDB environ
 
 #### Using Dynamoid ORM
 
-When you use *activity_notification* with [Dynamoid](https://github.com/Dynamoid/dynamoid) ORM, set **AN_ORM** environment variable to **dynamoid**:
+When you use *activity_notification* with [Dynamoid](https://github.com/Dynamoid/dynamoid) ORM, you first need to add the `dynamoid` gem to your Gemfile:
+
+```ruby
+gem 'activity_notification'
+gem 'dynamoid', '>= 3.11.0', '< 4.0'
+```
+
+Then set **AN_ORM** environment variable to **dynamoid**:
 
 ```console
 $ export AN_ORM=dynamoid
