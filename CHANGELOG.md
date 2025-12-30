@@ -1,3 +1,16 @@
+## 2.4.1 / 2025-12-31
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.4.0...v2.4.1)
+
+Enhancements:
+
+* Make Mongoid and Dynamoid optional dependencies - [#190](https://github.com/simukappu/activity_notification/issues/190)
+
+Bug Fixes:
+
+* Fix OpenAPI schema validation errors in Subscription model
+* Fix Dynamoid ORM datetime format issue in optional_targets API response
+* Fix OpenAPI parser deprecation warning by adding strict_reference_validation configuration
+
 ## 2.4.0 / 2025-08-20
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.3.3...v2.4.0)
 
