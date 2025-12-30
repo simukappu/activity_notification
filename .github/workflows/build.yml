@@ -95,7 +95,6 @@ jobs:
           bin/install_dynamodblocal.sh
           bin/start_dynamodblocal.sh
       - name: Run tests with RSpec
-        run: bundle exec rspec
-        continue-on-error: ${{ matrix.allow_failures == 'true' }}
+        run: bundle exec rspec --format progress
       - name: Coveralls
         uses: coverallsapp/github-action@v2
