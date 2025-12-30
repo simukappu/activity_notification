@@ -36,8 +36,15 @@ describe ActivityNotification::Generators::MigrationGenerator, type: :generator 
         if ActivityNotification.config.orm == :active_record
           it 'can be executed to migrate scheme' do
             require subject
-            CreateActivityNotificationTables.new.migrate(:down)
-            CreateActivityNotificationTables.new.migrate(:up)
+            # Suppress migration output during tests
+            old_verbose = ActiveRecord::Migration.verbose
+            ActiveRecord::Migration.verbose = false
+            begin
+              CreateActivityNotificationTables.new.migrate(:down)
+              CreateActivityNotificationTables.new.migrate(:up)
+            ensure
+              ActiveRecord::Migration.verbose = old_verbose
+            end
           end
         end
       end
@@ -56,8 +63,15 @@ describe ActivityNotification::Generators::MigrationGenerator, type: :generator 
         if ActivityNotification.config.orm == :active_record
           it 'can be executed to migrate scheme' do
             require subject
-            CreateActivityNotificationTables.new.migrate(:down)
-            CreateActivityNotificationTables.new.migrate(:up)
+            # Suppress migration output during tests
+            old_verbose = ActiveRecord::Migration.verbose
+            ActiveRecord::Migration.verbose = false
+            begin
+              CreateActivityNotificationTables.new.migrate(:down)
+              CreateActivityNotificationTables.new.migrate(:up)
+            ensure
+              ActiveRecord::Migration.verbose = old_verbose
+            end
           end
         end
       end
