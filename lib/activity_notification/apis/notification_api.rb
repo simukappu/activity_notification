@@ -604,7 +604,7 @@ module ActivityNotification
           batch_options = {}
           batch_options[:batch_size] = options[:batch_size] if options[:batch_size]
           
-          targets.find_each(batch_options) do |target|
+          targets.find_each(**batch_options) do |target|
             notification = notify_to(target, notifiable, options)
             notifications << notification
           end
