@@ -228,7 +228,8 @@ module ActivityNotification
           notify_later(target_type, notifiable, options)
         else
           targets = notifiable.notification_targets(target_type, options[:pass_full_options] ? options : options[:key])
-          unless targets.blank?
+          # Optimize blank check to avoid loading all records for ActiveRecord relations
+          unless targets_empty?(targets)
             notify_all(targets, notifiable, options)
           end
         end
@@ -269,10 +270,17 @@ module ActivityNotification
 
       # Generates notifications to specified targets.
       #
-      # @example Notify to all users
-      #   ActivityNotification::Notification.notify_all User.all, @comment
+      # For large target collections, this method uses batch processing to reduce memory consumption:
+      # - ActiveRecord::Relation: Uses find_each (loads in batches of 1000 records)
+      # - Mongoid::Criteria: Uses each with cursor batching
+      # - Arrays: Standard iteration (already in memory)
       #
-      # @param [Array<Object>] targets Targets to send notifications
+      # @example Notify to all users (with ActiveRecord relation for memory efficiency)
+      #   ActivityNotification::Notification.notify_all User.all, @comment
+      # @example Notify to all users with custom batch size
+      #   ActivityNotification::Notification.notify_all User.all, @comment, batch_size: 500
+      #
+      # @param [ActiveRecord::Relation, Mongoid::Criteria, Array<Object>] targets Targets to send notifications
       # @param [Object] notifiable Notifiable instance
       # @param [Hash] options Options for notifications
       # @option options [String]                  :key                      (notifiable.default_notification_key) Key of the notification
@@ -284,23 +292,32 @@ module ActivityNotification
       # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
       # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
       # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
+      # @option options [Integer]                 :batch_size               (1000)                                Batch size for ActiveRecord find_each (optional)
       # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
       # @return [Array<Notificaion>] Array of generated notifications
       def notify_all(targets, notifiable, options = {})
         if options[:notify_later]
           notify_all_later(targets, notifiable, options)
         else
-          targets.map { |target| notify_to(target, notifiable, options) }
+          # Optimize for large ActiveRecord relations by using batch processing
+          process_targets_in_batches(targets, notifiable, options)
         end
       end
       alias_method :notify_all_now, :notify_all
 
       # Generates notifications to specified targets later by ActiveJob queue.
       #
+      # Note: When passing ActiveRecord relations or Mongoid criteria to async jobs,
+      # they may be serialized to arrays before job execution, which can consume memory
+      # for large target sets. For very large datasets (10,000+ records), consider using
+      # notify_later with target_type instead, which generates notifications asynchronously
+      # without loading all targets upfront:
+      #   ActivityNotification::Notification.notify(:users, @comment, notify_later: true)
+      #
       # @example Notify to all users later
       #   ActivityNotification::Notification.notify_all_later User.all, @comment
       #
-      # @param [Array<Object>] targets Targets to send notifications
+      # @param [ActiveRecord::Relation, Mongoid::Criteria, Array<Object>] targets Targets to send notifications
       # @param [Object] notifiable Notifiable instance
       # @param [Hash] options Options for notifications
       # @option options [String]                  :key                      (notifiable.default_notification_key) Key of the notification
@@ -545,6 +562,66 @@ module ActivityNotification
         notification.prepare_to_store.save
         notification.after_store
         notification
+      end
+
+      # Checks if targets collection is empty without loading all records
+      # @api private
+      # @param [Object] targets Targets collection (can be an ActiveRecord::Relation, Mongoid::Criteria, Array, etc.)
+      # @return [Boolean] True if targets is empty
+      def targets_empty?(targets)
+        # For ActiveRecord relations and Mongoid criteria, use exists? to avoid loading all records
+        if targets.respond_to?(:exists?)
+          !targets.exists?
+        else
+          # For arrays and other enumerables, use blank?
+          targets.blank?
+        end
+      end
+
+      # Processes targets in batches for memory efficiency with large collections
+      # @api private
+      # 
+      # For ActiveRecord::Relation, uses find_each which loads records in batches (default 1000).
+      # For Mongoid::Criteria, uses each which leverages MongoDB's cursor batching.
+      # For Arrays and other enumerables, uses standard iteration.
+      # 
+      # Note: When called from async jobs (notify_all_later), ActiveRecord relations may be
+      # serialized to arrays before reaching this method, which limits batch processing benefits.
+      # Consider using notify_later with target_type instead of notify_all_later with relations
+      # for large datasets in async scenarios.
+      #
+      # @param [Object] targets Targets collection (can be an ActiveRecord::Relation, Mongoid::Criteria, Array, etc.)
+      # @param [Object] notifiable Notifiable instance
+      # @param [Hash] options Options for notifications
+      # @option options [Integer] :batch_size (1000) Batch size for ActiveRecord find_each (optional)
+      # @return [Array<Notification>] Array of generated notifications
+      def process_targets_in_batches(targets, notifiable, options = {})
+        notifications = []
+        
+        # For ActiveRecord relations, use find_each to process in batches
+        # This loads records in batches (default 1000) to avoid loading all records into memory
+        if targets.respond_to?(:find_each)
+          batch_options = {}
+          batch_options[:batch_size] = options[:batch_size] if options[:batch_size]
+          
+          targets.find_each(batch_options) do |target|
+            notification = notify_to(target, notifiable, options)
+            notifications << notification
+          end
+        # For Mongoid criteria, use each which uses MongoDB's cursor with automatic batching
+        # MongoDB driver handles batch size automatically (default ~101 initial, then unlimited)
+        elsif defined?(Mongoid::Criteria) && targets.is_a?(Mongoid::Criteria)
+          targets.each do |target|
+            notification = notify_to(target, notifiable, options)
+            notifications << notification
+          end
+        else
+          # For arrays and other enumerables, use standard map approach
+          # Already in memory, so no batching benefit
+          notifications = targets.map { |target| notify_to(target, notifiable, options) }
+        end
+        
+        notifications
       end
     end
 
