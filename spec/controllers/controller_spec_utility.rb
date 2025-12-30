@@ -70,7 +70,7 @@ module ActivityNotification
         end
 
         def committee_options
-          @committee_options ||= { schema: Committee::Drivers::load_from_file(schema_path), prefix: root_path, validate_success_only: true, parse_response_by_content_type: false }
+          @committee_options ||= { schema: Committee::Drivers::load_from_file(schema_path, parser_options: { strict_reference_validation: true }), prefix: root_path, validate_success_only: true, parse_response_by_content_type: false }
         end
 
         def get_with_compatibility path, options = {}
