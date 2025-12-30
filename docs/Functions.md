@@ -126,6 +126,213 @@ class Comment < ActiveRecord::Base
 end
 ```
 
+#### Adding email attachments
+
+You can customize the mailer to add email attachments by creating a custom mailer class that extends **ActivityNotification::Mailer**. This allows you to use ActionMailer's `attachments` API to attach files to your notification emails.
+
+##### Creating a custom mailer class
+
+Create a custom mailer class in *app/mailers* that extends *ActivityNotification::Mailer* and overrides the notification email methods:
+
+```ruby
+# app/mailers/custom_notification_mailer.rb
+class CustomNotificationMailer < ActivityNotification::Mailer
+  def send_notification_email(notification, options = {})
+    # Add attachments before sending the email
+    add_attachments(notification)
+    
+    # Call the parent method to send the email
+    super
+  end
+
+  def send_batch_notification_email(target, notifications, batch_key, options = {})
+    # Add attachments for batch emails
+    add_batch_attachments(target, notifications)
+    
+    # Call the parent method to send the email
+    super
+  end
+
+  private
+
+  def add_attachments(notification)
+    # Add attachments using ActionMailer's attachments API
+    # Example 1: Attach a file from the filesystem
+    if notification.notifiable.respond_to?(:attachment_path) && 
+       notification.notifiable.attachment_path.present? &&
+       File.exist?(notification.notifiable.attachment_path)
+      attachments[File.basename(notification.notifiable.attachment_path)] = 
+        File.read(notification.notifiable.attachment_path)
+    end
+
+    # Example 2: Attach generated content (e.g., PDF)
+    if notification.key == 'report.completed'
+      attachments['report.pdf'] = {
+        mime_type: 'application/pdf',
+        content: generate_report_pdf(notification)
+      }
+    end
+
+    # Example 3: Attach image inline for embedding in email
+    if notification.notifiable.respond_to?(:logo_path) && 
+       File.exist?(notification.notifiable.logo_path)
+      attachments.inline['logo.png'] = File.read(notification.notifiable.logo_path)
+    end
+  end
+
+  def add_batch_attachments(target, notifications)
+    # Example: Attach a summary report for batch notifications
+    attachments['notification_summary.pdf'] = {
+      mime_type: 'application/pdf',
+      content: generate_batch_summary_pdf(target, notifications)
+    }
+  end
+
+  def generate_report_pdf(notification)
+    # Your PDF generation logic here
+    # For example, using Prawn, WickedPDF, or other PDF libraries
+    "PDF content here"
+  end
+
+  def generate_batch_summary_pdf(target, notifications)
+    # Your batch PDF generation logic here
+    "Batch PDF content here"
+  end
+end
+```
+
+##### Configuring the custom mailer
+
+To use your custom mailer, configure it in *config/initializers/activity_notification.rb*:
+
+```ruby
+ActivityNotification.configure do |config|
+  # Set your custom mailer class
+  config.mailer = 'CustomNotificationMailer'
+  
+  # Other configurations...
+  config.email_enabled = true
+  config.mailer_sender = 'notifications@example.com'
+end
+```
+
+##### Practical use case: Attaching user-specific documents
+
+Here's a complete example showing how to attach user-specific documents based on the notification type:
+
+```ruby
+# app/mailers/custom_notification_mailer.rb
+class CustomNotificationMailer < ActivityNotification::Mailer
+  def send_notification_email(notification, options = {})
+    case notification.key
+    when 'invoice.created'
+      attach_invoice(notification)
+    when 'report.monthly'
+      attach_monthly_report(notification)
+    when 'document.shared'
+      attach_shared_document(notification)
+    end
+    
+    super
+  end
+
+  private
+
+  def attach_invoice(notification)
+    invoice = notification.notifiable
+    if invoice.respond_to?(:pdf_file) && invoice.pdf_file.attached?
+      # Using Active Storage
+      attachments["invoice_#{invoice.id}.pdf"] = invoice.pdf_file.download
+    elsif invoice.respond_to?(:generate_pdf)
+      # Generate PDF on the fly
+      attachments["invoice_#{invoice.id}.pdf"] = {
+        mime_type: 'application/pdf',
+        content: invoice.generate_pdf
+      }
+    end
+  end
+
+  def attach_monthly_report(notification)
+    target = notification.target
+    report = MonthlyReportGenerator.new(target, Date.current.last_month)
+    
+    attachments['monthly_report.pdf'] = {
+      mime_type: 'application/pdf',
+      content: report.to_pdf
+    }
+    
+    # Optionally attach CSV data as well
+    attachments['monthly_data.csv'] = {
+      mime_type: 'text/csv',
+      content: report.to_csv
+    }
+  end
+
+  def attach_shared_document(notification)
+    document = notification.notifiable
+    if document.respond_to?(:file_url)
+      # Download and attach remote file
+      require 'open-uri'
+      attachments[document.filename] = URI.open(document.file_url).read
+    end
+  rescue StandardError => e
+    # Handle errors gracefully - email will still be sent without attachment
+    Rails.logger.error("Failed to attach document: #{e.message}")
+  end
+end
+```
+
+```ruby
+# app/models/invoice.rb
+class Invoice < ActiveRecord::Base
+  acts_as_notifiable :users,
+    targets: ->(invoice, key) { [invoice.user] },
+    notifiable_path: :invoice_path
+
+  # Method to generate PDF (example using Prawn)
+  def generate_pdf
+    require 'prawn'
+    
+    Prawn::Document.new do |pdf|
+      pdf.text "Invoice ##{id}", size: 24, style: :bold
+      pdf.move_down 20
+      pdf.text "Amount: $#{amount}"
+      pdf.text "Date: #{created_at.strftime('%Y-%m-%d')}"
+      # Add more invoice details...
+    end.render
+  end
+
+  def invoice_path
+    "/invoices/#{id}"
+  end
+end
+```
+
+With this setup, when you create a notification:
+
+```ruby
+@invoice.notify :users, key: 'invoice.created'
+```
+
+The notification email will automatically include the invoice PDF as an attachment.
+
+##### Using inline attachments in email templates
+
+When you attach images inline, you can reference them in your email templates:
+
+```erb
+<!-- app/views/activity_notification/mailer/users/report/monthly.html.erb -->
+<html>
+  <body>
+    <%= image_tag attachments['logo.png'].url %>
+    <h1>Your Monthly Report</h1>
+    <p>Dear <%= @target.name %>,</p>
+    <p>Please find your monthly report attached.</p>
+    <!-- Email content -->
+  </body>
+</html>
+```
+
 #### i18n for email
 
 The subject of notification email can be put in your locale *.yml* files as **mail_subject** field:
