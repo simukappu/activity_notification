@@ -1,5 +1,6 @@
 require 'dynamoid'
 require 'activity_notification/apis/notification_api'
+require 'activity_notification/apis/cascading_notification_api'
 
 module ActivityNotification
   module ORM
@@ -14,6 +15,7 @@ module ActivityNotification
         include Renderable
         include Association
         include NotificationApi
+        include CascadingNotificationApi
 
         table name: ActivityNotification.config.notification_table_name, key: :id
 
