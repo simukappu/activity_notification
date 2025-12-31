@@ -1625,3 +1625,6 @@ shared_examples_for :notification_api do
     end
 
 end
+
+# Include performance tests
+require_relative 'notification_api_performance_spec'

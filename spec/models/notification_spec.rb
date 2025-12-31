@@ -5,6 +5,7 @@
 describe ActivityNotification::Notification, type: :model do
 
   it_behaves_like :notification_api
+  it_behaves_like :notification_api_performance
   it_behaves_like :renderable
 
   describe "with association" do
