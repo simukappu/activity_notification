@@ -37,14 +37,7 @@ require "action_cable/testing/rspec" if Rails::VERSION::MAJOR == 5
 require 'factory_bot_rails'
 require 'activity_notification'
 
-Dir[Rails.root.join("../../spec/support/**/*.rb")].each { |file| require file }
-
-def clean_database
-  [ActivityNotification::Notification, ActivityNotification::Subscription, Comment, Article, Admin, User].each do |model_class|
-    model_class.delete_all
-  end
-end
-
+# RSpec configuration must come before loading support files or defining example groups
 RSpec.configure do |config|
   config.expect_with  :minitest, :rspec
   config.include FactoryBot::Syntax::Methods
@@ -53,4 +46,12 @@ RSpec.configure do |config|
     clean_database
   end
   config.include Devise::Test::ControllerHelpers, type: :controller
+end
+
+Dir[Rails.root.join("../../spec/support/**/*.rb")].each { |file| require file }
+
+def clean_database
+  [ActivityNotification::Notification, ActivityNotification::Subscription, Comment, Article, Admin, User].each do |model_class|
+    model_class.delete_all
+  end
 end
