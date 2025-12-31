@@ -110,7 +110,19 @@ module ActivityNotification
         # @param [Object] target Target instance to notify
         # @return [String, Array<String>, nil] CC email address(es) or nil
         def mailer_cc(target)
-          target.respond_to?(:mailer_cc) ? target.mailer_cc : nil
+          if target.respond_to?(:mailer_cc)
+            target.mailer_cc
+          elsif ActivityNotification.config.mailer_cc.present?
+            if ActivityNotification.config.mailer_cc.is_a?(Proc)
+              # Get the notification key from current context
+              key = @notification ? @notification.key : nil
+              ActivityNotification.config.mailer_cc.call(key)
+            else
+              ActivityNotification.config.mailer_cc
+            end
+          else
+            nil
+          end
         end
 
         # Returns sender email address as 'reply_to'.

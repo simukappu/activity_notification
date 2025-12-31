@@ -45,6 +45,14 @@ ActivityNotification.configure do |config|
   # note that it will be overwritten if you use your own mailer class with default "from" parameter.
   config.mailer_sender = 'please-change-me-at-config-initializers-activity_notification@example.com'
 
+  # Configure the carbon copy (CC) email address(es) for notification emails.
+  # You can set a single email address, an array of email addresses, or a Proc that returns either.
+  # Note that this can be overridden per target by defining a mailer_cc method in the target model,
+  # or per notification by defining overriding_notification_email_cc in the notifiable model.
+  # config.mailer_cc = 'admin@example.com'
+  # config.mailer_cc = ['admin@example.com', 'support@example.com']
+  # config.mailer_cc = ->(key){ key.include?('urgent') ? 'urgent@example.com' : nil }
+
   # Configure the class responsible to send e-mails.
   # config.mailer = "ActivityNotification::Mailer"
 

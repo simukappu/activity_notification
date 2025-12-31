@@ -82,6 +82,15 @@ module ActivityNotification
     #   @return [String] Email address as sender of notification email.
     attr_accessor :mailer_sender
 
+    # @overload mailer_cc
+    #   Returns carbon copy (CC) email address(es) for notification email
+    #   @return [String, Array<String>, Proc] CC email address(es) for notification email.
+    # @overload mailer_cc=(value)
+    #   Sets carbon copy (CC) email address(es) for notification email
+    #   @param [String, Array<String>, Proc] mailer_cc The new mailer_cc
+    #   @return [String, Array<String>, Proc] CC email address(es) for notification email.
+    attr_accessor :mailer_cc
+
     # @overload mailer
     #   Returns mailer class for email notification
     #   @return [String] Mailer class for email notification.
@@ -236,6 +245,7 @@ module ActivityNotification
       @subscribe_to_email_as_default            = nil
       @subscribe_to_optional_targets_as_default = nil
       @mailer_sender                            = nil
+      @mailer_cc                                = nil
       @mailer                                   = 'ActivityNotification::Mailer'
       @parent_mailer                            = 'ActionMailer::Base'
       @parent_job                               = 'ActiveJob::Base'

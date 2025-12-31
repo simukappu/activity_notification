@@ -3,6 +3,7 @@
 
 Enhancements:
 
+* Add global CC (Carbon Copy) email configuration support - allows configuring CC recipients through gem configuration file, target models, or notifiable models with three-level priority system
 * Make Mongoid and Dynamoid optional dependencies - [#190](https://github.com/simukappu/activity_notification/issues/190)
 
 Bug Fixes:

@@ -4,27 +4,64 @@
 
 The CC (Carbon Copy) functionality has been added to the activity_notification gem's email notification system. This feature allows email notifications to be sent with additional CC recipients, following the same pattern as existing email header fields like `from`, `reply_to`, and `to`.
 
+CC recipients can be configured at three levels:
+1. **Global configuration** - Set a default CC for all notifications via the gem's configuration file
+2. **Target model** - Define CC recipients at the target level (e.g., User, Admin)
+3. **Notifiable model** - Override CC per notification type in the notifiable model
+
 ## Implementation Details
 
 ### Files Modified
 
-1. **lib/activity_notification/mailers/helpers.rb**
+1. **lib/activity_notification/config.rb**
+   - Added `mailer_cc` configuration attribute to allow global CC configuration
+   - Supports String, Array, or Proc values for flexible CC recipient configuration
+   
+2. **lib/activity_notification/mailers/helpers.rb**
    - Added `cc: :mailer_cc` to the email headers processing loop in the `headers_for` method
-   - Added a new `mailer_cc` helper method that retrieves CC recipients from the target model
+   - Updated the `mailer_cc` helper method to check configuration when target doesn't define mailer_cc
    - Updated the header value resolution logic to properly handle the `mailer_cc` method which takes a target parameter instead of a key parameter
+
+3. **lib/generators/templates/activity_notification.rb**
+   - Added configuration example and documentation for `config.mailer_cc`
 
 ### Key Features
 
-- **Flexible CC Recipients**: CC can be specified as a single email address (String) or multiple email addresses (Array)
-- **Optional Implementation**: The `mailer_cc` method is optional - if not defined in the target model, no CC recipients will be added
+- **Three-Level Configuration**: CC can be configured at the global level (gem configuration), target level (model), or notification level (per-notification type)
+- **Flexible CC Recipients**: CC can be specified as a single email address (String), multiple email addresses (Array), or dynamic via Proc
+- **Optional Implementation**: All CC configuration is optional - if not defined, no CC recipients will be added
 - **Override Support**: Like other email headers, CC can be overridden per notification using the `overriding_notification_email_cc` method in the notifiable model
 - **Consistent Pattern**: Follows the same implementation pattern as existing email headers (`from`, `reply_to`, `to`)
 
 ## Usage Guide
 
-### Method 1: Define `mailer_cc` in Your Target Model
+### Method 1: Configure CC Globally (New Feature)
 
-Add a `mailer_cc` method to your target model (e.g., User, Admin) to specify CC recipients:
+Set a default CC for all notification emails in your initializer:
+
+```ruby
+# config/initializers/activity_notification.rb
+ActivityNotification.configure do |config|
+  # Single CC recipient for all notifications
+  config.mailer_cc = 'admin@example.com'
+  
+  # OR multiple CC recipients
+  config.mailer_cc = ['admin@example.com', 'support@example.com']
+  
+  # OR dynamic CC based on notification key
+  config.mailer_cc = ->(key) {
+    if key.include?('urgent')
+      ['urgent@example.com', 'manager@example.com']
+    else
+      'admin@example.com'
+    end
+  }
+end
+```
+
+### Method 2: Define `mailer_cc` in Your Target Model
+
+Add a `mailer_cc` method to your target model (e.g., User, Admin) to specify CC recipients for that target. This overrides the global configuration:
 
 ```ruby
 class User < ApplicationRecord
@@ -48,9 +85,9 @@ class User < ApplicationRecord
 end
 ```
 
-### Method 2: Override CC Per Notification Type
+### Method 3: Override CC Per Notification Type
 
-For more granular control, implement `overriding_notification_email_cc` in your notifiable model to set CC based on the notification type:
+For more granular control, implement `overriding_notification_email_cc` in your notifiable model to set CC based on the notification type. This has the highest priority:
 
 ```ruby
 class Article < ApplicationRecord
@@ -65,35 +102,41 @@ class Article < ApplicationRecord
       # CC multiple recipients for published articles
       ["editor@example.com", "marketing@example.com"]
     else
-      nil
+      nil # Use target's mailer_cc or global config
     end
   end
 end
 ```
 
-### Method 3: Combine Both Approaches
+### Method 4: Combine All Approaches
 
-You can combine both methods - the notifiable's `overriding_notification_email_cc` takes precedence over the target's `mailer_cc`:
+You can combine all approaches - the priority order is: notification override > target method > global configuration:
 
 ```ruby
+# config/initializers/activity_notification.rb
+ActivityNotification.configure do |config|
+  # Global default for all notifications
+  config.mailer_cc = "support@example.com"
+end
+
 class User < ApplicationRecord
   acts_as_target
   
-  # Default CC for all notifications
+  # Override global config for this target
   def mailer_cc
-    "support@example.com"
+    "admin@example.com"
   end
 end
 
 class Comment < ApplicationRecord
   acts_as_notifiable
   
-  # Override CC for specific notification types
+  # Override both global config and target method for specific notifications
   def overriding_notification_email_cc(target, key)
     if key == 'comment.urgent'
       ["urgent@example.com", "manager@example.com"]
     else
-      nil # Use default from target.mailer_cc
+      nil # Falls back to target.mailer_cc, then global config
     end
   end
 end
@@ -101,7 +144,51 @@ end
 
 ## Examples
 
-### Example 1: Simple Static CC
+### Example 1: Global Configuration with Static CC
+
+```ruby
+# config/initializers/activity_notification.rb
+ActivityNotification.configure do |config|
+  config.mailer_cc = "admin@example.com"
+end
+
+# All notification emails will include:
+# To: user@example.com
+# CC: admin@example.com
+```
+
+### Example 2: Global Configuration with Multiple CC Recipients
+
+```ruby
+# config/initializers/activity_notification.rb
+ActivityNotification.configure do |config|
+  config.mailer_cc = ["supervisor@example.com", "hr@example.com"]
+end
+
+# All notification emails will include:
+# To: user@example.com
+# CC: supervisor@example.com, hr@example.com
+```
+
+### Example 3: Dynamic Global CC Based on Notification Key
+
+```ruby
+# config/initializers/activity_notification.rb
+ActivityNotification.configure do |config|
+  config.mailer_cc = ->(key) {
+    case key
+    when /urgent/
+      ["urgent@example.com", "manager@example.com"]
+    when /comment/
+      "moderation@example.com"
+    else
+      "admin@example.com"
+    end
+  }
+end
+```
+
+### Example 4: Target-Level Static CC
 
 ```ruby
 class User < ApplicationRecord
@@ -117,7 +204,7 @@ end
 # CC: admin@example.com
 ```
 
-### Example 2: Multiple CC Recipients
+### Example 5: Target-Level Multiple CC Recipients
 
 ```ruby
 class User < ApplicationRecord
@@ -133,7 +220,7 @@ end
 # CC: supervisor@example.com, hr@example.com
 ```
 
-### Example 3: Dynamic CC Based on User Attributes
+### Example 6: Dynamic CC Based on User Attributes
 
 ```ruby
 class User < ApplicationRecord
@@ -149,7 +236,7 @@ class User < ApplicationRecord
 end
 ```
 
-### Example 4: Override CC Per Notification
+### Example 7: Override CC Per Notification
 
 ```ruby
 class Article < ApplicationRecord
@@ -174,7 +261,7 @@ class Article < ApplicationRecord
 end
 ```
 
-### Example 5: Conditional CC Based on Target and Key
+### Example 8: Conditional CC Based on Target and Key
 
 ```ruby
 class Post < ApplicationRecord
@@ -205,17 +292,19 @@ end
 
 ### Resolution Order
 
-The CC recipient(s) are resolved in the following order:
+The CC recipient(s) are resolved in the following priority order:
 
 1. **Override Method** (Highest Priority): If the notifiable model has `overriding_notification_email_cc(target, key)` defined and returns a non-nil value, that value is used
-2. **Target Default Method**: If no override is provided, the target's `mailer_cc` method is called (if it exists)
-3. **No CC** (Default): If neither method is defined or both return nil, no CC header is added to the email
+2. **Target Method**: If no override is provided, the target's `mailer_cc` method is called (if it exists)
+3. **Global Configuration**: If the target doesn't have a `mailer_cc` method, the global `config.mailer_cc` setting is used (if configured)
+4. **No CC** (Default): If none of the above are defined or all return nil, no CC header is added to the email
 
 ### Return Value Format
 
-The `mailer_cc` method can return:
+Both the `mailer_cc` method and `config.mailer_cc` configuration can return:
 - **String**: A single email address (e.g., `"admin@example.com"`)
 - **Array<String>**: Multiple email addresses (e.g., `["admin@example.com", "manager@example.com"]`)
+- **Proc**: A lambda/proc that takes the notification key and returns a String, Array, or nil (e.g., `->(key) { key.include?('urgent') ? 'urgent@example.com' : nil }`)
 - **nil**: No CC recipients (CC header will not be added to the email)
 
 ### Implementation Pattern
