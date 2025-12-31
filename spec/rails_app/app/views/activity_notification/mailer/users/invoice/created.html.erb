@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+  <h2>Invoice Created</h2>
+  
+  <p>Hello <%= @notification.target.name %>,</p>
+  
+  <p>A new invoice has been created for you:</p>
+  
+  <ul>
+    <li><strong>Invoice ID:</strong> #<%= @notification.notifiable.id %></li>
+    <li><strong>Amount:</strong> $<%= @notification.notifiable.amount %></li>
+    <% if @notification.notifiable.description.present? %>
+    <li><strong>Description:</strong> <%= @notification.notifiable.description %></li>
+    <% end %>
+    <li><strong>Status:</strong> <%= @notification.notifiable.status %></li>
+  </ul>
+  
+  <p>The invoice PDF is attached to this email.</p>
+  
+  <p>Thank you!</p>
+</body>
+</html>

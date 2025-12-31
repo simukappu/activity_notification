@@ -1,0 +1,16 @@
+Invoice Created
+
+Hello <%= @notification.target.name %>,
+
+A new invoice has been created for you:
+
+Invoice ID: #<%= @notification.notifiable.id %>
+Amount: $<%= @notification.notifiable.amount %>
+<% if @notification.notifiable.description.present? -%>
+Description: <%= @notification.notifiable.description %>
+<% end -%>
+Status: <%= @notification.notifiable.status %>
+
+The invoice PDF is attached to this email.
+
+Thank you!
