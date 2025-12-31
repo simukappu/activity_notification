@@ -39,14 +39,14 @@ shared_examples_for :cascading_notification_api do
             { delay: 15.minutes, target: :slack }
           ]
           
-          scheduled_time = 15.minutes.from_now
+          start_time = Time.current
           expect {
             test_instance.cascade_notify(cascade_config)
           }.to have_enqueued_job(ActivityNotification::CascadingNotificationJob)
           
           # Verify the job was scheduled with approximately the right delay
           enqueued_job = ActiveJob::Base.queue_adapter.enqueued_jobs.last
-          expect(enqueued_job[:at]).to be_within(1.second).of(scheduled_time)
+          expect(enqueued_job[:at]).to be_within(1.second).of(start_time + 15.minutes)
         end
 
         it "returns true when cascade is initiated successfully" do
