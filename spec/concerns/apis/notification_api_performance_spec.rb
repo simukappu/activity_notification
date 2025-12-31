@@ -30,36 +30,39 @@ shared_examples_for :notification_api_performance do
 
     describe ".notify with targets_empty? optimization" do
       context "when checking for empty target collections" do
-        it "uses exists? query instead of loading all records for ActiveRecord relations" do
-          # Mock the notifiable to return a User relation
-          allow(@comment).to receive(:notification_targets).and_return(User.none)
-          
-          # Verify that exists? is called (efficient check)
-          expect_any_instance_of(ActiveRecord::Relation).to receive(:exists?).and_call_original
-          
-          # Verify that blank? is NOT called on the relation (which would load records)
-          expect_any_instance_of(ActiveRecord::Relation).not_to receive(:blank?)
-          
-          described_class.notify(:users, @comment)
-        end
-
-        it "executes minimal queries for empty check" do
-          allow(@comment).to receive(:notification_targets).and_return(User.none)
-          
-          # Count queries executed
-          query_count = 0
-          query_subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
-            event = ActiveSupport::Notifications::Event.new(*args)
-            # Count SELECT queries, excluding schema queries
-            query_count += 1 if event.payload[:sql] =~ /SELECT.*FROM.*users/i
-          end
-          
-          begin
+        # ActiveRecord-specific test
+        if ENV['AN_ORM'].nil? || ENV['AN_ORM'] == 'active_record'
+          it "uses exists? query instead of loading all records for ActiveRecord relations" do
+            # Mock the notifiable to return a User relation
+            allow(@comment).to receive(:notification_targets).and_return(User.none)
+            
+            # Verify that exists? is called (efficient check)
+            expect_any_instance_of(ActiveRecord::Relation).to receive(:exists?).and_call_original
+            
+            # Verify that blank? is NOT called on the relation (which would load records)
+            expect_any_instance_of(ActiveRecord::Relation).not_to receive(:blank?)
+            
             described_class.notify(:users, @comment)
-            # Should execute at most 1 query for empty check (SELECT 1 ... LIMIT 1)
-            expect(query_count).to be <= 1
-          ensure
-            ActiveSupport::Notifications.unsubscribe(query_subscriber)
+          end
+
+          it "executes minimal queries for empty check" do
+            allow(@comment).to receive(:notification_targets).and_return(User.none)
+            
+            # Count queries executed
+            query_count = 0
+            query_subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
+              event = ActiveSupport::Notifications::Event.new(*args)
+              # Count SELECT queries, excluding schema queries
+              query_count += 1 if event.payload[:sql] =~ /SELECT.*FROM.*users/i
+            end
+            
+            begin
+              described_class.notify(:users, @comment)
+              # Should execute at most 1 query for empty check (SELECT 1 ... LIMIT 1)
+              expect(query_count).to be <= 1
+            ensure
+              ActiveSupport::Notifications.unsubscribe(query_subscriber)
+            end
           end
         end
 
@@ -94,23 +97,26 @@ shared_examples_for :notification_api_performance do
           expect(notifications.all? { |n| n.is_a?(described_class) }).to be true
         end
 
-        it "uses find_each for ActiveRecord relations" do
-          relation = User.where(id: @users.map(&:id))
-          
-          # Verify find_each is called (indicates batch processing)
-          expect(relation).to receive(:find_each).and_call_original
-          
-          described_class.notify_all(relation, @comment, send_later: false)
-        end
+        # ActiveRecord-specific tests
+        if ENV['AN_ORM'].nil? || ENV['AN_ORM'] == 'active_record'
+          it "uses find_each for ActiveRecord relations" do
+            relation = User.where(id: @users.map(&:id))
+            
+            # Verify find_each is called (indicates batch processing)
+            expect(relation).to receive(:find_each).and_call_original
+            
+            described_class.notify_all(relation, @comment, send_later: false)
+          end
 
-        it "does not load all records into memory at once" do
-          relation = User.where(id: @users.map(&:id))
-          
-          # Verify that to_a is NOT called (which would load all records)
-          expect(relation).not_to receive(:to_a)
-          expect(relation).not_to receive(:load)
-          
-          described_class.notify_all(relation, @comment, send_later: false)
+          it "does not load all records into memory at once" do
+            relation = User.where(id: @users.map(&:id))
+            
+            # Verify that to_a is NOT called (which would load all records)
+            expect(relation).not_to receive(:to_a)
+            expect(relation).not_to receive(:load)
+            
+            described_class.notify_all(relation, @comment, send_later: false)
+          end
         end
       end
 
@@ -156,14 +162,17 @@ shared_examples_for :notification_api_performance do
           expect(batch_count).to eq(@user_count)
         end
 
-        it "respects custom batch_size option" do
-          relation = User.where(id: @users.map(&:id))
-          custom_batch_size = 250
-          
-          # Verify find_each is called with custom batch_size
-          expect(relation).to receive(:find_each).with(hash_including(batch_size: custom_batch_size)).and_call_original
-          
-          described_class.notify_all(relation, @comment, send_later: false, batch_size: custom_batch_size)
+        # ActiveRecord-specific test
+        if ENV['AN_ORM'].nil? || ENV['AN_ORM'] == 'active_record'
+          it "respects custom batch_size option" do
+            relation = User.where(id: @users.map(&:id))
+            custom_batch_size = 250
+            
+            # Verify find_each is called with custom batch_size
+            expect(relation).to receive(:find_each).with(hash_including(batch_size: custom_batch_size)).and_call_original
+            
+            described_class.notify_all(relation, @comment, send_later: false, batch_size: custom_batch_size)
+          end
         end
 
         it "maintains memory efficiency during processing" do
@@ -188,28 +197,31 @@ shared_examples_for :notification_api_performance do
             "Batch processing may not be working correctly."
         end
 
-        it "executes queries in batches, not all at once" do
-          relation = User.where(id: @users.map(&:id))
-          
-          # Track SELECT queries to verify batching
-          select_query_count = 0
-          query_subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
-            event = ActiveSupport::Notifications::Event.new(*args)
-            # Count SELECT queries for users
-            select_query_count += 1 if event.payload[:sql] =~ /SELECT.*FROM.*users/i
-          end
-          
-          begin
-            described_class.notify_all(relation, @comment, send_later: false)
+        # ActiveRecord-specific test
+        if ENV['AN_ORM'].nil? || ENV['AN_ORM'] == 'active_record'
+          it "executes queries in batches, not all at once" do
+            relation = User.where(id: @users.map(&:id))
             
-            # With find_each (batch_size: 1000), we expect at least 1 SELECT for users
-            # Plus additional queries for notifications, but should NOT be thousands of queries
-            expect(select_query_count).to be > 0
-            expect(select_query_count).to be < 100, 
-              "Query count of #{select_query_count} suggests inefficient querying. " \
-              "Expected batch processing to minimize queries."
-          ensure
-            ActiveSupport::Notifications.unsubscribe(query_subscriber)
+            # Track SELECT queries to verify batching
+            select_query_count = 0
+            query_subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
+              event = ActiveSupport::Notifications::Event.new(*args)
+              # Count SELECT queries for users
+              select_query_count += 1 if event.payload[:sql] =~ /SELECT.*FROM.*users/i
+            end
+            
+            begin
+              described_class.notify_all(relation, @comment, send_later: false)
+              
+              # With find_each (batch_size: 1000), we expect at least 1 SELECT for users
+              # Plus additional queries for notifications, but should NOT be thousands of queries
+              expect(select_query_count).to be > 0
+              expect(select_query_count).to be < 100, 
+                "Query count of #{select_query_count} suggests inefficient querying. " \
+                "Expected batch processing to minimize queries."
+            ensure
+              ActiveSupport::Notifications.unsubscribe(query_subscriber)
+            end
           end
         end
       end
