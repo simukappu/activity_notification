@@ -325,9 +325,9 @@ See [Testing](/docs/Testing.md#Testing).
 
 ## Documentation
 
-See [API Reference](http://www.rubydoc.info/github/simukappu/activity_notification/index) for more details.
+`docs/` contains documentation for users to read. These files are included in the distributed Gem. `ai-docs/` contains AI-generated and design documents. These files are not included in the distributed Gem.
 
-RubyDoc.info does not support parsing methods in *included* and *class_methods* of *ActiveSupport::Concern* currently.
+See [API Reference](http://www.rubydoc.info/github/simukappu/activity_notification/index) for more details. RubyDoc.info does not support parsing methods in *included* and *class_methods* of *ActiveSupport::Concern* currently.
 To read complete documents, please generate YARD documents on your local environment:
 ```console
 $ git pull https://github.com/simukappu/activity_notification.git

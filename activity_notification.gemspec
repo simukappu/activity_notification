@@ -15,8 +15,7 @@ Gem::Specification.new do |s|
   s.description   = "Integrated user activity notifications for Ruby on Rails. Provides functions to configure multiple notification targets and make activity notifications with notifiable models, like adding comments, responding etc."
   s.license       = "MIT"
 
-  s.files         = `git ls-files`.split("\n")
-  s.test_files    = `git ls-files -- spec/*`.split("\n")
+  s.files         = Dir.glob("lib/**/*") + Dir.glob("app/**/*") + Dir.glob("docs/**/*") + ["README.md", "MIT-LICENSE"]
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 2.1.0'
 
