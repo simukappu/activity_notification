@@ -97,24 +97,18 @@ class CustomNotificationMailer < ActivityNotification::Mailer
   def attach_monthly_report(notification)
     target = notification.target
     
-    # Generate a simple monthly report
-    report_content = "Monthly Report\n"
-    report_content += "User: #{target.class.name} ##{target.id}\n"
-    report_content += "Month: #{Date.current.last_month.strftime('%B %Y')}\n"
-    report_content += "Generated: #{Time.current}\n"
+    # Use MonthlyReportGenerator for comprehensive reports
+    generator = MonthlyReportGenerator.new(target)
     
     attachments['monthly_report.pdf'] = {
       mime_type: 'application/pdf',
-      content: report_content
+      content: generator.to_pdf
     }
     
-    # Optionally attach CSV data as well
-    csv_content = "Date,Activity,Count\n"
-    csv_content += "#{Date.current.last_month},Notifications,#{target.notifications.count}\n"
-    
+    # Attach CSV data as well
     attachments['monthly_data.csv'] = {
       mime_type: 'text/csv',
-      content: csv_content
+      content: generator.to_csv
     }
   end
 

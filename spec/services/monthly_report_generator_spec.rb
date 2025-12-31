@@ -141,4 +141,212 @@ describe MonthlyReportGenerator do
       expect(pdf_content).to include("Target: Article ##{article.id}")
     end
   end
+  
+  describe 'edge cases and error handling' do
+    context 'with different date formats' do
+      let(:specific_date) { Date.new(2023, 6, 15) }
+      let(:generator) { MonthlyReportGenerator.new(user, specific_date) }
+      
+      it 'formats month correctly for different dates' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to include('June 2023')
+      end
+      
+      it 'uses correct month in CSV' do
+        csv_content = generator.to_csv
+        expect(csv_content).to include('2023-06')
+      end
+    end
+    
+    context 'with notifications from different months' do
+      let!(:current_month_notifications) do
+        create_list(:notification, 3, target: user, created_at: month.beginning_of_month + 5.days)
+      end
+      
+      let!(:previous_month_notifications) do
+        create_list(:notification, 5, target: user, created_at: month.beginning_of_month - 10.days)
+      end
+      
+      it 'counts all notifications in total' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to include("Total Notifications: 8")
+      end
+    end
+    
+    context 'with large number of notifications' do
+      let!(:notifications) do
+        create_list(:notification, 100, target: user)
+      end
+      
+      it 'handles large datasets' do
+        expect { generator.to_pdf }.not_to raise_error
+        expect { generator.to_csv }.not_to raise_error
+      end
+      
+      it 'includes correct count' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to include("Total Notifications: 100")
+      end
+    end
+    
+    context 'with diverse notification keys' do
+      let!(:notification_types) do
+        [
+          create(:notification, target: user, key: 'article.created'),
+          create(:notification, target: user, key: 'article.updated'),
+          create(:notification, target: user, key: 'comment.posted'),
+          create(:notification, target: user, key: 'comment.replied'),
+          create(:notification, target: user, key: 'invoice.created'),
+        ]
+      end
+      
+      it 'includes breakdown of all notification types in PDF' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to include('NOTIFICATION BREAKDOWN BY TYPE')
+        expect(pdf_content).to include('article.created')
+        expect(pdf_content).to include('comment.posted')
+        expect(pdf_content).to include('invoice.created')
+      end
+      
+      it 'includes breakdown in CSV' do
+        csv_content = generator.to_csv
+        expect(csv_content).to include('Notification Type,Count')
+        expect(csv_content).to include('article.created')
+        expect(csv_content).to include('comment.posted')
+      end
+    end
+    
+    context 'with user without email' do
+      let(:user_without_email) do
+        u = create(:user)
+        allow(u).to receive(:respond_to?).with(:email).and_return(false)
+        u
+      end
+      let(:generator) { MonthlyReportGenerator.new(user_without_email) }
+      
+      it 'generates PDF without email field' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to include("Target: User ##{user_without_email.id}")
+        expect(pdf_content).not_to include('Email:')
+      end
+    end
+    
+    context 'with user without name' do
+      let(:user_without_name) do
+        u = create(:user)
+        allow(u).to receive(:respond_to?).with(:name).and_return(false)
+        u
+      end
+      let(:generator) { MonthlyReportGenerator.new(user_without_name) }
+      
+      it 'generates PDF without name field' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to include("Target: User ##{user_without_name.id}")
+        expect(pdf_content).not_to include('Name:')
+      end
+    end
+    
+    context 'CSV generation details' do
+      let!(:notifications) do
+        create_list(:notification, 10, target: user)
+      end
+      
+      before do
+        notifications.take(7).each { |n| n.open! }
+      end
+      
+      it 'generates valid CSV format' do
+        csv_content = generator.to_csv
+        rows = csv_content.split("\n")
+        
+        # Check header
+        expect(rows[0]).to eq('Month,Total Notifications,Opened,Unopened')
+        
+        # Check data row format
+        data_row = rows[1].split(',')
+        expect(data_row.length).to eq(4)
+        expect(data_row[1].to_i).to eq(10)
+        expect(data_row[2].to_i).to eq(7)
+        expect(data_row[3].to_i).to eq(3)
+      end
+      
+      it 'includes empty row separator' do
+        csv_content = generator.to_csv
+        rows = csv_content.split("\n")
+        expect(rows).to include('')
+      end
+      
+      it 'includes notification type header' do
+        csv_content = generator.to_csv
+        expect(csv_content).to include('Notification Type,Count')
+      end
+    end
+    
+    context 'PDF generation details' do
+      it 'includes proper section headers' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to include('MONTHLY ACTIVITY REPORT')
+        expect(pdf_content).to include('ACTIVITY SUMMARY')
+        expect(pdf_content).to include('NOTIFICATION BREAKDOWN BY TYPE')
+      end
+      
+      it 'includes separators' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to include('=' * 60)
+        expect(pdf_content).to include('-' * 60)
+      end
+      
+      it 'includes end of report marker' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to end_with('End of Report')
+      end
+      
+      it 'uses proper timestamp format' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to match(/Generated: \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/)
+      end
+    end
+    
+    context 'when notifications query fails' do
+      before do
+        allow(user).to receive(:notifications).and_raise(StandardError.new('Database error'))
+      end
+      
+      it 'handles errors gracefully in PDF generation' do
+        expect { generator.to_pdf }.not_to raise_error
+      end
+      
+      it 'handles errors gracefully in CSV generation' do
+        expect { generator.to_csv }.not_to raise_error
+      end
+    end
+    
+    context 'with nil month parameter' do
+      let(:generator) { MonthlyReportGenerator.new(user, nil) }
+      
+      it 'uses default month' do
+        expect(generator.month).to eq(Date.current.last_month)
+      end
+    end
+    
+    context 'with future month' do
+      let(:future_month) { Date.current + 2.months }
+      let(:generator) { MonthlyReportGenerator.new(user, future_month) }
+      
+      it 'accepts future month' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to include(future_month.strftime('%B %Y'))
+      end
+    end
+    
+    context 'with very old month' do
+      let(:old_month) { Date.new(2010, 1, 1) }
+      let(:generator) { MonthlyReportGenerator.new(user, old_month) }
+      
+      it 'accepts old dates' do
+        pdf_content = generator.to_pdf
+        expect(pdf_content).to include('January 2010')
+      end
+    end
+  end
 end
