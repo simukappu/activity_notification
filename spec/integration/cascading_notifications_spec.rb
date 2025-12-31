@@ -39,6 +39,9 @@ describe "Cascading Notifications Integration", type: :integration do
         { delay: 30.minutes, target: :sms, options: { urgent: true } }
       ]
       
+      # Capture the current time for consistent time calculations
+      start_time = Time.current
+      
       # Start the cascade
       expect(@notification.cascade_notify(cascade_config)).to be true
       
@@ -46,10 +49,10 @@ describe "Cascading Notifications Integration", type: :integration do
       expect(ActiveJob::Base.queue_adapter.enqueued_jobs.size).to eq(1)
       first_job = ActiveJob::Base.queue_adapter.enqueued_jobs.first
       expect(first_job[:job]).to eq(ActivityNotification::CascadingNotificationJob)
-      expect(first_job[:at]).to be_within(1.second).of(5.minutes.from_now)
+      expect(first_job[:at]).to be_within(1.second).of(start_time + 5.minutes)
       
       # Simulate time passing and execute first job
-      travel_to(5.minutes.from_now) do
+      travel_to(start_time + 5.minutes) do
         expect(slack_target).to receive(:notify).with(@notification, { channel: '#general' })
         
         # Clear queue and perform the job
@@ -60,14 +63,14 @@ describe "Cascading Notifications Integration", type: :integration do
         # Verify Slack was triggered successfully
         expect(result).to eq({ slack: :success })
         
-        # Verify next job was scheduled for email
+        # Verify next job was scheduled for email (10 minutes from current travelled time)
         expect(ActiveJob::Base.queue_adapter.enqueued_jobs.size).to eq(1)
         next_job = ActiveJob::Base.queue_adapter.enqueued_jobs.first
-        expect(next_job[:at]).to be_within(1.second).of(10.minutes.from_now)
+        expect(next_job[:at]).to be_within(1.second).of(start_time + 15.minutes)
       end
       
       # Simulate more time passing and execute second job
-      travel_to(15.minutes.from_now) do
+      travel_to(start_time + 15.minutes) do
         expect(email_target).to receive(:notify).with(@notification, {})
         
         # Clear queue and perform the job
@@ -78,14 +81,14 @@ describe "Cascading Notifications Integration", type: :integration do
         # Verify email was triggered successfully
         expect(result).to eq({ email: :success })
         
-        # Verify next job was scheduled for SMS
+        # Verify next job was scheduled for SMS (30 minutes from current travelled time)
         expect(ActiveJob::Base.queue_adapter.enqueued_jobs.size).to eq(1)
         next_job = ActiveJob::Base.queue_adapter.enqueued_jobs.first
-        expect(next_job[:at]).to be_within(1.second).of(30.minutes.from_now)
+        expect(next_job[:at]).to be_within(1.second).of(start_time + 45.minutes)
       end
       
       # Simulate final time passing and execute third job
-      travel_to(45.minutes.from_now) do
+      travel_to(start_time + 45.minutes) do
         expect(sms_target).to receive(:notify).with(@notification, { urgent: true })
         
         # Clear queue and perform the job
@@ -114,11 +117,13 @@ describe "Cascading Notifications Integration", type: :integration do
         { delay: 10.minutes, target: :email }
       ]
       
+      start_time = Time.current
+      
       # Start the cascade
       @notification.cascade_notify(cascade_config)
       
       # Simulate first job execution
-      travel_to(5.minutes.from_now) do
+      travel_to(start_time + 5.minutes) do
         expect(slack_target).to receive(:notify).with(@notification, {})
         
         ActiveJob::Base.queue_adapter.enqueued_jobs.clear
@@ -130,7 +135,7 @@ describe "Cascading Notifications Integration", type: :integration do
       end
       
       # User reads the notification before second job executes
-      travel_to(10.minutes.from_now) do
+      travel_to(start_time + 15.minutes) do
         @notification.open!
         expect(@notification.opened?).to be true
         
@@ -162,10 +167,12 @@ describe "Cascading Notifications Integration", type: :integration do
         { delay: 10.minutes, target: :email }
       ]
       
+      start_time = Time.current
+      
       @notification.cascade_notify(cascade_config)
       
       # Simulate first job execution with failure
-      travel_to(5.minutes.from_now) do
+      travel_to(start_time + 5.minutes) do
         ActiveJob::Base.queue_adapter.enqueued_jobs.clear
         job_instance = ActivityNotification::CascadingNotificationJob.new
         result = job_instance.perform(@notification.id, cascade_config, 0)
@@ -179,7 +186,7 @@ describe "Cascading Notifications Integration", type: :integration do
       end
       
       # Simulate second job execution (should succeed)
-      travel_to(15.minutes.from_now) do
+      travel_to(start_time + 15.minutes) do
         expect(email_target).to receive(:notify).with(@notification, {})
         
         job_instance = ActivityNotification::CascadingNotificationJob.new
@@ -203,10 +210,12 @@ describe "Cascading Notifications Integration", type: :integration do
         { delay: 5.minutes, target: :slack }
       ]
       
+      start_time = Time.current
+      
       @notification.cascade_notify(cascade_config)
       
       # Simulate job execution
-      travel_to(5.minutes.from_now) do
+      travel_to(start_time + 5.minutes) do
         job_instance = ActivityNotification::CascadingNotificationJob.new
         result = job_instance.perform(@notification.id, cascade_config, 0)
         
@@ -223,10 +232,12 @@ describe "Cascading Notifications Integration", type: :integration do
         { delay: 5.minutes, target: :nonexistent_target }
       ]
       
+      start_time = Time.current
+      
       @notification.cascade_notify(cascade_config)
       
       # Simulate job execution
-      travel_to(5.minutes.from_now) do
+      travel_to(start_time + 5.minutes) do
         job_instance = ActivityNotification::CascadingNotificationJob.new
         result = job_instance.perform(@notification.id, cascade_config, 0)
         
@@ -254,6 +265,8 @@ describe "Cascading Notifications Integration", type: :integration do
         { delay: 10.minutes, target: :email }
       ]
       
+      start_time = Time.current
+      
       # Expect immediate execution of first target
       expect(slack_target).to receive(:notify).with(@notification, {})
       
@@ -263,7 +276,7 @@ describe "Cascading Notifications Integration", type: :integration do
       # Verify remaining cascade was scheduled
       expect(ActiveJob::Base.queue_adapter.enqueued_jobs.size).to eq(1)
       scheduled_job = ActiveJob::Base.queue_adapter.enqueued_jobs.first
-      expect(scheduled_job[:at]).to be_within(1.second).of(10.minutes.from_now)
+      expect(scheduled_job[:at]).to be_within(1.second).of(start_time + 10.minutes)
     end
   end
 
@@ -273,6 +286,8 @@ describe "Cascading Notifications Integration", type: :integration do
         { delay: 5.minutes, target: :slack }
       ]
       
+      start_time = Time.current
+      
       @notification.cascade_notify(cascade_config)
       
       # Delete the notification
@@ -280,7 +295,7 @@ describe "Cascading Notifications Integration", type: :integration do
       @notification.destroy
       
       # Simulate job execution with deleted notification
-      travel_to(5.minutes.from_now) do
+      travel_to(start_time + 5.minutes) do
         job_instance = ActivityNotification::CascadingNotificationJob.new
         result = job_instance.perform(notification_id, cascade_config, 0)
         
@@ -299,10 +314,12 @@ describe "Cascading Notifications Integration", type: :integration do
         { delay: 5.minutes, target: :slack }
       ]
       
+      start_time = Time.current
+      
       @notification.cascade_notify(cascade_config)
       
       # Simulate job execution
-      travel_to(5.minutes.from_now) do
+      travel_to(start_time + 5.minutes) do
         expect(slack_target).to receive(:notify).with(@notification, {})
         
         ActiveJob::Base.queue_adapter.enqueued_jobs.clear

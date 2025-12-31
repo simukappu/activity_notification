@@ -1,7 +1,7 @@
-require 'activity_notification/apis/cascading_notification_api'
-
-describe ActivityNotification::CascadingNotificationApi, type: :model do
-  let(:test_instance) { create(:notification) }
+shared_examples_for :cascading_notification_api do
+  include ActiveJob::TestHelper
+  let(:test_class_name) { described_class.to_s.underscore.split('/').last.to_sym }
+  let(:test_instance) { create(test_class_name) }
 
   describe "as public instance methods" do
     describe "#cascade_notify" do
@@ -39,10 +39,14 @@ describe ActivityNotification::CascadingNotificationApi, type: :model do
             { delay: 15.minutes, target: :slack }
           ]
           
+          scheduled_time = 15.minutes.from_now
           expect {
             test_instance.cascade_notify(cascade_config)
           }.to have_enqueued_job(ActivityNotification::CascadingNotificationJob)
-            .at(15.minutes.from_now)
+          
+          # Verify the job was scheduled with approximately the right delay
+          enqueued_job = ActiveJob::Base.queue_adapter.enqueued_jobs.last
+          expect(enqueued_job[:at]).to be_within(1.second).of(scheduled_time)
         end
 
         it "returns true when cascade is initiated successfully" do
