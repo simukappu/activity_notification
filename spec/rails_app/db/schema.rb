@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_12_01_000000) do
+ActiveRecord::Schema.define(version: 20250101000000) do
 
   create_table "admins", force: :cascade do |t|
     t.integer "user_id"
@@ -38,6 +38,17 @@ ActiveRecord::Schema.define(version: 2019_12_01_000000) do
     t.datetime "updated_at", null: false
     t.index ["article_id"], name: "index_comments_on_article_id"
     t.index ["user_id"], name: "index_comments_on_user_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.string "status", default: "pending"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "created_at"], name: "index_invoices_on_user_id_and_created_at"
+    t.index ["user_id"], name: "index_invoices_on_user_id"
   end
 
   create_table "notifications", force: :cascade do |t|
