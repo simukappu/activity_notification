@@ -42,6 +42,26 @@ RSpec.configure do |config|
   config.expect_with  :minitest, :rspec
 end
 
+# Configure shoulda-matchers
+require 'shoulda/matchers'
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    
+    # Configure for the ORM being used
+    if ENV['AN_ORM'] == 'mongoid' || ENV['AN_TEST_DB'] == 'mongodb'
+      # Mongoid is being used
+      with.library :active_model
+    elsif ENV['AN_ORM'] == 'dynamoid'
+      # Dynamoid is being used
+      with.library :active_model
+    else
+      # ActiveRecord is being used (default)
+      with.library :rails
+    end
+  end
+end
+
 Dir[Rails.root.join("../../spec/support/**/*.rb")].each { |file| require file }
 
 def clean_database
