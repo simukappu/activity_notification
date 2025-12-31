@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+      .header {
+        background-color: #4CAF50;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+      .content {
+        padding: 20px;
+      }
+      .logo {
+        max-width: 200px;
+        height: auto;
+      }
+      .footer {
+        background-color: #f1f1f1;
+        padding: 10px;
+        text-align: center;
+        font-size: 12px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <% if attachments['logo.png'].present? %>
+        <%= image_tag attachments['logo.png'].url, alt: 'Logo', class: 'logo' %>
+      <% end %>
+      <h1>Your Monthly Report</h1>
+    </div>
+
+    <div class="content">
+      <p>Dear <%= @target.respond_to?(:name) ? @target.name : 'User' %>,</p>
+
+      <p>
+        Your monthly activity report for <%= Date.current.last_month.strftime('%B %Y') %> is ready!
+      </p>
+
+      <p>
+        This report contains detailed information about your activity and notifications
+        during the past month. Please find your monthly report attached to this email.
+      </p>
+
+      <h2>Quick Summary</h2>
+      <% if @target.respond_to?(:notifications) %>
+        <ul>
+          <li>Total notifications: <%= @target.notifications.count %></li>
+          <li>Opened: <%= @target.notifications.opened_only.count rescue 0 %></li>
+          <li>Unopened: <%= @target.notifications.unopened_only.count rescue 0 %></li>
+        </ul>
+      <% end %>
+
+      <p>
+        The attached PDF contains a comprehensive breakdown of your activity.
+        Additionally, we've included a CSV file with the raw data for your records.
+      </p>
+
+      <p>
+        If you have any questions about this report, please don't hesitate to contact us.
+      </p>
+
+      <p>
+        Best regards,<br/>
+        The Activity Notification Team
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>
+        This is an automated email from Activity Notification.
+        Please do not reply to this email.
+      </p>
+    </div>
+  </body>
+</html>

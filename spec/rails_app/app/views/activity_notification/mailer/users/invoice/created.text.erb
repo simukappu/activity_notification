@@ -1,0 +1,30 @@
+New Invoice
+===========
+
+Dear <%= @target.respond_to?(:name) ? @target.name : 'Customer' %>,
+
+A new invoice has been created for your account.
+
+Invoice Details
+---------------
+Invoice #: <%= @notification.notifiable.id %>
+Date: <%= @notification.notifiable.created_at.strftime('%B %d, %Y') %>
+<% if @notification.notifiable.respond_to?(:amount) %>
+Amount: $<%= @notification.notifiable.amount %>
+<% end %>
+<% if @notification.notifiable.respond_to?(:status) %>
+Status: <%= @notification.notifiable.status.titleize %>
+<% end %>
+
+The complete invoice is attached to this email as a PDF file.
+Please review the invoice and process payment at your earliest convenience.
+
+If you have any questions about this invoice, please contact our support team.
+
+Thank you for your business!
+
+Best regards,
+The Billing Team
+
+---
+This is an automated email. Please do not reply to this email.

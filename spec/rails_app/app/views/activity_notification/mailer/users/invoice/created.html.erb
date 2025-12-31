@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+      }
+      .header {
+        background-color: #2196F3;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
+      .content {
+        padding: 20px;
+      }
+      .invoice-details {
+        background-color: #f9f9f9;
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin: 20px 0;
+      }
+      .footer {
+        background-color: #f1f1f1;
+        padding: 10px;
+        text-align: center;
+        font-size: 12px;
+        color: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>New Invoice</h1>
+    </div>
+
+    <div class="content">
+      <p>Dear <%= @target.respond_to?(:name) ? @target.name : 'Customer' %>,</p>
+
+      <p>
+        A new invoice has been created for your account.
+      </p>
+
+      <div class="invoice-details">
+        <h2>Invoice Details</h2>
+        <p><strong>Invoice #:</strong> <%= @notification.notifiable.id %></p>
+        <p><strong>Date:</strong> <%= @notification.notifiable.created_at.strftime('%B %d, %Y') %></p>
+        <% if @notification.notifiable.respond_to?(:amount) %>
+          <p><strong>Amount:</strong> $<%= @notification.notifiable.amount %></p>
+        <% end %>
+        <% if @notification.notifiable.respond_to?(:status) %>
+          <p><strong>Status:</strong> <%= @notification.notifiable.status.titleize %></p>
+        <% end %>
+      </div>
+
+      <p>
+        The complete invoice is attached to this email as a PDF file.
+        Please review the invoice and process payment at your earliest convenience.
+      </p>
+
+      <p>
+        If you have any questions about this invoice, please contact our support team.
+      </p>
+
+      <p>
+        Thank you for your business!
+      </p>
+
+      <p>
+        Best regards,<br/>
+        The Billing Team
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>
+        This is an automated email. Please do not reply to this email.
+      </p>
+    </div>
+  </body>
+</html>

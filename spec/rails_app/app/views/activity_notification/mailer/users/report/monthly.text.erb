@@ -1,0 +1,29 @@
+Your Monthly Report
+==================
+
+Dear <%= @target.respond_to?(:name) ? @target.name : 'User' %>,
+
+Your monthly activity report for <%= Date.current.last_month.strftime('%B %Y') %> is ready!
+
+This report contains detailed information about your activity and notifications
+during the past month. Please find your monthly report attached to this email.
+
+Quick Summary
+-------------
+<% if @target.respond_to?(:notifications) %>
+- Total notifications: <%= @target.notifications.count %>
+- Opened: <%= @target.notifications.opened_only.count rescue 0 %>
+- Unopened: <%= @target.notifications.unopened_only.count rescue 0 %>
+<% end %>
+
+The attached PDF contains a comprehensive breakdown of your activity.
+Additionally, we've included a CSV file with the raw data for your records.
+
+If you have any questions about this report, please don't hesitate to contact us.
+
+Best regards,
+The Activity Notification Team
+
+---
+This is an automated email from Activity Notification.
+Please do not reply to this email.
