@@ -1,7 +1,10 @@
+require 'activity_notification/apis/cascading_notification_api'
+
 module ActivityNotification
   # Defines API for notification included in Notification model.
   module NotificationApi
     extend ActiveSupport::Concern
+    include CascadingNotificationApi
 
     included do
       # Defines store_notification as private clas method

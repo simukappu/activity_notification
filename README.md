@@ -24,6 +24,7 @@
 * Grouping notifications (grouping like *"Kevin and 7 other users posted comments to this article"*)
 * Email notification
 * Batch email notification (event driven or periodical email notification, daily or weekly etc)
+* Cascading notifications (progressive notification escalation through multiple channels with time delays)
 * Push notification with [Action Cable](https://guides.rubyonrails.org/action_cable_overview.html)
 * Subscription management (subscribing and unsubscribing for each target and notification type)
 * REST API backend and [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification)
@@ -104,6 +105,7 @@ You can see sample single page application using [Vue.js](https://vuejs.org) as 
     - [Batch email subject](/docs/Functions.md#batch-email-subject)
     - [i18n for batch email](/docs/Functions.md#i18n-for-batch-email)
   - [Grouping notifications](/docs/Functions.md#grouping-notifications)
+  - [Cascading notifications](/docs/Functions.md#cascading-notifications)
   - [Subscription management](/docs/Functions.md#subscription-management)
     - [Configuring subscriptions](/docs/Functions.md#configuring-subscriptions)
     - [Managing subscriptions](/docs/Functions.md#managing-subscriptions)

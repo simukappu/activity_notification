@@ -339,6 +339,126 @@ notification:
 
 Then, you will see *"Kevin and 7 other users posted 10 comments to your article"*.
 
+### Cascading notifications
+
+*activity_notification* provides cascading notifications that enable progressive notification escalation through multiple channels with time delays. This ensures important notifications are not missed while avoiding unnecessary interruptions when users have already engaged with earlier notification channels.
+
+#### How cascading notifications work
+
+Cascading notifications automatically send notifications through different channels (Slack, Email, SMS, etc.) with configurable time delays, but only if the user hasn't already read the notification:
+
+1. User gets an in-app notification
+2. ⏱️ Wait 10 minutes → Still unread? Send Slack message  
+3. ⏱️ Wait 10 more minutes → Still unread? Send Email
+4. ⏱️ Wait 30 more minutes → Still unread? Send SMS
+
+If the user reads the notification at any point, the cascade stops automatically.
+
+#### Basic usage
+
+```ruby
+# Create a notification
+notification = Notification.create!(
+  target: user,
+  notifiable: comment,
+  key: 'comment.reply'
+)
+
+# Setup cascade: Slack after 10 min, Email after another 10 min
+cascade_config = [
+  { delay: 10.minutes, target: :slack },
+  { delay: 10.minutes, target: :email }
+]
+
+# Start the cascade
+notification.cascade_notify(cascade_config)
+```
+
+#### Configuration options
+
+Each step in the cascade requires:
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `delay` | Duration | Yes | How long to wait (e.g., `10.minutes`, `1.hour`) |
+| `target` | Symbol/String | Yes | Optional target name (`:slack`, `:email`, etc.) |
+| `options` | Hash | No | Custom options to pass to the target |
+
+#### Advanced usage
+
+**Immediate first notification:**
+```ruby
+# Send Slack immediately, then email if still unread
+cascade_config = [
+  { delay: 5.minutes, target: :slack },
+  { delay: 10.minutes, target: :email }
+]
+
+notification.cascade_notify(cascade_config, trigger_first_immediately: true)
+```
+
+**With custom options:**
+```ruby
+cascade_config = [
+  { 
+    delay: 5.minutes, 
+    target: :slack,
+    options: { channel: '#urgent' }
+  },
+  { 
+    delay: 10.minutes, 
+    target: :email
+  }
+]
+
+notification.cascade_notify(cascade_config)
+```
+
+**Integration with notification creation:**
+```ruby
+# In your controller
+comment = Comment.create!(comment_params)
+
+# Create notifications
+comment.notify(:users, key: 'comment.new')
+
+# Add cascade to all created notifications
+comment.notifications.each do |notification|
+  cascade_config = [
+    { delay: 10.minutes, target: :slack },
+    { delay: 30.minutes, target: :email }
+  ]
+  notification.cascade_notify(cascade_config)
+end
+```
+
+#### Prerequisites
+
+Before using cascading notifications, ensure:
+
+1. **Optional targets are configured** on your notifiable models
+2. **ActiveJob is configured** (default in Rails)
+3. **Job queue is running** (Sidekiq, Delayed Job, etc.)
+
+#### Common patterns
+
+**Urgent notifications (fast escalation):**
+```ruby
+URGENT_CASCADE = [
+  { delay: 2.minutes, target: :slack },
+  { delay: 5.minutes, target: :email },
+  { delay: 10.minutes, target: :sms }
+].freeze
+```
+
+**Normal notifications (gentle escalation):**
+```ruby
+NORMAL_CASCADE = [
+  { delay: 30.minutes, target: :slack },
+  { delay: 1.hour, target: :email }
+].freeze
+```
+
 
 ### Subscription management
 
