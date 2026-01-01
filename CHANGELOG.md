@@ -1,3 +1,12 @@
+## 2.5.0 / 2026-01-02
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.4.1...v2.5.0)
+
+Enhancements:
+
+* Minimize files included in the distributed Gem
+* Add CC (Carbon Copy) email notification functionality - [#107](https://github.com/simukappu/activity_notification/issues/107)
+* Add cascading notification feature with sequential delivery and time-delayed escalation - [#127](https://github.com/simukappu/activity_notification/issues/127)
+
 ## 2.4.1 / 2025-12-31
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.4.0...v2.4.1)
 
