@@ -74,6 +74,7 @@ module ActivityNotification
             subject: :subject_for,
             from: :mailer_from,
             reply_to: :mailer_reply_to,
+            cc: :mailer_cc,
             message_id: nil
           }.each do |header_name, default_method|
             overridding_method_name = "overriding_notification_email_#{header_name.to_s}"
@@ -81,7 +82,12 @@ module ActivityNotification
                 @notification.notifiable.send(overridding_method_name, @target, key).present?
               @notification.notifiable.send(overridding_method_name, @target, key)
             elsif default_method
-              send(default_method, key)
+              # Special handling for methods that take target instead of key
+              if [:mailer_cc].include?(default_method)
+                send(default_method, @target)
+              else
+                send(default_method, key)
+              end
             else
               nil
             end
@@ -97,6 +103,26 @@ module ActivityNotification
         # @return [String] Target email address as 'to'
         def mailer_to(target)
           target.mailer_to
+        end
+
+        # Returns carbon copy (CC) email address(es).
+        #
+        # @param [Object] target Target instance to notify
+        # @return [String, Array<String>, nil] CC email address(es) or nil
+        def mailer_cc(target)
+          if target.respond_to?(:mailer_cc)
+            target.mailer_cc
+          elsif ActivityNotification.config.mailer_cc.present?
+            if ActivityNotification.config.mailer_cc.is_a?(Proc)
+              # Get the notification key from current context
+              key = @notification ? @notification.key : nil
+              ActivityNotification.config.mailer_cc.call(key)
+            else
+              ActivityNotification.config.mailer_cc
+            end
+          else
+            nil
+          end
         end
 
         # Returns sender email address as 'reply_to'.

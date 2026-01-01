@@ -99,7 +99,7 @@ If you use i18n for email, you can configure email subject in your locale files.
 
 #### Other header fields
 
-Similarly to the [Email subject](#email-subject), the `From`, `Reply-To` and `Message-ID` headers are configurable per notifiable model. From and reply to will override the `config.mailer_sender` config setting.
+Similarly to the [Email subject](#email-subject), the `From`, `Reply-To`, `CC` and `Message-ID` headers are configurable per notifiable model. From and reply to will override the `config.mailer_sender` config setting.
 
 ```ruby
 class Comment < ActiveRecord::Base
@@ -120,8 +120,84 @@ class Comment < ActiveRecord::Base
     "no-reply.article+comment-#{self.id}@example.com"
   end
 
+  def overriding_notification_email_cc(target, key)
+    # CC the article author on comment notifications
+    if key == "comment.create"
+      article.user.email
+    else
+      nil
+    end
+  end
+
   def overriding_notification_email_message_id(target, key)
     "https://www.example.com/article/#{article.id}@example.com/"
+  end
+end
+```
+
+#### CC (Carbon Copy) configuration
+
+*activity_notification* supports CC (Carbon Copy) email addresses at three levels with the following priority order:
+
+1. **Notifiable model override** (highest priority) - using `overriding_notification_email_cc` method
+2. **Target model method** - using `mailer_cc` method  
+3. **Global configuration** - using `config.mailer_cc` setting
+
+##### Global CC configuration
+
+You can configure global CC recipients in *activity_notification.rb* initializer as *String*, *Array*, or *Proc*:
+
+```ruby
+# Single CC recipient for all notifications
+config.mailer_cc = 'admin@example.com'
+
+# Multiple CC recipients for all notifications
+config.mailer_cc = ['admin@example.com', 'support@example.com']
+
+# Dynamic CC based on notification key
+config.mailer_cc = ->(key) {
+  if key.include?('urgent')
+    ['urgent@example.com', 'manager@example.com']
+  else
+    'admin@example.com'
+  end
+}
+```
+
+##### Target-level CC configuration
+
+You can define `mailer_cc` method in your target model to set CC recipients for that specific target:
+
+```ruby
+class User < ActiveRecord::Base
+  acts_as_target
+  belongs_to :team_lead, class_name: 'User'
+
+  # Return single or multiple CC addresses
+  def mailer_cc
+    team_lead.present? ? team_lead.email : 'admin@example.com'
+  end
+end
+```
+
+##### Notifiable-level CC override
+
+For the most granular control, implement `overriding_notification_email_cc` in your notifiable model to set CC per notification type:
+
+```ruby
+class Article < ActiveRecord::Base
+  acts_as_notifiable :users,
+    targets: ->(article, key) { [article.user] }
+
+  def overriding_notification_email_cc(target, key)
+    case key
+    when 'article.published'
+      ['editor@example.com', 'marketing@example.com']
+    when 'article.flagged'
+      'moderation@example.com'
+    else
+      nil # Falls back to target's mailer_cc or global config
+    end
   end
 end
 ```

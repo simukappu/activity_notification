@@ -130,6 +130,192 @@ describe ActivityNotification::Mailer do
         end
       end
 
+      context "with defined mailer_cc in target model" do
+        context "as single email address" do
+          it "sends with cc" do
+            module TargetCCMethods
+              def mailer_cc
+                'cc@example.com'
+              end
+            end
+            notification.target.extend(TargetCCMethods)
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            expect(ActivityNotification::Mailer.deliveries.last.cc).not_to be_nil
+            expect(ActivityNotification::Mailer.deliveries.last.cc.first)
+              .to eq('cc@example.com')
+          end
+        end
+
+        context "as array of email addresses" do
+          it "sends with multiple cc recipients" do
+            module TargetCCArrayMethods
+              def mailer_cc
+                ['cc1@example.com', 'cc2@example.com']
+              end
+            end
+            notification.target.extend(TargetCCArrayMethods)
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            expect(ActivityNotification::Mailer.deliveries.last.cc).not_to be_nil
+            expect(ActivityNotification::Mailer.deliveries.last.cc)
+              .to match_array(['cc1@example.com', 'cc2@example.com'])
+          end
+        end
+
+        context "as nil" do
+          it "does not send with cc" do
+            module TargetCCNilMethods
+              def mailer_cc
+                nil
+              end
+            end
+            notification.target.extend(TargetCCNilMethods)
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            expect(ActivityNotification::Mailer.deliveries.last.cc).to be_nil
+          end
+        end
+      end
+
+      context "without mailer_cc in target model" do
+        it "does not send with cc" do
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.cc).to be_nil
+        end
+
+        context "with email value as ActivityNotification.config.mailer_cc" do
+          it "sends with configured cc from global config" do
+            original_config = ActivityNotification.config.mailer_cc
+            ActivityNotification.config.mailer_cc = "config_cc@example.com"
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            expect(ActivityNotification::Mailer.deliveries.last.cc).not_to be_nil
+            expect(ActivityNotification::Mailer.deliveries.last.cc.first)
+              .to eq("config_cc@example.com")
+            ActivityNotification.config.mailer_cc = original_config
+          end
+        end
+
+        context "with email array as ActivityNotification.config.mailer_cc" do
+          it "sends with multiple configured cc from global config" do
+            original_config = ActivityNotification.config.mailer_cc
+            ActivityNotification.config.mailer_cc = ["config_cc1@example.com", "config_cc2@example.com"]
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            expect(ActivityNotification::Mailer.deliveries.last.cc).not_to be_nil
+            expect(ActivityNotification::Mailer.deliveries.last.cc)
+              .to match_array(["config_cc1@example.com", "config_cc2@example.com"])
+            ActivityNotification.config.mailer_cc = original_config
+          end
+        end
+
+        context "with email proc as ActivityNotification.config.mailer_cc" do
+          it "sends with configured cc from global config proc" do
+            original_config = ActivityNotification.config.mailer_cc
+            ActivityNotification.config.mailer_cc =
+              ->(key){ key == notification.key ? "proc_cc@example.com" : "other_cc@example.com" }
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            expect(ActivityNotification::Mailer.deliveries.last.cc).not_to be_nil
+            expect(ActivityNotification::Mailer.deliveries.last.cc.first)
+              .to eq("proc_cc@example.com")
+            ActivityNotification.config.mailer_cc = original_config
+          end
+
+          it "sends with configured cc from global config proc with different key" do
+            original_config = ActivityNotification.config.mailer_cc
+            ActivityNotification.config.mailer_cc =
+              ->(key){ key == 'different.key' ? "proc_cc@example.com" : "other_cc@example.com" }
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            expect(ActivityNotification::Mailer.deliveries.last.cc).not_to be_nil
+            expect(ActivityNotification::Mailer.deliveries.last.cc.first)
+              .to eq("other_cc@example.com")
+            ActivityNotification.config.mailer_cc = original_config
+          end
+        end
+      end
+
+      context "with defined overriding_notification_email_cc in notifiable model" do
+        it "sends with updated cc" do
+          module AdditionalMethods
+            def overriding_notification_email_cc(target, key)
+              'override_cc@example.com'
+            end
+          end
+          notification.notifiable.extend(AdditionalMethods)
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.cc.first)
+            .to eq('override_cc@example.com')
+        end
+
+        it "sends with updated cc as array" do
+          module AdditionalMethodsArray
+            def overriding_notification_email_cc(target, key)
+              ['override_cc1@example.com', 'override_cc2@example.com']
+            end
+          end
+          notification.notifiable.extend(AdditionalMethodsArray)
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.cc)
+            .to match_array(['override_cc1@example.com', 'override_cc2@example.com'])
+        end
+
+        it "overrides target mailer_cc method" do
+          module TargetCCMethodsBase
+            def mailer_cc
+              'target_cc@example.com'
+            end
+          end
+          module NotifiableOverrideMethods
+            def overriding_notification_email_cc(target, key)
+              'notifiable_override_cc@example.com'
+            end
+          end
+          notification.target.extend(TargetCCMethodsBase)
+          notification.notifiable.extend(NotifiableOverrideMethods)
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.cc.first)
+            .to eq('notifiable_override_cc@example.com')
+        end
+
+        it "overrides global config and target mailer_cc method" do
+          original_config = ActivityNotification.config.mailer_cc
+          ActivityNotification.config.mailer_cc = "config_cc@example.com"
+          
+          module TargetCCMethodsWithConfig
+            def mailer_cc
+              'target_cc@example.com'
+            end
+          end
+          module NotifiableOverrideMethodsWithConfig
+            def overriding_notification_email_cc(target, key)
+              'notifiable_override_cc@example.com'
+            end
+          end
+          notification.target.extend(TargetCCMethodsWithConfig)
+          notification.notifiable.extend(NotifiableOverrideMethodsWithConfig)
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.cc.first)
+            .to eq('notifiable_override_cc@example.com')
+          
+          ActivityNotification.config.mailer_cc = original_config
+        end
+      end
+
+      context "with mailer_cc priority resolution" do
+        it "uses target mailer_cc over global config" do
+          original_config = ActivityNotification.config.mailer_cc
+          ActivityNotification.config.mailer_cc = "config_cc@example.com"
+          
+          module TargetCCOverConfig
+            def mailer_cc
+              'target_cc@example.com'
+            end
+          end
+          notification.target.extend(TargetCCOverConfig)
+          ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.cc.first)
+            .to eq('target_cc@example.com')
+          
+          ActivityNotification.config.mailer_cc = original_config
+        end
+      end
+
       context "with defined overriding_notification_email_message_id in notifiable model" do
         it "sends with specific message id" do
           module AdditionalMethods
@@ -184,6 +370,40 @@ describe ActivityNotification::Mailer do
           expect(ActivityNotification::Mailer.deliveries.last.to[0]).to eq(test_target.email)
         end
   
+      end
+
+      context "with defined mailer_cc in target model" do
+        it "sends batch notification email with cc" do
+          module BatchTargetCCMethods
+            def mailer_cc
+              'batch_cc@example.com'
+            end
+          end
+          test_target.extend(BatchTargetCCMethods)
+          ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.cc).not_to be_nil
+          expect(ActivityNotification::Mailer.deliveries.last.cc.first)
+            .to eq('batch_cc@example.com')
+        end
+
+        it "sends batch notification email with multiple cc recipients" do
+          module BatchTargetCCArrayMethods
+            def mailer_cc
+              ['batch_cc1@example.com', 'batch_cc2@example.com']
+            end
+          end
+          test_target.extend(BatchTargetCCArrayMethods)
+          ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.cc)
+            .to match_array(['batch_cc1@example.com', 'batch_cc2@example.com'])
+        end
+      end
+
+      context "without mailer_cc in target model" do
+        it "does not send batch notification email with cc" do
+          ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_now
+          expect(ActivityNotification::Mailer.deliveries.last.cc).to be_nil
+        end
       end
 
       context "when fallback option is :none and the template is missing" do
