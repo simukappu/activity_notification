@@ -1,3 +1,11 @@
+## 2.5.0 / 2026-01-03
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.5.0...v2.5.1)
+
+Enhancements:
+
+* Allow use with Rails 8.1 - [#199](https://github.com/simukappu/activity_notification/issues/199)
+* Optimize NotificationApi performance for large target collections with batch processing - [#148](https://github.com/simukappu/activity_notification/issues/148)
+
 ## 2.5.0 / 2026-01-02
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.4.1...v2.5.0)
 
