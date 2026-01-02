@@ -1,6 +1,7 @@
 # To run as single test for debugging
 # require Rails.root.join('../../spec/concerns/apis/notification_api_spec.rb').to_s
 # require Rails.root.join('../../spec/concerns/apis/cascading_notification_api_spec.rb').to_s
+# require Rails.root.join('../../spec/concerns/apis/notification_api_performance_spec.rb').to_s
 # require Rails.root.join('../../spec/concerns/renderable_spec.rb').to_s
 
 describe ActivityNotification::Notification, type: :model do
@@ -8,6 +9,7 @@ describe ActivityNotification::Notification, type: :model do
   it_behaves_like :notification_api
   it_behaves_like :cascading_notification_api
   it_behaves_like :renderable
+  # it_behaves_like :notification_api_performance
 
   describe "with association" do
     context "belongs to target" do
