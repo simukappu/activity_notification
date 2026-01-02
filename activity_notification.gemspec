@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   s.required_ruby_version = '>= 2.1.0'
 
-  s.add_dependency 'railties', '>= 7.0.0', '< 8.1'
+  s.add_dependency 'railties', '>= 7.0.0', '< 8.2'
   s.add_dependency 'i18n', '>= 0.5.0'
   s.add_dependency 'jquery-rails', '>= 3.1.1'
   s.add_dependency 'swagger-blocks', '>= 3.0.0'

@@ -21,6 +21,7 @@ jobs:
           - gemfiles/Gemfile.rails-7.1
           - gemfiles/Gemfile.rails-7.2
           - gemfiles/Gemfile.rails-8.0
+          - gemfiles/Gemfile.rails-8.1
         orm:
           - active_record
           - mongoid
@@ -32,19 +33,21 @@ jobs:
           - gemfile: gemfiles/Gemfile.rails-7.1
             ruby-version: 3.2.9
           - gemfile: gemfiles/Gemfile.rails-7.2
-            ruby-version: 3.3.9
+            ruby-version: 3.3.10
           - gemfile: gemfiles/Gemfile.rails-8.0
-            ruby-version: 3.4.5
+            ruby-version: 3.4.8
+          - gemfile: gemfiles/Gemfile.rails-8.1
+            ruby-version: 4.0.0
           - gemfile: Gemfile
-            ruby-version: 3.4.5
+            ruby-version: 4.0.0
             orm: active_record
             test-db: mysql
           - gemfile: Gemfile
-            ruby-version: 3.4.5
+            ruby-version: 4.0.0
             orm: active_record
             test-db: postgresql
           - gemfile: Gemfile
-            ruby-version: 3.4.5
+            ruby-version: 4.0.0
             orm: mongoid
             test-db: mongodb
 

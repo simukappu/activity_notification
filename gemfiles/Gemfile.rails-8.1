@@ -1,19 +1,14 @@
 source 'https://rubygems.org'
 
-gemspec
+gemspec path: '../'
 
-gem 'rails', '~> 8.0.0'
-
-group :production do
-  gem 'sprockets-rails'
-  gem 'puma'
-  gem 'pg'
-  gem 'devise'
-  gem 'devise_token_auth'
-end
+gem 'rails', '~> 8.1.0'
+gem 'sprockets-rails'
+gem 'ostruct'
 
 group :development do
   gem 'bullet'
+  gem 'rack-cors'
 end
 
 group :test do
@@ -26,7 +21,4 @@ group :test do
   gem 'coveralls_reborn', require: false
 end
 
-gem 'ostruct'
-gem 'webpacker', groups: [:production, :development]
-gem 'rack-cors', groups: [:production, :development]
 gem 'dotenv-rails', groups: [:development, :test]

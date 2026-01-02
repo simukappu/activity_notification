@@ -34,7 +34,9 @@ module Dummy
     if Gem::Version.new("5.2.0") <= Rails.gem_version && Rails.gem_version < Gem::Version.new("6.0.0") && ENV['AN_TEST_DB'] != 'mongodb'
       config.active_record.sqlite3.represent_boolean_as_integer = true
     end
-    config.active_support.to_time_preserves_timezone = :zone
+    if Rails.gem_version < Gem::Version.new("8.1.0")
+      config.active_support.to_time_preserves_timezone = :zone
+    end
 
     # Configure CORS for API mode
     if defined?(Rack::Cors)
