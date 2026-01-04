@@ -411,7 +411,7 @@ module ActionDispatch::Routing
       # @param [Hash] options Passed options from notify_to
       # @param [Hash] resources_options Options to send resources method
       def create_notification_routes(options = {}, resources_options = [])
-        self.resources options[:model], resources_options do
+        self.resources options[:model], **resources_options do
           collection do
             post :open_all unless ignore_path?(:open_all, options)
             post :destroy_all unless ignore_path?(:destroy_all, options)
@@ -430,7 +430,7 @@ module ActionDispatch::Routing
       # @param [Hash] options Passed options from subscribed_by
       # @param [Hash] resources_options Options to send resources method
       def create_subscription_routes(options = {}, resources_options = [])
-        self.resources options[:model], resources_options do
+        self.resources options[:model], **resources_options do
           collection do
             get :find                           unless ignore_path?(:find, options)
             get :optional_target_names          if options[:api_mode] && !ignore_path?(:optional_target_names, options)
