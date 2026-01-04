@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'rails', '~> 8.0.0'
+gem 'rails', '~> 8.1.0'
 
 group :production do
   gem 'sprockets-rails'
