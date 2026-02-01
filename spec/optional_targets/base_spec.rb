@@ -33,6 +33,14 @@ describe ActivityNotification::OptionalTarget::Base do
         end
       end
 
+      context "with partial_root option" do
+        it "renders notification message with specified partial root" do
+          notification = create(:notification)
+          result = test_instance.send(:render_notification_message, notification, partial_root: 'activity_notification/optional_targets/default/base')
+          expect(result).to be_include("Move to notified")
+        end
+      end
+
       context "with unexisting template as fallback option" do
         it "raise ActionView::MissingTemplate" do
           expect { expect(test_instance.send(:render_notification_message, create(:notification), fallback: :hoge)) }

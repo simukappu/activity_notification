@@ -269,12 +269,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(notifications_path_for(target_user))
         .to eq(user_notifications_path(target_user))
     end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(notifications_path_for(target_user, devise_default_routes: true))
+        .to eq(notifications_path)
+    end
   end
 
   describe '#notification_path_for' do
     it "returns path for the notification target" do
       expect(notification_path_for(notification))
         .to eq(user_notification_path(target_user, notification))
+    end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(notification_path_for(notification, devise_default_routes: true))
+        .to eq(notification_path(notification))
     end
   end
 
@@ -283,12 +293,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(move_notification_path_for(notification))
         .to eq(move_user_notification_path(target_user, notification))
     end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(move_notification_path_for(notification, devise_default_routes: true))
+        .to eq(move_notification_path(notification))
+    end
   end
 
   describe '#open_notification_path_for' do
     it "returns path for the notification target" do
       expect(open_notification_path_for(notification))
         .to eq(open_user_notification_path(target_user, notification))
+    end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(open_notification_path_for(notification, devise_default_routes: true))
+        .to eq(open_notification_path(notification))
     end
   end
 
@@ -297,12 +317,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(open_all_notifications_path_for(target_user))
         .to eq(open_all_user_notifications_path(target_user))
     end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(open_all_notifications_path_for(target_user, devise_default_routes: true))
+        .to eq(open_all_notifications_path)
+    end
   end
 
   describe '#destroy_all_notifications_path_for' do
     it "returns path for the notification target" do
       expect(destroy_all_notifications_path_for(target_user))
         .to eq(destroy_all_user_notifications_path(target_user))
+    end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(destroy_all_notifications_path_for(target_user, devise_default_routes: true))
+        .to eq(destroy_all_notifications_path)
     end
   end
 
@@ -311,12 +341,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(notifications_url_for(target_user))
         .to eq(user_notifications_url(target_user))
     end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(notifications_url_for(target_user, devise_default_routes: true))
+        .to eq(notifications_url)
+    end
   end
 
   describe '#notification_url_for' do
     it "returns url for the notification target" do
       expect(notification_url_for(notification))
         .to eq(user_notification_url(target_user, notification))
+    end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(notification_url_for(notification, devise_default_routes: true))
+        .to eq(notification_url(notification))
     end
   end
 
@@ -325,12 +365,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(move_notification_url_for(notification))
         .to eq(move_user_notification_url(target_user, notification))
     end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(move_notification_url_for(notification, devise_default_routes: true))
+        .to eq(move_notification_url(notification))
+    end
   end
 
   describe '#open_notification_url_for' do
     it "returns url for the notification target" do
       expect(open_notification_url_for(notification))
         .to eq(open_user_notification_url(target_user, notification))
+    end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(open_notification_url_for(notification, devise_default_routes: true))
+        .to eq(open_notification_url(notification))
     end
   end
 
@@ -339,12 +389,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(open_all_notifications_url_for(target_user))
         .to eq(open_all_user_notifications_url(target_user))
     end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(open_all_notifications_url_for(target_user, devise_default_routes: true))
+        .to eq(open_all_notifications_url)
+    end
   end
 
   describe '#destroy_all_notifications_url_for' do
     it "returns url for the notification target" do
       expect(destroy_all_notifications_url_for(target_user))
         .to eq(destroy_all_user_notifications_url(target_user))
+    end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(destroy_all_notifications_url_for(target_user, devise_default_routes: true))
+        .to eq(destroy_all_notifications_url)
     end
   end
 
@@ -353,12 +413,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(subscriptions_path_for(target_user))
         .to eq(user_subscriptions_path(target_user))
     end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(subscriptions_path_for(target_user, devise_default_routes: true))
+        .to eq(subscriptions_path)
+    end
   end
 
   describe '#subscription_path_for' do
     it "returns path for the subscription target" do
       expect(subscription_path_for(subscription))
         .to eq(user_subscription_path(target_user, subscription))
+    end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(subscription_path_for(subscription, devise_default_routes: true))
+        .to eq(subscription_path(subscription))
     end
   end
 
@@ -367,12 +437,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(subscribe_subscription_path_for(subscription))
         .to eq(subscribe_user_subscription_path(target_user, subscription))
     end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(subscribe_subscription_path_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_subscription_path(subscription))
+    end
   end
 
   describe '#subscribe_path_for' do
     it "returns path for the subscription target" do
       expect(subscribe_path_for(subscription))
         .to eq(subscribe_user_subscription_path(target_user, subscription))
+    end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(subscribe_path_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_subscription_path(subscription))
     end
   end
 
@@ -381,12 +461,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(unsubscribe_subscription_path_for(subscription))
         .to eq(unsubscribe_user_subscription_path(target_user, subscription))
     end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(unsubscribe_subscription_path_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_subscription_path(subscription))
+    end
   end
 
   describe '#unsubscribe_path_for' do
     it "returns path for the subscription target" do
       expect(unsubscribe_path_for(subscription))
         .to eq(unsubscribe_user_subscription_path(target_user, subscription))
+    end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(unsubscribe_path_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_subscription_path(subscription))
     end
   end
 
@@ -395,12 +485,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(subscribe_to_email_subscription_path_for(subscription))
         .to eq(subscribe_to_email_user_subscription_path(target_user, subscription))
     end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(subscribe_to_email_subscription_path_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_to_email_subscription_path(subscription))
+    end
   end
 
   describe '#subscribe_to_email_path_for' do
     it "returns path for the subscription target" do
       expect(subscribe_to_email_path_for(subscription))
         .to eq(subscribe_to_email_user_subscription_path(target_user, subscription))
+    end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(subscribe_to_email_path_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_to_email_subscription_path(subscription))
     end
   end
 
@@ -409,12 +509,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(unsubscribe_to_email_subscription_path_for(subscription))
         .to eq(unsubscribe_to_email_user_subscription_path(target_user, subscription))
     end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(unsubscribe_to_email_subscription_path_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_to_email_subscription_path(subscription))
+    end
   end
 
   describe '#unsubscribe_to_email_path_for' do
     it "returns path for the subscription target" do
       expect(unsubscribe_to_email_path_for(subscription))
         .to eq(unsubscribe_to_email_user_subscription_path(target_user, subscription))
+    end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(unsubscribe_to_email_path_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_to_email_subscription_path(subscription))
     end
   end
 
@@ -423,12 +533,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(subscribe_to_optional_target_subscription_path_for(subscription))
         .to eq(subscribe_to_optional_target_user_subscription_path(target_user, subscription))
     end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(subscribe_to_optional_target_subscription_path_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_to_optional_target_subscription_path(subscription))
+    end
   end
 
   describe '#subscribe_to_optional_target_path_for' do
     it "returns path for the subscription target" do
       expect(subscribe_to_optional_target_path_for(subscription))
         .to eq(subscribe_to_optional_target_user_subscription_path(target_user, subscription))
+    end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(subscribe_to_optional_target_path_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_to_optional_target_subscription_path(subscription))
     end
   end
 
@@ -437,12 +557,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(unsubscribe_to_optional_target_subscription_path_for(subscription))
         .to eq(unsubscribe_to_optional_target_user_subscription_path(target_user, subscription))
     end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(unsubscribe_to_optional_target_subscription_path_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_to_optional_target_subscription_path(subscription))
+    end
   end
 
   describe '#unsubscribe_to_optional_target_path_for' do
     it "returns path for the subscription target" do
       expect(unsubscribe_to_optional_target_path_for(subscription))
         .to eq(unsubscribe_to_optional_target_user_subscription_path(target_user, subscription))
+    end
+
+    it "returns devise default path when devise_default_routes is true" do
+      expect(unsubscribe_to_optional_target_path_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_to_optional_target_subscription_path(subscription))
     end
   end
 
@@ -451,12 +581,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(subscriptions_url_for(target_user))
         .to eq(user_subscriptions_url(target_user))
     end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(subscriptions_url_for(target_user, devise_default_routes: true))
+        .to eq(subscriptions_url)
+    end
   end
 
   describe '#subscription_url_for' do
     it "returns url for the subscription target" do
       expect(subscription_url_for(subscription))
         .to eq(user_subscription_url(target_user, subscription))
+    end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(subscription_url_for(subscription, devise_default_routes: true))
+        .to eq(subscription_url(subscription))
     end
   end
 
@@ -465,12 +605,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(subscribe_subscription_url_for(subscription))
         .to eq(subscribe_user_subscription_url(target_user, subscription))
     end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(subscribe_subscription_url_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_subscription_url(subscription))
+    end
   end
 
   describe '#subscribe_url_for' do
     it "returns url for the subscription target" do
       expect(subscribe_url_for(subscription))
         .to eq(subscribe_user_subscription_url(target_user, subscription))
+    end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(subscribe_url_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_subscription_url(subscription))
     end
   end
 
@@ -479,12 +629,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(unsubscribe_subscription_url_for(subscription))
         .to eq(unsubscribe_user_subscription_url(target_user, subscription))
     end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(unsubscribe_subscription_url_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_subscription_url(subscription))
+    end
   end
 
   describe '#unsubscribe_url_for' do
     it "returns url for the subscription target" do
       expect(unsubscribe_url_for(subscription))
         .to eq(unsubscribe_user_subscription_url(target_user, subscription))
+    end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(unsubscribe_url_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_subscription_url(subscription))
     end
   end
 
@@ -493,12 +653,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(subscribe_to_email_subscription_url_for(subscription))
         .to eq(subscribe_to_email_user_subscription_url(target_user, subscription))
     end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(subscribe_to_email_subscription_url_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_to_email_subscription_url(subscription))
+    end
   end
 
   describe '#subscribe_to_email_url_for' do
     it "returns url for the subscription target" do
       expect(subscribe_to_email_url_for(subscription))
         .to eq(subscribe_to_email_user_subscription_url(target_user, subscription))
+    end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(subscribe_to_email_url_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_to_email_subscription_url(subscription))
     end
   end
 
@@ -507,12 +677,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(unsubscribe_to_email_subscription_url_for(subscription))
         .to eq(unsubscribe_to_email_user_subscription_url(target_user, subscription))
     end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(unsubscribe_to_email_subscription_url_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_to_email_subscription_url(subscription))
+    end
   end
 
   describe '#unsubscribe_to_email_url_for' do
     it "returns url for the subscription target" do
       expect(unsubscribe_to_email_url_for(subscription))
         .to eq(unsubscribe_to_email_user_subscription_url(target_user, subscription))
+    end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(unsubscribe_to_email_url_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_to_email_subscription_url(subscription))
     end
   end
 
@@ -521,12 +701,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(subscribe_to_optional_target_subscription_url_for(subscription))
         .to eq(subscribe_to_optional_target_user_subscription_url(target_user, subscription))
     end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(subscribe_to_optional_target_subscription_url_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_to_optional_target_subscription_url(subscription))
+    end
   end
 
   describe '#subscribe_to_optional_target_url_for' do
     it "returns url for the subscription target" do
       expect(subscribe_to_optional_target_url_for(subscription))
         .to eq(subscribe_to_optional_target_user_subscription_url(target_user, subscription))
+    end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(subscribe_to_optional_target_url_for(subscription, devise_default_routes: true))
+        .to eq(subscribe_to_optional_target_subscription_url(subscription))
     end
   end
 
@@ -535,12 +725,22 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       expect(unsubscribe_to_optional_target_subscription_url_for(subscription))
         .to eq(unsubscribe_to_optional_target_user_subscription_url(target_user, subscription))
     end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(unsubscribe_to_optional_target_subscription_url_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_to_optional_target_subscription_url(subscription))
+    end
   end
 
   describe '#unsubscribe_to_optional_target_url_for' do
     it "returns url for the subscription target" do
       expect(unsubscribe_to_optional_target_url_for(subscription))
         .to eq(unsubscribe_to_optional_target_user_subscription_url(target_user, subscription))
+    end
+
+    it "returns devise default url when devise_default_routes is true" do
+      expect(unsubscribe_to_optional_target_url_for(subscription, devise_default_routes: true))
+        .to eq(unsubscribe_to_optional_target_subscription_url(subscription))
     end
   end
 

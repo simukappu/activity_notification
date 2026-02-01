@@ -435,9 +435,7 @@ module ActivityNotification
       # @api private
       # @param [String] target_type Target type of generated notifications
       def generated_notifications_as_notifiable_for(target_type = nil)
-        target_type.nil? ?
-          generated_notifications_as_notifiable.all :
-          generated_notifications_as_notifiable.filtered_by_target_type(target_type.to_s.to_model_name)
+        target_type.nil? ? generated_notifications_as_notifiable.all : generated_notifications_as_notifiable.filtered_by_target_type(target_type.to_s.to_model_name)
       end
 
       # Destroies generated notifications for specified target type with dependency.

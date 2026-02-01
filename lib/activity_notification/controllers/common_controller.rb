@@ -72,9 +72,7 @@ module ActivityNotification
       def target_view_path
         target_type = @target.to_resources_name
         view_path = [controller_path, target_type].join('/')
-        lookup_context.exists?(action_name, view_path) ?
-          view_path :
-          [controller_path, DEFAULT_VIEW_DIRECTORY].join('/')
+        lookup_context.exists?(action_name, view_path) ? view_path : [controller_path, DEFAULT_VIEW_DIRECTORY].join('/')
       end
 
       # Sets view prefixes for target view path.
