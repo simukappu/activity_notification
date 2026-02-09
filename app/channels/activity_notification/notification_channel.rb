@@ -34,4 +34,6 @@ if defined?(ActionCable)
         reject if @target.nil? || @target.notification_action_cable_with_devise?
       end
   end
+else
+  class ActivityNotification::NotificationChannel; end
 end
