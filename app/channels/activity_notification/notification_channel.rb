@@ -35,5 +35,7 @@ if defined?(ActionCable)
       end
   end
 else
+  # :nocov:
   class ActivityNotification::NotificationChannel; end
+  # :nocov:
 end
