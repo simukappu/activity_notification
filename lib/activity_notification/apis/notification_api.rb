@@ -230,10 +230,19 @@ module ActivityNotification
         if options[:notify_later]
           notify_later(target_type, notifiable, options)
         else
-          targets = notifiable.notification_targets(target_type, options[:pass_full_options] ? options : options[:key])
+          potential_targets = notifiable.notification_targets(target_type, options[:pass_full_options] ? options : options[:key])
+          subscribed_targets = []
+          key = options[:key] || notifiable.default_notification_key
+          if potential_targets.respond_to?(:find_each)
+            potential_targets.find_each do |target|
+              subscribed_targets << target if target.subscribes_to_notification?(key)
+            end
+          else
+            subscribed_targets = potential_targets.select { |target| target.subscribes_to_notification?(key) }
+          end
           # Optimize blank check to avoid loading all records for ActiveRecord relations
-          unless targets_empty?(targets)
-            notify_all(targets, notifiable, options)
+          unless targets_empty?(subscribed_targets)
+            notify_all(subscribed_targets, notifiable, options)
           end
         end
       end
@@ -413,10 +422,7 @@ module ActivityNotification
       # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
       def generate_notification(target, notifiable, options = {})
         key = options[:key] || notifiable.default_notification_key
-        if target.subscribes_to_notification?(key)
-          # Store notification
-          notification = store_notification(target, notifiable, key, options)
-        end
+        store_notification(target, notifiable, key, options)
       end
 
       # Opens all notifications of the target.

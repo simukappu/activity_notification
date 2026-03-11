@@ -377,7 +377,10 @@ module ActivityNotification
     # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
     # @return [Notification] Generated notification instance
     def receive_notification_of(notifiable, options = {})
-      Notification.notify_to(self, notifiable, options)
+      key = options[:key] || notifiable.default_notification_key
+      if self.subscribes_to_notification?(key)
+        Notification.notify_to(self, notifiable, options)
+      end
     end
     alias_method :receive_notification_now_of, :receive_notification_of
 

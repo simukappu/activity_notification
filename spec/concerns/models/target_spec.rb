@@ -917,7 +917,7 @@ shared_examples_for :target do
     describe "#receive_notification_of" do
       it "is an alias of ActivityNotification::Notification.notify_to" do
         expect(ActivityNotification::Notification).to receive(:notify_to)
-        test_instance.receive_notification_of create(:user)
+        test_instance.receive_notification_of test_notifiable
       end
     end
 
