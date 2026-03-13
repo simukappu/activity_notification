@@ -17,6 +17,7 @@ class CreateActivityNotificationTables < ActiveRecord::Migration[5.2]
 
     create_table :subscriptions do |t|
       t.belongs_to :target,     polymorphic: true, index: true, null: false
+      t.belongs_to :notifiable, polymorphic: true, index: true
       t.string     :key,                           index: true, null: false
       t.boolean    :subscribing,                                null: false, default: true
       t.boolean    :subscribing_to_email,                       null: false, default: true

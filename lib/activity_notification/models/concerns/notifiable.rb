@@ -86,6 +86,10 @@ module ActivityNotification
       resolved_parameter
     end
 
+    def instance_subscription_targets(target_type)
+      Subscription.where(target_type: target_type, notifiable_type: self.class.name, notifiable_id: self.id).map(&:target)
+    end
+
     # Returns group unit of the notifications from configured field or overridden method.
     # This method is able to be overridden.
     #

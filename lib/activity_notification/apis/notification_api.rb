@@ -240,6 +240,7 @@ module ActivityNotification
           else
             subscribed_targets = potential_targets.select { |target| target.subscribes_to_notification?(key) }
           end
+          subscribed_targets.append(*notifiable.instance_subscription_targets(target_type))
           # Optimize blank check to avoid loading all records for ActiveRecord relations
           unless targets_empty?(subscribed_targets)
             notify_all(subscribed_targets, notifiable, options)

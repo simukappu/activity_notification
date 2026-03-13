@@ -28,6 +28,7 @@ class <%= @migration_name %> < ActiveRecord::Migration<%= "[#{Rails.version.to_f
 
     <% if @migration_tables.include?('subscriptions') %>create_table :subscriptions do |t|
       t.belongs_to :target,     polymorphic: true, index: true, null: false
+      t.belongs_to :notifiable, polymorphic: true, index: true
       t.string     :key,                           index: true, null: false
       t.boolean    :subscribing,                                null: false, default: true
       t.boolean    :subscribing_to_email,                       null: false, default: true
@@ -41,6 +42,7 @@ class <%= @migration_name %> < ActiveRecord::Migration<%= "[#{Rails.version.to_f
     end
     add_index :subscriptions, [:target_type, :target_id, :key], unique: true<% else %># create_table :subscriptions do |t|
     #   t.belongs_to :target,     polymorphic: true, index: true, null: false
+    #   t.belongs_to :notifiable, polymorphic: true, index: true
     #   t.string     :key,                           index: true, null: false
     #   t.boolean    :subscribing,                                null: false, default: true
     #   t.boolean    :subscribing_to_email,                       null: false, default: true

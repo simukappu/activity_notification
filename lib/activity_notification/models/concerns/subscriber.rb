@@ -149,7 +149,7 @@ module ActivityNotification
       # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
       # @return [Boolean] If the target subscribes to the notification
       def _subscribes_to_notification?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
-        evaluate_subscription(subscriptions.where(key: key).first, :subscribing?, subscribe_as_default)
+        evaluate_subscription(subscriptions.where(key: key, notifiable_type: nil).first, :subscribing?, subscribe_as_default)
       end
 
       # Returns if the target subscribes to the notification email.
