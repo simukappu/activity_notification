@@ -45,7 +45,11 @@ Rails.application.configure do
   config.action_mailer.default_url_options = { host: 'localhost', port: 3000 }
 
   # For notification email preview
-  config.action_mailer.preview_path = "#{Rails.root}/lib/mailer_previews"
+  if Gem::Version.new("7.1.0") <= Rails.gem_version
+    config.action_mailer.preview_paths << "#{Rails.root}/lib/mailer_previews"
+  else
+    config.action_mailer.preview_path = "#{Rails.root}/lib/mailer_previews"
+  end
 
   # Specifies delivery job for mail
   if Rails::VERSION::MAJOR >= 6
