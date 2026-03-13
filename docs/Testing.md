@@ -149,7 +149,7 @@ $ export AN_ORM=dynamoid AN_TEST_DB=postgresql
 ```
 
 Then, configure *spec/rails_app/config/database.yml* or *spec/rails_app/config/mongoid.yml*, *spec/rails_app/config/dynamoid.rb* as your local database.
-Finally, run database migration, seed data script and the example appliation.
+Finally, run database migration, seed data script and the example application.
 ```console
 $ cd spec/rails_app
 $ # You don't need migration when you use MongoDB only (AN_ORM=mongoid and AN_TEST_DB=mongodb)

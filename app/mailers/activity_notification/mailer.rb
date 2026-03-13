@@ -1,5 +1,5 @@
 if defined?(ActionMailer)
-  # Mailer for email notification of ActivityNotificaion.
+  # Mailer for email notification of ActivityNotification.
   class ActivityNotification::Mailer < ActivityNotification.config.parent_mailer.constantize
     include ActivityNotification::Mailers::Helpers
 

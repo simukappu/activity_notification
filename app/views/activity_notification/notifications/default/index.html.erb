@@ -67,7 +67,7 @@
             $(".notifications").prepend(notification.group_owner_view);
             $(".notification_count").html("<span class=unopened>" + notification.unopened_notification_count + "</span>");
           }
-          // Push notificaion using Web Notification API by Push.js
+          // Push notification using Web Notification API by Push.js
           Push.create('ActivityNotification', {
             body: notification.text,
             timeout: 5000,

@@ -7,7 +7,7 @@ module ActivityNotification
       # @scope class
       # @param [String] name     Association name
       # @param [Object] instance Associated instance
-      # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+      # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
       scope :filtered_by_association, ->(name, instance) { where("#{name}_id" => instance.present? ? instance.id : nil, "#{name}_type" => instance.present? ? instance.class.name : nil) }
     end
 

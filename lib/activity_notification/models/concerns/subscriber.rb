@@ -101,7 +101,7 @@ module ActivityNotification
     # @option options [String]     :filtered_by_key        (nil)   Key of the notification for filter
     # @option options [Array|Hash] :custom_filter          (nil)   Custom subscription filter (e.g. ["created_at >= ?", time.hour.ago])
     # @option options [Boolean]    :with_target            (false) If it includes target with subscriptions
-    # @return [Array<Notificaion>] Configured subscription index of the target
+    # @return [Array<Notification>] Configured subscription index of the target
     def subscription_index(options = {})
       target_index = subscriptions.filtered_by_options(options)
       target_index = options[:reverse] ? target_index.earliest_order : target_index.latest_order
@@ -120,7 +120,7 @@ module ActivityNotification
     # @option options [Symbol|String] :filter                 (nil)   Filter option to load notification keys (Nothing as all, 'configured' with configured subscriptions or 'unconfigured' without subscriptions)
     # @option options [String]        :filtered_by_key        (nil)   Key of the notification for filter
     # @option options [Array|Hash]    :custom_filter          (nil)   Custom subscription filter (e.g. ["created_at >= ?", time.hour.ago])
-    # @return [Array<Notificaion>] Unconfigured notification keys of the target
+    # @return [Array<Notification>] Unconfigured notification keys of the target
     def notification_keys(options = {})
       subscription_keys    = subscriptions.uniq_keys
       target_notifications = notifications.filtered_by_options(options.select { |k, _| [:filtered_by_key, :custom_filter].include?(k) })
@@ -146,7 +146,7 @@ module ActivityNotification
       # @api protected
       #
       # @param [String]  key                  Key of the notification
-      # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
+      # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record is not configured
       # @return [Boolean] If the target subscribes to the notification
       def _subscribes_to_notification?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
         evaluate_subscription(subscriptions.where(key: key).first, :subscribing?, subscribe_as_default)
@@ -157,7 +157,7 @@ module ActivityNotification
       # @api protected
       #
       # @param [String]  key                  Key of the notification
-      # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
+      # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record is not configured
       # @return [Boolean] If the target subscribes to the notification
       def _subscribes_to_notification_email?(key, subscribe_as_default = ActivityNotification.config.subscribe_to_email_as_default)
         evaluate_subscription(subscriptions.where(key: key).first, :subscribing_to_email?, subscribe_as_default)
@@ -170,7 +170,7 @@ module ActivityNotification
       #
       # @param [String]         key                  Key of the notification
       # @param [String, Symbol] optional_target_name Class name of the optional target implementation (e.g. :amazon_sns, :slack)
-      # @param [Boolean]        subscribe_as_default Default subscription value to use when the subscription record does not configured
+      # @param [Boolean]        subscribe_as_default Default subscription value to use when the subscription record is not configured
       # @return [Boolean] If the target subscribes to the specified optional target
       def _subscribes_to_optional_target?(key, optional_target_name, subscribe_as_default = ActivityNotification.config.subscribe_to_optional_targets_as_default)
         _subscribes_to_notification?(key, subscribe_as_default) &&
@@ -183,7 +183,7 @@ module ActivityNotification
       # @api private
       # @param [Boolean] record  Subscription record
       # @param [Symbol]  field   Evaluating subscription field or method of the record
-      # @param [Boolean] default Default subscription value to use when the subscription record does not configured
+      # @param [Boolean] default Default subscription value to use when the subscription record is not configured
       # @param [Array]   args    Arguments of evaluating subscription method
       # @return [Boolean] If the target subscribes
       def evaluate_subscription(record, field, default, *args)

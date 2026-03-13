@@ -17,8 +17,8 @@ if defined?(ActiveJob)
     # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
     # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
     # @option options [Boolean]                 :pass_full_options        (false)                               Whether it passes full options to notifiable.notification_targets, not a key only
-    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
-    # @return [Array<Notificaion>] Array of generated notifications
+    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc.) and values are options
+    # @return [Array<Notification>] Array of generated notifications
     def perform(target_type, notifiable, options = {})
       ActivityNotification::Notification.notify(target_type, notifiable, options)
     end

@@ -525,7 +525,7 @@ config.subscribe_to_email_as_default = false
 config.subscribe_to_optional_targets_as_default = true
 ```
 
-However if **subscribe_as_default** is not enabled, **subscribe_to_email_as_default** and **subscribe_to_optional_targets_as_default** won't change anything.
+However, if **subscribe_as_default** is not enabled, **subscribe_to_email_as_default** and **subscribe_to_optional_targets_as_default** won't change anything.
 
 ##### Creating and updating subscriptions
 
@@ -860,7 +860,7 @@ See [Devise Token Auth documents](https://devise-token-auth.gitbook.io/devise-to
 
 *activity_notification* supports push notification with Action Cable by WebSocket.
 *activity_notification* only provides Action Cable channels implementation, does not connections.
-You can use default implementaion in Rails or your custom `ApplicationCable::Connection` for Action Cable connections.
+You can use default implementation in Rails or your custom `ApplicationCable::Connection` for Action Cable connections.
 
 #### Enabling broadcasting notifications to channels
 
@@ -928,7 +928,7 @@ You can simply create subscriptions for the specified target in your view like t
       received: function(notification) {
         // Display notification
 
-        // Push notificaion using Web Notification API by Push.js
+        // Push notification using Web Notification API by Push.js
         Push.create('ActivityNotification', {
           body: notification.text,
           timeout: 5000,
@@ -978,7 +978,7 @@ export default {
     notify (data) {
       // Display notification
 
-      // Push notificaion using Web Notification API by Push.js
+      // Push notification using Web Notification API by Push.js
       Push.create('ActivityNotification', {
         body: data.notification.text,
         timeout: 5000,
@@ -1045,7 +1045,7 @@ App.activity_notification = App.cable.subscriptions.create(
 
 *ActivityNotification::NotificationWithDeviseChannel* will confirm subscription requests from authenticated cookies by Devise. If the user has not signed in, the subscription request will be rejected. If the user has signed in as unauthorized user, the subscription request will be also rejected.
 
-In addtion, you can use `Target#notification_action_cable_channel_class_name` method to select channel class depending on your *action_cable_with_devise* configuration for the target.
+In addition, you can use `Target#notification_action_cable_channel_class_name` method to select channel class depending on your *action_cable_with_devise* configuration for the target.
 
 ```js
 App.activity_notification = App.cable.subscriptions.create(
@@ -1253,7 +1253,7 @@ First, add **slack-notifier** gem to your Gemfile and create Incoming WebHooks i
 gem 'slack-notifier'
 ```
 
-Then, write `require 'activity_notification/optional_targets/slack'` statement in your notifiable model and set *ActivityNotification::OptionalTarget::Slack* to *acts_as_notifiable* with *:webhook_url* and *:target_username* initializing parameters. *:webhook_url* is created WebHook URL and required, *:target_username* is target's slack user name as String value, symbol method name or lambda function and is optional.
+Then, write `require 'activity_notification/optional_targets/slack'` statement in your notifiable model and set *ActivityNotification::OptionalTarget::Slack* to *acts_as_notifiable* with *:webhook_url* and *:target_username* initializing parameters. *:webhook_url* is created WebHook URL and required, *:target_username* is target's slack username as String value, symbol method name or lambda function and is optional.
 Any other options for `Slack::Notifier.new` are available as initializing parameters. See [Github slack-notifier](https://github.com/stevenosloan/slack-notifier) and [API Reference of Class: Slack::Notifier](http://www.rubydoc.info/gems/slack-notifier/1.5.1/Slack/Notifier) for more details.
 
 ```ruby
@@ -1323,10 +1323,10 @@ end
 *ActivityNotification::Subscription* model provides API to subscribe and unsubscribe optional notification targets. Call these methods with optional target name like this:
 
 ```ruby
-# Subscribe Acltion Cable channel for 'comment.reply' notifications
+# Subscribe Action Cable channel for 'comment.reply' notifications
 user.find_or_create_subscription('comment.reply').subscribe_to_optional_target(:action_cable_channel)
 
-# Subscribe Acltion Cable API channel for 'comment.reply' notifications
+# Subscribe Action Cable API channel for 'comment.reply' notifications
 user.find_or_create_subscription('comment.reply').subscribe_to_optional_target(:action_cable_api_channel)
 
 # Unsubscribe Slack notification for 'comment.reply' notifications

@@ -1,6 +1,6 @@
 Dear <%= @target.printable_target_name %>
 
-You have recieved follwing notifications.
+You have received the following notifications.
 
 <% @notifications.each do |notification| %>
 <%= notification.notifier.present? ? notification.notifier.printable_notifier_name : 'Someone' %> notified you of <%= notification.notifiable.printable_notifiable_name(notification.target) %><%= " in #{notification.group.printable_group_name}" if notification.group.present? %>.

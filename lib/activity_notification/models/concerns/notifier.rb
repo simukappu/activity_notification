@@ -9,7 +9,7 @@ module ActivityNotification
 
       # Has many sent notification instances from this notifier.
       # @scope instance
-      # @return [Array<Notificaion>, Mongoid::Criteria<Notificaion>] Array or database query of sent notifications from this notifier
+      # @return [Array<Notification>, Mongoid::Criteria<Notification>] Array or database query of sent notifications from this notifier
       has_many_records :sent_notifications,
         class_name: "::ActivityNotification::Notification",
         as: :notifier
