@@ -47,6 +47,32 @@ class Comment < ActiveRecord::Base
 end
 ```
 
+Another way to change it is overriding `notification_email_allowed?(target, key)` on the notifiable model.
+
+```ruby
+class Comment < ActiveRecord::Base
+  belongs_to :article
+  belongs_to :user
+
+  acts_as_notifiable :users,
+    targets: ->(comment, key) {
+      ([comment.article.user] + comment.article.reload.commented_users.to_a - [comment.user]).uniq
+    },
+    notifiable_path: :article_notifiable_path
+
+  def article_notifiable_path
+    article_path(article)
+  end
+
+  def notification_email_allowed?(target, key)
+    return false if CONDITIONAL
+
+    true
+  end
+end
+```
+
+
 #### Sender configuration
 
 You can configure the notification *"from"* address inside of *activity_notification.rb* in two ways.
