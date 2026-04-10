@@ -215,6 +215,76 @@ class Article < ActiveRecord::Base
 end
 ```
 
+#### Email attachments
+
+*activity_notification* supports email attachments at three levels with the same priority order as CC:
+
+1. **Notifiable model override** (highest priority) - using `overriding_notification_email_attachments` method
+2. **Target model method** - using `mailer_attachments` method
+3. **Global configuration** - using `config.mailer_attachments` setting
+
+Attachments are specified as a Hash (or Array of Hashes) with `:filename` and either `:content` (binary data) or `:path` (local file path). An optional `:mime_type` can be provided; otherwise it is inferred from the filename.
+
+##### Global attachment configuration
+
+Configure default attachments in *activity_notification.rb* initializer:
+
+```ruby
+# Single attachment from a local file
+config.mailer_attachments = {
+  filename: 'terms.pdf',
+  path: Rails.root.join('public', 'terms.pdf')
+}
+
+# Multiple attachments
+config.mailer_attachments = [
+  { filename: 'logo.png', path: Rails.root.join('app/assets/images/logo.png') },
+  { filename: 'terms.pdf', path: Rails.root.join('public', 'terms.pdf') }
+]
+
+# Dynamic attachments based on notification key
+config.mailer_attachments = ->(key) {
+  if key.include?('invoice')
+    { filename: 'invoice.pdf', content: generate_invoice_pdf }
+  else
+    nil # No attachments
+  end
+}
+```
+
+##### Target-level attachment configuration
+
+Define `mailer_attachments` method in your target model:
+
+```ruby
+class User < ActiveRecord::Base
+  acts_as_target
+
+  def mailer_attachments
+    if admin?
+      { filename: 'admin_guide.pdf', path: Rails.root.join('docs', 'admin_guide.pdf') }
+    else
+      nil # Falls back to global config
+    end
+  end
+end
+```
+
+##### Notifiable-level attachment override
+
+For per-notification attachments, implement `overriding_notification_email_attachments` in your notifiable model:
+
+```ruby
+class Invoice < ActiveRecord::Base
+  acts_as_notifiable :users,
+    targets: ->(invoice, key) { [invoice.user] }
+
+  def overriding_notification_email_attachments(target, key)
+    { filename: "invoice_#{number}.pdf", content: generate_pdf }
+  end
+end
+```
+
 #### i18n for email
 
 The subject of notification email can be put in your locale *.yml* files as **mail_subject** field:

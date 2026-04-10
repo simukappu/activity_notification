@@ -91,6 +91,15 @@ module ActivityNotification
     #   @return [String, Array<String>, Proc] CC email address(es) for notification email.
     attr_accessor :mailer_cc
 
+    # @overload mailer_attachments
+    #   Returns attachment specification(s) for notification emails
+    #   @return [Hash, Array<Hash>, Proc, nil] Attachment specification(s) for notification emails.
+    # @overload mailer_attachments=(value)
+    #   Sets attachment specification(s) for notification emails
+    #   @param [Hash, Array<Hash>, Proc, nil] mailer_attachments The new mailer_attachments
+    #   @return [Hash, Array<Hash>, Proc, nil] Attachment specification(s) for notification emails.
+    attr_accessor :mailer_attachments
+
     # @overload mailer
     #   Returns mailer class for email notification
     #   @return [String] Mailer class for email notification.
@@ -246,6 +255,7 @@ module ActivityNotification
       @subscribe_to_optional_targets_as_default = nil
       @mailer_sender                            = nil
       @mailer_cc                                = nil
+      @mailer_attachments                       = nil
       @mailer                                   = 'ActivityNotification::Mailer'
       @parent_mailer                            = 'ActionMailer::Base'
       @parent_job                               = 'ActiveJob::Base'

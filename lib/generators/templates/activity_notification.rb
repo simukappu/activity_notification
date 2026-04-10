@@ -53,6 +53,18 @@ ActivityNotification.configure do |config|
   # config.mailer_cc = ['admin@example.com', 'support@example.com']
   # config.mailer_cc = ->(key){ key.include?('urgent') ? 'urgent@example.com' : nil }
 
+  # Configure default attachment(s) for notification emails.
+  # Attachments are specified as Hash with :filename and :content (binary) or :path (file path).
+  # Optional :mime_type is inferred from filename if not provided.
+  # Can be overridden per target by defining a mailer_attachments method in the target model,
+  # or per notification by defining overriding_notification_email_attachments in the notifiable model.
+  # config.mailer_attachments = { filename: 'terms.pdf', path: Rails.root.join('public', 'terms.pdf') }
+  # config.mailer_attachments = [
+  #   { filename: 'logo.png', path: Rails.root.join('app/assets/images/logo.png') },
+  #   { filename: 'terms.pdf', content: File.read(Rails.root.join('public', 'terms.pdf')) }
+  # ]
+  # config.mailer_attachments = ->(key) { key.include?('invoice') ? { filename: 'invoice.pdf', content: generate_pdf } : nil }
+
   # Configure the class responsible to send e-mails.
   # config.mailer = "ActivityNotification::Mailer"
 

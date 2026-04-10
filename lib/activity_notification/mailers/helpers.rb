@@ -94,6 +94,11 @@ module ActivityNotification
             headers[header_name] = header_value if header_value
           end
           @email = headers[:to]
+
+          # Resolve attachments
+          attachment_specs = resolve_attachments(key)
+          headers[:attachment_specs] = attachment_specs if attachment_specs.present?
+
           headers
         end
 
@@ -122,6 +127,58 @@ module ActivityNotification
             end
           else
             nil
+          end
+        end
+
+        # Returns attachment specification(s) for notification email.
+        # Checks target method first, then falls back to global configuration.
+        #
+        # @param [Object] target Target instance to notify
+        # @return [Hash, Array<Hash>, nil] Attachment specification(s) or nil
+        def mailer_attachments(target)
+          if target.respond_to?(:mailer_attachments)
+            target.mailer_attachments
+          elsif ActivityNotification.config.mailer_attachments.present?
+            if ActivityNotification.config.mailer_attachments.is_a?(Proc)
+              key = @notification ? @notification.key : nil
+              ActivityNotification.config.mailer_attachments.call(key)
+            else
+              ActivityNotification.config.mailer_attachments
+            end
+          else
+            nil
+          end
+        end
+
+        # Resolves attachment specifications with priority:
+        # notifiable override > target method > global configuration.
+        #
+        # @param [String] key Key of the notification
+        # @return [Hash, Array<Hash>, nil] Resolved attachment specification(s) or nil
+        def resolve_attachments(key)
+          if @notification&.notifiable&.respond_to?(:overriding_notification_email_attachments) &&
+             @notification.notifiable.overriding_notification_email_attachments(@target, key).present?
+            @notification.notifiable.overriding_notification_email_attachments(@target, key)
+          else
+            mailer_attachments(@target)
+          end
+        end
+
+        # Processes attachment specifications and adds them to the mail object.
+        #
+        # @param [Mail::Message] mail_obj The mail object to add attachments to
+        # @param [Hash, Array<Hash>, nil] specs Attachment specification(s)
+        # @return [void]
+        def process_attachments(mail_obj, specs)
+          return if specs.blank?
+          specs_array = specs.is_a?(Array) ? specs : [specs]
+          specs_array.each do |spec|
+            next if spec.blank?
+            validate_attachment_spec!(spec)
+            content = spec[:content] || File.read(spec[:path])
+            options = { content: content }
+            options[:mime_type] = spec[:mime_type] if spec[:mime_type]
+            mail_obj.attachments[spec[:filename]] = options
           end
         end
 
@@ -204,14 +261,43 @@ module ActivityNotification
         # @param [Hash]           headers  Prepared email header
         # @param [String, Symbol] fallback Fallback option
         def send_mail(headers, fallback = nil)
+          attachment_specs = headers.delete(:attachment_specs)
           begin
-            mail headers
+            mail_obj = mail headers
+            process_attachments(mail_obj, attachment_specs)
+            mail_obj
           rescue ActionView::MissingTemplate => e
             if fallback.present?
-              mail headers.merge(template_name: fallback)
+              mail_obj = mail headers.merge(template_name: fallback)
+              process_attachments(mail_obj, attachment_specs)
+              mail_obj
             else
               raise e
             end
+          end
+        end
+
+        # Validates an attachment specification hash.
+        #
+        # @param [Hash] spec Attachment specification
+        # @raise [ArgumentError] If specification is invalid
+        # @return [void]
+        def validate_attachment_spec!(spec)
+          unless spec.is_a?(Hash)
+            raise ArgumentError, "Attachment specification must be a Hash, got #{spec.class}"
+          end
+          unless spec[:filename].present?
+            raise ArgumentError, "Attachment specification must include :filename"
+          end
+          content_sources = [spec[:content], spec[:path]].compact
+          if content_sources.empty?
+            raise ArgumentError, "Attachment specification must include :content or :path"
+          end
+          if content_sources.size > 1
+            raise ArgumentError, "Attachment specification must include only one of :content or :path"
+          end
+          if spec[:path].present? && !File.exist?(spec[:path])
+            raise ArgumentError, "Attachment file not found: #{spec[:path]}"
           end
         end
 

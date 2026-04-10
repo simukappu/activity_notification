@@ -329,6 +329,165 @@ describe ActivityNotification::Mailer do
             .to eq("https://www.example.com/test@example.com/")
         end
       end
+      context "with mailer_attachments" do
+        after do
+          ActivityNotification.config.mailer_attachments = nil
+        end
+
+        context "with global config as Hash" do
+          it "includes attachment in email" do
+            ActivityNotification.config.mailer_attachments = { filename: 'test.txt', content: 'hello' }
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            mail = ActivityNotification::Mailer.deliveries.last
+            expect(mail.attachments.size).to eq(1)
+            expect(mail.attachments.first.filename).to eq('test.txt')
+          end
+        end
+
+        context "with global config as Array" do
+          it "includes multiple attachments in email" do
+            ActivityNotification.config.mailer_attachments = [
+              { filename: 'a.txt', content: 'aaa' },
+              { filename: 'b.txt', content: 'bbb' }
+            ]
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            mail = ActivityNotification::Mailer.deliveries.last
+            expect(mail.attachments.size).to eq(2)
+            expect(mail.attachments.map(&:filename)).to match_array(['a.txt', 'b.txt'])
+          end
+        end
+
+        context "with global config as Proc" do
+          it "calls proc with notification key" do
+            ActivityNotification.config.mailer_attachments = ->(key) {
+              key == notification.key ? { filename: 'dynamic.txt', content: 'from proc' } : nil
+            }
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            mail = ActivityNotification::Mailer.deliveries.last
+            expect(mail.attachments.size).to eq(1)
+            expect(mail.attachments.first.filename).to eq('dynamic.txt')
+          end
+
+          it "sends without attachments when proc returns nil" do
+            ActivityNotification.config.mailer_attachments = ->(key) { nil }
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            mail = ActivityNotification::Mailer.deliveries.last
+            expect(mail.attachments.size).to eq(0)
+          end
+        end
+
+        context "with path-based attachment" do
+          it "reads file content from path" do
+            tmpfile = Tempfile.new(['test', '.txt'])
+            tmpfile.write('file content')
+            tmpfile.close
+            ActivityNotification.config.mailer_attachments = { filename: 'from_path.txt', path: tmpfile.path }
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            mail = ActivityNotification::Mailer.deliveries.last
+            expect(mail.attachments.size).to eq(1)
+            expect(mail.attachments.first.filename).to eq('from_path.txt')
+            tmpfile.unlink
+          end
+        end
+
+        context "with mime_type specified" do
+          it "uses the specified mime_type" do
+            ActivityNotification.config.mailer_attachments = { filename: 'data.bin', content: 'binary', mime_type: 'application/octet-stream' }
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            mail = ActivityNotification::Mailer.deliveries.last
+            expect(mail.attachments.size).to eq(1)
+            expect(mail.attachments.first.content_type).to include('application/octet-stream')
+          end
+        end
+
+        context "with target mailer_attachments method" do
+          it "uses target attachments over global config" do
+            ActivityNotification.config.mailer_attachments = { filename: 'global.txt', content: 'global' }
+            module TargetAttachmentMethods
+              def mailer_attachments
+                { filename: 'target.txt', content: 'target' }
+              end
+            end
+            notification.target.extend(TargetAttachmentMethods)
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            mail = ActivityNotification::Mailer.deliveries.last
+            expect(mail.attachments.size).to eq(1)
+            expect(mail.attachments.first.filename).to eq('target.txt')
+          end
+        end
+
+        context "with notifiable overriding_notification_email_attachments" do
+          it "uses notifiable override over target and global" do
+            ActivityNotification.config.mailer_attachments = { filename: 'global.txt', content: 'global' }
+            module TargetAttachmentMethodsBase
+              def mailer_attachments
+                { filename: 'target.txt', content: 'target' }
+              end
+            end
+            module NotifiableAttachmentOverride
+              def overriding_notification_email_attachments(target, key)
+                { filename: 'override.txt', content: 'override' }
+              end
+            end
+            notification.target.extend(TargetAttachmentMethodsBase)
+            notification.notifiable.extend(NotifiableAttachmentOverride)
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            mail = ActivityNotification::Mailer.deliveries.last
+            expect(mail.attachments.size).to eq(1)
+            expect(mail.attachments.first.filename).to eq('override.txt')
+          end
+        end
+
+        context "without any attachment configuration" do
+          it "sends email without attachments" do
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+            mail = ActivityNotification::Mailer.deliveries.last
+            expect(mail.attachments.size).to eq(0)
+          end
+        end
+      end
+
+      context "with invalid attachment specification" do
+        after do
+          ActivityNotification.config.mailer_attachments = nil
+        end
+
+        it "raises ArgumentError for missing filename" do
+          ActivityNotification.config.mailer_attachments = { content: 'data' }
+          expect {
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          }.to raise_error(ArgumentError, /filename/)
+        end
+
+        it "raises ArgumentError for missing content and path" do
+          ActivityNotification.config.mailer_attachments = { filename: 'test.txt' }
+          expect {
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          }.to raise_error(ArgumentError, /content or :path/)
+        end
+
+        it "raises ArgumentError for both content and path" do
+          ActivityNotification.config.mailer_attachments = { filename: 'test.txt', content: 'data', path: '/tmp/test' }
+          expect {
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          }.to raise_error(ArgumentError, /only one/)
+        end
+
+        it "raises ArgumentError for non-existent path" do
+          ActivityNotification.config.mailer_attachments = { filename: 'test.txt', path: '/nonexistent/file.txt' }
+          expect {
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          }.to raise_error(ArgumentError, /not found/)
+        end
+
+        it "raises ArgumentError for non-Hash spec" do
+          ActivityNotification.config.mailer_attachments = "invalid"
+          expect {
+            ActivityNotification::Mailer.send_notification_email(notification).deliver_now
+          }.to raise_error(ArgumentError, /must be a Hash/)
+        end
+      end
+
       context "when fallback option is :none and the template is missing" do
         it "raise ActionView::MissingTemplate" do
           expect { ActivityNotification::Mailer.send_notification_email(notification, fallback: :none).deliver_now }
@@ -403,6 +562,33 @@ describe ActivityNotification::Mailer do
         it "does not send batch notification email with cc" do
           ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_now
           expect(ActivityNotification::Mailer.deliveries.last.cc).to be_nil
+        end
+      end
+
+      context "with mailer_attachments" do
+        after do
+          ActivityNotification.config.mailer_attachments = nil
+        end
+
+        it "includes attachment in batch email from global config" do
+          ActivityNotification.config.mailer_attachments = { filename: 'batch.txt', content: 'batch content' }
+          ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_now
+          mail = ActivityNotification::Mailer.deliveries.last
+          expect(mail.attachments.size).to eq(1)
+          expect(mail.attachments.first.filename).to eq('batch.txt')
+        end
+
+        it "includes attachment in batch email from target method" do
+          module BatchTargetAttachmentMethods
+            def mailer_attachments
+              { filename: 'target_batch.txt', content: 'target batch' }
+            end
+          end
+          test_target.extend(BatchTargetAttachmentMethods)
+          ActivityNotification::Mailer.send_batch_notification_email(test_target, notifications, batch_key).deliver_now
+          mail = ActivityNotification::Mailer.deliveries.last
+          expect(mail.attachments.size).to eq(1)
+          expect(mail.attachments.first.filename).to eq('target_batch.txt')
         end
       end
 

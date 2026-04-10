@@ -4,6 +4,8 @@
 Enhancements:
 
 * Add instance-level subscription support — subscribe to notifications from a specific notifiable instance, not just by notification key - [#202](https://github.com/simukappu/activity_notification/issues/202)
+* Add email attachment support for notification emails with three-level configuration (global, target, notifiable) - [#154](https://github.com/simukappu/activity_notification/issues/154)
+* Add documentation for `notification_email_allowed?` override - [#206](https://github.com/simukappu/activity_notification/pull/206)
 
 Breaking Changes:
 
