@@ -45,10 +45,10 @@ module ActionDispatch::Routing
     #     open_myscope_user_notification      PUT    /myscope/users/:user_id/notifications/:id/open(.:format)
     #       { controller:"activity_notification/notifications", action:"open", target_type:"users", routing_scope: :myscope }
     #
-    # When you use devise authentication and you want make notification targets assciated with devise,
+    # When you use devise authentication and you want to make notification targets associated with devise,
     # you can create as follows in your routes:
     #   notify_to :users, with_devise: :users
-    # This with_devise option creates the needed routes assciated with devise authentication:
+    # This with_devise option creates the needed routes associated with devise authentication:
     #   # Notification with devise routes
     #     user_notifications          GET    /users/:user_id/notifications(.:format)
     #       { controller:"activity_notification/notifications_with_devise", action:"index", target_type:"users", devise_type:"users" }
@@ -65,7 +65,7 @@ module ActionDispatch::Routing
     #
     # When you use with_devise option and you want to make simple default routes as follows, you can use devise_default_routes option:
     #   notify_to :users, with_devise: :users, devise_default_routes: true
-    # These with_devise and devise_default_routes options create the needed routes assciated with authenticated devise resource as the default target
+    # These with_devise and devise_default_routes options create the needed routes associated with authenticated devise resource as the default target
     #   # Notification with default devise routes
     #     user_notifications          GET    /notifications(.:format)
     #       { controller:"activity_notification/notifications_with_devise", action:"index", target_type:"users", devise_type:"users" }
@@ -135,7 +135,7 @@ module ActionDispatch::Routing
     #   @param          [Symbol]       resources Resources to notify
     #   @option options [String]       :routing_scope         (nil)            Routing scope for notification routes
     #   @option options [Symbol]       :with_devise           (false)          Devise resources name for devise integration. Devise integration will be enabled by this option.
-    #   @option options [Boolean]      :devise_default_routes (false)          Whether you will create routes as device default routes assciated with authenticated devise resource as the default target
+    #   @option options [Boolean]      :devise_default_routes (false)          Whether you will create routes as device default routes associated with authenticated devise resource as the default target
     #   @option options [Boolean]      :api_mode              (false)          Whether you will use activity_notification controllers as REST API mode
     #   @option options [Hash|Boolean] :with_subscription     (false)          Subscription path options to define subscription management paths with notification paths. Calls subscribed_by routing when truthy value is passed as this option.
     #   @option options [String]       :model                 (:notifications) Model name of notifications
@@ -168,7 +168,7 @@ module ActionDispatch::Routing
 
     # Includes subscribed_by method for routes, which is responsible to generate all necessary routes for subscriptions of activity_notification.
     #
-    # When you have an User model configured as a target (e.g. defined acts_as_target),
+    # When you have a User model configured as a target (e.g. defined acts_as_target),
     # you can create as follows in your routes:
     #   subscribed_by :users
     # This method creates the needed routes:
@@ -225,10 +225,10 @@ module ActionDispatch::Routing
     #     unsubscribe_to_optional_target_myscope_user_subscription  PUT    /myscope/users/:user_id/subscriptions/:id/unsubscribe_to_optional_target(.:format)
     #       { controller:"activity_notification/subscriptions", action:"unsubscribe_to_optional_target", target_type:"users", routing_scope: :myscope }
     #
-    # When you use devise authentication and you want make subscription targets assciated with devise,
+    # When you use devise authentication and you want to make subscription targets associated with devise,
     # you can create as follows in your routes:
     #   subscribed_by :users, with_devise: :users
-    # This with_devise option creates the needed routes assciated with devise authentication:
+    # This with_devise option creates the needed routes associated with devise authentication:
     #   # Subscription with devise routes
     #     user_subscriptions                                GET    /users/:user_id/subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"index", target_type:"users", devise_type:"users" }
@@ -255,7 +255,7 @@ module ActionDispatch::Routing
     #
     # When you use with_devise option and you want to make simple default routes as follows, you can use devise_default_routes option:
     #   subscribed_by :users, with_devise: :users, devise_default_routes: true
-    # These with_devise and devise_default_routes options create the needed routes assciated with authenticated devise resource as the default target
+    # These with_devise and devise_default_routes options create the needed routes associated with authenticated devise resource as the default target
     #   # Subscription with devise routes
     #     user_subscriptions                                GET    /subscriptions(.:format)
     #       { controller:"activity_notification/subscriptions_with_devise", action:"index", target_type:"users", devise_type:"users" }
@@ -331,7 +331,7 @@ module ActionDispatch::Routing
     #   @param          [Symbol]       resources Resources to notify
     #   @option options [String]       :routing_scope         (nil)            Routing scope for subscription routes
     #   @option options [Symbol]       :with_devise           (false)          Devise resources name for devise integration. Devise integration will be enabled by this option.
-    #   @option options [Boolean]      :devise_default_routes (false)          Whether you will create routes as device default routes assciated with authenticated devise resource as the default target
+    #   @option options [Boolean]      :devise_default_routes (false)          Whether you will create routes as device default routes associated with authenticated devise resource as the default target
     #   @option options [Boolean]      :api_mode              (false)          Whether you will use activity_notification controllers as REST API mode
     #   @option options [String]       :model                 (:subscriptions) Model name of subscriptions
     #   @option options [String]       :controller            ("activity_notification/subscriptions" | activity_notification/subscriptions_with_devise") :controller option as resources routing

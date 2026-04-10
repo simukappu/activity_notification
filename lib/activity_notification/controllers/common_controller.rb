@@ -67,7 +67,7 @@ module ActivityNotification
       end
 
       # Returns path of the target view templates.
-      # Do not make this method public unless Rendarable module calls controller's target_view_path method to render resources.
+      # Do not make this method public unless Renderable module calls controller's target_view_path method to render resources.
       # @api protected
       def target_view_path
         target_type = @target.to_resources_name

@@ -72,7 +72,7 @@ ActivityNotification.configure do |config|
   # Configure delimiter of composite key for DynamoDB.
   # config.composite_key_delimiter = '#'
 
-  # Configure if activity_notification stores notificaion records including associated records like target and notifiable..
+  # Configure if activity_notification stores notification records including associated records like target and notifiable..
   # This store_with_associated_records option can be set true only when you use mongoid or dynamoid ORM.
   config.store_with_associated_records = (config.orm != :active_record)
 

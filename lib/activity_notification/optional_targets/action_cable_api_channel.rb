@@ -57,7 +57,7 @@ module ActivityNotification
           }
         end
 
-        # Overriden rendering notification message using format_message
+        # Overridden rendering notification message using format_message
         # @param [Notification] notification Notification instance
         # @param [Hash]         options      Options for rendering
         # @return [String] Rendered json formatted message to broadcast

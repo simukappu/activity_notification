@@ -14,7 +14,7 @@ module ActivityNotification
       # Authenticate devise resource by Devise (e.g. calling authenticate_user! method).
       # @api protected
       # @todo Needs to call authenticate method by more secure way
-      # @return [Response] Redirects for unsigned in target by Devise, returns HTTP 403 without neccesary target method or returns 400 when request parameters are not enough
+      # @return [Response] Redirects for unsigned in target by Devise, returns HTTP 403 without necessary target method or returns 400 when request parameters are not enough
       def authenticate_devise_resource!
         if params[:devise_type].present?
           authenticate_method_name = "authenticate_#{params[:devise_type].to_resource_name}!"
@@ -29,7 +29,7 @@ module ActivityNotification
       end
 
       # Sets @target instance variable from request parameters.
-      # This method override super (ActivityNotiication::CommonController#set_target)
+      # This method override super (ActivityNotification::CommonController#set_target)
       # to set devise authenticated target when the target_id params is not specified.
       # @api protected
       # @return [Object] Target instance (Returns HTTP 400 when request parameters are not enough)

@@ -2,10 +2,10 @@ module ActivityNotification
   # Provides a shortcut from views to the rendering method.
   # Module extending ActionView::Base and adding `render_notification` helper.
   module ViewHelpers
-    # View helper for rendering an notification, calls {Notification#render} internally.
+    # View helper for rendering a notification, calls {Notification#render} internally.
     # @see Notification#render
     #
-    # @param [Notification, Array<Notificaion>] notifications Array or single instance of notifications to render
+    # @param [Notification, Array<Notification>] notifications Array or single instance of notifications to render
     # @param [Hash] options Options for rendering notifications
     # @option options [String, Symbol] :target       (nil)                     Target type name to find template or i18n text
     # @option options [String]         :partial      ("activity_notification/notifications/#{target}", controller.target_view_path, 'activity_notification/notifications/default') Partial template name
@@ -489,7 +489,7 @@ module ActivityNotification
       # @api private
       #
       # @param [Object] target Notification target instance
-      # @param [Array<Notificaion>] notification_index Array notification index
+      # @param [Array<Notification>] notification_index Array notification index
       # @param [Hash] params Option parameter to send render_notification
       def prepare_content_for(target, notification_index, params)
         content_for :notification_index do

@@ -173,8 +173,8 @@ module ActivityNotification
     attr_accessor :composite_key_delimiter
 
     # @overload store_with_associated_records
-    #   Returns whether activity_notification stores notificaion records including associated records like target and notifiable
-    #   @return [Boolean] Whether activity_notification stores notificaion records including associated records like target and notifiable.
+    #   Returns whether activity_notification stores notification records including associated records like target and notifiable
+    #   @return [Boolean] Whether activity_notification stores Notification records including associated records like target and notifiable.
     attr_reader :store_with_associated_records
 
     # @overload action_cable_enabled
@@ -271,10 +271,10 @@ module ActivityNotification
       @orm = orm.to_sym
     end
 
-    # Sets whether activity_notification stores notificaion records including associated records like target and notifiable.
+    # Sets whether activity_notification stores notification records including associated records like target and notifiable.
     # This store_with_associated_records option can be set true only when you use mongoid or dynamoid ORM.
     # @param [Boolean] store_with_associated_records The new store_with_associated_records
-    # @return [Boolean] Whether activity_notification stores notificaion records including associated records like target and notifiable.
+    # @return [Boolean] Whether activity_notification stores notification records including associated records like target and notifiable.
     def store_with_associated_records=(store_with_associated_records)
       if store_with_associated_records && [:mongoid, :dynamoid].exclude?(@orm) then raise ActivityNotification::ConfigError, "config.store_with_associated_records can be set true only when you use mongoid or dynamoid ORM." end
       @store_with_associated_records = store_with_associated_records
@@ -289,7 +289,7 @@ module ActivityNotification
     end
 
     # Returns default optional target subscription value to use when the subscription record does not configured
-    # @return [Boolean] Default optinal target subscription value to use when the subscription record does not configured.
+    # @return [Boolean] Default optional target subscription value to use when the subscription record does not configured.
     def subscribe_to_optional_targets_as_default
       return false unless @subscribe_as_default
 

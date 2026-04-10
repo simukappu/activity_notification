@@ -18,7 +18,7 @@ class ActivityNotification::NotificationApiWithDeviseChannel < ActivityNotificat
       end
 
       # Set @target instance variable from request parameters.
-      # This method overrides super (ActivityNotiication::NotificationChannel#set_target)
+      # This method overrides super (ActivityNotification::NotificationChannel#set_target)
       # to set devise authenticated target when the target_id params is not specified.
       # @api protected
       # @return [Object] Target instance (Reject subscription when request parameters are not enough)

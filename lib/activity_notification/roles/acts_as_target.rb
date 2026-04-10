@@ -9,7 +9,7 @@ module ActivityNotification
       # == Parameters:
       # * :email
       #   * Email address to send notification email.
-      #     This is a necessary option when you enables email notification.
+      #     This is a necessary option when you enable email notification.
       # @example Simply use :email field
       #   # app/models/user.rb
       #   class User < ActiveRecord::Base

@@ -9,7 +9,7 @@ module ActivityNotification
       # == Parameters:
       # * :printable_name or :printable_notification_group_name
       #   * Printable notification group name.
-      #     This parameter is a optional since `ActivityNotification::Common.printable_name` is used as default value.
+      #     This parameter is optional since `ActivityNotification::Common.printable_name` is used as default value.
       #     :printable_name is the same option as :printable_notification_group_name
       # @example Define printable name with article title
       #   # app/models/article.rb

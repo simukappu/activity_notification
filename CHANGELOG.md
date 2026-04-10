@@ -316,7 +316,7 @@ Enhancements:
 
 Bug Fixes:
 
-* Fix a bug which ActivityNotificaion.config.mailer configuration was ignored
+* Fix a bug which ActivityNotification.config.mailer configuration was ignored
 
 ## 1.4.1 / 2017-05-17
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v1.4.0...v1.4.1)

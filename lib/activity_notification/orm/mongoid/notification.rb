@@ -47,7 +47,7 @@ module ActivityNotification
         # Only group owner instance has :group_members value.
         # Group member instance has nil as :group_members association.
         # @scope instance
-        # @return [Mongoid::Criteria<Notificaion>] Database query of the group member notification instances of this notification
+        # @return [Mongoid::Criteria<Notification>] Database query of the group member notification instances of this notification
         has_many   :group_members, class_name: "ActivityNotification::Notification", foreign_key: :group_owner_id
 
         # Belongs to :otifier instance of this notification.
@@ -66,52 +66,52 @@ module ActivityNotification
 
         # Selects group owner notifications only.
         # @scope class
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :group_owners_only,                 -> { where(:group_owner_id.exists => false) }
 
         # Selects group member notifications only.
         # @scope class
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :group_members_only,                -> { where(:group_owner_id.exists => true) }
 
         # Selects unopened notifications only.
         # @scope class
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :unopened_only,                     -> { where(:opened_at.exists => false) }
 
         # Selects opened notifications only without limit.
         # Be careful to get too many records with this method.
         # @scope class
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :opened_only!,                      -> { where(:opened_at.exists => true) }
 
         # Selects opened notifications only with limit.
         # @scope class
         # @param [Integer] limit Limit to query for opened notifications
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :opened_only,                       ->(limit) { limit == 0 ? none : opened_only!.limit(limit) }
 
         # Selects group member notifications in unopened_index.
         # @scope class
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :unopened_index_group_members_only, -> { where(:group_owner_id.in => unopened_index.map(&:id)) }
 
         # Selects group member notifications in opened_index.
         # @scope class
         # @param [Integer] limit Limit to query for opened notifications
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :opened_index_group_members_only,   ->(limit) { where(:group_owner_id.in => opened_index(limit).map(&:id)) }
 
         # Selects notifications within expiration.
         # @scope class
         # @param [ActiveSupport::Duration] expiry_delay Expiry period of notifications
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :within_expiration_only,            ->(expiry_delay) { where(:created_at.gt => expiry_delay.ago) }
 
         # Selects group member notifications with specified group owner ids.
         # @scope class
         # @param [Array<String>] owner_ids Array of group owner ids
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :group_members_of_owner_ids_only,   ->(owner_ids) { where(:group_owner_id.in => owner_ids) }
 
         # Selects filtered notifications by target instance.
@@ -120,23 +120,23 @@ module ActivityNotification
         #   @user.notifications
         # @scope class
         # @param [Object] target Target instance for filter
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :filtered_by_target,                ->(target) { filtered_by_association("target", target) }
 
         # Selects filtered notifications by notifiable instance.
-        # @example Get filtered unopened notificatons of the @user for @comment as notifiable
+        # @example Get filtered unopened notifications of the @user for @comment as notifiable
         #   @notifications = @user.notifications.unopened_only.filtered_by_instance(@comment)
         # @scope class
         # @param [Object] notifiable Notifiable instance for filter
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :filtered_by_instance,              ->(notifiable) { filtered_by_association("notifiable", notifiable) }
 
         # Selects filtered notifications by group instance.
-        # @example Get filtered unopened notificatons of the @user for @article as group
+        # @example Get filtered unopened notifications of the @user for @article as group
         #   @notifications = @user.notifications.unopened_only.filtered_by_group(@article)
         # @scope class
         # @param [Object] group Group instance for filter
-        # @return [Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :filtered_by_group,                 ->(group) {
           group.present? ?
             where(group_id: group.id, group_type: group.class.name) :
@@ -144,43 +144,43 @@ module ActivityNotification
         }
 
         # Selects filtered notifications later than specified time.
-        # @example Get filtered unopened notificatons of the @user later than @notification
+        # @example Get filtered unopened notifications of the @user later than @notification
         #   @notifications = @user.notifications.unopened_only.later_than(@notification.created_at)
         # @scope class
         # @param [Time] Created time of the notifications for filter
-        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>, Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :later_than,                        ->(created_time) { where(:created_at.gt => created_time) }
 
         # Selects filtered notifications earlier than specified time.
-        # @example Get filtered unopened notificatons of the @user earlier than @notification
+        # @example Get filtered unopened notifications of the @user earlier than @notification
         #   @notifications = @user.notifications.unopened_only.earlier_than(@notification.created_at)
         # @scope class
         # @param [Time] Created time of the notifications for filter
-        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>, Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :earlier_than,                      ->(created_time) { where(:created_at.lt => created_time) }
 
         # Includes target instance with query for notifications.
-        # @return [Mongoid::Criteria<Notificaion>] Database query of notifications with target
+        # @return [Mongoid::Criteria<Notification>] Database query of notifications with target
         scope :with_target,                       -> { }
 
         # Includes notifiable instance with query for notifications.
-        # @return [Mongoid::Criteria<Notificaion>] Database query of notifications with notifiable
+        # @return [Mongoid::Criteria<Notification>] Database query of notifications with notifiable
         scope :with_notifiable,                   -> { }
 
         # Includes group instance with query for notifications.
-        # @return [Mongoid::Criteria<Notificaion>] Database query of notifications with group
+        # @return [Mongoid::Criteria<Notification>] Database query of notifications with group
         scope :with_group,                        -> { }
 
         # Includes group owner instances with query for notifications.
-        # @return [Mongoid::Criteria<Notificaion>] Database query of notifications with group owner
+        # @return [Mongoid::Criteria<Notification>] Database query of notifications with group owner
         scope :with_group_owner,                  -> { }
 
         # Includes group member instances with query for notifications.
-        # @return [Mongoid::Criteria<Notificaion>] Database query of notifications with group members
+        # @return [Mongoid::Criteria<Notification>] Database query of notifications with group members
         scope :with_group_members,                -> { }
 
         # Includes notifier instance with query for notifications.
-        # @return [Mongoid::Criteria<Notificaion>] Database query of notifications with notifier
+        # @return [Mongoid::Criteria<Notification>] Database query of notifications with notifier
         scope :with_notifier,                     -> { }
 
         # Dummy reload method for test of notifications.

@@ -14,7 +14,7 @@ module ActivityNotification
       # Has many notification instances for this notifiable.
       # Dependency for these notifications can be overridden from acts_as_notifiable.
       # @scope instance
-      # @return [Array<Notificaion>, Mongoid::Criteria<Notificaion>] Array or database query of notifications for this notifiable
+      # @return [Array<Notification>, Mongoid::Criteria<Notification>] Array or database query of notifications for this notifiable
       has_many_records :generated_notifications_as_notifiable,
         class_name: "::ActivityNotification::Notification",
         as: :notifiable
@@ -65,13 +65,13 @@ module ActivityNotification
     end
 
     # Returns notification targets from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [Hash] options Options for notifications
     # @option options [String]                  :key                      (notifiable.default_notification_key) Key of the notification
     # @option options [Hash]                    :parameters               ({})                                  Additional parameters of the notifications
-    # @return [Array<Notificaion> | ActiveRecord_AssociationRelation<Notificaion>] Array or database query of the notification targets
+    # @return [Array<Notification> | ActiveRecord_AssociationRelation<Notification>] Array or database query of the notification targets
     def notification_targets(target_type, options = {})
       target_typed_method_name = "notification_#{cast_to_resources_name(target_type)}"
       resolved_parameter = resolve_parameter(
@@ -119,7 +119,7 @@ module ActivityNotification
     end
 
     # Returns group unit of the notifications from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -133,7 +133,7 @@ module ActivityNotification
     end
 
     # Returns group expiry period of the notifications from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -147,7 +147,7 @@ module ActivityNotification
     end
 
     # Returns additional notification parameters from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -161,7 +161,7 @@ module ActivityNotification
     end
 
     # Returns notifier of the notification from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -175,7 +175,7 @@ module ActivityNotification
     end
 
     # Returns if sending notification email is allowed for the notifiable from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [Object] target Target instance to notify
     # @param [String] key Key of the notification
@@ -189,7 +189,7 @@ module ActivityNotification
     end
 
     # Returns if publishing WebSocket using ActionCable is allowed for the notifiable from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [Object] target Target instance to notify
     # @param [String] key Key of the notification
@@ -203,7 +203,7 @@ module ActivityNotification
     end
 
     # Returns if publishing WebSocket API using ActionCable is allowed for the notifiable from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [Object] target Target instance to notify
     # @param [String] key Key of the notification
@@ -217,7 +217,7 @@ module ActivityNotification
     end
 
     # Returns notifiable_path to move after opening notification from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -251,7 +251,7 @@ module ActivityNotification
     end
 
     # Returns optional_targets of the notification from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -265,7 +265,7 @@ module ActivityNotification
     end
 
     # Returns optional_target names of the notification from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [String] target_type Target type to notify
     # @param [String] key Key of the notification
@@ -307,8 +307,8 @@ module ActivityNotification
     # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
     # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
     # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
-    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
-    # @return [Array<Notificaion>] Array of generated notifications
+    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc.) and values are options
+    # @return [Array<Notification>] Array of generated notifications
     def notify(target_type, options = {})
       Notification.notify(target_type, self, options)
     end
@@ -327,8 +327,8 @@ module ActivityNotification
     # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
     # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
     # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
-    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
-    # @return [Array<Notificaion>] Array of generated notifications
+    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc.) and values are options
+    # @return [Array<Notification>] Array of generated notifications
     def notify_later(target_type, options = {})
       Notification.notify_later(target_type, self, options)
     end
@@ -348,8 +348,8 @@ module ActivityNotification
     # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
     # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
     # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
-    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
-    # @return [Array<Notificaion>] Array of generated notifications
+    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc.) and values are options
+    # @return [Array<Notification>] Array of generated notifications
     def notify_all(targets, options = {})
       Notification.notify_all(targets, self, options)
     end
@@ -369,8 +369,8 @@ module ActivityNotification
     # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
     # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
     # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
-    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
-    # @return [Array<Notificaion>] Array of generated notifications
+    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc.) and values are options
+    # @return [Array<Notification>] Array of generated notifications
     def notify_all_later(targets, options = {})
       Notification.notify_all_later(targets, self, options)
     end
@@ -389,7 +389,7 @@ module ActivityNotification
     # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
     # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
     # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
-    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
+    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc.) and values are options
     # @return [Notification] Generated notification instance
     def notify_to(target, options = {})
       Notification.notify_to(target, self, options)
@@ -410,14 +410,14 @@ module ActivityNotification
     # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
     # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
     # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
-    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
+    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc.) and values are options
     # @return [Notification] Generated notification instance
     def notify_later_to(target, options = {})
       Notification.notify_later_to(target, self, options)
     end
 
     # Returns default key of the notification.
-    # This method is able to be overridden.
+    # This method can be overridden.
     # "#{to_resource_name}.default" is defined as default key.
     #
     # @return [String] Default key of the notification
@@ -426,7 +426,7 @@ module ActivityNotification
     end
 
     # Returns key of the notification for tracked notifiable creation.
-    # This method is able to be overridden.
+    # This method can be overridden.
     # "#{to_resource_name}.create" is defined as default creation key.
     #
     # @return [String] Key of the notification for tracked notifiable creation
@@ -435,7 +435,7 @@ module ActivityNotification
     end
 
     # Returns key of the notification for tracked notifiable update.
-    # This method is able to be overridden.
+    # This method can be overridden.
     # "#{to_resource_name}.update" is defined as default update key.
     #
     # @return [String] Key of the notification for tracked notifiable update
@@ -470,7 +470,7 @@ module ActivityNotification
         target_type.nil? ? generated_notifications_as_notifiable.all : generated_notifications_as_notifiable.filtered_by_target_type(target_type.to_s.to_model_name)
       end
 
-      # Destroies generated notifications for specified target type with dependency.
+      # Destroys generated notifications for specified target type with dependency.
       # This method is intended to be called before destroy this notifiable as dependent configuration.
       # @api private
       # @param [Symbol]  dependent         Has_many dependency, [:delete_all, :destroy, :restrict_with_error, :restrict_with_exception] are available
