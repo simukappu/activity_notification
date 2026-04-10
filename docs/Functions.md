@@ -47,6 +47,19 @@ class Comment < ActiveRecord::Base
 end
 ```
 
+You can also control email delivery per-notification by overriding `notification_email_allowed?` on the notifiable model:
+
+```ruby
+class Comment < ActiveRecord::Base
+  # ...acts_as_notifiable configuration...
+
+  def notification_email_allowed?(target, key)
+    # Example: skip email for comments on draft articles
+    !article.draft?
+  end
+end
+```
+
 #### Sender configuration
 
 You can configure the notification *"from"* address inside of *activity_notification.rb* in two ways.
@@ -1334,3 +1347,4 @@ user.find_or_create_subscription('comment.reply').unsubscribe_to_optional_target
 ```
 
 You can also manage subscriptions of optional targets by subscriptions REST API. See [REST API backend](#rest-api-backend) for more details.
+
