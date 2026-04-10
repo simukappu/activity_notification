@@ -231,6 +231,9 @@ module ActivityNotification
           notify_later(target_type, notifiable, options)
         else
           targets = notifiable.notification_targets(target_type, options[:pass_full_options] ? options : options[:key])
+          # Merge targets from instance-level subscriptions and deduplicate
+          instance_targets = notifiable.instance_subscription_targets(target_type, options[:key])
+          targets = merge_targets(targets, instance_targets)
           # Optimize blank check to avoid loading all records for ActiveRecord relations
           unless targets_empty?(targets)
             notify_all(targets, notifiable, options)
@@ -413,7 +416,7 @@ module ActivityNotification
       # @option options [Hash]    :parameters ({})                                  Additional parameters of the notifications
       def generate_notification(target, notifiable, options = {})
         key = options[:key] || notifiable.default_notification_key
-        if target.subscribes_to_notification?(key)
+        if target.subscribes_to_notification?(key, notifiable: notifiable)
           # Store notification
           notification = store_notification(target, notifiable, key, options)
         end
@@ -579,6 +582,18 @@ module ActivityNotification
           # For arrays and other enumerables, use blank?
           targets.blank?
         end
+      end
+
+      # Merges instance subscription targets with the main targets list, deduplicating.
+      # @api private
+      #
+      # @param [Object] targets Main targets collection (can be an ActiveRecord::Relation, Mongoid::Criteria, Array, etc.)
+      # @param [Array] instance_targets Targets from instance-level subscriptions
+      # @return [Array] Deduplicated array of all targets
+      def merge_targets(targets, instance_targets)
+        return targets if instance_targets.blank?
+        all_targets = targets.respond_to?(:to_a) ? targets.to_a : Array(targets)
+        (all_targets + instance_targets).uniq
       end
 
       # Processes targets in batches for memory efficiency with large collections

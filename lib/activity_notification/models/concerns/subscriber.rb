@@ -27,20 +27,48 @@ module ActivityNotification
 
     # Gets subscription of the target and notification key.
     #
-    # @param [Hash] key Key of the notification for subscription
+    # @param [String] key Key of the notification for subscription
+    # @param [Object] notifiable Optional notifiable instance for instance-level subscription lookup
     # @return [Subscription] Configured subscription instance
-    def find_subscription(key)
-      subscriptions.where(key: key).first
+    def find_subscription(key, notifiable: nil)
+      if notifiable
+        if ActivityNotification.config.orm == :dynamoid
+          # :nocov:
+          delimiter = ActivityNotification.config.composite_key_delimiter
+          subscriptions.where(key: key, notifiable_key: "#{notifiable.class.name}#{delimiter}#{notifiable.id}").first
+          # :nocov:
+        else
+          # :nocov:
+          subscriptions.where(key: key, notifiable_type: notifiable.class.name, notifiable_id: notifiable.id).first
+          # :nocov:
+        end
+      else
+        if ActivityNotification.config.orm == :dynamoid
+          # :nocov:
+          subscriptions.where(key: key).select { |s| s.notifiable_type.nil? }.first
+          # :nocov:
+        else
+          # :nocov:
+          subscriptions.where(key: key, notifiable_type: nil).first
+          # :nocov:
+        end
+      end
     end
 
     # Gets subscription of the target and notification key.
     #
-    # @param [Hash] key                 Key of the notification for subscription
+    # @param [String] key                 Key of the notification for subscription
     # @param [Hash] subscription_params Parameters to create subscription record
     # @return [Subscription] Found or created subscription instance
     def find_or_create_subscription(key, subscription_params = {})
-      subscription = find_subscription(key)
-      subscription || create_subscription(subscription_params.merge(key: key))
+      notifiable = subscription_params.delete(:notifiable)
+      subscription = find_subscription(key, notifiable: notifiable)
+      merge_params = { key: key }
+      if notifiable
+        merge_params[:notifiable_type] = notifiable.class.name
+        merge_params[:notifiable_id]   = notifiable.id
+      end
+      subscription || create_subscription(subscription_params.merge(merge_params))
     end
 
     # Creates new subscription of the target.
@@ -65,6 +93,13 @@ module ActivityNotification
       elsif subscription_params[:subscribing_to_email].nil?
         subscription_params[:subscribing_to_email] = ActivityNotification.config.subscribe_to_email_as_default
       end
+      # :nocov:
+      # Convert notifiable_type/notifiable_id to notifiable_key for Dynamoid
+      if ActivityNotification.config.orm == :dynamoid && subscription_params[:notifiable_type].present? && subscription_params[:notifiable_id].present?
+        delimiter = ActivityNotification.config.composite_key_delimiter
+        subscription_params[:notifiable_key] = "#{subscription_params.delete(:notifiable_type)}#{delimiter}#{subscription_params.delete(:notifiable_id)}"
+      end
+      # :nocov:
       subscription = Subscription.new(subscription_params)
       subscription.assign_attributes(target: self)
       subscription.subscribing? ?
@@ -149,7 +184,19 @@ module ActivityNotification
       # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
       # @return [Boolean] If the target subscribes to the notification
       def _subscribes_to_notification?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
-        evaluate_subscription(subscriptions.where(key: key).first, :subscribing?, subscribe_as_default)
+        subscription = _find_key_level_subscription(key)
+        evaluate_subscription(subscription, :subscribing?, subscribe_as_default)
+      end
+
+      # Returns if the target subscribes to the notification for a specific notifiable instance.
+      # @api protected
+      #
+      # @param [String]  key        Key of the notification
+      # @param [Object]  notifiable Notifiable instance to check subscription for
+      # @return [Boolean] If the target has an active instance-level subscription for this notifiable
+      def _subscribes_to_notification_for_instance?(key, notifiable)
+        instance_sub = find_subscription(key, notifiable: notifiable)
+        instance_sub.present? && instance_sub.subscribing?
       end
 
       # Returns if the target subscribes to the notification email.
@@ -160,7 +207,8 @@ module ActivityNotification
       # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
       # @return [Boolean] If the target subscribes to the notification
       def _subscribes_to_notification_email?(key, subscribe_as_default = ActivityNotification.config.subscribe_to_email_as_default)
-        evaluate_subscription(subscriptions.where(key: key).first, :subscribing_to_email?, subscribe_as_default)
+        subscription = _find_key_level_subscription(key)
+        evaluate_subscription(subscription, :subscribing_to_email?, subscribe_as_default)
       end
       alias_method :_subscribes_to_email?, :_subscribes_to_notification_email?
 
@@ -173,11 +221,20 @@ module ActivityNotification
       # @param [Boolean]        subscribe_as_default Default subscription value to use when the subscription record does not configured
       # @return [Boolean] If the target subscribes to the specified optional target
       def _subscribes_to_optional_target?(key, optional_target_name, subscribe_as_default = ActivityNotification.config.subscribe_to_optional_targets_as_default)
+        subscription = _find_key_level_subscription(key)
         _subscribes_to_notification?(key, subscribe_as_default) &&
-          evaluate_subscription(subscriptions.where(key: key).first, :subscribing_to_optional_target?, subscribe_as_default, optional_target_name, subscribe_as_default)
+          evaluate_subscription(subscription, :subscribing_to_optional_target?, subscribe_as_default, optional_target_name, subscribe_as_default)
       end
 
     private
+
+      # Finds a key-level subscription (where notifiable is nil) for the given key.
+      # @api private
+      # @param [String] key Key of the notification
+      # @return [Subscription, nil] Key-level subscription record or nil
+      def _find_key_level_subscription(key)
+        find_subscription(key, notifiable: nil)
+      end
 
       # Returns if the target subscribes.
       # @api private

@@ -1,3 +1,14 @@
+## 2.6.0 / Unreleased
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.5.1...v2.6.0)
+
+Enhancements:
+
+* Add instance-level subscription support — subscribe to notifications from a specific notifiable instance, not just by notification key - [#202](https://github.com/simukappu/activity_notification/issues/202)
+
+Breaking Changes:
+
+* **Migration required**: Add `notifiable_type` and `notifiable_id` columns to subscriptions table and update unique index. See the [Upgrade Guide](docs/Upgrade-to-2.6.md) for details.
+
 ## 2.5.1 / 2026-01-03
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.5.0...v2.5.1)
 

@@ -18,6 +18,13 @@ module ActivityNotification
         # @return [Object] Target instance of this subscription
         belongs_to_polymorphic_xdb_record :target
 
+        # Belongs to notifiable instance of this subscription as polymorphic association (optional).
+        # When present, this subscription is scoped to a specific notifiable instance.
+        # When nil, this is a key-level subscription that applies globally.
+        # @scope instance
+        # @return [Object, nil] Notifiable instance of this subscription
+        belongs_to_polymorphic_xdb_record :notifiable, optional: true
+
         field :key,                       type: String
         field :subscribing,               type: Boolean, default: ActivityNotification.config.subscribe_as_default
         field :subscribing_to_email,      type: Boolean, default: ActivityNotification.config.subscribe_to_email_as_default
@@ -28,7 +35,7 @@ module ActivityNotification
         field :optional_targets,          type: Hash,    default: {}
 
         validates  :target,               presence: true
-        validates  :key,                  presence: true, uniqueness: { scope: [:target_type, :target_id] }
+        validates  :key,                  presence: true, uniqueness: { scope: [:target_type, :target_id, :notifiable_type, :notifiable_id] }
         validates_inclusion_of :subscribing,          in: [true, false]
         validates_inclusion_of :subscribing_to_email, in: [true, false]
         validate   :subscribing_to_email_cannot_be_true_when_subscribing_is_false
@@ -58,6 +65,19 @@ module ActivityNotification
 
         # Dummy reload method for test of subscriptions.
         scope :reload,                    -> { }
+
+        # Selects key-level subscriptions only (where notifiable is nil).
+        # @return [Mongoid::Criteria<Subscription>] Database query of key-level subscriptions
+        scope :key_level_only,            -> { where(notifiable_type: nil) }
+
+        # Selects instance-level subscriptions only (where notifiable is present).
+        # @return [Mongoid::Criteria<Subscription>] Database query of instance-level subscriptions
+        scope :instance_level_only,       -> { where(:notifiable_type.ne => nil) }
+
+        # Selects subscriptions for a specific notifiable instance.
+        # @param [Object] notifiable Notifiable instance for filter
+        # @return [Mongoid::Criteria<Subscription>] Database query of filtered subscriptions
+        scope :for_notifiable,            ->(notifiable) { where(notifiable_type: notifiable.class.name, notifiable_id: notifiable.id) }
 
         # Selects unique keys from query for subscriptions.
         # @return [Array<String>] Array of subscription unique keys

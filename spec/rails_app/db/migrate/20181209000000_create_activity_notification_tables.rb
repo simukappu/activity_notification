@@ -17,6 +17,7 @@ class CreateActivityNotificationTables < ActiveRecord::Migration[5.2]
 
     create_table :subscriptions do |t|
       t.belongs_to :target,     polymorphic: true, index: true, null: false
+      t.belongs_to :notifiable, polymorphic: true, index: true
       t.string     :key,                           index: true, null: false
       t.boolean    :subscribing,                                null: false, default: true
       t.boolean    :subscribing_to_email,                       null: false, default: true
@@ -28,6 +29,6 @@ class CreateActivityNotificationTables < ActiveRecord::Migration[5.2]
 
       t.timestamps null: false
     end
-    add_index :subscriptions, [:target_type, :target_id, :key], unique: true
+    add_index :subscriptions, [:target_type, :target_id, :key, :notifiable_type, :notifiable_id], unique: true, name: 'index_subscriptions_uniqueness', length: { target_type: 191, key: 191, notifiable_type: 191 }
   end
 end

@@ -65,6 +65,8 @@ ActiveRecord::Schema.define(version: 2019_12_01_000000) do
   create_table "subscriptions", force: :cascade do |t|
     t.string "target_type", null: false
     t.integer "target_id", null: false
+    t.string "notifiable_type"
+    t.integer "notifiable_id"
     t.string "key", null: false
     t.boolean "subscribing", default: true, null: false
     t.boolean "subscribing_to_email", default: true, null: false
@@ -76,7 +78,8 @@ ActiveRecord::Schema.define(version: 2019_12_01_000000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["key"], name: "index_subscriptions_on_key"
-    t.index ["target_type", "target_id", "key"], name: "index_subscriptions_on_target_type_and_target_id_and_key", unique: true
+    t.index ["notifiable_type", "notifiable_id"], name: "index_subscriptions_on_notifiable_type_and_notifiable_id"
+    t.index ["target_type", "target_id", "key", "notifiable_type", "notifiable_id"], name: "index_subscriptions_uniqueness", unique: true, length: { target_type: 191, key: 191, notifiable_type: 191 }
     t.index ["target_type", "target_id"], name: "index_subscriptions_on_target_type_and_target_id"
   end
 

@@ -28,6 +28,7 @@ class <%= @migration_name %> < ActiveRecord::Migration<%= "[#{Rails.version.to_f
 
     <% if @migration_tables.include?('subscriptions') %>create_table :subscriptions do |t|
       t.belongs_to :target,     polymorphic: true, index: true, null: false
+      t.belongs_to :notifiable, polymorphic: true, index: true
       t.string     :key,                           index: true, null: false
       t.boolean    :subscribing,                                null: false, default: true
       t.boolean    :subscribing_to_email,                       null: false, default: true
@@ -39,8 +40,9 @@ class <%= @migration_name %> < ActiveRecord::Migration<%= "[#{Rails.version.to_f
 
       t.timestamps null: false
     end
-    add_index :subscriptions, [:target_type, :target_id, :key], unique: true<% else %># create_table :subscriptions do |t|
+    add_index :subscriptions, [:target_type, :target_id, :key, :notifiable_type, :notifiable_id], unique: true, name: 'index_subscriptions_uniqueness', length: { target_type: 191, key: 191, notifiable_type: 191 }<% else %># create_table :subscriptions do |t|
     #   t.belongs_to :target,     polymorphic: true, index: true, null: false
+    #   t.belongs_to :notifiable, polymorphic: true, index: true
     #   t.string     :key,                           index: true, null: false
     #   t.boolean    :subscribing,                                null: false, default: true
     #   t.boolean    :subscribing_to_email,                       null: false, default: true
@@ -52,6 +54,6 @@ class <%= @migration_name %> < ActiveRecord::Migration<%= "[#{Rails.version.to_f
     #
     #   t.timestamps null: false
     # end
-    # add_index :subscriptions, [:target_type, :target_id, :key], unique: true<% end %>
+    # add_index :subscriptions, [:target_type, :target_id, :key, :notifiable_type, :notifiable_id], unique: true, name: 'index_subscriptions_uniqueness', length: { target_type: 191, key: 191, notifiable_type: 191 }<% end %>
   end
 end

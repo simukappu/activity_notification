@@ -86,6 +86,38 @@ module ActivityNotification
       resolved_parameter
     end
 
+    # Returns targets that have instance-level subscriptions for this notifiable.
+    # This method finds all active instance-level subscriptions for this specific notifiable
+    # instance and returns their target objects.
+    #
+    # @param [String] target_type Target type to notify
+    # @param [String] key Key of the notification (defaults to default_notification_key)
+    # @return [Array<Object>] Array of target instances with active instance-level subscriptions
+    def instance_subscription_targets(target_type, key = nil)
+      key ||= default_notification_key
+      target_class_name = target_type.to_s.to_model_name
+      if ActivityNotification.config.orm == :dynamoid
+        # :nocov:
+        delimiter = ActivityNotification.config.composite_key_delimiter
+        Subscription.where(
+          notifiable_key: "#{self.class.name}#{delimiter}#{self.id}",
+          key:            key,
+          subscribing:    true
+        ).select { |s| s.target_type == target_class_name }.map(&:target).compact
+        # :nocov:
+      else
+        # :nocov:
+        Subscription.where(
+          notifiable_type: self.class.name,
+          notifiable_id:   self.id,
+          key:             key,
+          subscribing:     true,
+          target_type:     target_class_name
+        ).map(&:target).compact
+        # :nocov:
+      end
+    end
+
     # Returns group unit of the notifications from configured field or overridden method.
     # This method is able to be overridden.
     #

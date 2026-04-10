@@ -546,9 +546,12 @@ module ActivityNotification
     #
     # @param [String]  key                  Key of the notification
     # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
+    # @param [Object]  notifiable           Optional notifiable instance for instance-level subscription check
     # @return [Boolean] If the target subscribes the notification or the subscription management is not allowed for the target
-    def subscribes_to_notification?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
-      !subscription_allowed?(key) || _subscribes_to_notification?(key, subscribe_as_default)
+    def subscribes_to_notification?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default, notifiable: nil)
+      return true unless subscription_allowed?(key)
+      _subscribes_to_notification?(key, subscribe_as_default) ||
+        (notifiable.present? && _subscribes_to_notification_for_instance?(key, notifiable))
     end
 
     # Returns if the target subscribes to the notification email.

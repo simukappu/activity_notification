@@ -191,7 +191,7 @@ module ActivityNotification
             params[:subscription][:optional_targets][optional_target_key] = boolean_value
           end
         end
-        params.require(:subscription).permit(:key, :subscribing, :subscribing_to_email, optional_targets: optional_target_keys)
+        params.require(:subscription).permit(:key, :subscribing, :subscribing_to_email, :notifiable_type, :notifiable_id, optional_targets: optional_target_keys)
       end
 
       # Sets options to load subscription index from request parameters.

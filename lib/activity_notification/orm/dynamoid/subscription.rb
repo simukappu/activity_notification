@@ -19,6 +19,13 @@ module ActivityNotification
         # @return [Object] Target instance of this subscription
         belongs_to_composite_xdb_record :target
 
+        # Belongs to notifiable instance of this subscription as polymorphic association using composite key (optional).
+        # When present, this subscription is scoped to a specific notifiable instance.
+        # When nil, this is a key-level subscription that applies globally.
+        # @scope instance
+        # @return [Object, nil] Notifiable instance of this subscription
+        belongs_to_composite_xdb_record :notifiable, optional: true
+
         field :key,                       :string
         field :subscribing,               :boolean, default: ActivityNotification.config.subscribe_as_default
         field :subscribing_to_email,      :boolean, default: ActivityNotification.config.subscribe_to_email_as_default
@@ -31,7 +38,7 @@ module ActivityNotification
         global_secondary_index name: :index_target_key_created_at, hash_key: :target_key, range_key: :created_at, projected_attributes: :all
 
         validates  :target,               presence: true
-        validates  :key,                  presence: true, uniqueness: { scope: :target_key }
+        validates  :key,                  presence: true, uniqueness: { scope: [:target_key, :notifiable_key] }
         validates_inclusion_of :subscribing,          in: [true, false]
         validates_inclusion_of :subscribing_to_email, in: [true, false]
         validate   :subscribing_to_email_cannot_be_true_when_subscribing_is_false
