@@ -1,4 +1,4 @@
-## 2.6.0 / Unreleased
+## 2.6.0 / 2026-04-11
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.5.1...v2.6.0)
 
 Enhancements:
