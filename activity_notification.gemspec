@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
 
   s.files         = Dir.glob("lib/**/*") + Dir.glob("app/**/*") + Dir.glob("docs/**/*") + ["README.md", "MIT-LICENSE"]
   s.require_paths = ["lib"]
-  s.required_ruby_version = '>= 2.1.0'
+  s.required_ruby_version = '>= 2.7.0'
 
   s.add_dependency 'railties', '>= 7.0.0', '< 8.2'
   s.add_dependency 'i18n', '>= 0.5.0'
