@@ -36,7 +36,7 @@ module ActivityNotification
         # Only group owner instance has :group_members value.
         # Group member instance has nil as :group_members association.
         # @scope instance
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of the group member notification instances of this notification
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of the group member notification instances of this notification
         has_many   :group_members, class_name: "ActivityNotification::Notification", foreign_key: :group_owner_id
 
         # Belongs to :notifier instance of this notification.
@@ -59,52 +59,52 @@ module ActivityNotification
 
         # Selects group owner notifications only.
         # @scope class
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :group_owners_only,                 -> { where(group_owner_id: nil) }
 
         # Selects group member notifications only.
         # @scope class
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :group_members_only,                -> { where.not(group_owner_id: nil) }
 
         # Selects unopened notifications only.
         # @scope class
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :unopened_only,                     -> { where(opened_at: nil) }
 
         # Selects opened notifications only without limit.
         # Be careful to get too many records with this method.
         # @scope class
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :opened_only!,                      -> { where.not(opened_at: nil) }
 
         # Selects opened notifications only with limit.
         # @scope class
         # @param [Integer] limit Limit to query for opened notifications
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :opened_only,                       ->(limit) { opened_only!.limit(limit) }
 
         # Selects group member notifications in unopened_index.
         # @scope class
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :unopened_index_group_members_only, -> { where(group_owner_id: unopened_index.map(&:id)) }
 
         # Selects group member notifications in opened_index.
         # @scope class
         # @param [Integer] limit Limit to query for opened notifications
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :opened_index_group_members_only,   ->(limit) { where(group_owner_id: opened_index(limit).map(&:id)) }
 
         # Selects notifications within expiration.
         # @scope class
         # @param [ActiveSupport::Duration] expiry_delay Expiry period of notifications
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :within_expiration_only,            ->(expiry_delay) { where("created_at > ?", expiry_delay.ago) }
 
         # Selects group member notifications with specified group owner ids.
         # @scope class
         # @param [Array<String>] owner_ids Array of group owner ids
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :group_members_of_owner_ids_only,   ->(owner_ids) { where(group_owner_id: owner_ids) }
 
         # Selects filtered notifications by target instance.
@@ -113,63 +113,63 @@ module ActivityNotification
         #   @user.notifications
         # @scope class
         # @param [Object] target Target instance for filter
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :filtered_by_target,                ->(target) { where(target: target) }
 
         # Selects filtered notifications by notifiable instance.
-        # @example Get filtered unopened notificatons of the @user for @comment as notifiable
+        # @example Get filtered unopened notifications of the @user for @comment as notifiable
         #   @notifications = @user.notifications.unopened_only.filtered_by_instance(@comment)
         # @scope class
         # @param [Object] notifiable Notifiable instance for filter
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :filtered_by_instance,              ->(notifiable) { where(notifiable: notifiable) }
 
         # Selects filtered notifications by group instance.
-        # @example Get filtered unopened notificatons of the @user for @article as group
+        # @example Get filtered unopened notifications of the @user for @article as group
         #   @notifications = @user.notifications.unopened_only.filtered_by_group(@article)
         # @scope class
         # @param [Object] group Group instance for filter
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of filtered notifications
         scope :filtered_by_group,                 ->(group) { where(group: group) }
 
         # Selects filtered notifications later than specified time.
-        # @example Get filtered unopened notificatons of the @user later than @notification
+        # @example Get filtered unopened notifications of the @user later than @notification
         #   @notifications = @user.notifications.unopened_only.later_than(@notification.created_at)
         # @scope class
         # @param [Time] Created time of the notifications for filter
-        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>, Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :later_than,                        ->(created_time) { where('created_at > ?', created_time) }
 
         # Selects filtered notifications earlier than specified time.
-        # @example Get filtered unopened notificatons of the @user earlier than @notification
+        # @example Get filtered unopened notifications of the @user earlier than @notification
         #   @notifications = @user.notifications.unopened_only.earlier_than(@notification.created_at)
         # @scope class
         # @param [Time] Created time of the notifications for filter
-        # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+        # @return [ActiveRecord_AssociationRelation<Notification>, Mongoid::Criteria<Notification>] Database query of filtered notifications
         scope :earlier_than,                      ->(created_time) { where('created_at < ?', created_time) }
 
         # Includes target instance with query for notifications.
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with target
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of notifications with target
         scope :with_target,                       -> { includes(:target) }
 
         # Includes notifiable instance with query for notifications.
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with notifiable
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of notifications with notifiable
         scope :with_notifiable,                   -> { includes(:notifiable) }
 
         # Includes group instance with query for notifications.
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with group
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of notifications with group
         scope :with_group,                        -> { includes(:group) }
 
         # Includes group owner instances with query for notifications.
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with group owner
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of notifications with group owner
         scope :with_group_owner,                  -> { includes(:group_owner) }
 
         # Includes group member instances with query for notifications.
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with group members
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of notifications with group members
         scope :with_group_members,                -> { includes(:group_members) }
 
         # Includes notifier instance with query for notifications.
-        # @return [ActiveRecord_AssociationRelation<Notificaion>] Database query of notifications with notifier
+        # @return [ActiveRecord_AssociationRelation<Notification>] Database query of notifications with notifier
         scope :with_notifier,                     -> { includes(:notifier) }
 
         # Raise DeleteRestrictionError for notifications.

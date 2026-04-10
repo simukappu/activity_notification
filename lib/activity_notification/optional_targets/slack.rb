@@ -6,7 +6,7 @@ module ActivityNotification
 
       # Initialize method to prepare Slack::Notifier
       # @param [Hash] options Options for initializing
-      # @option options [String, Proc, Symbol] :target_username (nil) Target user name of Slack, it resolved by target instance like email_allowed?
+      # @option options [String, Proc, Symbol] :target_username (nil) Target username of Slack, it resolved by target instance like email_allowed?
       # @option options [required, String]     :webhook_url     (nil) Webhook URL of Slack Incoming WebHooks integration
       # @option options [Hash]                 others                 Other options to be set Slack::Notifier.new, like :channel, :username, :icon_emoji etc
       def initialize_target(options = {})
@@ -17,7 +17,7 @@ module ActivityNotification
       # Publishes notification message to Slack
       # @param [Notification] notification Notification instance
       # @param [Hash] options Options for publishing
-      # @option options [String, Proc, Symbol] :target_username (nil)                     Target user name of Slack, it resolved by target instance like email_allowed?
+      # @option options [String, Proc, Symbol] :target_username (nil)                     Target username of Slack, it resolved by target instance like email_allowed?
       # @option options [String]               :partial_root    ("activity_notification/optional_targets/#{target}/#{optional_target_name}", "activity_notification/optional_targets/#{target}/base", "activity_notification/optional_targets/default/#{optional_target_name}", "activity_notification/optional_targets/default/base") Partial template name
       # @option options [String]               :partial         (self.key.tr('.', '/'))   Root path of partial template
       # @option options [String]               :layout          (nil)                     Layout template name

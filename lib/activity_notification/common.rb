@@ -105,7 +105,7 @@ module ActivityNotification
       end
     end
 
-    # Convets to class name.
+    # Converts to class name.
     # This function returns base_class name for STI models if the class responds to base_class method.
     # @see https://github.com/simukappu/activity_notification/issues/89
     # @see https://github.com/simukappu/activity_notification/pull/139
@@ -114,26 +114,26 @@ module ActivityNotification
       self.class.respond_to?(:base_class) ? self.class.base_class.name : self.class.name
     end
 
-    # Convets to singularized model name (resource name).
+    # Converts to singularized model name (resource name).
     # @return [String] Singularized model name (resource name)
     def to_resource_name
       self.to_class_name.demodulize.singularize.underscore
     end
 
-    # Convets to pluralized model name (resources name).
+    # Converts to pluralized model name (resources name).
     # @return [String] Pluralized model name (resources name)
     def to_resources_name
       self.to_class_name.demodulize.pluralize.underscore
     end
 
-    # Convets to printable model type name to be humanized.
+    # Converts to printable model type name to be humanized.
     # @return [String] Printable model type name
     # @todo Is this the best to make readable?
     def printable_type
       "#{self.to_class_name.demodulize.humanize}"
     end
 
-    # Convets to printable model name to show in view or email.
+    # Converts to printable model name to show in view or email.
     # @return [String] Printable model name
     def printable_name
       "#{self.printable_type} (#{id})"

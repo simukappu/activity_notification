@@ -14,8 +14,8 @@ module ActivityNotification
       # == Parameters:
       # * :targets
       #   * Targets to send notifications.
-      #     It it set as ActiveRecord records or array of models.
-      #     This is a only necessary option.
+      #     It is set as ActiveRecord records or array of models.
+      #     This is the only necessary option.
       #     If you do not specify this option, you have to override notification_targets
       #     or notification_[plural target type] (e.g. notification_users) method.
       # @example Notify to all users
@@ -189,10 +189,10 @@ module ActivityNotification
       #   end
       #
       # * :optional_targets
-      #   * Optional targets to integrate external notification serveces like Amazon SNS or Slack.
+      #   * Optional targets to integrate external notification services like Amazon SNS or Slack.
       #     You can use hash of optional target implementation class as key and initializing parameters as value for this parameter.
       #     When the hash parameter is passed, acts_as_notifiable will create new instance of optional target class and call initialize_target method with initializing parameters, then configure them as optional_targets for this notifiable and target.
-      #     You can also use symbol of method name or lambda function which returns array of initialized optional target intstances.
+      #     You can also use symbol of method name or lambda function which returns array of initialized optional target instances.
       #     All optional target class must extends ActivityNotification::OptionalTarget::Base.
       #     This parameter is completely optional.
       # @example Define to integrate with Amazon SNS, Slack and your custom ConsoleOutput targets
@@ -203,7 +203,7 @@ module ActivityNotification
       #     require 'custom_optional_targets/console_output'
       #     acts_as_notifiable :admins, targets: Admin.all,
       #       optional_targets: {
-      #         ActivityNotification::OptionalTarget::AmazonSNS => { topic_arn: '<Topin ARN of yours>' },
+      #         ActivityNotification::OptionalTarget::AmazonSNS => { topic_arn: '<Topic ARN of yours>' },
       #         ActivityNotification::OptionalTarget::Slack  => {
       #           webhook_url: '<Slack Webhook URL>',
       #           slack_name: :slack_name, channel: 'activity_notification', username: 'ActivityNotification', icon_emoji: ":ghost:"

@@ -38,7 +38,7 @@ ActivityNotification.configure do |config|
 
   # Configure default optional target subscription value to use when the subscription record does not configured.
   # Note that you can configure them for each method calling as default argument.
-  # Set false when you want to unsubscribe to optinal target notifications as default.
+  # Set false when you want to unsubscribe to optional target notifications as default.
   # config.subscribe_to_optional_targets_as_default = true
 
   # Configure the e-mail address which will be shown in ActivityNotification::Mailer,
@@ -80,7 +80,7 @@ ActivityNotification.configure do |config|
   # Configure delimiter of composite key for DynamoDB.
   # config.composite_key_delimiter = '#'
 
-  # Configure if activity_notification stores notificaion records including associated records like target and notifiable..
+  # Configure if activity_notification stores notification records including associated records like target and notifiable..
   # This store_with_associated_records option can be set true only when you use mongoid or dynamoid ORM.
   config.store_with_associated_records = false
 

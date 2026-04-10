@@ -9,7 +9,7 @@ module ActivityNotification
 
       # Has many notification instances of this target.
       # @scope instance
-      # @return [Array<Notificaion>, Mongoid::Criteria<Notificaion>] Array or database query of notifications of this target
+      # @return [Array<Notification>, Mongoid::Criteria<Notification>] Array or database query of notifications of this target
       has_many_records :notifications,
         class_name: "::ActivityNotification::Notification",
         as: :target,
@@ -64,7 +64,7 @@ module ActivityNotification
       # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
       # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [Array<Notificaion>] All notifications for this target type
+      # @return [Array<Notification>] All notifications for this target type
       def all_notifications(options = {})
         reverse                = options[:reverse] || false
         with_group_members     = options[:with_group_members] || false
@@ -106,7 +106,7 @@ module ActivityNotification
       # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
       # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [Hash<Target, Notificaion>] All notifications for this target type grouped by targets
+      # @return [Hash<Target, Notification>] All notifications for this target type grouped by targets
       def notification_index_map(options = {})
         all_notifications(options).group_by(&:target)
       end
@@ -143,7 +143,7 @@ module ActivityNotification
       end
 
       # Resolves current authenticated target by devise authentication from current resource signed in with Devise.
-      # This method is able to be overridden.
+      # This method can be overridden.
       #
       # @param [Object] current_resource Current resource signed in with Devise
       # @return [Object] Current authenticated target by devise authentication
@@ -160,7 +160,7 @@ module ActivityNotification
     end
 
     # Returns target email address for email notification.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @return [String] Target email address
     def mailer_to
@@ -168,7 +168,7 @@ module ActivityNotification
     end
 
     # Returns if sending notification email is allowed for the target from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [Object] notifiable Notifiable instance of the notification
     # @param [String] key Key of the notification
@@ -178,7 +178,7 @@ module ActivityNotification
     end
 
     # Returns if sending batch notification email is allowed for the target from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [String] key Key of the notifications
     # @return [Boolean] If sending batch notification email is allowed for the target
@@ -187,7 +187,7 @@ module ActivityNotification
     end
 
     # Returns if subscription management is allowed for the target from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [String] key Key of the notifications
     # @return [Boolean] If subscription management is allowed for the target
@@ -197,7 +197,7 @@ module ActivityNotification
     alias_method :notification_subscription_allowed?, :subscription_allowed?
 
     # Returns if publishing WebSocket using ActionCable is allowed for the target from configured field or overridden method.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [Object] notifiable Notifiable instance of the notification
     # @param [String] key Key of the notification
@@ -228,7 +228,7 @@ module ActivityNotification
     end
 
     # Returns if current resource signed in with Devise is authenticated for the notification.
-    # This method is able to be overridden.
+    # This method can be overridden.
     #
     # @param [Object] current_resource Current resource signed in with Devise
     # @return [Boolean] If current resource signed in with Devise is authenticated for the notification
@@ -288,8 +288,8 @@ module ActivityNotification
     # Returns automatically arranged notification index of the target.
     # This method is the typical way to get notification index from controller and view.
     # When the target has unopened notifications, it returns unopened notifications first.
-    # Additionaly, it returns opened notifications unless unopened index size overs the limit.
-    # @todo Is this conbimned array the best solution?
+    # Additionally, it returns opened notifications unless unopened index size overs the limit.
+    # @todo Is this combined array the best solution?
     #
     # @example Get automatically arranged notification index of @user
     #   @notifications = @user.notification_index
@@ -307,7 +307,7 @@ module ActivityNotification
     # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
     # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-    # @return [Array<Notificaion>] Notification index of the target
+    # @return [Array<Notification>] Notification index of the target
     def notification_index(options = {})
       arrange_notification_index(method(:unopened_notification_index),
                                  method(:opened_notification_index),
@@ -332,7 +332,7 @@ module ActivityNotification
     # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
     # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-    # @return [Array<Notificaion>] Unopened notification index of the target
+    # @return [Array<Notification>] Unopened notification index of the target
     def unopened_notification_index(options = {})
       arrange_single_notification_index(method(:_unopened_notification_index), options)
     end
@@ -355,7 +355,7 @@ module ActivityNotification
     # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
     # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-    # @return [Array<Notificaion>] Opened notification index of the target
+    # @return [Array<Notification>] Opened notification index of the target
     def opened_notification_index(options = {})
       arrange_single_notification_index(method(:_opened_notification_index), options)
     end
@@ -374,7 +374,7 @@ module ActivityNotification
     # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
     # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
     # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
-    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
+    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc.) and values are options
     # @return [Notification] Generated notification instance
     def receive_notification_of(notifiable, options = {})
       Notification.notify_to(self, notifiable, options)
@@ -395,7 +395,7 @@ module ActivityNotification
     # @option options [Boolean]                 :send_email               (true)                                Whether it sends notification email
     # @option options [Boolean]                 :send_later               (true)                                Whether it sends notification email asynchronously
     # @option options [Boolean]                 :publish_optional_targets (true)                                Whether it publishes notification to optional targets
-    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc) and values are options
+    # @option options [Hash<String, Hash>]      :optional_targets         ({})                                  Options for optional targets, keys are optional target name (:amazon_sns or :slack etc.) and values are options
     # @return [Notification] Generated notification instance
     def receive_notification_later_of(notifiable, options = {})
       Notification.notify_later_to(self, notifiable, options)
@@ -439,7 +439,7 @@ module ActivityNotification
     # Gets automatically arranged notification index of the target with included attributes like target, notifiable, group and notifier.
     # This method is the typical way to get notifications index from controller of view.
     # When the target have unopened notifications, it returns unopened notifications first.
-    # Additionaly, it returns opened notifications unless unopened index size overs the limit.
+    # Additionally, it returns opened notifications unless unopened index size overs the limit.
     # @todo Is this switching the best solution?
     #
     # @example Get automatically arranged notification index of the @user with included attributes
@@ -461,7 +461,7 @@ module ActivityNotification
     # @option options [String]         :later_than             (nil)           ISO 8601 format time to filter notifications later than specified time
     # @option options [String]         :earlier_than           (nil)           ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash]     :custom_filter          (nil)           Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-    # @return [Array<Notificaion>] Notification index of the target with attributes
+    # @return [Array<Notification>] Notification index of the target with attributes
     def notification_index_with_attributes(options = {})
       arrange_notification_index(method(:unopened_notification_index_with_attributes),
                                  method(:opened_notification_index_with_attributes),
@@ -486,7 +486,7 @@ module ActivityNotification
     # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
     # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-    # @return [Array<Notificaion>] Unopened notification index of the target with attributes
+    # @return [Array<Notification>] Unopened notification index of the target with attributes
     def unopened_notification_index_with_attributes(options = {})
       include_attributes(_unopened_notification_index(options)).to_a
     end
@@ -509,7 +509,7 @@ module ActivityNotification
     # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
     # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
     # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-    # @return [Array<Notificaion>] Opened notification index of the target with attributes
+    # @return [Array<Notification>] Opened notification index of the target with attributes
     def opened_notification_index_with_attributes(options = {})
       include_attributes(_opened_notification_index(options)).to_a
     end
@@ -545,7 +545,7 @@ module ActivityNotification
     # It also returns true when the subscription management is not allowed for the target.
     #
     # @param [String]  key                  Key of the notification
-    # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
+    # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record is not configured
     # @return [Boolean] If the target subscribes the notification or the subscription management is not allowed for the target
     def subscribes_to_notification?(key, subscribe_as_default = ActivityNotification.config.subscribe_as_default)
       !subscription_allowed?(key) || _subscribes_to_notification?(key, subscribe_as_default)
@@ -555,7 +555,7 @@ module ActivityNotification
     # It also returns true when the subscription management is not allowed for the target.
     #
     # @param [String]  key                  Key of the notification
-    # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record does not configured
+    # @param [Boolean] subscribe_as_default Default subscription value to use when the subscription record is not configured
     # @return [Boolean] If the target subscribes the notification email or the subscription management is not allowed for the target
     def subscribes_to_notification_email?(key, subscribe_as_default = ActivityNotification.config.subscribe_to_email_as_default)
       !subscription_allowed?(key) || _subscribes_to_notification_email?(key, subscribe_as_default)
@@ -567,7 +567,7 @@ module ActivityNotification
     #
     # @param [String]         key                  Key of the notification
     # @param [String, Symbol] optional_target_name Class name of the optional target implementation (e.g. :amazon_sns, :slack)
-    # @param [Boolean]        subscribe_as_default Default subscription value to use when the subscription record does not configured
+    # @param [Boolean]        subscribe_as_default Default subscription value to use when the subscription record is not configured
     # @return [Boolean] If the target subscribes the notification email or the subscription management is not allowed for the target
     def subscribes_to_optional_target?(key, optional_target_name, subscribe_as_default = ActivityNotification.config.subscribe_to_optional_targets_as_default)
       !subscription_allowed?(key) || _subscribes_to_optional_target?(key, optional_target_name, subscribe_as_default)
@@ -590,7 +590,7 @@ module ActivityNotification
       # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
       # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [ActiveRecord_AssociationRelation<Notificaion>|Mongoid::Criteria<Notificaion>|Dynamoid::Criteria::Chain] Unopened notification index of the target
+      # @return [ActiveRecord_AssociationRelation<Notification>|Mongoid::Criteria<Notification>|Dynamoid::Criteria::Chain] Unopened notification index of the target
       def _unopened_notification_index(options = {})
         reverse            = options[:reverse] || false
         with_group_members = options[:with_group_members] || false
@@ -612,7 +612,7 @@ module ActivityNotification
       # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
       # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [ActiveRecord_AssociationRelation<Notificaion>|Mongoid::Criteria<Notificaion>|Dynamoid::Criteria::Chain] Opened notification index of the target
+      # @return [ActiveRecord_AssociationRelation<Notification>|Mongoid::Criteria<Notification>|Dynamoid::Criteria::Chain] Opened notification index of the target
       def _opened_notification_index(options = {})
         limit              = options[:limit] || ActivityNotification.config.opened_index_limit
         reverse            = options[:reverse] || false
@@ -622,11 +622,11 @@ module ActivityNotification
 
       # Includes attributes like target, notifiable, group or notifier from the notification index.
       # When group member exists in the notification index, group will be included in addition to target, notifiable and or notifier.
-      # Otherwise, target, notifiable and or notifier will be include without group.
+      # Otherwise, target, notifiable and or notifier will be included without group.
       # @api private
       #
-      # @param [ActiveRecord_AssociationRelation<Notificaion>|Mongoid::Criteria<Notificaion>|Dynamoid::Criteria::Chain] target_index Notification index
-      # @return [ActiveRecord_AssociationRelation<Notificaion>|Mongoid::Criteria<Notificaion>|Dynamoid::Criteria::Chain] Notification index with attributes
+      # @param [ActiveRecord_AssociationRelation<Notification>|Mongoid::Criteria<Notification>|Dynamoid::Criteria::Chain] target_index Notification index
+      # @return [ActiveRecord_AssociationRelation<Notification>|Mongoid::Criteria<Notification>|Dynamoid::Criteria::Chain] Notification index with attributes
       def include_attributes(target_index)
         if target_index.present?
           Notification.group_member_exists?(target_index.to_a) ?
@@ -654,7 +654,7 @@ module ActivityNotification
       # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
       # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [Array<Notificaion>] Notification index of the target
+      # @return [Array<Notification>] Notification index of the target
       def arrange_single_notification_index(loading_index_method, options = {})
         as_latest_group_member = options[:as_latest_group_member] || false
         as_latest_group_member ?
@@ -664,7 +664,7 @@ module ActivityNotification
 
       # Gets automatically arranged notification index of the target.
       # When the target have unopened notifications, it returns unopened notifications first.
-      # Additionaly, it returns opened notifications unless unopened index size overs the limit.
+      # Additionally, it returns opened notifications unless unopened index size overs the limit.
       # @api private
       # @todo Is this switching the best solution?
       #
@@ -683,7 +683,7 @@ module ActivityNotification
       # @option options [String]     :later_than             (nil)   ISO 8601 format time to filter notifications later than specified time
       # @option options [String]     :earlier_than           (nil)   ISO 8601 format time to filter notifications earlier than specified time
       # @option options [Array|Hash] :custom_filter          (nil)   Custom notification filter (e.g. ["created_at >= ?", time.hour.ago])
-      # @return [Array<Notificaion>] Notification index of the target
+      # @return [Array<Notification>] Notification index of the target
       def arrange_notification_index(loading_unopened_index_method, loading_opened_index_method, options = {})
         # When the target have unopened notifications
         if has_unopened_notifications?(options)
@@ -691,7 +691,7 @@ module ActivityNotification
           target_unopened_index = arrange_single_notification_index(loading_unopened_index_method, options)
           # Total limit of notification index
           total_limit = options[:limit] || ActivityNotification.config.opened_index_limit
-          # Additionaly, return opened notifications unless unopened index size overs the limit
+          # Additionally, return opened notifications unless unopened index size overs the limit
           if (opened_limit = total_limit - target_unopened_index.size) > 0
             target_opened_index = arrange_single_notification_index(loading_opened_index_method, options.merge(limit: opened_limit))
             target_unopened_index.concat(target_opened_index.to_a)

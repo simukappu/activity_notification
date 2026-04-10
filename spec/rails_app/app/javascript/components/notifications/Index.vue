@@ -172,7 +172,7 @@ export default {
         this.notifications.unshift(data.group_owner);
         this.getUnopenedNotificationCount();
       }
-      // Push notificaion using Web Notification API by Push.js
+      // Push notification using Web Notification API by Push.js
       Push.create('ActivityNotification', {
         body: data.notification.text,
         timeout: 5000,

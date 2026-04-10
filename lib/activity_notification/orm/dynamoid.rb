@@ -117,7 +117,7 @@ class ActiveModel::NullMutationTracker
   def force_change(attr_name); end if Rails::VERSION::MAJOR >= 6
 end
 
-# Entend Dynamoid to support ActivityNotification scope in Dynamoid::Criteria::Chain
+# Extend Dynamoid to support ActivityNotification scope in Dynamoid::Criteria::Chain
 # @private
 module Dynamoid # :nodoc: all
   # https://github.com/Dynamoid/dynamoid/blob/master/lib/dynamoid/criteria.rb
@@ -147,7 +147,7 @@ module Dynamoid # :nodoc: all
       # is defined same as
       #   ActivityNotification::Notification.unopened_only.group_owners_only.latest_order
       # @scope class
-      # @example Get unopened notificaton index of the @user
+      # @example Get unopened notification index of the @user
       #   @notifications = @user.notifications.unopened_index
       #   @notifications = @user.notifications.unopened_only.group_owners_only.latest_order
       # @param [Boolean] reverse If notification index will be ordered as earliest first
@@ -163,7 +163,7 @@ module Dynamoid # :nodoc: all
       # is defined same as
       #   ActivityNotification::Notification.opened_only(limit).group_owners_only.latest_order
       # @scope class
-      # @example Get unopened notificaton index of the @user with limit 10
+      # @example Get unopened notification index of the @user with limit 10
       #   @notifications = @user.notifications.opened_index(10)
       #   @notifications = @user.notifications.opened_only(10).group_owners_only.latest_order
       # @param [Integer] limit Limit to query for opened notifications
@@ -217,7 +217,7 @@ module Dynamoid # :nodoc: all
       end
 
       # Selects filtered notifications by notifiable instance.
-      # @example Get filtered unopened notificatons of the @user for @comment as notifiable
+      # @example Get filtered unopened notifications of the @user for @comment as notifiable
       #   @notifications = @user.notifications.unopened_only.filtered_by_instance(@comment)
       # @scope class
       # @param [Object] notifiable Notifiable instance for filter
@@ -227,7 +227,7 @@ module Dynamoid # :nodoc: all
       end
 
       # Selects filtered notifications by group instance.
-      # @example Get filtered unopened notificatons of the @user for @article as group
+      # @example Get filtered unopened notifications of the @user for @article as group
       #   @notifications = @user.notifications.unopened_only.filtered_by_group(@article)
       # @scope class
       # @param [Object] group Group instance for filter
@@ -237,7 +237,7 @@ module Dynamoid # :nodoc: all
       end
 
       # Selects filtered notifications or subscriptions by target_type.
-      # @example Get filtered unopened notificatons of User as target type
+      # @example Get filtered unopened notifications of User as target type
       #   @notifications = ActivityNotification.Notification.unopened_only.filtered_by_target_type('User')
       # @scope class
       # @param [String] target_type Target type for filter
@@ -247,7 +247,7 @@ module Dynamoid # :nodoc: all
       end
 
       # Selects filtered notifications by notifiable_type.
-      # @example Get filtered unopened notificatons of the @user for Comment notifiable class
+      # @example Get filtered unopened notifications of the @user for Comment notifiable class
       #   @notifications = @user.notifications.unopened_only.filtered_by_type('Comment')
       # @scope class
       # @param [String] notifiable_type Notifiable type for filter
@@ -257,7 +257,7 @@ module Dynamoid # :nodoc: all
       end
 
       # Selects filtered notifications or subscriptions by key.
-      # @example Get filtered unopened notificatons of the @user with key 'comment.reply'
+      # @example Get filtered unopened notifications of the @user with key 'comment.reply'
       #   @notifications = @user.notifications.unopened_only.filtered_by_key('comment.reply')
       # @scope class
       # @param [String] key Key of the notification for filter
@@ -267,37 +267,37 @@ module Dynamoid # :nodoc: all
       end
 
       # Selects filtered notifications later than specified time.
-      # @example Get filtered unopened notificatons of the @user later than @notification
+      # @example Get filtered unopened notifications of the @user later than @notification
       #   @notifications = @user.notifications.unopened_only.later_than(@notification.created_at)
       # @scope class
       # @param [Time] Created time of the notifications for filter
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+      # @return [ActiveRecord_AssociationRelation<Notification>, Mongoid::Criteria<Notification>] Database query of filtered notifications
       def later_than(created_time)
         where('created_at.gt': created_time)
       end
 
       # Selects filtered notifications earlier than specified time.
-      # @example Get filtered unopened notificatons of the @user earlier than @notification
+      # @example Get filtered unopened notifications of the @user earlier than @notification
       #   @notifications = @user.notifications.unopened_only.earlier_than(@notification.created_at)
       # @scope class
       # @param [Time] Created time of the notifications for filter
-      # @return [ActiveRecord_AssociationRelation<Notificaion>, Mongoid::Criteria<Notificaion>] Database query of filtered notifications
+      # @return [ActiveRecord_AssociationRelation<Notification>, Mongoid::Criteria<Notification>] Database query of filtered notifications
       def earlier_than(created_time)
         where('created_at.lt': created_time)
       end
 
       # Selects filtered notifications or subscriptions by notifiable_type, group or key with filter options.
-      # @example Get filtered unopened notificatons of the @user for Comment notifiable class
+      # @example Get filtered unopened notifications of the @user for Comment notifiable class
       #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment' })
-      # @example Get filtered unopened notificatons of the @user for @article as group
+      # @example Get filtered unopened notifications of the @user for @article as group
       #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_group: @article })
-      # @example Get filtered unopened notificatons of the @user for Article instance id=1 as group
+      # @example Get filtered unopened notifications of the @user for Article instance id=1 as group
       #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_group_type: 'Article', filtered_by_group_id: '1' })
-      # @example Get filtered unopened notificatons of the @user with key 'comment.reply'
+      # @example Get filtered unopened notifications of the @user with key 'comment.reply'
       #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_key: 'comment.reply' })
-      # @example Get filtered unopened notificatons of the @user for Comment notifiable class with key 'comment.reply'
+      # @example Get filtered unopened notifications of the @user for Comment notifiable class with key 'comment.reply'
       #   @notifications = @user.notifications.unopened_only.filtered_by_options({ filtered_by_type: 'Comment', filtered_by_key: 'comment.reply' })
-      # @example Get custom filtered notificatons of the @user
+      # @example Get custom filtered notifications of the @user
       #   @notifications = @user.notifications.unopened_only.filtered_by_options({ custom_filter: ["created_at >= ?", time.hour.ago] })
       # @scope class
       # @param [Hash] options Options for filter

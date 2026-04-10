@@ -1,6 +1,6 @@
 require 'dynamoid/adapter_plugin/aws_sdk_v3'
 
-# Entend Dynamoid v3.1.0 to support none, limit, exists?, update_all, serializable_hash in Dynamoid::Criteria::Chain.
+# Extend Dynamoid v3.1.0 to support none, limit, exists?, update_all, serializable_hash in Dynamoid::Criteria::Chain.
 # ActivityNotification project will try to contribute these fundamental functions to Dynamoid upstream.
 # @private
 module Dynamoid # :nodoc: all
@@ -83,13 +83,13 @@ module Dynamoid # :nodoc: all
   end
 end
 
-# Entend Dynamoid to support uniqueness validator
+# Extend Dynamoid to support uniqueness validator
 # @private
 module Dynamoid # :nodoc: all
   # https://github.com/Dynamoid/dynamoid/blob/master/lib/dynamoid/validations.rb
   # @private
   module Validations
-    # Validates whether or not a field is unique against the records in the database.
+    # Validates whether a field is unique against the records in the database.
     class UniquenessValidator < ActiveModel::EachValidator
       # Validate the document for uniqueness violations.
       # @param [Document] document The document to validate.

@@ -20,7 +20,7 @@ $ bin/rails generate activity_notification:install
 ```
 
 The generator will install an initializer which describes all configuration options of *activity_notification*.
-It also generates a i18n based translation file which we can configure the presentation of notifications.
+It also generates an i18n based translation file which we can configure the presentation of notifications.
 
 #### ORM Dependencies
 
@@ -147,7 +147,7 @@ In such cases, you can use **store_with_associated_records** option in initializ
 config.store_with_associated_records = true
 ```
 
-When **store_with_associated_records** is set to *false* as default, *activity_notification* stores notificaion records with association like this:
+When **store_with_associated_records** is set to *false* as default, *activity_notification* stores notification records with association like this:
 
 ```json
 {
@@ -181,7 +181,7 @@ When **store_with_associated_records** is set to *false* as default, *activity_n
 }
 ```
 
-When you set **store_with_associated_records** to *true*, *activity_notification* stores notificaion records including associated target, notifiable, notifier and several instance methods like this:
+When you set **store_with_associated_records** to *true*, *activity_notification* stores notification records including associated target, notifiable, notifier and several instance methods like this:
 
 ```json
 {
@@ -561,7 +561,7 @@ ActivityNotification::Notification.notify :users, @comment, key: "comment.reply"
 The first argument is the plural symbol name of your target model, which is configured in notifiable model by *acts_as_notifiable*.
 The new instances of **ActivityNotification::Notification** model will be generated for the specified targets.
 
-*Hint*: *:key* is a option. Default key `#{notifiable_type}.default` which means *comment.default* will be used without specified key.
+*Hint*: *:key* is an option. Default key `#{notifiable_type}.default` which means *comment.default* will be used without specified key.
 You can override it by *Notifiable#default_notification_key*.
 
 #### Asynchronous notification API with ActiveJob
@@ -580,7 +580,7 @@ You can also use *:notify_later* option in *notify* method. This is the same ope
 
 *Note*: *notify_now* is an alias for *notify* and does the same.
 
-When you use asynchronous notification API, you should setup ActiveJob with background queuing service such as Sidekiq.
+When you use asynchronous notification API, you should set up ActiveJob with background queuing service such as Sidekiq.
 You can set *config.active_job_queue* in your initializer to specify a queue name *activity_notification* will use.
 The default queue name is *:activity_notification*.
 
@@ -725,7 +725,7 @@ For example, if you have a notification with *:key* set to *"notification.commen
 
 *Hint*: the *"notification."* prefix in *:key* is completely optional, you can skip it in your projects or use this prefix only to make namespace.
 
-If you would like to fallback to a partial, you can utilize the **:fallback** parameter to specify the path of a partial to use when one is missing:
+If you would like to fall back to a partial, you can utilize the **:fallback** parameter to specify the path of a partial to use when one is missing:
 
 ```erb
 <%= render_notification(@notification, target: :users, fallback: :default) %>
@@ -741,7 +741,7 @@ If you do not specify *:target* option like this,
 
 the gem will look for a partial in *default* as the target type which means *activity_notification/notifications/default/_default.html.(|erb|haml|slim|something_else)*.
 
-If a view file does not exist then *ActionView::MisingTemplate* will be raised. If you wish to fallback to the old behaviour and use an i18n based translation in this situation you can specify a *:fallback* parameter of *:text* to fallback to this mechanism like such:
+If a view file does not exist then *ActionView::MisingTemplate* will be raised. If you wish to fall back to the old behaviour and use an i18n based translation in this situation you can specify a *:fallback* parameter of *:text* to fall back to this mechanism like such:
 
 ```erb
 <%= render_notification(@notification, fallback: :text) %>
