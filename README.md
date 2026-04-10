@@ -23,10 +23,12 @@
 * Automatic tracked notifications (generating notifications along with the lifecycle of notifiable models)
 * Grouping notifications (grouping like *"Kevin and 7 other users posted comments to this article"*)
 * Email notification
+* Email attachments (configurable at global, target, and notifiable levels)
 * Batch email notification (event driven or periodical email notification, daily or weekly etc)
 * Cascading notifications (progressive notification escalation through multiple channels with time delays)
 * Push notification with [Action Cable](https://guides.rubyonrails.org/action_cable_overview.html)
 * Subscription management (subscribing and unsubscribing for each target and notification type)
+* Instance-level subscriptions (subscribing to notifications from a specific notifiable instance)
 * REST API backend and [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification)
 * Integration with [Devise](https://github.com/plataformatec/devise) authentication
 * Activity notifications stream integrated into cloud computing using [Amazon DynamoDB Streams](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Streams.html)
