@@ -1,3 +1,10 @@
+## 2.6.1 / 2026-04-11
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.6.0...v2.6.1)
+
+Bug Fixes:
+
+* Fix generator file structure for add_notifiable_to_subscriptions migration - [#202](https://github.com/simukappu/activity_notification/issues/202)
+
 ## 2.6.0 / 2026-04-11
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.5.1...v2.6.0)
 
