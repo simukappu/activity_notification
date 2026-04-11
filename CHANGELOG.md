@@ -7,6 +7,15 @@ Enhancements:
 * Add email attachment support for notification emails with three-level configuration (global, target, notifiable) - [#154](https://github.com/simukappu/activity_notification/issues/154)
 * Add documentation for `notification_email_allowed?` override - [#206](https://github.com/simukappu/activity_notification/pull/206)
 
+Bug Fixes:
+
+* Fix gem loading error without ActionCable when `eager_load` is true - [#200](https://github.com/simukappu/activity_notification/issues/200) [#201](https://github.com/simukappu/activity_notification/pull/201)
+* Fix Rails 8.1 deprecation warnings for `resources` method in route definitions
+
+Dependency:
+
+* Update minimum Ruby version to 2.7.0 (required by Rails 7.0+)
+
 Breaking Changes:
 
 * **Migration required**: Add `notifiable_type` and `notifiable_id` columns to subscriptions table and update unique index. See the [Upgrade Guide](docs/Upgrade-to-2.6.md) for details.
