@@ -7,7 +7,7 @@ module ActivityNotification
     # @example Run migration generator
     #   rails generate activity_notification:add_notifiable_to_subscriptions
     class AddNotifiableToSubscriptionsGenerator < ActiveRecord::Generators::Base
-      source_root File.expand_path("templates", __dir__)
+      source_root File.expand_path("../../../templates/migrations", __FILE__)
 
       argument :name, type: :string, default: 'AddNotifiableToSubscriptions',
         desc: "The migration name"

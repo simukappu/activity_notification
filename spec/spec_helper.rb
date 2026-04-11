@@ -14,7 +14,7 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new [
 ]
 SimpleCov.start('rails') do
   add_filter '/spec/'
-  add_filter '/lib/generators/'
+  add_filter '/lib/generators/templates/'
   add_filter '/lib/activity_notification/version'
   if ENV['AN_ORM'] == 'mongoid'
     add_filter '/lib/activity_notification/orm/active_record'
