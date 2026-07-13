@@ -47,7 +47,7 @@ module ActivityNotification
     #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
     #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def open_all
-      @opened_notifications = @target.open_all_notifications(params)
+      @opened_notifications = @target.open_all_notifications(bulk_action_options)
       return_back_or_ajax
     end
 
@@ -70,7 +70,7 @@ module ActivityNotification
     #   @option params [String] :reload                 ('true')  Whether notification index will be reloaded
     #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def destroy_all
-      @destroyed_notifications = @target.destroy_all_notifications(params)
+      @destroyed_notifications = @target.destroy_all_notifications(bulk_action_options)
       set_index_options
       load_index if params[:reload].to_s.to_boolean(true)
       return_back_or_ajax
@@ -150,6 +150,21 @@ module ActivityNotification
       # @return [Object] Notification instance (Returns HTTP 403 when the target of notification is different from specified target by request parameter)
       def set_notification
         validate_target(@notification = Notification.with_target.find(params[:id]))
+      end
+
+      # Builds a permitted options hash for bulk actions (open_all / destroy_all)
+      # from request parameters.
+      # Only known-safe filter keys are permitted here. Request parameters must
+      # never be forwarded to the model layer as-is, because :custom_filter is
+      # passed straight to ActiveRecord's where as a raw SQL fragment and would
+      # allow SQL injection from untrusted input.
+      # @api protected
+      # @return [Hash] permitted options for bulk actions
+      def bulk_action_options
+        params.permit(:filter, :limit, :reverse, :without_grouping, :with_group_members,
+                      :filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key,
+                      :later_than, :earlier_than, :routing_scope, :devise_default_routes, ids: [])
+              .to_h.symbolize_keys
       end
 
       # Sets options to load notification index from request parameters.

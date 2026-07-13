@@ -332,7 +332,7 @@ module Dynamoid # :nodoc: all
           filtered_notifications = filtered_notifications.earlier_than(Time.iso8601(options[:earlier_than]))
         end
         if options.has_key?(:custom_filter)
-          filtered_notifications = filtered_notifications.where(options[:custom_filter])
+          filtered_notifications = filtered_notifications.where(ActivityNotification.validate_custom_filter(options[:custom_filter]))
         end
         filtered_notifications
       end
