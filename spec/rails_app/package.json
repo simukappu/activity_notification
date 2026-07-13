@@ -17,7 +17,7 @@
     "push.js": "^1.0.12"
   },
   "devDependencies": {
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": ">=5.2.5"
   },
   "license": "MIT"
 }
