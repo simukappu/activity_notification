@@ -709,7 +709,7 @@ When you want to use REST API backend integrated with Devise authentication, see
 
 You can see [sample single page application](/spec/rails_app/app/javascript/) using [Vue.js](https://vuejs.org) as a part of example Rails application. This sample application works with *activity_notification* REST API backend.
 
-#### Securing REST API responses
+#### Securing the REST API
 
 The REST API endpoints do not authenticate requests on their own. Authenticating requests and authorizing access to a target's notifications and subscriptions is the responsibility of your application. The recommended way is to use the *:with_devise* option so that only the authenticated resource can access its own records. See [REST API backend with Devise Token Auth](#rest-api-backend-with-devise-token-auth) for the setup. The controllers shipped for *:with_devise* return HTTP 403 for a target that does not belong to the authenticated resource.
 
