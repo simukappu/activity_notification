@@ -101,3 +101,6 @@ jobs:
         run: bundle exec rspec --format progress
       - name: Coveralls
         uses: coverallsapp/github-action@v2
+        continue-on-error: true
+        with:
+          fail-on-error: false
