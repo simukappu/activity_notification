@@ -1,3 +1,11 @@
+## Unreleased
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.6.1...main)
+
+Enhancements:
+
+* Add `config.restrict_api_response_fields` option to limit embedded associated records in REST API responses to their id and printable_* values, disabled by default
+* Document that REST API authentication is the host application's responsibility (`:with_devise`) and how to scope API response fields
+
 ## 2.6.1 / 2026-04-11
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.6.0...v2.6.1)
 

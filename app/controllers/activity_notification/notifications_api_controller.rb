@@ -135,14 +135,26 @@ module ActivityNotification
       # Returns options for notification JSON
       # @api protected
       def notification_json_options
+        include_options =
+          if ActivityNotification.config.restrict_api_response_fields
+            {
+              target: { only: [:id], methods: [:printable_type, :printable_target_name] },
+              notifiable: { only: [:id], methods: [:printable_type] },
+              group: { only: [:id], methods: [:printable_type, :printable_group_name] },
+              notifier: { only: [:id], methods: [:printable_type, :printable_notifier_name] },
+              group_members: { only: [:id] }
+            }
+          else
+            {
+              target: { methods: [:printable_type, :printable_target_name] },
+              notifiable: { methods: [:printable_type] },
+              group: { methods: [:printable_type, :printable_group_name] },
+              notifier: { methods: [:printable_type, :printable_notifier_name] },
+              group_members: {}
+            }
+          end
         {
-          include: {
-            target: { methods: [:printable_type, :printable_target_name] },
-            notifiable: { methods: [:printable_type] },
-            group: { methods: [:printable_type, :printable_group_name] },
-            notifier: { methods: [:printable_type, :printable_notifier_name] },
-            group_members: {}
-          },
+          include: include_options,
           methods: [:notifiable_path, :printable_notifiable_name, :group_member_notifier_count, :group_notification_count]
         }
       end

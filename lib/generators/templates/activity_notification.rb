@@ -121,4 +121,12 @@ ActivityNotification.configure do |config|
   # See https://github.com/simukappu/activity_notification/issues/155 for more details.
   config.rescue_optional_target_errors = true
 
+  # Configure if the REST API restricts embedded associated records in JSON responses.
+  # When set true, associated records (target, notifiable, notifier, group, group members
+  # and subscription target) are serialized with only their id and printable_* method values
+  # instead of all database columns, to avoid exposing columns the frontend does not need.
+  # Note that authentication and authorization of the REST API is still the responsibility of
+  # your application (see the :with_devise routing option). Default value is false.
+  # config.restrict_api_response_fields = false
+
 end

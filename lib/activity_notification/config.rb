@@ -240,6 +240,15 @@ module ActivityNotification
     #   @return [Boolean] Whether activity_notification internally rescues optional target errors.
     attr_accessor :rescue_optional_target_errors
 
+    # @overload restrict_api_response_fields
+    #   Returns whether the REST API restricts embedded associated records to their id and printable_* method values
+    #   @return [Boolean] Whether the REST API restricts embedded associated records to their id and printable_* method values.
+    # @overload restrict_api_response_fields=(value)
+    #   Sets whether the REST API restricts embedded associated records (target, notifiable, notifier, group, group members and subscription target) in JSON responses to their id and printable_* method values instead of all database columns. This is an opt-in hardening option to avoid exposing columns the frontend does not need (e.g. authentication identifiers on an associated user record). It is disabled by default to preserve the existing response shape.
+    #   @param [Boolean] restrict_api_response_fields The new restrict_api_response_fields
+    #   @return [Boolean] Whether the REST API restricts embedded associated records to their id and printable_* method values.
+    attr_accessor :restrict_api_response_fields
+
     # Initialize configuration for ActivityNotification.
     # These configuration can be overridden in initializer.
     # @return [Config] A new instance of Config
@@ -272,6 +281,7 @@ module ActivityNotification
       @notification_channel_prefix              = 'activity_notification_channel'
       @notification_api_channel_prefix          = 'activity_notification_api_channel'
       @rescue_optional_target_errors            = true
+      @restrict_api_response_fields             = false
     end
 
     # Sets ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)

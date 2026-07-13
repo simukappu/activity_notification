@@ -171,7 +171,11 @@ module ActivityNotification
       # Returns include option for subscription JSON
       # @api protected
       def subscription_json_include_option
-        [:target].freeze
+        if ActivityNotification.config.restrict_api_response_fields
+          { target: { only: [:id], methods: [:printable_type, :printable_target_name] } }.freeze
+        else
+          [:target].freeze
+        end
       end
 
       # Returns methods option for subscription JSON

@@ -359,6 +359,32 @@ shared_examples_for :subscriptions_api_controller do
       end
     end
 
+    context "with config.restrict_api_response_fields enabled" do
+      around do |example|
+        original = ActivityNotification.config.restrict_api_response_fields
+        ActivityNotification.config.restrict_api_response_fields = true
+        example.run
+        ActivityNotification.config.restrict_api_response_fields = original
+      end
+
+      before do
+        @subscription = create(:subscription, target: test_target, key: 'test_subscription_key')
+        get_with_compatibility :show, target_params.merge({ id: @subscription, typed_target_param => test_target }), valid_session
+      end
+
+      it "returns 200 as http status code" do
+        expect(response.status).to eq(200)
+      end
+
+      it "excludes raw association columns from the embedded target and keeps printable methods" do
+        target_json = response_json["target"]
+        expect(target_json).to include("printable_target_name")
+        expect(target_json).not_to include("email")
+        expect(target_json).not_to include("provider")
+        expect(target_json).not_to include("uid")
+      end
+    end
+
     context "with wrong id and (typed_target)_id parameters" do
       before do
         @subscription = create(:subscription, target: create(:user))

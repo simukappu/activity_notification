@@ -709,6 +709,22 @@ When you want to use REST API backend integrated with Devise authentication, see
 
 You can see [sample single page application](/spec/rails_app/app/javascript/) using [Vue.js](https://vuejs.org) as a part of example Rails application. This sample application works with *activity_notification* REST API backend.
 
+#### Securing REST API responses
+
+The REST API endpoints do not authenticate requests on their own. Authenticating requests and authorizing access to a target's notifications and subscriptions is the responsibility of your application. The recommended way is to use the *:with_devise* option so that only the authenticated resource can access its own records. See [REST API backend with Devise Token Auth](#rest-api-backend-with-devise-token-auth) for the setup. The controllers shipped for *:with_devise* return HTTP 403 for a target that does not belong to the authenticated resource.
+
+By default, notification and subscription responses embed the associated records (target, notifiable, notifier, group, group members and subscription target) with all of their database columns. When those associated records are your user model, the response can include columns you may not want to expose to the frontend, such as authentication identifiers. Two options are available to reduce this exposure.
+
+The simplest option is to enable *config.restrict_api_response_fields*, which restricts every embedded associated record to its *id* and *printable_\** method values instead of all columns. It is disabled by default to preserve the existing response shape:
+
+```ruby
+ActivityNotification.configure do |config|
+  config.restrict_api_response_fields = true
+end
+```
+
+If you need finer control over the response shape, override the serialization options in your own API controllers instead. *ActivityNotification::NotificationsApiController#notification_json_options* and *ActivityNotification::SubscriptionsApiController#subscription_json_include_option* are protected methods that you can override to return only the fields your frontend consumes.
+
 #### API reference as OpenAPI Specification
 
 *activity_notification* provides API reference as [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification).
