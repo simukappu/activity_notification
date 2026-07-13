@@ -31,7 +31,7 @@ module ActivityNotification
             filtered_subscriptions = filtered_subscriptions.filtered_by_key(options[:filtered_by_key])
           end
           if options.has_key?(:custom_filter)
-            filtered_subscriptions = filtered_subscriptions.where(options[:custom_filter])
+            filtered_subscriptions = filtered_subscriptions.where(ActivityNotification.validate_custom_filter(options[:custom_filter]))
           end
           filtered_subscriptions
         }

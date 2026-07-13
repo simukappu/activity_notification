@@ -47,6 +47,24 @@ module ActivityNotification
     end
   end
 
+  # Validates a :custom_filter value before it is passed to the ORM query layer.
+  # A String is rejected because ActiveRecord's where treats a String as a raw
+  # SQL fragment, which allows SQL injection when the value originates from
+  # untrusted input. The documented and supported forms are an Array of a SQL
+  # fragment with bind parameters (e.g. ["created_at >= ?", time]) or a Hash of
+  # conditions, both of which are safe.
+  # @param [Array, Hash] custom_filter Custom filter value
+  # @return [Array, Hash] The same value when it is safe to use
+  # @raise [ArgumentError] When custom_filter is a raw SQL String
+  def self.validate_custom_filter(custom_filter)
+    if custom_filter.is_a?(String)
+      raise ArgumentError,
+        ":custom_filter must be an array of a SQL fragment and bind parameters " \
+        "(e.g. [\"created_at >= ?\", time]) or a hash of conditions, not a raw SQL string"
+    end
+    custom_filter
+  end
+
   # Casts to indifferent hash
   # @param [ActionController::Parameters, Hash] hash
   # @return [HashWithIndifferentAccess] Converted indifferent hash

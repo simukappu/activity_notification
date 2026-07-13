@@ -377,6 +377,22 @@ shared_examples_for :notifications_controller do
           expect(@notification_2.reload.opened?).to be_falsey
         end
       end
+
+      context 'with custom_filter request parameter (SQL injection attempt)' do
+        it "ignores the custom_filter parameter instead of using it as a raw SQL fragment" do
+          # An always-false predicate would open zero notifications if it were honored.
+          # Since custom_filter must never come from request parameters, it is dropped
+          # and all notifications of the target are opened as if no filter was given.
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, custom_filter: '1=2' }), valid_session
+          expect(@notification_1.reload.opened?).to be_truthy
+          expect(@notification_2.reload.opened?).to be_truthy
+        end
+
+        it "does not raise a server error for a malformed SQL fragment" do
+          post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, custom_filter: '1=1)' }), valid_session
+          expect(response.status).not_to eq(500)
+        end
+      end
     end
   end
 

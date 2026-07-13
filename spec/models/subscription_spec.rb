@@ -106,6 +106,12 @@ describe ActivityNotification::Subscription, type: :model do
             expect(subscriptions.size).to eq(1)
             expect(subscriptions.first).to eq(@subscription_1)
           end
+
+          it "raises ArgumentError for a raw SQL string custom_filter to prevent SQL injection" do
+            expect {
+              ActivityNotification::Subscription.filtered_by_options({ custom_filter: "1=1" }).to_a
+            }.to raise_error(ArgumentError)
+          end
         end
   
         context 'with no options' do

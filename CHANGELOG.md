@@ -1,3 +1,12 @@
+## Unreleased
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.6.1...main)
+
+Security Fixes:
+
+* Fix SQL injection via `custom_filter` in bulk notification endpoints (`open_all` / `destroy_all`) - GHSA-h5xx-m7vj-5vg2
+  * `NotificationsController#open_all` and `#destroy_all` no longer forward raw request parameters to the model layer. Only a permitted set of filter keys is passed, so `custom_filter` can no longer be supplied through HTTP requests.
+  * `filtered_by_options` now rejects a raw SQL string `custom_filter` with an `ArgumentError`. The documented array form (`["created_at >= ?", time]`) and hash form remain supported.
+
 ## 2.6.1 / 2026-04-11
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.6.0...v2.6.1)
 
