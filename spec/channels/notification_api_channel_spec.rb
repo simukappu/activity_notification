@@ -44,6 +44,12 @@ describe ActivityNotification::NotificationApiChannel, type: :channel do
       expect(subscription).to have_stream_from("activity_notification_api_channel_User##{test_target.id}")
     end
 
+    it "rejects subscription when streaming fails" do
+      allow(ActivityNotification.config).to receive(:notification_api_channel_prefix).and_raise(StandardError)
+      subscribe({ target_type: target_type, target_id: test_target.id })
+      expect(subscription).to be_rejected
+    end
+
     it_behaves_like :notification_api_channel
   end
 end

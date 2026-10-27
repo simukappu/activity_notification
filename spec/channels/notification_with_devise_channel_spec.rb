@@ -60,6 +60,14 @@ describe ActivityNotification::Test::NotificationWithDeviseChannel, type: :chann
       sign_in unauthenticated_user
     end
 
+    it "does not start streaming before rejecting subscription" do
+      # The stream name is built only when #subscribed calls stream_from
+      allow(ActivityNotification.config).to receive(:notification_channel_prefix).and_call_original
+      subscribe(target_params.merge({ typed_target_param => test_target }))
+      expect(subscription).to be_rejected
+      expect(ActivityNotification.config).not_to have_received(:notification_channel_prefix)
+    end
+
     it "rejects subscription" do
       subscribe(target_params.merge({ typed_target_param => test_target }))
       expect(subscription).to be_rejected

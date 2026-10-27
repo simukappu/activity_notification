@@ -7,6 +7,8 @@ if defined?(ActionCable)
     # ActionCable::Channel::Base#subscribed
     # @see https://api.rubyonrails.org/classes/ActionCable/Channel/Base.html#method-i-subscribed
     def subscribed
+      # before_subscribe callbacks do not halt the chain on reject
+      return if subscription_rejected?
       stream_from "#{ActivityNotification.config.notification_channel_prefix}_#{@target.to_class_name}#{ActivityNotification.config.composite_key_delimiter}#{@target.id}"
     rescue
       reject
