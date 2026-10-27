@@ -39,6 +39,7 @@ export default {
       required: true
     }
   },
+  emits: ['getUnopenedNotificationCount'],
   data () {
     return {
       notification: this.targetNotification,

@@ -113,6 +113,7 @@ export default {
       required: true
     }
   },
+  emits: ['getSubscriptions'],
   data () {
     return {
       subscription: this.targetSubscription,

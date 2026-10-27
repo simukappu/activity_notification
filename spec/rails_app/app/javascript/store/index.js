@@ -1,10 +1,7 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import createPersistedState from "vuex-persistedstate"
+import { createStore } from 'vuex'
+import createPersistedState from '../plugins/persisted-state'
 
-Vue.use(Vuex)
-
-export default new Vuex.Store({
+export default createStore({
   state: {
     signedInStatus: false,
     currentUser: null,
@@ -33,5 +30,5 @@ export default new Vuex.Store({
       return state.authHeaders;
     }
   },
-  plugins: [createPersistedState({storage: window.sessionStorage})]
+  plugins: [createPersistedState({ storage: window.sessionStorage })]
 });

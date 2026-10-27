@@ -7,7 +7,7 @@
       <p v-if="notification.key == 'article.update'" class="list_text">
         <strong>{{ notification.notifier.name }}</strong> updated his or her article "{{ notification.notifiable.title }}".
         <br>
-        <span class="created_at">{{ new Date(notification.created_at) | moment('timezone', 'UTC', "MMM DD HH:mm") }}</span>
+        <span class="created_at">{{ formatUtcDate(notification.created_at) }}</span>
       </p>
       <!-- Default view -->
       <p v-else class="list_text">
@@ -15,35 +15,37 @@
         <strong v-else>Someone</strong>
         <span v-if="notification.group_member_notifier_count > 0">
           and {{ notification.group_member_notifier_count }} other
-          <span v-if="notification.notifier">{{ notification.notifier.printable_type.toLowerCase() | pluralize(notification.group_member_notifier_count) }}</span>
+          <span v-if="notification.notifier">{{ pluralize(notification.notifier.printable_type.toLowerCase(), notification.group_member_notifier_count) }}</span>
           <span v-else>people</span>
         </span>
         notified you of
-        <span v-if="notification.notifiable" key="notification-group">
+        <span v-if="notification.notifiable">
           <span v-if="notification.group_members.length">
-            {{ notification.group_notification_count }} {{notification.notifiable_type.toLowerCase() | pluralize(notification.group_notification_count) }} including
+            {{ notification.group_notification_count }} {{ pluralize(notification.notifiable_type.toLowerCase(), notification.group_notification_count) }} including
           </span>
           {{ notification.printable_notifiable_name }}
           <span v-if="notification.group"> in {{ notification.group.printable_group_name }}</span>
         </span>
-        <span v-else key="notification-group">
-          <span v-if="notification.group_members.length" key="group-members">
-            {{ notification.group_notification_count }} {{notification.notifiable_type.toLowerCase() | pluralize(notification.group_notification_count) }}
+        <span v-else>
+          <span v-if="notification.group_members.length">
+            {{ notification.group_notification_count }} {{ pluralize(notification.notifiable_type.toLowerCase(), notification.group_notification_count) }}
           </span>
-          <span v-else key="group-members">
-            a {{ notification.notifiable_typetoLowerCase() | pluralize(0) }}
+          <span v-else>
+            a {{ pluralize(notification.notifiable_type.toLowerCase(), 0) }}
           </span>
           <span v-if="notification.group"> in {{ notification.group.printable_group_name }}</span>
           but the notifiable is not found. It may have been deleted.
         </span>
         <br>
-        <span class="created_at">{{ new Date(notification.created_at) | moment('timezone', 'UTC', "MMM DD hh:mm") }}</span>
+        <span class="created_at">{{ formatUtcDate(notification.created_at, { hour12: true }) }}</span>
       </p>
     </div>
   </div>
 </template>
 
 <script>
+import { formatUtcDate, pluralize } from '../../plugins/formatters'
+
 export default {
   name: 'NotificationContent',
   props: {
@@ -51,6 +53,10 @@ export default {
       type: Object,
       required: true
     }
+  },
+  methods: {
+    formatUtcDate,
+    pluralize
   }
 }
 </script>

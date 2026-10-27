@@ -66,6 +66,7 @@ export default {
       required: true
     }
   },
+  emits: ['getSubscriptions'],
   data () {
     return {
       baseURL: axios.defaults.baseURL + this.targetApiPath,

@@ -1047,7 +1047,7 @@ You can simply create subscriptions for the specified target in your view like t
 or create subscriptions in your single page application with API channels like this:
 
 ```js
-// Vue.js implementation with actioncable-vue
+// Vue.js implementation with a small Action Cable plugin (see spec/rails_app/app/javascript/plugins/action-cable.js)
 export default {
   // ...
   mounted () {

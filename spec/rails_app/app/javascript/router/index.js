@@ -1,12 +1,9 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import store from '../store'
 import DeviseTokenAuth from '../components/DeviseTokenAuth.vue'
 import Top from '../components/Top.vue'
 import NotificationsIndex from '../components/notifications/Index.vue'
 import SubscriptionsIndex from '../components/subscriptions/Index.vue'
-
-Vue.use(VueRouter)
 
 const routes = [
   // Routes for common components
@@ -58,7 +55,8 @@ const routes = [
   }
 ]
 
-const router = new VueRouter({
+const router = createRouter({
+  history: createWebHashHistory(),
   routes
 })
 

@@ -26,8 +26,8 @@
         <div class="list_description_wrapper">
           <p class="list_description">
             <span>{{ user.name }}</span> · {{ user.email }}<br>
-            <router-link v-bind:to="{ name : 'UnauthenticatedTargetNotificationsIndex', params : { target_type: 'users', target_id: user.id, target: user }}">Notifications</router-link> /
-            <router-link v-bind:to="{ name : 'UnauthenticatedTargetSubscriptionsIndex', params : { target_type: 'users', target_id: user.id, target: user }}">Subscriptions</router-link>
+            <router-link v-bind:to="{ name : 'UnauthenticatedTargetNotificationsIndex', params : { target_type: 'users', target_id: user.id }}">Notifications</router-link> /
+            <router-link v-bind:to="{ name : 'UnauthenticatedTargetSubscriptionsIndex', params : { target_type: 'users', target_id: user.id }}">Subscriptions</router-link>
           </p>
         </div>
       </div>
@@ -59,8 +59,8 @@
         <div class="list_description_wrapper">
           <p class="list_description">
             <span>{{ admin.user.name }}</span> · {{ admin.user.email }}<br>
-            <router-link v-bind:to="{ name : 'UnauthenticatedTargetNotificationsIndex', params : { target_type: 'admins', target_id: admin.id, target: admin }}">Notifications</router-link> /
-            <router-link v-bind:to="{ name : 'UnauthenticatedTargetSubscriptionsIndex', params : { target_type: 'admins', target_id: admin.id, target: admin }}">Subscriptions</router-link>
+            <router-link v-bind:to="{ name : 'UnauthenticatedTargetNotificationsIndex', params : { target_type: 'admins', target_id: admin.id }}">Notifications</router-link> /
+            <router-link v-bind:to="{ name : 'UnauthenticatedTargetSubscriptionsIndex', params : { target_type: 'admins', target_id: admin.id }}">Subscriptions</router-link>
           </p>
         </div>
       </div>

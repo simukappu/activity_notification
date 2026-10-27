@@ -63,7 +63,7 @@ export default {
         .catch (error => {
           console.log("Authentication failed");
           if (error.response.status == 401) {
-            this.$router.go({path: this.$router.currentRoute.path});
+            this.$router.go(0);
           }
         })
     },

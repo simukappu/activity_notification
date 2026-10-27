@@ -73,9 +73,9 @@ export default {
     },
     targetApiPath: {
       type: String,
-      default: function () { 
-        if (this.target_type && this.target_id) {
-          return '/' + this.target_type + '/' + this.target_id;
+      default: function (props) {
+        if (props.target_type && props.target_id) {
+          return '/' + props.target_type + '/' + props.target_id;
         } else {
           return '';
         }

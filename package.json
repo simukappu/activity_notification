@@ -3,6 +3,6 @@
      "yarn": "1.x"
   },
   "scripts": {
-    "postinstall": "cd ./spec/rails_app && yarn && yarn install --check-files"
+    "postinstall": "cd ./spec/rails_app && yarn install"
   }
 }

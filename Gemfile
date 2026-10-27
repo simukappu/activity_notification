@@ -27,6 +27,6 @@ group :test do
 end
 
 gem 'ostruct'
-gem 'webpacker', groups: [:production, :development]
+gem 'vite_rails', groups: [:production, :development]
 gem 'rack-cors', groups: [:production, :development]
 gem 'dotenv-rails', groups: [:development, :test]
