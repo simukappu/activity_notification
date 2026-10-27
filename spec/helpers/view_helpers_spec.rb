@@ -78,6 +78,15 @@ describe ActivityNotification::ViewHelpers, type: :helper do
       end
     end
 
+    context "with text as fallback for notification collection" do
+      it "escapes interpolated parameters" do
+        notification.parameters = { "article_title" => "<script>alert(1)</script>" }
+        notification.key = 'article.destroy'
+        expect(render_notification [notification], fallback: :text)
+          .to eq('The author removed an article &quot;&lt;script&gt;alert(1)&lt;/script&gt;&quot;')
+      end
+    end
+
     context "with i18n param set" do
       it "uses i18n text from key" do
         notification.key = simple_text_key

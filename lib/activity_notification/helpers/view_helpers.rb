@@ -21,7 +21,7 @@ module ActivityNotification
         notifications.render self, options
       elsif notifications.respond_to?(:map)
         return nil if (notifications.respond_to?(:empty?) ? notifications.empty? : notifications.to_a.empty?)
-        notifications.map {|notification| notification.render self, options.dup }.join.html_safe
+        safe_join(notifications.map {|notification| notification.render self, options.dup })
       end
     end
     alias_method :render_notifications, :render_notification

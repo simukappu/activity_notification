@@ -1,3 +1,10 @@
+## 2.7.1 / Unreleased
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.7.0...v2.7.1)
+
+Security Fixes:
+
+* Fix XSS in `render_notification` for notification collections with `fallback: :text` or `i18n: true`. Interpolated notification parameters are now HTML-escaped, as they already were when rendering a single notification
+
 ## 2.7.0 / 2026-07-14
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.6.1...v2.7.0)
 
