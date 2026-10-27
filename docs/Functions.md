@@ -336,6 +336,8 @@ You can also add conditions to filter notifications, like this:
 User.send_batch_unopened_notification_email(batch_key: 'batch.comment.post', filtered_by_key: 'comment.post', custom_filter: ["created_at >= ?", time.hour.ago])
 ```
 
+*custom_filter* accepts an array of a SQL fragment with bind parameters or a hash of conditions. Write it in your application code and never build it from request parameters, since it is passed to the ORM query layer as is. A raw SQL string, an array without bind parameters and MongoDB JavaScript operators (`$where`, `$function` and `$accumulator`) are rejected with `ArgumentError`.
+
 #### Batch sender configuration
 
 *activity_notification* uses same sender configuration of real-time email notification as batch email sender.
@@ -1007,7 +1009,7 @@ Then, *activity_notification* will broadcast configured notifications to target 
 You can simply create subscriptions for the specified target in your view like this:
 
 ```js
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.9/push.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/push.js/1.0.9/push.min.js" integrity="sha512-eiqtDDb4GUVCSqOSOTz/s/eiU4B31GrdSb17aPAA4Lv/Cjc8o+hnDvuNkgXhSI5yHuDvYkuojMaQmrB5JB31XQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
   App.activity_notification = App.cable.subscriptions.create(
     {

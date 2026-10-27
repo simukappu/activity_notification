@@ -7,6 +7,7 @@ Security Fixes:
 * Do not start streaming in Action Cable channels when the subscription is rejected. Before this fix, a rejected subscription briefly streamed from the requested target's channel before it was stopped
 * Reject more unsafe `custom_filter` forms with an `ArgumentError`: an array without bind parameters (e.g. `["1=1"]`), a hash with MongoDB JavaScript operators (`$where`, `$function`, `$accumulator`), and values other than an array or a hash such as `ActionController::Parameters`. `custom_filter` must be written by the application, not built from request parameters
 * Enforce CSRF protection on `open_all` of the notifications API and `create` of the subscriptions API, which skipped the authenticity token check unlike the other API actions
+* Add a Subresource Integrity hash to the push.js script tag in the default notification index view
 
 ## 2.7.0 / 2026-07-14
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.6.1...v2.7.0)
