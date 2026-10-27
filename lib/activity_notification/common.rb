@@ -47,23 +47,50 @@ module ActivityNotification
     end
   end
 
+  # MongoDB query operators which execute JavaScript on the database server.
+  JAVASCRIPT_QUERY_OPERATORS = %w[$where $function $accumulator].freeze
+
   # Validates a :custom_filter value before it is passed to the ORM query layer.
-  # A String is rejected because ActiveRecord's where treats a String as a raw
-  # SQL fragment, which allows SQL injection when the value originates from
-  # untrusted input. The documented and supported forms are an Array of a SQL
-  # fragment with bind parameters (e.g. ["created_at >= ?", time]) or a Hash of
-  # conditions, both of which are safe.
+  # custom_filter is a trusted input written by the application developer and
+  # must not be built from request parameters. This validation rejects the forms
+  # that run raw SQL or server-side JavaScript:
+  # - A String, since ActiveRecord's where treats it as a raw SQL fragment
+  # - An Array without bind parameters (e.g. ["1=1"]), which is also a raw SQL fragment
+  # - A Hash containing MongoDB JavaScript operators ($where, $function and $accumulator)
+  # The supported forms are an Array of a SQL fragment with bind parameters
+  # (e.g. ["created_at >= ?", time]) or a Hash of conditions.
   # @param [Array, Hash] custom_filter Custom filter value
   # @return [Array, Hash] The same value when it is safe to use
-  # @raise [ArgumentError] When custom_filter is a raw SQL String
+  # @raise [ArgumentError] When custom_filter is not in the supported forms
   def self.validate_custom_filter(custom_filter)
-    if custom_filter.is_a?(String)
+    valid =
+      case custom_filter
+      when Array then custom_filter.size >= 2 && custom_filter.first.is_a?(String)
+      when Hash  then !contains_javascript_query_operator?(custom_filter)
+      else false
+      end
+    unless valid
       raise ArgumentError,
         ":custom_filter must be an array of a SQL fragment and bind parameters " \
-        "(e.g. [\"created_at >= ?\", time]) or a hash of conditions, not a raw SQL string"
+        "(e.g. [\"created_at >= ?\", time]) or a hash of conditions without JavaScript operators"
     end
     custom_filter
   end
+
+  # Returns whether the value contains MongoDB query operators which execute JavaScript.
+  # @param [Object] value Value to check
+  # @return [Boolean] Whether the value contains JavaScript query operators
+  def self.contains_javascript_query_operator?(value)
+    case value
+    when Hash
+      value.any? { |k, v| JAVASCRIPT_QUERY_OPERATORS.include?(k.to_s) || contains_javascript_query_operator?(v) }
+    when Array
+      value.any? { |v| contains_javascript_query_operator?(v) }
+    else
+      false
+    end
+  end
+  private_class_method :contains_javascript_query_operator?
 
   # Casts to indifferent hash
   # @param [ActionController::Parameters, Hash] hash

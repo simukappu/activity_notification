@@ -112,6 +112,33 @@ describe ActivityNotification::Subscription, type: :model do
               ActivityNotification::Subscription.filtered_by_options({ custom_filter: "1=1" }).to_a
             }.to raise_error(ArgumentError)
           end
+
+          it "raises ArgumentError for a raw SQL array custom_filter without bind parameters" do
+            expect {
+              ActivityNotification::Subscription.filtered_by_options({ custom_filter: ["1=1"] }).to_a
+            }.to raise_error(ArgumentError)
+          end
+
+          it "raises ArgumentError for an array custom_filter without a SQL fragment" do
+            expect {
+              ActivityNotification::Subscription.filtered_by_options({ custom_filter: [1, 2] }).to_a
+            }.to raise_error(ArgumentError)
+          end
+
+          it "raises ArgumentError for a custom_filter with MongoDB JavaScript operators" do
+            expect {
+              ActivityNotification::Subscription.filtered_by_options({ custom_filter: { "$or" => [{ "$where" => "sleep(1000)" }] } }).to_a
+            }.to raise_error(ArgumentError)
+            expect {
+              ActivityNotification::Subscription.filtered_by_options({ custom_filter: { key: { "$function" => {} } } }).to_a
+            }.to raise_error(ArgumentError)
+          end
+
+          it "raises ArgumentError for a custom_filter of request parameters" do
+            expect {
+              ActivityNotification::Subscription.filtered_by_options({ custom_filter: ActionController::Parameters.new(key: "key") }).to_a
+            }.to raise_error(ArgumentError)
+          end
         end
   
         context 'with no options' do

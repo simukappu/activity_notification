@@ -5,6 +5,7 @@ Security Fixes:
 
 * Fix XSS in `render_notification` for notification collections with `fallback: :text` or `i18n: true`. Interpolated notification parameters are now HTML-escaped, as they already were when rendering a single notification
 * Do not start streaming in Action Cable channels when the subscription is rejected. Before this fix, a rejected subscription briefly streamed from the requested target's channel before it was stopped
+* Reject more unsafe `custom_filter` forms with an `ArgumentError`: an array without bind parameters (e.g. `["1=1"]`), a hash with MongoDB JavaScript operators (`$where`, `$function`, `$accumulator`), and values other than an array or a hash such as `ActionController::Parameters`. `custom_filter` must be written by the application, not built from request parameters
 
 ## 2.7.0 / 2026-07-14
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.6.1...v2.7.0)
