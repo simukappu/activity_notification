@@ -23,8 +23,8 @@ This project is maintained on a best-effort basis, and security fixes are applie
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.6.x   | Yes                |
-| < 2.6   | No                 |
+| 2.7.x   | Yes                |
+| < 2.7   | No                 |
 
 If you rely on an older version, we recommend upgrading to the latest release before reporting, since the fix will be delivered there.
 
