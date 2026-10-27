@@ -197,6 +197,11 @@ shared_examples_for :notifications_api_controller do
   end
 
   describe "POST #open_all" do
+    it "verifies authenticity token" do
+      expect_any_instance_of(described_class).to receive(:verify_authenticity_token)
+      post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target }), valid_session
+    end
+
     context "http POST request" do
       before do
         @notification = create(:notification, target: test_target)

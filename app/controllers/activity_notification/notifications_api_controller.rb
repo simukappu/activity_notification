@@ -5,7 +5,6 @@ module ActivityNotification
     include Swagger::NotificationsApi
     # Include CommonApiController to select target and define common methods
     include CommonApiController
-    protect_from_forgery except: [:open_all]
     rescue_from ActivityNotification::NotifiableNotFoundError, with: :render_notifiable_not_found
 
     # Returns notification index of the target.

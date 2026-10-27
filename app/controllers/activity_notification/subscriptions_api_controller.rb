@@ -5,7 +5,6 @@ module ActivityNotification
     include Swagger::SubscriptionsApi
     # Include CommonApiController to select target and define common methods
     include CommonApiController
-    protect_from_forgery except: [:create]
     before_action :set_subscription, except: [:index, :create, :find, :optional_target_names]
     before_action ->{ validate_param(:key) }, only: [:find, :optional_target_names]
 
