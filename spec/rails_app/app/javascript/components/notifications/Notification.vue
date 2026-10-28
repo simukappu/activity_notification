@@ -7,13 +7,13 @@
           <p class="unopened_description">Open</p>
         </div>
       </a>
-      <a href="#" v-on:click="move(notification, '?open=true')" data-remote="true">
+      <a href="#" v-on:click="openAndMove(notification)" data-remote="true">
         <notification-content :notification="notification" />
       </a>
       <div class="unopened_wrapper"></div>
     </div>
     <div v-else>
-      <a href="#" v-on:click="move(notification, '')" data-remote="true">
+      <a href="#" v-on:click="move(notification)" data-remote="true">
         <notification-content :notification="notification" />
       </a>
     </div>
@@ -62,9 +62,24 @@ export default {
           }
         })
     },
-    move (notification, paramsString) {
+    // Opens the notification by PUT request since GET requests to move action cannot open it without an open token
+    openAndMove (notification) {
       axios
-        .get(this.targetApiPath + '/notifications/' + notification.id + '/move' + paramsString)
+        .put(this.targetApiPath + '/notifications/' + notification.id + '/open')
+        .then(response => {
+          if (response.status == 200) {
+            window.location.href = response.data.notification.notifiable_path;
+          }
+        })
+        .catch (error => {
+          if (error.response.status == 401) {
+            this.$router.push('/logout');
+          }
+        })
+    },
+    move (notification) {
+      axios
+        .get(this.targetApiPath + '/notifications/' + notification.id + '/move')
         .then(response => {
           if (response.status == 200) {
             window.location.href = response.request.responseURL;

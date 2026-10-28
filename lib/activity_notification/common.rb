@@ -92,6 +92,12 @@ module ActivityNotification
   end
   private_class_method :contains_javascript_query_operator?
 
+  # Returns message verifier to generate and verify tokens to open notifications by move action.
+  # @return [ActiveSupport::MessageVerifier] Message verifier for open tokens
+  def self.open_token_verifier
+    Rails.application.message_verifier("activity_notification_open_token")
+  end
+
   # Casts to indifferent hash
   # @param [ActionController::Parameters, Hash] hash
   # @return [HashWithIndifferentAccess] Converted indifferent hash

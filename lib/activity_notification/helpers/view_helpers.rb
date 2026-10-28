@@ -111,7 +111,7 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def move_notification_path_for(notification, params = {})
-      options = params.dup
+      options = move_notification_options(notification, params)
       options.delete(:devise_default_routes) ?
         send("move_#{routing_scope(options)}notification_path", notification, options) :
         send("move_#{routing_scope(options)}#{notification.target.to_resource_name}_notification_path", notification.target, notification, options)
@@ -195,7 +195,7 @@ module ActivityNotification
     # @todo Needs any other better implementation
     # @todo Must handle devise namespace
     def move_notification_url_for(notification, params = {})
-      options = params.dup
+      options = move_notification_options(notification, params)
       options.delete(:devise_default_routes) ?
         send("move_#{routing_scope(options)}notification_url", notification, options) :
         send("move_#{routing_scope(options)}#{notification.target.to_resource_name}_notification_url", notification.target, notification, options)
@@ -551,6 +551,14 @@ module ActivityNotification
       # @api private
       def select_path(path, root)
         [root, path].map(&:to_s).join('/')
+      end
+
+      # Prepare options for move_notification path with token to open the notification
+      # @api private
+      def move_notification_options(notification, params)
+        options = params.dup
+        options[:open_token] = notification.open_token if options[:open].to_s.to_boolean(false)
+        options
       end
 
       # Prepare routing scope from options

@@ -707,6 +707,23 @@ module ActivityNotification
       unopened_member_count + 1
     end
 
+    # Returns a token to open the notification by HTTP GET request to move action.
+    # GET requests are not protected from CSRF, so move action opens the notification only with this token.
+    # move_notification_path_for and move_notification_url_for helpers add this token when open: true is specified.
+    #
+    # @return [String] Token to open the notification by move action
+    def open_token
+      ActivityNotification.open_token_verifier.generate(id.to_s, purpose: :open_notification)
+    end
+
+    # Returns if the token is valid to open the notification by move action.
+    #
+    # @param [String] token Token to verify
+    # @return [Boolean] If the token is valid to open the notification
+    def valid_open_token?(token)
+      token.is_a?(String) && ActivityNotification.open_token_verifier.verified(token, purpose: :open_notification) == id.to_s
+    end
+
     # Returns if the notification is unopened.
     #
     # @return [Boolean] If the notification is unopened

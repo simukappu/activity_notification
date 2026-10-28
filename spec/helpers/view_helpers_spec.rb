@@ -298,6 +298,12 @@ describe ActivityNotification::ViewHelpers, type: :helper do
   end
 
   describe '#move_notification_path_for' do
+    it "adds open token with open parameter" do
+      expect(move_notification_path_for(notification, open: true))
+        .to include("open_token=#{CGI.escape(notification.open_token)}")
+      expect(move_notification_path_for(notification)).not_to include("open_token")
+    end
+
     it "returns path for the notification target" do
       expect(move_notification_path_for(notification))
         .to eq(move_user_notification_path(target_user, notification))
@@ -370,6 +376,12 @@ describe ActivityNotification::ViewHelpers, type: :helper do
   end
 
   describe '#move_notification_url_for' do
+    it "adds open token with open parameter" do
+      expect(move_notification_url_for(notification, open: true))
+        .to include("open_token=#{CGI.escape(notification.open_token)}")
+      expect(move_notification_url_for(notification)).not_to include("open_token")
+    end
+
     it "returns url for the notification target" do
       expect(move_notification_url_for(notification))
         .to eq(move_user_notification_url(target_user, notification))

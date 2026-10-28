@@ -125,6 +125,7 @@ module ActivityNotification
     # @overload open(params)
     #   @param [Hash] params Request parameters
     #   @option params [String] :open                   ('false') Whether the notification will be opened
+    #   @option params [String] :open_token             (nil)     Token to open the notification, which is required with open parameter since GET requests are not protected from CSRF (See Notification#open_token)
     #   @option params [String] :filter                 (nil)     Filter option to load notification index by their status (Nothing as auto, 'opened' or 'unopened')
     #   @option params [String] :limit                  (nil)     Maximum number of notifications to return
     #   @option params [String] :without_grouping       ('false') Whether notification index will include group members
@@ -133,7 +134,7 @@ module ActivityNotification
     #   @return [Response] JavaScript view for ajax request or redirects to back as default
     def move
       with_members = !(params[:with_group_members].to_s.to_boolean(false) || params[:without_grouping].to_s.to_boolean(false))
-      @opened_notifications_count = @notification.open!(with_members: with_members) if params[:open].to_s.to_boolean(false)
+      @opened_notifications_count = @notification.open!(with_members: with_members) if params[:open].to_s.to_boolean(false) && @notification.valid_open_token?(params[:open_token])
       redirect_to_notifiable_path
     end
   

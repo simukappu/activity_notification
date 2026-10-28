@@ -1,3 +1,10 @@
+## 2.7.2 / Unreleased
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.7.1...v2.7.2)
+
+Security Fixes:
+
+* Require an open token to open a notification with `open=true` in `move` action. GET requests are not protected from CSRF, so a cross-site link could mark notifications as opened. `move_notification_path_for` and `move_notification_url_for` add the token when `open: true` is specified, so links in notification emails and optional targets keep working. Links in emails sent before this version no longer open the notification. Use `PUT open` with `move=true` from API clients instead
+
 ## 2.7.1 / 2026-10-28
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.7.0...v2.7.1)
 

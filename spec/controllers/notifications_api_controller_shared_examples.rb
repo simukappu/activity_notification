@@ -546,11 +546,11 @@ shared_examples_for :notifications_api_controller do
     end
 
     context "with true as open parameter" do
-      context "http GET request" do
+      context "http GET request with open token" do
         before do
           @notification = create(:notification, target: test_target)
           expect(@notification.opened?).to be_falsey
-          get_with_compatibility :move, target_params.merge({ id: @notification, typed_target_param => test_target, open: true }), valid_session
+          get_with_compatibility :move, target_params.merge({ id: @notification, typed_target_param => test_target, open: true, open_token: @notification.open_token }), valid_session
         end
 
         it "returns 302 as http status code" do
@@ -563,6 +563,31 @@ shared_examples_for :notifications_api_controller do
 
         it "redirects to notifiable_path" do
           expect(response).to redirect_to @notification.notifiable_path
+        end
+      end
+
+      context "http GET request without open token" do
+        before do
+          @notification = create(:notification, target: test_target)
+          get_with_compatibility :move, target_params.merge({ id: @notification, typed_target_param => test_target, open: true }), valid_session
+        end
+
+        it "does not open the notification" do
+          expect(response.status).to eq(302)
+          expect(@notification.reload.opened?).to be_falsey
+        end
+      end
+
+      context "http GET request with open token of another notification" do
+        before do
+          @notification = create(:notification, target: test_target)
+          other_notification = create(:notification, target: test_target)
+          get_with_compatibility :move, target_params.merge({ id: @notification, typed_target_param => test_target, open: true, open_token: other_notification.open_token }), valid_session
+        end
+
+        it "does not open the notification" do
+          expect(response.status).to eq(302)
+          expect(@notification.reload.opened?).to be_falsey
         end
       end
     end
