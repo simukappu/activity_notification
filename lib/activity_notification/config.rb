@@ -249,6 +249,15 @@ module ActivityNotification
     #   @return [Boolean] Whether the REST API restricts embedded associated records to their id and printable_* method values.
     attr_accessor :restrict_api_response_fields
 
+    # @overload max_index_limit
+    #   Returns maximum number of records that notification and subscription index actions of the controllers return
+    #   @return [Integer, nil] Maximum number of records that index actions return.
+    # @overload max_index_limit=(value)
+    #   Sets maximum number of records that notification and subscription index actions of the controllers return. The limit request parameter is capped by this value, and this value is used when the limit parameter is not specified. Set nil to remove the cap.
+    #   @param [Integer, nil] max_index_limit The new max_index_limit
+    #   @return [Integer, nil] Maximum number of records that index actions return.
+    attr_accessor :max_index_limit
+
     # Initialize configuration for ActivityNotification.
     # These configuration can be overridden in initializer.
     # @return [Config] A new instance of Config
@@ -282,6 +291,7 @@ module ActivityNotification
       @notification_api_channel_prefix          = 'activity_notification_api_channel'
       @rescue_optional_target_errors            = true
       @restrict_api_response_fields             = false
+      @max_index_limit                          = 1000
     end
 
     # Sets ORM name for ActivityNotification (:active_record, :mongoid or :dynamodb)

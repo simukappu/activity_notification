@@ -129,4 +129,9 @@ ActivityNotification.configure do |config|
   # your application (see the :with_devise routing option). Default value is false.
   # config.restrict_api_response_fields = false
 
+  # Configure maximum number of records that notification and subscription index actions of the controllers return.
+  # The limit request parameter is capped by this value, and this value is used when the limit parameter is not specified.
+  # Set nil to remove the cap. Default value is 1000.
+  # config.max_index_limit = 1000
+
 end

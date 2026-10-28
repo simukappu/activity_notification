@@ -4,6 +4,8 @@
 Security Fixes:
 
 * Require an open token to open a notification with `open=true` in `move` action. GET requests are not protected from CSRF, so a cross-site link could mark notifications as opened. `move_notification_path_for` and `move_notification_url_for` add the token when `open: true` is specified, so links in notification emails and optional targets keep working. Links in emails sent before this version no longer open the notification. Use `PUT open` with `move=true` from API clients instead
+* Return 400 instead of 500 for invalid `later_than` and `earlier_than` parameters in notification `index`, `open_all` and `destroy_all` actions
+* Add `config.max_index_limit` (default 1000) to cap the `limit` parameter of notification and subscription index actions. It is also used when the `limit` parameter is not specified. Set `nil` to remove the cap
 
 ## 2.7.1 / 2026-10-28
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.7.0...v2.7.1)

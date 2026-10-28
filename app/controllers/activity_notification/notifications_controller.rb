@@ -4,6 +4,7 @@ module ActivityNotification
     # Include CommonController to select target and define common methods
     include CommonController
     before_action :set_notification, except: [:index, :open_all, :destroy_all]
+    before_action :validate_time_params, only: [:index, :open_all, :destroy_all]
 
     # Shows notification index of the target.
     #
@@ -172,13 +173,28 @@ module ActivityNotification
       # @api protected
       # @return [Hash] options to load notification index
       def set_index_options
-        limit              = params[:limit].to_i > 0 ? params[:limit].to_i : nil
+        limit              = index_limit
         reverse            = params[:reverse].present? ?
                                params[:reverse].to_s.to_boolean(false) : nil
         with_group_members = params[:with_group_members].present? || params[:without_grouping].present? ? params[:with_group_members].to_s.to_boolean(false) || params[:without_grouping].to_s.to_boolean(false) : nil
         @index_options     = params.permit(:filter, :filtered_by_type, :filtered_by_group_type, :filtered_by_group_id, :filtered_by_key, :later_than, :earlier_than, :routing_scope, :devise_default_routes)
                                    .to_h.symbolize_keys
                                    .merge(limit: limit, reverse: reverse, with_group_members: with_group_members)
+      end
+
+      # Validates ISO 8601 time parameters and returns HTTP 400 when they are invalid.
+      # @api protected
+      # @return [void]
+      def validate_time_params
+        [:later_than, :earlier_than].each do |param_name|
+          next unless params.key?(param_name)
+          begin
+            Time.iso8601(params[param_name].to_s)
+          rescue ArgumentError
+            render_invalid_parameter("Parameter is not ISO 8601 time: #{param_name}")
+            return
+          end
+        end
       end
 
       # Loads notification index with request parameters.

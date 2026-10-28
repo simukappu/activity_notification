@@ -121,6 +121,45 @@ shared_examples_for :notifications_controller do
           expect(assigns(:notifications).size).to eq(1)
         end
       end
+
+      context "with ActivityNotification.config.max_index_limit" do
+        before do
+          @max_index_limit = ActivityNotification.config.max_index_limit
+          ActivityNotification.config.max_index_limit = 1
+        end
+
+        after do
+          ActivityNotification.config.max_index_limit = @max_index_limit
+        end
+
+        it "caps limit parameter by max_index_limit" do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, limit: 2 }), valid_session
+          expect(assigns(:notifications).size).to eq(1)
+        end
+
+        it "uses max_index_limit without limit parameter" do
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target }), valid_session
+          expect(assigns(:notifications).size).to eq(1)
+        end
+
+        it "does not cap limit parameter when max_index_limit is nil" do
+          ActivityNotification.config.max_index_limit = nil
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target }), valid_session
+          expect(assigns(:notifications).size).to eq(2)
+        end
+      end
+    end
+
+    context "with invalid time parameter" do
+      it "returns 400 as http status code for invalid later_than parameter" do
+        get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, later_than: 'invalid' }), valid_session
+        expect(response.status).to eq(400)
+      end
+
+      it "returns 400 as http status code for invalid earlier_than parameter" do
+        post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, earlier_than: '' }), valid_session
+        expect(response.status).to eq(400)
+      end
     end
 
     context "with reload parameter" do

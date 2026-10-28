@@ -198,7 +198,7 @@ module ActivityNotification
       # @api protected
       # @return [Hash] options to load subscription index
       def set_index_options
-        limit          = params[:limit].to_i > 0 ? params[:limit].to_i : nil
+        limit          = index_limit
         reverse        = params[:reverse].present? ? params[:reverse].to_s.to_boolean(false) : nil
         @index_options = params.permit(:filter, :filtered_by_key, :routing_scope, :devise_default_routes)
                                .to_h.symbolize_keys.merge(limit: limit, reverse: reverse)

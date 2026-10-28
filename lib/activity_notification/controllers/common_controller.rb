@@ -103,6 +103,15 @@ module ActivityNotification
         render status: 400, json: error_response(code: 400, message: "Invalid parameter", type: message)
       end
 
+      # Returns limit for index actions from request parameter, capped by ActivityNotification.config.max_index_limit.
+      # @api protected
+      # @return [Integer, nil] Limit for index actions
+      def index_limit
+        limit     = params[:limit].to_i > 0 ? params[:limit].to_i : nil
+        max_limit = ActivityNotification.config.max_index_limit
+        max_limit ? [limit || max_limit, max_limit].min : limit
+      end
+
       # Validate param and return HTTP 400 unless it presents.
       # @api protected
       # @param [String, Symbol] param_name Parameter name to validate

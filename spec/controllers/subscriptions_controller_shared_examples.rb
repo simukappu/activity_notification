@@ -140,6 +140,22 @@ shared_examples_for :subscriptions_controller do
         end
       end
 
+      context "with ActivityNotification.config.max_index_limit" do
+        before do
+          @max_index_limit = ActivityNotification.config.max_index_limit
+          ActivityNotification.config.max_index_limit = 1
+          get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, limit: 2 }), valid_session
+        end
+
+        after do
+          ActivityNotification.config.max_index_limit = @max_index_limit
+        end
+
+        it "caps limit parameter by max_index_limit" do
+          expect(assigns(:subscriptions).size).to eq(1)
+        end
+      end
+
       context "with 1 as limit" do
         before do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, limit: 1 }), valid_session
