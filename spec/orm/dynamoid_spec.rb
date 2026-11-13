@@ -47,6 +47,23 @@ if ActivityNotification.config.orm == :dynamoid
     end
   end
 
+  describe ActivityNotification::DynamoidExtension do
+    context "delete_all" do
+      it "deletes all records" do
+        create(:notification)
+        ActivityNotification::Notification.delete_all
+        expect(ActivityNotification::Notification.count).to eq(0)
+      end
+
+      it "waits for the table deletion before re-creating the table" do
+        table_name = ActivityNotification::Notification.table_name
+        expect(Dynamoid.adapter).to receive(:delete_table).with(table_name, sync: true).ordered.and_call_original
+        expect(Dynamoid.adapter).to receive(:create_table).with(table_name, anything, hash_including(sync: true)).ordered.and_call_original
+        ActivityNotification::Notification.delete_all
+      end
+    end
+  end
+
   describe Dynamoid::Criteria::Chain do
     let(:chain) { ActivityNotification::Notification.scan_index_forward(true) }
 

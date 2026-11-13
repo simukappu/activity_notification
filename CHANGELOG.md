@@ -1,3 +1,10 @@
+## 2.7.4 / Unreleased
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.7.3...v2.7.4)
+
+Bug Fixes:
+
+* Wait for the table deletion in `delete_all` of Dynamoid models. DynamoDB deletes tables asynchronously, so recreating the table could fail and the next operation raised `ResourceInUseException`
+
 ## 2.7.3 / 2026-11-13
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.7.2...v2.7.3)
 

@@ -164,9 +164,11 @@ module ActivityNotification
     extend ActiveSupport::Concern
 
     class_methods do
-      # Defines delete_all method as calling delete_table and create_table methods
+      # Defines delete_all method as calling delete_table and create_table methods.
+      # Waits until the table is deleted since DynamoDB deletes tables asynchronously
+      # and rejects creating a table while the table with the same name is being deleted.
       def delete_all
-        delete_table
+        Dynamoid.adapter.delete_table(table_name, sync: true)
         create_table(sync: true)
       end
     end
