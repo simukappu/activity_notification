@@ -192,6 +192,16 @@ shared_examples_for :notification_api do
         validate_expected_notification(notifications[1], @user_1, @comment_2)
       end
 
+      it "processes targets with find_each when the targets collection supports it" do
+        # Target models are not ActiveRecord with AN_TEST_DB=mongodb, so use a collection responding to find_each
+        targets = double('batchable targets')
+        allow(targets).to receive(:find_each) { |**_options, &block| [@author_user, @user_1].each(&block) }
+        notifications = described_class.notify_all(targets, @comment_2, batch_size: 10)
+        expect(targets).to have_received(:find_each).with(batch_size: 10)
+        validate_expected_notification(notifications[0], @author_user, @comment_2)
+        validate_expected_notification(notifications[1], @user_1, @comment_2)
+      end
+
       it "creates notification records" do
         described_class.notify_all([@author_user, @user_1], @comment_2)
         expect(@author_user.notifications.unopened_only.count).to eq(1)
