@@ -13,6 +13,8 @@ SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new [
   Coveralls::SimpleCov::Formatter
 ]
 SimpleCov.start('rails') do
+  # Fail CI builds when line coverage of each job drops below 100%
+  minimum_coverage 100 if ENV['CI']
   add_filter '/spec/'
   add_filter '/lib/generators/templates/'
   add_filter '/lib/activity_notification/version'
