@@ -23,6 +23,10 @@ shared_examples_for :subscriptions_api_controller do
         assert_json_with_object_array(response_json["subscriptions"], [@subscription])
       end
 
+      it "embeds target in configured subscriptions as the subscription API does" do
+        expect(response_json["subscriptions"].first["target"]["id"].to_s).to eq(test_target.id.to_s)
+      end
+
       it "returns unconfigured notification keys as JSON" do
         expect(response_json["unconfigured_count"]).to eq(1)
         expect(response_json['unconfigured_notification_keys']).to eq([@notification.key])
@@ -175,6 +179,26 @@ shared_examples_for :subscriptions_api_controller do
           get_with_compatibility :index, target_params.merge({ typed_target_param => test_target, filtered_by_key: 'test_notification_key_2' }), valid_session
           expect(response_json['unconfigured_notification_keys']).to eq([@notification2.key])
         end
+      end
+    end
+
+    context "with config.restrict_api_response_fields enabled" do
+      around do |example|
+        original = ActivityNotification.config.restrict_api_response_fields
+        ActivityNotification.config.restrict_api_response_fields = true
+        example.run
+        ActivityNotification.config.restrict_api_response_fields = original
+      end
+
+      before do
+        create(:subscription, target: test_target, key: 'test_subscription_key')
+        get_with_compatibility :index, target_params.merge({ typed_target_param => test_target }), valid_session
+      end
+
+      it "excludes raw association columns from the embedded target in configured subscriptions" do
+        target_json = response_json["subscriptions"].first["target"]
+        expect(target_json).to include("printable_target_name")
+        expect(target_json).not_to include("email")
       end
     end
   end

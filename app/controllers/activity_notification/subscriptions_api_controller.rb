@@ -20,7 +20,7 @@ module ActivityNotification
     #   @return [JSON] configured_count: count of subscription index, subscriptions: subscription index, unconfigured_count: count of unconfigured notification keys, unconfigured_notification_keys: unconfigured notification keys
     def index
       super
-      json_response = { configured_count: @subscriptions.size, subscriptions: @subscriptions } if @subscriptions
+      json_response = { configured_count: @subscriptions.size, subscriptions: @subscriptions.as_json(include: subscription_json_include_option, methods: subscription_json_methods_option) } if @subscriptions
       json_response = (json_response || {}).merge(unconfigured_count: @notification_keys.size, unconfigured_notification_keys: @notification_keys) if @notification_keys
       render json: json_response
     end

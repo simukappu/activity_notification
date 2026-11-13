@@ -1,3 +1,10 @@
+## 2.7.3 / Unreleased
+[Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.7.2...v2.7.3)
+
+Bug Fixes:
+
+* Embed `target` in each subscription of the subscriptions API `index` response, as the `show` response and the API reference schema do. `config.restrict_api_response_fields` also applies to it
+
 ## 2.7.2 / 2026-10-28
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.7.1...v2.7.2)
 
