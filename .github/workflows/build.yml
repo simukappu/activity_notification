@@ -112,8 +112,66 @@ jobs:
           flag-name: ${{ matrix.gemfile }}-${{ matrix.orm }}-${{ matrix.test-db || 'sqlite' }}
           fail-on-error: false
 
+  aws-emulator:
+    # Run the tests with Dynamoid ORM against AWS Emulator (https://aws.amazon.com/products/developer-tools/emulator/)
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      AN_ORM: dynamoid
+      AWS_DEFAULT_REGION: ap-northeast-1
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install AWS Emulator
+        working-directory: ${{ runner.temp }}
+        run: |
+          PACKAGE_FILE=aws-emulator_amd64.deb
+          curl -fsSLO https://downloads.aws.com/aws-emulator/packages/aws-emulator/LTS/latest/$PACKAGE_FILE
+          curl -fsSLO https://downloads.aws.com/aws-emulator/packages/aws-emulator/LTS/latest/$PACKAGE_FILE.sig
+          curl -fsSLo aws-publishing.asc https://downloads.aws.com/keys/gpg/current.asc
+          gpg --import aws-publishing.asc
+          # Verify the package with the documented fingerprint of the AWS publishing key
+          gpg --with-colons --fingerprint ssm-publishing@amazon.com | grep -q '^fpr:::::::::98BCF336A3BE53B734E967C52E5BF49BD940F624:'
+          gpg --verify $PACKAGE_FILE.sig $PACKAGE_FILE
+          sudo apt-get install -y ./$PACKAGE_FILE
+          aws-emulator -v
+      - name: Start AWS Emulator
+        run: |
+          # Disable SigV4 verification since the tests travel in time with signed requests.
+          # AWS Emulator listens only on 127.0.0.1 and accepts the dummy keys then.
+          nohup aws-emulator --auth off > "$RUNNER_TEMP/aws-emulator.log" 2>&1 &
+          EMULATOR_DIR="$HOME/.aws/emulator/9297"
+          for i in $(seq 30); do
+            curl -sf --cacert "$EMULATOR_DIR/ca.pem" https://127.0.0.1:9297/__admin/health && break
+            sleep 1
+          done
+          curl -sf --cacert "$EMULATOR_DIR/ca.pem" https://127.0.0.1:9297/__admin/health
+          {
+            echo "AWS_ENDPOINT_URL=https://127.0.0.1:9297"
+            echo "AWS_CA_BUNDLE=$EMULATOR_DIR/ca.pem"
+            echo "AWS_EC2_METADATA_DISABLED=true"
+          } >> "$GITHUB_ENV"
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@b3aaceaef7e0ee231b499e7b5f49c03fc1d32199 # v1.338.0
+        with:
+          ruby-version: '4.0'
+          bundler-cache: true
+      - name: Run tests with RSpec against AWS Emulator
+        run: bundle exec rspec --format progress
+      - name: Coveralls
+        uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
+        continue-on-error: true
+        with:
+          file: coverage/lcov.info
+          format: lcov
+          parallel: true
+          flag-name: Gemfile-dynamoid-aws-emulator
+          fail-on-error: false
+
   coveralls:
-    needs: build
+    needs: [build, aws-emulator]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:

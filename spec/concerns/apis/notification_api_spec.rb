@@ -603,7 +603,7 @@ shared_examples_for :notification_api do
         end
       end
 
-      context 'with ids options' do
+      context 'with ids options', filter_by_dynamodb_primary_key: true do
         it "opens notifications with specified IDs only" do
           notification_to_open = @user_1.notifications.first
           described_class.open_all_of(@user_1, { ids: [notification_to_open.id] })
@@ -710,7 +710,7 @@ shared_examples_for :notification_api do
         end
       end
 
-      context 'with ids options' do
+      context 'with ids options', filter_by_dynamodb_primary_key: true do
         it "destroys notifications with specified IDs only" do
           notification_to_destroy = @user_1.notifications.first
           described_class.destroy_all_of(@user_1, { ids: [notification_to_destroy.id] })

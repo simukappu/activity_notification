@@ -399,7 +399,7 @@ shared_examples_for :notifications_controller do
         end
       end
 
-      context 'with ids parameter' do
+      context 'with ids parameter', filter_by_dynamodb_primary_key: true do
         it "opens only specified notifications" do
           post_with_compatibility :open_all, target_params.merge({ typed_target_param => test_target, ids: [@notification_1.id] }), valid_session
           expect(@notification_1.reload.opened?).to be_truthy
@@ -550,7 +550,7 @@ shared_examples_for :notifications_controller do
         end
       end
 
-      context "with ids request parameters" do
+      context "with ids request parameters", filter_by_dynamodb_primary_key: true do
         it "destroys notifications with specified IDs only" do
           post_with_compatibility :destroy_all, target_params.merge({ typed_target_param => test_target, 'ids' => [@notification_2.id.to_s] }), valid_session
           expect(test_target.notifications.count).to eq(1)

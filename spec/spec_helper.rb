@@ -65,4 +65,10 @@ RSpec.configure do |config|
     clean_database
   end
   config.include Devise::Test::ControllerHelpers, type: :controller
+  # AWS Emulator rejects Query on global secondary indexes with filter expressions on the primary key of the table
+  if ActivityNotification.config.orm == :dynamoid && ENV['AWS_ENDPOINT_URL']
+    config.define_derived_metadata(filter_by_dynamodb_primary_key: true) do |metadata|
+      metadata[:skip] = 'AWS Emulator rejects filter expressions on the primary key of the table in Query on global secondary indexes'
+    end
+  end
 end
