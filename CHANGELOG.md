@@ -1,4 +1,4 @@
-## 2.7.3 / Unreleased
+## 2.7.3 / 2026-11-13
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.7.2...v2.7.3)
 
 Bug Fixes:
