@@ -47,7 +47,13 @@ Dir[Rails.root.join("../../spec/support/**/*.rb")].each { |file| require file }
 
 def clean_database
   [ActivityNotification::Notification, ActivityNotification::Subscription, Comment, Article, Admin, User].each do |model_class|
-    model_class.delete_all
+    if ActivityNotification.config.orm == :dynamoid && model_class.include?(Dynamoid::Document)
+      # Truncate tables instead of deleting and re-creating them since table deletion takes seconds on DynamoDB and AWS Emulator
+      model_class.create_table(sync: true)
+      Dynamoid.adapter.truncate(model_class.table_name)
+    else
+      model_class.delete_all
+    end
   end
 end
 

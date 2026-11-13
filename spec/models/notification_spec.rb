@@ -122,7 +122,6 @@ describe ActivityNotification::Notification, type: :model do
   describe "with scope" do
     context "to filter by notification status" do
       before do
-        ActivityNotification::Notification.delete_all
         @unopened_group_owner  = create(:notification, group_owner: nil)
         @unopened_group_member = create(:notification, group_owner: @unopened_group_owner)
         @opened_group_owner    = create(:notification, group_owner: nil, opened_at: Time.current)
@@ -212,7 +211,6 @@ describe ActivityNotification::Notification, type: :model do
 
     context "to filter by association" do
       before do
-        ActivityNotification::Notification.delete_all
         @target_1, @notifiable_1, @group_1, @key_1 = create(:confirmed_user), create(:article), nil,           "key.1"
         @target_2, @notifiable_2, @group_2, @key_2 = create(:confirmed_user), create(:comment), @notifiable_1, "key.2"
         @notification_1 = create(:notification, target: @target_1, notifiable: @notifiable_1, group: @group_1, key: @key_1)
@@ -374,7 +372,6 @@ describe ActivityNotification::Notification, type: :model do
 
     context "to make order by created_at" do
       before do
-        ActivityNotification::Notification.delete_all
         @target = create(:confirmed_user)
         unopened_group_owner   = create(:notification, target: @target, group_owner: nil)
         unopened_group_member  = create(:notification, target: @target, group_owner: unopened_group_owner, created_at: unopened_group_owner.created_at + 10.second)
@@ -476,7 +473,6 @@ describe ActivityNotification::Notification, type: :model do
 
     context "to include with associated records" do
       before do
-        ActivityNotification::Notification.delete_all
         create(:notification)
         @notifications = ActivityNotification::Notification.filtered_by_key("default.default")
       end

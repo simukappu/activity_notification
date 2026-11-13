@@ -51,7 +51,6 @@ describe ActivityNotification::Subscription, type: :model do
   describe "with scope" do
     context "to filter by association" do
       before do
-        ActivityNotification::Subscription.delete_all
         @target_1, @key_1 = create(:confirmed_user), "key.1"
         @target_2, @key_2 = create(:confirmed_user), "key.2"
         @subscription_1 = create(:subscription, target: @target_1, key: @key_1)
@@ -152,7 +151,6 @@ describe ActivityNotification::Subscription, type: :model do
 
     context "to make order by created_at" do
       before do
-        ActivityNotification::Subscription.delete_all
         @target = create(:confirmed_user)
         @subscription_1 = create(:subscription, target: @target, key: 'key.1')
         @subscription_2 = create(:subscription, target: @target, key: 'key.2', created_at: @subscription_1.created_at + 10.second)

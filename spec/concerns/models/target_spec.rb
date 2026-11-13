@@ -38,7 +38,6 @@ shared_examples_for :target do
 
     describe ".notification_index_map" do
       it "returns notifications of this target type group by target" do
-        ActivityNotification::Notification.delete_all
         target_1 = create(test_class_name)
         target_2 = create(test_class_name)
         notification_1 = create(:notification, target: target_1)
@@ -57,7 +56,6 @@ shared_examples_for :target do
       context "with :filtered_by_status" do
         context "as :opened" do
           it "returns opened notifications of this target type group by target" do
-            ActivityNotification::Notification.delete_all
             target_1 = create(test_class_name)
             target_2 = create(test_class_name)
             target_3 = create(test_class_name)
@@ -82,7 +80,6 @@ shared_examples_for :target do
 
         context "as :unopened" do
           it "returns unopened notifications of this target type group by target" do
-            ActivityNotification::Notification.delete_all
             target_1 = create(test_class_name)
             target_2 = create(test_class_name)
             target_3 = create(test_class_name)
@@ -108,7 +105,6 @@ shared_examples_for :target do
 
       context "with :as_latest_group_member" do
         before do
-          ActivityNotification::Notification.delete_all
           @target_1 = create(test_class_name)
           @target_2 = create(test_class_name)
           @target_3 = create(test_class_name)
@@ -150,7 +146,6 @@ shared_examples_for :target do
 
     describe ".send_batch_unopened_notification_email" do
       it "sends batch notification email to this type targets with unopened notifications" do
-        ActivityNotification::Notification.delete_all
         target_1 = create(test_class_name)
         target_2 = create(test_class_name)
         target_3 = create(test_class_name)
@@ -200,7 +195,6 @@ shared_examples_for :target do
 
   describe "as public instance methods" do
     before do
-      ActivityNotification::Notification.delete_all
       described_class.set_target_class_defaults
     end
 

@@ -67,10 +67,6 @@ if ActivityNotification.config.orm == :dynamoid
   describe Dynamoid::Criteria::Chain do
     let(:chain) { ActivityNotification::Notification.scan_index_forward(true) }
 
-    before do
-      ActivityNotification::Notification.delete_all
-    end
-
     it "is a Dynamoid::Criteria::None" do
       expect(chain).to be_a(Dynamoid::Criteria::Chain)
     end
