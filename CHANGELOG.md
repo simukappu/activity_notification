@@ -4,6 +4,7 @@
 Bug Fixes:
 
 * Embed `target` in each subscription of the subscriptions API `index` response, as the `show` response and the API reference schema do. `config.restrict_api_response_fields` also applies to it
+* Add `target_type`, `target_id`, `notifiable_type`, `notifiable_id` and the other polymorphic association types and ids to REST API responses with Dynamoid ORM, as with ActiveRecord and Mongoid ORMs and the API reference schema
 
 ## 2.7.2 / 2026-10-28
 [Full Changelog](http://github.com/simukappu/activity_notification/compare/v2.7.1...v2.7.2)

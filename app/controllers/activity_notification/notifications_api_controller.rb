@@ -154,7 +154,7 @@ module ActivityNotification
           end
         {
           include: include_options,
-          methods: [:notifiable_path, :printable_notifiable_name, :group_member_notifier_count, :group_notification_count]
+          methods: [:notifiable_path, :printable_notifiable_name, :group_member_notifier_count, :group_notification_count] + polymorphic_association_json_methods(ActivityNotification::Notification)
         }
       end
 

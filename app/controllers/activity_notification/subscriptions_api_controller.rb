@@ -180,7 +180,7 @@ module ActivityNotification
       # Returns methods option for subscription JSON
       # @api protected
       def subscription_json_methods_option
-        [].freeze
+        polymorphic_association_json_methods(ActivityNotification::Subscription).freeze
       end
 
       # Returns JSON of @subscription

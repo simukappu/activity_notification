@@ -26,5 +26,16 @@ module ActivityNotification
       def redirect_to_subscription_path
       end
 
+      # Returns methods to add polymorphic association type and id to JSON of the model.
+      # Dynamoid models store polymorphic associations as composite keys (e.g. target_key),
+      # so their type and id are added to JSON responses as with other ORMs.
+      # @api protected
+      # @param [Class] model_class Model class of the JSON (e.g. ActivityNotification::Notification)
+      # @return [Array<Symbol>] Methods to add to JSON
+      def polymorphic_association_json_methods(model_class)
+        associations = ActivityNotification.config.orm == :dynamoid ? model_class._associated_composite_records : []
+        associations.flat_map { |association| [:"#{association}_type", :"#{association}_id"] }
+      end
+
   end
 end
