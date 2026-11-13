@@ -22,8 +22,7 @@ group :test do
   gem 'timecop'
   gem 'committee'
   gem 'committee-rails', '< 0.6'
-  # gem 'coveralls', require: false
-  gem 'coveralls_reborn', require: false
+  gem 'simplecov-lcov', require: false
 end
 
 gem 'ostruct'
